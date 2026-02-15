@@ -34,6 +34,21 @@ async function fetchJson(url) {
   return res.json();
 }
 
+const OPHIM_FETCH_TIMEOUT_MS = Number(process.env.OPHIM_FETCH_TIMEOUT_MS) || 25000;
+
+/** Fetch JSON with timeout (tránh treo khi API chậm/không phản hồi) */
+async function fetchJsonWithTimeout(url, timeoutMs = OPHIM_FETCH_TIMEOUT_MS) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ac.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+    return res.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 /** R2 client (S3 compatible) */
 function getR2Client() {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -80,21 +95,41 @@ async function processImage(url, slug, folder = 'thumbs') {
   }
 }
 
+/** Giới hạn OPhim: số trang tối đa (0 = không giới hạn), số phim tối đa (0 = không giới hạn). Đặt env để tránh build quá lâu (vd: OPHIM_MAX_PAGES=5, OPHIM_MAX_MOVIES=500). */
+const OPHIM_MAX_PAGES = Number(process.env.OPHIM_MAX_PAGES) || 0;
+const OPHIM_MAX_MOVIES = Number(process.env.OPHIM_MAX_MOVIES) || 0;
+
 /** 1. Thu thập phim từ OPhim */
 async function fetchOPhimMovies() {
   const list = [];
   let page = 1;
   while (true) {
+    if (OPHIM_MAX_PAGES > 0 && page > OPHIM_MAX_PAGES) {
+      console.log('   OPhim: đạt giới hạn số trang:', OPHIM_MAX_PAGES);
+      break;
+    }
+    if (OPHIM_MAX_MOVIES > 0 && list.length >= OPHIM_MAX_MOVIES) {
+      console.log('   OPhim: đạt giới hạn số phim:', OPHIM_MAX_MOVIES);
+      break;
+    }
     const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=100`;
-    const data = await fetchJson(url);
+    let data;
+    try {
+      data = await fetchJsonWithTimeout(url);
+    } catch (e) {
+      console.warn('OPhim list page', page, 'failed:', e.message);
+      break;
+    }
     const items = data?.data?.items || [];
     if (items.length === 0) break;
+    console.log('   OPhim page', page, 'items:', items.length, 'total:', list.length);
     for (const item of items) {
+      if (OPHIM_MAX_MOVIES > 0 && list.length >= OPHIM_MAX_MOVIES) break;
       const slug = item?.slug;
       if (!slug) continue;
       await sleep(OPHIM_DELAY_MS);
       try {
-        const detail = await fetchJson(`${OPHIM_BASE}/phim/${slug}`);
+        const detail = await fetchJsonWithTimeout(`${OPHIM_BASE}/phim/${slug}`);
         const movie = detail?.data?.movie || detail?.data;
         if (!movie) continue;
         const m = normalizeOPhimMovie(movie, slug);
