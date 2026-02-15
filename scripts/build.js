@@ -242,7 +242,7 @@ function parseSheetMovies(moviesRows, episodesRows) {
     const slug = movies.find((m) => m.id === mid || m.slug === mid)?.slug;
     const movie = slug ? movieBySlug[slug] : null;
     if (!movie) continue;
-    const name = (row[epIdx('name') >= 0 ? row[epIdx('name')] : row[1]) || `Tap ${i}`;
+    const name = (epIdx('name') >= 0 ? row[epIdx('name')] : row[1]) || `Tap ${i}`;
     let sources = [];
     const srcStr = row[epIdx('sources')] ?? row[epIdx('source')];
     if (srcStr) {
