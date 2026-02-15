@@ -144,7 +144,10 @@ async function fetchOPhimMovies() {
 }
 
 function normalizeOPhimMovie(m, slug) {
-  const id = m._id || m.id || `ophim_${slug}`;
+  const rawId = m._id || m.id || `ophim_${slug}`;
+  const id = String(rawId);
+  const rawSlug = (m.slug || slug || '').toString().trim();
+  const slugNorm = rawSlug ? rawSlug.toLowerCase() : '';
   const quality = (m.quality || '').toLowerCase();
   const is4k = /4k|uhd|2160p/.test(quality);
   return {
@@ -152,7 +155,7 @@ function normalizeOPhimMovie(m, slug) {
     _id: id,
     title: m.name || m.title || '',
     origin_name: m.origin_name || m.original_title || '',
-    slug: m.slug || slug,
+    slug: slugNorm || id,
     thumb: m.thumb_url || m.poster_url || m.thumb || '',
     poster: m.poster_url || m.poster || m.thumb || '',
     year: m.year || '',
@@ -327,7 +330,7 @@ function mergeMovies(ophim, custom) {
 function writeMoviesLight(movies) {
   const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
   const light = sorted.map((m) => ({
-    id: m.id,
+    id: String(m.id),
     title: m.title,
     origin_name: m.origin_name || '',
     slug: m.slug,
@@ -424,7 +427,7 @@ function writeBatches(movies) {
   fs.ensureDirSync(batchDir);
   for (let start = 0; start < sorted.length; start += BATCH_SIZE) {
     const end = Math.min(start + BATCH_SIZE, sorted.length);
-    const batch = sorted.slice(start, end);
+    const batch = sorted.slice(start, end).map((m) => ({ ...m, id: String(m.id) }));
     const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
     fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
   }

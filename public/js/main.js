@@ -13,19 +13,23 @@
     return res.json();
   };
 
-  /** Get movie by slug from moviesLight */
+  /** Get movie by slug from moviesLight (so khớp chính xác, rồi không phân biệt hoa thường) */
   window.DAOP.getMovieBySlug = function (slug) {
+    if (!slug) return undefined;
     const list = window.moviesLight || [];
-    return list.find(function (m) {
-      return m.slug === slug;
-    });
+    const s = String(slug).trim();
+    let m = list.find(function (x) { return (x.slug || '') === s; });
+    if (!m) m = list.find(function (x) { return (x.slug || '').toLowerCase() === s.toLowerCase(); });
+    return m;
   };
 
-  /** Get movie index by id for batch path */
+  /** Get movie index by id for batch path (id so sánh dạng string để tránh lệch kiểu) */
   window.DAOP.getBatchPath = function (id) {
+    if (id == null) return null;
     const list = window.moviesLight || [];
+    const idStr = String(id);
     const idx = list.findIndex(function (m) {
-      return m.id === id;
+      return String(m.id) === idStr;
     });
     if (idx < 0) return null;
     const start = Math.floor(idx / 100) * 100;
@@ -44,8 +48,9 @@
     script.src = path;
     script.onload = function () {
       const batch = window.moviesBatch || [];
+      const idStr = String(id);
       const movie = batch.find(function (m) {
-        return m.id === id;
+        return String(m.id) === idStr;
       });
       callback(movie || null);
     };
