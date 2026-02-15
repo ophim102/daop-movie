@@ -124,12 +124,60 @@ Nếu dùng R2, Google Sheets, OPhim custom URL thì thêm:
 
 ### Cách B: Build bằng GitHub Actions, deploy bằng Cloudflare API
 
-1. Tạo **API Token** Cloudflare: My Profile → API Tokens → Create Token → mẫu "Edit Cloudflare Workers" hoặc custom với quyền **Account** → **Cloudflare Pages: Edit**, **Workers R2: Edit** (nếu dùng R2).
-2. Lấy **Account ID**: vào bất kỳ trang nào trong Cloudflare, URL hoặc Overview.
-3. **Workers & Pages** → **Create** → **Pages** → **Direct Upload** (không gắn Git). Đặt tên project (ví dụ: `daop`).
-4. Thêm secrets như bước 3 (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`). Workflow `.github/workflows/deploy.yml` sẽ chạy khi push `main`, build xong sẽ deploy thư mục `public/` lên project Pages này (cần sửa tên project trong workflow nếu khác `daop`).
+Workflow này: khi bạn push lên nhánh `main`, GitHub Actions sẽ **chỉ đẩy** thư mục `public/` lên Cloudflare Pages (không chạy build trên Actions). Build phải đã có sẵn (chạy local hoặc workflow `update-data` / `build-on-demand`).
 
-Nếu dùng Cách B, build phải chạy trước (local hoặc workflow `update-data`). Lần đầu có thể chạy local: `npm run build` rồi push thư mục `public/data` lên; sau đó workflow deploy sẽ đẩy `public/` lên Pages.
+#### Bước B.1: Tạo API Token Cloudflare
+
+1. Đăng nhập [Cloudflare Dashboard](https://dash.cloudflare.com).
+2. Bấm **My Profile** (icon người góc phải) → **API Tokens**.
+3. **Create Token**.
+4. Chọn một trong hai:
+   - **Dùng mẫu:** kéo xuống tìm **Edit Cloudflare Workers** → **Use template** (sau đó có thể thu hẹp quyền nếu cần), hoặc
+   - **Custom token:** **Create Custom Token** → đặt tên (vd: `daop-pages-deploy`), phần **Permissions**:
+     - **Account** → **Cloudflare Pages** → **Edit**
+     - (Nếu dùng R2) **Account** → **Workers R2 Storage** → **Edit**
+5. **Continue to summary** → **Create Token**.
+6. **Copy** token ngay (chỉ hiển thị một lần). Lưu vào nơi an toàn → dùng làm giá trị secret `CLOUDFLARE_API_TOKEN`.
+
+#### Bước B.2: Lấy Account ID
+
+1. Trong Cloudflare Dashboard, ở thanh bên trái hoặc trang **Overview** của bất kỳ domain/zone nào.
+2. **Account ID** là chuỗi 32 ký tự hex (vd: `74d232c91b824ba3218e83bc576cb392`).
+3. Copy → dùng làm giá trị secret `CLOUDFLARE_ACCOUNT_ID`.
+
+#### Bước B.3: Tạo project Cloudflare Pages (Direct Upload)
+
+1. **Workers & Pages** (menu trái) → **Create** → **Pages**.
+2. Chọn **Direct Upload** (không chọn "Connect to Git").
+3. **Project name:** đặt tên (vd: `daop`) — tên này dùng trong workflow.
+4. **Create project**. Project trống sẽ được tạo, chưa có deployment nào.
+
+#### Bước B.4: Thêm Secrets và Variables trên GitHub
+
+1. Vào repo GitHub → **Settings** → **Secrets and variables** → **Actions**.
+2. **Repository secrets** → **New repository secret**:
+   - Tên: `CLOUDFLARE_API_TOKEN` → Value: token đã copy ở B.1.
+   - Tên: `CLOUDFLARE_ACCOUNT_ID` → Value: Account ID ở B.2.
+3. (Tùy chọn) **Variables** → **New repository variable**:
+   - Tên: `CLOUDFLARE_PAGES_PROJECT_NAME` → Value: tên project đã đặt ở B.3 (vd: `daop`).
+   - Nếu không tạo variable này, workflow mặc định dùng tên `daop` (xem `.github/workflows/deploy.yml`).
+
+#### Bước B.5: Đảm bảo thư mục `public/` có sẵn trước khi deploy
+
+Workflow `deploy.yml` chỉ upload nội dung thư mục `public/` lên Pages, **không** chạy `npm run build`. Do đó:
+
+- **Lần đầu:** Chạy build trên máy: `npm run build` (cần `.env` đã cấu hình). Commit và push cả thư mục `public/` (ít nhất `public/data` và các file tĩnh) lên nhánh `main`.
+- **Sau đó:** Mỗi lần push `main`, workflow deploy sẽ chạy và đẩy `public/` hiện tại lên Pages.
+- **Cập nhật dữ liệu:** Chạy workflow **update-data** (theo lịch hoặc thủ công) hoặc **build-on-demand** (trigger từ Admin). Các workflow này chạy `npm run build`, commit `public/data`, push lên `main` → push đó sẽ kích hoạt lại workflow deploy và đẩy `public/` mới lên Pages.
+
+#### Bước B.6: Đổi tên project (nếu không dùng `daop`)
+
+Nếu bạn đặt tên project Pages khác (vd: `my-phim-site`):
+
+- Cách 1: Tạo variable `CLOUDFLARE_PAGES_PROJECT_NAME` = `my-phim-site` (như B.4).
+- Cách 2: Sửa file `.github/workflows/deploy.yml`, dòng `projectName`: đổi `'daop'` thành tên project của bạn.
+
+Sau khi cấu hình xong, URL site sẽ dạng `https://<project-name>.pages.dev` (vd: `https://daop.pages.dev`).
 
 ---
 
