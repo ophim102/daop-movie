@@ -456,9 +456,10 @@ async function exportConfigFromSupabase() {
     if (b.end_date && b.end_date < today) return false;
     return true;
   });
+  const defaultSections = [{ title: 'Phim mới', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0 }];
   fs.writeFileSync(path.join(configDir, 'server-sources.json'), JSON.stringify(sources.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'banners.json'), JSON.stringify(banners, null, 2));
-  fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify(sections.data || [], null, 2));
+  fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify((sections.data && sections.data.length) ? sections.data : defaultSections, null, 2));
   const settingsObj = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(settingsObj, null, 2));
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
