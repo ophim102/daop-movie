@@ -3,6 +3,15 @@
  */
 (function () {
   function getSlug() {
+    var hash = window.location.hash;
+    if (hash && hash.length > 1) {
+      var slug = decodeURIComponent(hash.slice(1));
+      if (slug) {
+        var clean = '/phim/' + slug + '.html';
+        if (window.history && window.history.replaceState) window.history.replaceState(null, '', clean);
+        return slug;
+      }
+    }
     var path = window.location.pathname;
     var m = path.match(/\/phim\/([^/]+)(\.html)?$/);
     return m ? decodeURIComponent(m[1]) : null;

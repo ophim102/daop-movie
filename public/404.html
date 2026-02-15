@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đang chuyển...</title>
+  <script>
+    (function() {
+      var path = window.location.pathname;
+      var m = path.match(/^\/phim\/([^/]+)(\.html)?$/);
+      if (m) {
+        var slug = decodeURIComponent(m[1]);
+        window.location.replace('/phim/index.html#' + encodeURIComponent(slug));
+        return;
+      }
+      document.body = document.body || document.createElement('body');
+      document.body.innerHTML = '<p>Trang không tồn tại. <a href="/">Về trang chủ</a>.</p>';
+    })();
+  </script>
+</head>
+<body><p>Đang chuyển...</p></body>
+</html>

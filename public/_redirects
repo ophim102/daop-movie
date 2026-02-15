@@ -1,2 +1,1 @@
-# Trang chi tiết phim: mọi URL /phim/:slug hoặc /phim/:slug.html đều serve phim/index.html (JS đọc slug từ URL)
-/phim/*  /phim/index.html  200
+/phim/:slug  /phim/index.html  200
