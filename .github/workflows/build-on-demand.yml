@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run build -- --incremental
         env:
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL }}
