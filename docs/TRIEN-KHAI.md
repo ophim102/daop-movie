@@ -32,6 +32,9 @@ Tài liệu này mô tả từng bước đưa dự án lên môi trường th�
 5. Lấy URL và key:
    - **Settings → API**: copy **Project URL** và **anon public** key.  
    → Dùng sau cho website (cấu hình trong Admin: Supabase User URL + Anon Key).
+   https://oqmcargitpdbidmgglck.supabase.co
+   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xbWNhcmdpdHBkYmlkbWdnbGNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTYyMjksImV4cCI6MjA4NjY3MjIyOX0.m5OkWQzWYk8lYOGrt1zoRhTROkXQbTxmpXqXW-Hdb28
+
 
 ### 1.2. Project Supabase Admin (cho quản trị)
 
@@ -44,11 +47,14 @@ Tài liệu này mô tả từng bước đưa dự án lên môi trường th�
    ```sql
    update auth.users
    set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
-   where email = 'admin@example.com';
+   where email = 'ophimadmin@gotv.top';
    ```
 
 4. Lấy key:
    - **Settings → API**: copy **Project URL**, **anon public** (cho Admin Panel), **service_role** (chỉ dùng cho script build và backend, không đưa lên frontend).
+   https://pikyipdctezidbnmccvz.supabase.co
+   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpa3lpcGRjdGV6aWRibm1jY3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNDA1MzMsImV4cCI6MjA4NjcxNjUzM30.Pn9WEfM6GjxdqzBfPBk64YP95po7AgCpiMbABR_0EaQ
+   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpa3lpcGRjdGV6aWRibm1jY3Z6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTE0MDUzMywiZXhwIjoyMDg2NzE2NTMzfQ.YAFAPV_CtSv6rT4gONViAtn9w0Z_51CyRR1i2xnAOwI
 
 ---
 
@@ -83,12 +89,18 @@ Dùng cho GitHub Actions (build, deploy) và (sau này) cho Cloudflare/Vercel.
 | `SUPABASE_ADMIN_URL` | URL project Supabase Admin | https://xxx.supabase.co |
 | `SUPABASE_ADMIN_SERVICE_ROLE_KEY` | Service role key Supabase Admin | eyJ... |
 | `CLOUDFLARE_API_TOKEN` | Token deploy Cloudflare Pages | Xem bước 4 |
+vtOfCF6qQUMFHaly4tcnV7KVJIFhqV8FI_Qsn5wL
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID Cloudflare | Trong dashboard Cloudflare |
+74d232c91b824ba3218e83bc576cb392
 | `GITHUB_TOKEN` | Mặc định có sẵn, dùng push/deploy | (không cần tạo) |
 
 Nếu dùng R2, Google Sheets, OPhim custom URL thì thêm:
 
-- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`
+- `R2_ACCOUNT_ID` 74d232c91b824ba3218e83bc576cb392,
+`R2_ACCESS_KEY_ID`fa40ee305ab802cca55299d7350faef6, 
+`R2_SECRET_ACCESS_KEY` ca4c7d42f1c881ecc90a0c2eb59e7d19184a39b2a36622fe7cbddd8017466a3c
+`R2_BUCKET_NAME`, ophimadmin
+`R2_PUBLIC_URL` https://pub-62eef44669df48e4bca5388a38e69522.r2.dev
 - `GOOGLE_SHEETS_ID`, `GOOGLE_SERVICE_ACCOUNT_KEY` (hoặc đường dẫn file JSON)
 - `OPHIM_BASE_URL` (nếu khác mặc định)
 
