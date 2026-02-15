@@ -4,15 +4,6 @@
     "source_type": "type",
     "source_value": "series",
     "limit_count": 24,
-    "sort_order": 0,
-    "more_link": "/phim-bo.html"
-  },
-  {
-    "title": "Phim lẻ",
-    "source_type": "type",
-    "source_value": "single",
-    "limit_count": 12,
-    "sort_order": 1,
-    "more_link": "/phim-le.html"
+    "sort_order": 0
   }
 ]
