@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
     steps:
       - uses: actions/checkout@v4
       - uses: cloudflare/pages-action@v1
@@ -16,4 +15,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'daop' }}
           directory: public
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
