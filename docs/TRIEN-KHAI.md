@@ -183,22 +183,101 @@ Sau khi cấu hình xong, URL site sẽ dạng `https://<project-name>.pages.dev
 
 ## Bước 5: Deploy Admin Panel + API lên Vercel
 
-1. Vào [vercel.com](https://vercel.com) → **Add New** → **Project** → Import repo GitHub (cùng repo DAOP).
-2. Cấu hình:
-   - **Root Directory:** để trống (repo root).
-   - **Install Command:** `npm install && cd admin && npm install` (bắt buộc để cài cả dependency admin).
-   - **Build Command:** `cd admin && npm run build`
-   - **Output Directory:** `admin/dist`
-3. **Environment Variables** (cho Admin frontend):
-   - `VITE_SUPABASE_ADMIN_URL` = URL Supabase Admin
-   - `VITE_SUPABASE_ADMIN_ANON_KEY` = anon key Supabase Admin
-4. **Environment Variables** cho API (trigger build):
-   - `GITHUB_TOKEN` = Personal Access Token GitHub (repo scope, để trigger workflow).
-   - `GITHUB_REPO` = `USERNAME/REPO` (ví dụ: `myuser/daop-movie`).
-   - `WEBHOOK_BUILD_TOKEN` = chuỗi bí mật tùy chọn (Admin gọi API kèm token này).
-5. Deploy. Vercel sẽ build `admin/` và nhận thư mục `api/` ở root thành serverless functions → URL dạng `https://xxx.vercel.app`. API trigger build: `https://xxx.vercel.app/api/trigger-build`.
+Admin Panel (React/Vite) và API trigger build (serverless) cùng nằm trong một project Vercel: build từ thư mục `admin/`, đồng thời thư mục `api/` ở root repo được deploy thành các function tại `/api/*`.
 
-**Lưu ý:** Thư mục `api/` ở root repo sẽ được Vercel nhận thành serverless functions (URL `/api/trigger-build`). Nếu bạn chỉ muốn deploy Admin mà không cần API, có thể đặt **Root Directory** = `admin` và **Output** = `dist`; khi đó không có `/api/*`.
+---
+
+### Bước 5.1: Import repo lên Vercel
+
+1. Đăng nhập [vercel.com](https://vercel.com) (dùng tài khoản GitHub).
+2. Trang chủ → **Add New** → **Project**.
+3. Trong **Import Git Repository**, chọn repo **ophim102/daop-movie** (hoặc repo DAOP của bạn). Nếu chưa thấy, bấm **Configure** để kết nối GitHub và cấp quyền truy cập repo.
+4. Bấm **Import** (chưa cần đổi tên project; có thể đổi sau trong Settings).
+
+---
+
+### Bước 5.2: Cấu hình Build (Framework Preset, Root, Install, Build, Output)
+
+Trên màn hình **Configure Project**:
+
+1. **Framework Preset:** chọn **Other** (hoặc **Vite** nếu có, vì admin dùng Vite; nếu chọn Vite có thể Vercel tự điền Build/Output — khi đó chỉ cần sửa **Root Directory** và **Install** như dưới đây).
+
+2. **Root Directory:**  
+   - Để **trống** (hoặc `.`) để Vercel dùng **root của repo**.  
+   - Cần root repo vì thư mục `api/` nằm ở root; nếu đặt Root = `admin` thì sẽ không có `/api/*`.
+
+3. **Build and Output Settings** — chỉnh thủ công nếu Vercel chưa nhận đúng:
+   - **Install Command:**  
+     `npm install && cd admin && npm install`  
+     (cài dependency ở root và trong `admin/` vì build cần cả hai).
+   - **Build Command:**  
+     `cd admin && npm run build`  
+     (chạy build Vite trong thư mục `admin/`).
+   - **Output Directory:**  
+     `admin/dist`  
+     (thư mục Vite build ra, so với root repo).
+
+4. **Development Command:** có thể để mặc định hoặc `cd admin && npm run dev`.
+
+5. Bấm **Environment Variables** (bước tiếp) hoặc **Deploy** nếu muốn thêm biến môi trường sau.
+
+---
+
+### Bước 5.3: Environment Variables — Admin frontend
+
+Cần hai biến để Admin kết nối Supabase Admin (đăng nhập, đọc/ghi cấu hình):
+
+| Name | Value | Ghi chú |
+|------|--------|--------|
+| `VITE_SUPABASE_ADMIN_URL` | URL project Supabase Admin | Dạng `https://xxxx.supabase.co` (lấy ở Supabase → Settings → API). |
+| `VITE_SUPABASE_ADMIN_ANON_KEY` | **Anon (public)** key Supabase Admin | **Không** dùng service_role; chỉ dùng anon key (Supabase → Settings → API → anon public). |
+
+- Thêm từng biến: **Key** = tên, **Value** = giá trị, chọn **Environment** = Production (và Preview nếu cần).
+- Tiền tố `VITE_` bắt buộc để Vite nhúng vào bundle frontend.
+
+---
+
+### Bước 5.4: Environment Variables — API trigger build
+
+API `api/trigger-build.ts` khi được gọi sẽ dùng GitHub API để trigger workflow **build-on-demand**. Cần hai biến bắt buộc, một tùy chọn:
+
+| Name | Value | Bắt buộc | Ghi chú |
+|------|--------|----------|--------|
+| `GITHUB_TOKEN` | Personal Access Token (classic) | Có | Quyền **repo** (full). Tạo: GitHub → Settings (user) → Developer settings → Personal access tokens → Generate new token (classic), chọn scope **repo**. |
+| `GITHUB_REPO` | `owner/repo` | Có | Ví dụ: `ophim102/daop-movie`. Đúng với repo chứa workflow **build-on-demand**. |
+| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Nếu đặt, client gọi `/api/trigger-build` phải gửi đúng token (header `Authorization: Bearer <token>` hoặc body `{ "token": "<token>" }`). Hiện Admin UI chưa gửi token; nếu bạn đặt biến này thì cần sửa Admin để gửi token hoặc tạm không đặt. |
+
+- Thêm cả ba (hoặc ít nhất `GITHUB_TOKEN`, `GITHUB_REPO`) trong cùng project Vercel, Environment = Production (và Preview nếu bạn test qua preview).
+
+---
+
+### Bước 5.5: Deploy và kiểm tra
+
+1. Sau khi thêm Environment Variables, bấm **Deploy** (hoặc nếu đã Deploy trước đó thì vào **Deployments** → bấm **Redeploy** với option **Use existing Build Cache** tắt để build lại với env mới).
+2. Đợi build xong. Khi thành công:
+   - **Admin:** `https://<tên-project>.vercel.app` (trang chủ là giao diện đăng nhập Admin).
+   - **API trigger build:** `https://<tên-project>.vercel.app/api/trigger-build` (POST; không GET).
+3. Kiểm tra nhanh:
+   - Mở URL Admin → đăng nhập bằng tài khoản Supabase Admin đã gán role admin.
+   - Trong Admin, nút **Build website** gọi `POST /api/trigger-build` → nếu cấu hình đúng sẽ trả `{ "ok": true, "message": "Build triggered" }` và workflow **build-on-demand** chạy trên GitHub.
+
+---
+
+### Bước 5.6: (Tùy chọn) Chỉ deploy Admin, không dùng API
+
+Nếu bạn **không** cần API trigger build (chỉ cần giao diện Admin):
+
+1. **Settings** → **General** → **Root Directory:** đổi thành `admin`.
+2. **Build Command:** `npm run build` (đã ở trong `admin`).
+3. **Output Directory:** `dist`.
+4. Có thể xóa hoặc không cấu hình `GITHUB_TOKEN`, `GITHUB_REPO`, `WEBHOOK_BUILD_TOKEN`. Khi đó không có route `/api/trigger-build`.
+
+---
+
+**Tóm tắt URL sau khi deploy**
+
+- Admin: `https://<project>.vercel.app`
+- API trigger build: `https://<project>.vercel.app/api/trigger-build` (POST)
 
 ---
 

@@ -7,10 +7,14 @@ export default function DonateSettings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('donate_settings').select('*').limit(1).single().then((r) => {
-      if (r.data) form.setFieldsValue(r.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    void Promise.resolve(
+      supabase.from('donate_settings').select('*').limit(1).single(),
+    )
+      .then((r) => {
+        if (r.data) form.setFieldsValue(r.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [form]);
 
   const onFinish = async (values: any) => {
