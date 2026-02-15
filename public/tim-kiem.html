@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tìm kiếm | DAOP Phim</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/phim-bo.html">Phim bộ</a>
+      <a href="/phim-le.html">Phim lẻ</a>
+      <a href="/tim-kiem.html">Tìm kiếm</a>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Tìm kiếm</h1>
+    <input type="search" id="search-input" class="search-box" placeholder="Gõ tên phim hoặc tên gốc...">
+    <div id="search-results" class="movies-grid" style="margin-top:1rem;"></div>
+  </main>
+  <footer class="site-footer">
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+  </footer>
+  <script src="/data/movies-light.js"></script>
+  <script src="/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flexsearch@0.7.31/dist/flexsearch.min.js"></script>
+  <script src="/js/search.js"></script>
+</body>
+</html>

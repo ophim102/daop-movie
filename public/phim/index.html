@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết phim | DAOP Phim</title>
+  <meta name="description" content="">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/phim-bo.html">Phim bộ</a>
+      <a href="/phim-le.html">Phim lẻ</a>
+      <a href="/tim-kiem.html">Tìm kiếm</a>
+    </nav>
+  </header>
+  <main class="container">
+    <div id="movie-detail"></div>
+  </main>
+  <footer class="site-footer">
+    <p><a href="/donate.html">Donate</a></p>
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+    <p>Dữ liệu phim có thể từ TMDB. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a></p>
+  </footer>
+  <script>
+    window.DAOP = window.DAOP || {};
+    window.DAOP.basePath = '';
+    var path = window.location.pathname;
+    var base = '';
+    if (path.indexOf('/phim/') === 0) {
+      var slug = path.replace(/^\/phim\//, '').replace(/\/index\.html$/, '').replace(/\.html$/, '') || '';
+      if (slug && slug !== 'index') {
+        history.replaceState(null, '', base + '/phim/' + slug + '.html');
+      }
+    }
+  </script>
+  <script src="/data/movies-light.js"></script>
+  <script src="/data/filters.js"></script>
+  <script src="/data/actors.js"></script>
+  <script>
+    fetch('/data/config/site-settings.json').then(function(r){ return r.json(); }).then(function(s){
+      window.DAOP.siteName = s.site_name || 'DAOP Phim';
+      window.DAOP.siteSettings = s;
+      window.DAOP.twikooEnvId = s.twikoo_env_id || '';
+      window.DAOP.supabaseUserUrl = s.supabase_user_url || '';
+      window.DAOP.supabaseUserAnonKey = s.supabase_user_anon_key || '';
+      return fetch('/data/config/server-sources.json');
+    }).then(function(r){ return r && r.json ? r.json() : []; }).then(function(arr){
+      window.DAOP.serverSources = arr || [];
+    }).catch(function(){});
+  </script>
+  <script src="/js/main.js"></script>
+  <script src="/js/user-sync.js"></script>
+  <script src="/js/player.js"></script>
+  <script src="/js/movie-detail.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.16/dist/twikoo.all.min.js"></script>
+</body>
+</html>

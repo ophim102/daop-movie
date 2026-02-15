@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn cài app | DAOP Phim</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/">Trang chủ</a>
+      <a href="/huong-dan-app.html">Hướng dẫn app</a>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Hướng dẫn cài đặt ứng dụng</h1>
+    <div id="app-guide-content">Đang tải...</div>
+    <p><a href="#" id="apk-link">Tải APK (Android)</a> | <a href="#" id="testflight-link">TestFlight (iOS)</a></p>
+  </main>
+  <footer class="site-footer">
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+  </footer>
+  <script>
+    fetch('/data/config/static-pages.json').then(function(r){ return r.json(); }).then(function(pages){
+      var app = Array.isArray(pages) ? pages.find(function(p){ return p.page_key === 'app_guide'; }) : null;
+      var el = document.getElementById('app-guide-content');
+      if (el) el.innerHTML = (app && app.content) ? app.content : '<p>Hướng dẫn tải APK, TestFlight và cài đặt.</p>';
+      if (app && app.apk_link) document.getElementById('apk-link').href = app.apk_link;
+      if (app && app.testflight_link) document.getElementById('testflight-link').href = app.testflight_link;
+    }).catch(function(){ document.getElementById('app-guide-content').innerHTML = '<p>Hướng dẫn cài đặt ứng dụng.</p>'; });
+  </script>
+</body>
+</html>

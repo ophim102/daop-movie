@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giới thiệu | DAOP Phim</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/">Trang chủ</a>
+      <a href="/gioi-thieu.html">Giới thiệu</a>
+      <a href="/donate.html">Donate</a>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Giới thiệu</h1>
+    <div id="static-content">Đang tải...</div>
+  </main>
+  <footer class="site-footer">
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+  </footer>
+  <script>
+    fetch('/data/config/static-pages.json').then(function(r){ return r.json(); }).then(function(pages){
+      var about = Array.isArray(pages) ? pages.find(function(p){ return p.page_key === 'about'; }) : null;
+      var el = document.getElementById('static-content');
+      if (el) el.innerHTML = (about && about.content) ? about.content : '<p>Nội dung trang giới thiệu.</p>';
+    }).catch(function(){ document.getElementById('static-content').innerHTML = '<p>Nội dung trang giới thiệu.</p>'; });
+  </script>
+</body>
+</html>

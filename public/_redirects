@@ -1,0 +1,7 @@
+# Cloudflare Pages: catch-all cho trang chi tiết / danh mục
+/phim/*        /phim/index.html          200
+/the-loai/*    /the-loai/index.html      200
+/quoc-gia/*    /quoc-gia/index.html      200
+/nam-phat-hanh/*  /nam-phat-hanh/index.html  200
+/dien-vien/*   /dien-vien/index.html     200
+/dien-vien     /dien-vien/               302

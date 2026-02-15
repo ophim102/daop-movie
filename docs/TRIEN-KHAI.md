@@ -1,0 +1,218 @@
+# Hướng dẫn triển khai DAOP
+
+Tài liệu này mô tả từng bước đưa dự án lên môi trường thật: website trên Cloudflare Pages, Admin trên Vercel, dữ liệu từ Supabase và (tùy chọn) R2, Google Sheets, Twikoo.
+
+---
+
+## Chuẩn bị tài khoản / dịch vụ
+
+| Dịch vụ | Dùng để | Bắt buộc |
+|---------|---------|----------|
+| **GitHub** | Lưu code, GitHub Actions | Có |
+| **Supabase** | 2 project: User (auth, favorites, history) + Admin (cấu hình) | Có |
+| **Cloudflare** | Pages (website) + có thể R2 (ảnh) | Có (Pages); R2 tùy chọn |
+| **Vercel** | Host Admin + API trigger build (+ Twikoo nếu dùng) | Có |
+| **TMDB** | API key lấy thông tin phim | Có (để build có dữ liệu) |
+| **Google Cloud** | Service account đọc Google Sheets (phim custom) | Tùy chọn |
+| **MongoDB** | Cho Twikoo (bình luận) | Tùy chọn |
+
+---
+
+## Bước 1: Tạo hai project Supabase
+
+### 1.1. Project Supabase User (cho người xem)
+
+1. Vào [supabase.com](https://supabase.com) → New Project.
+2. Đặt tên (ví dụ: `daop-user`), chọn region, đặt mật khẩu database.
+3. Sau khi tạo xong:
+   - Vào **SQL Editor** → New query.
+   - Copy toàn bộ nội dung file `docs/supabase/schema-user.sql` và chạy.
+4. Bật **Authentication**:
+   - Authentication → Providers: bật **Email**, (tùy chọn) **Google**.
+5. Lấy URL và key:
+   - **Settings → API**: copy **Project URL** và **anon public** key.  
+   → Dùng sau cho website (cấu hình trong Admin: Supabase User URL + Anon Key).
+
+### 1.2. Project Supabase Admin (cho quản trị)
+
+1. Tạo project mới (ví dụ: `daop-admin`).
+2. **SQL Editor** → chạy toàn bộ `docs/supabase/schema-admin.sql`.
+3. Tạo user admin:
+   - Authentication → Users → Add user (email + mật khẩu).
+   - Để gán role admin, trong **SQL Editor** chạy (thay email đúng):
+
+   ```sql
+   update auth.users
+   set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
+   where email = 'admin@example.com';
+   ```
+
+4. Lấy key:
+   - **Settings → API**: copy **Project URL**, **anon public** (cho Admin Panel), **service_role** (chỉ dùng cho script build và backend, không đưa lên frontend).
+
+---
+
+## Bước 2: Đẩy code lên GitHub
+
+1. Tạo repository mới trên GitHub (ví dụ: `daop-movie`).
+2. Trên máy, trong thư mục dự án:
+
+```bash
+git init
+git add .
+git commit -m "Initial: DAOP project"
+git branch -M main
+git remote add origin https://github.com/USERNAME/daop-movie.git
+git push -u origin main
+```
+
+(Thay `USERNAME` và tên repo bằng của bạn.)
+
+---
+
+## Bước 3: Cấu hình biến môi trường (GitHub Secrets)
+
+Dùng cho GitHub Actions (build, deploy) và (sau này) cho Cloudflare/Vercel.
+
+1. Vào repo GitHub → **Settings → Secrets and variables → Actions**.
+2. Thêm **Repository secrets**:
+
+| Tên secret | Ý nghĩa | Ví dụ |
+|------------|---------|--------|
+| `TMDB_API_KEY` | API key TMDB | Lấy tại themoviedb.org/settings/api |
+| `SUPABASE_ADMIN_URL` | URL project Supabase Admin | https://xxx.supabase.co |
+| `SUPABASE_ADMIN_SERVICE_ROLE_KEY` | Service role key Supabase Admin | eyJ... |
+| `CLOUDFLARE_API_TOKEN` | Token deploy Cloudflare Pages | Xem bước 4 |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID Cloudflare | Trong dashboard Cloudflare |
+| `GITHUB_TOKEN` | Mặc định có sẵn, dùng push/deploy | (không cần tạo) |
+
+Nếu dùng R2, Google Sheets, OPhim custom URL thì thêm:
+
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`
+- `GOOGLE_SHEETS_ID`, `GOOGLE_SERVICE_ACCOUNT_KEY` (hoặc đường dẫn file JSON)
+- `OPHIM_BASE_URL` (nếu khác mặc định)
+
+**Variables** (Settings → Variables): có thể thêm `CLOUDFLARE_PAGES_PROJECT_NAME` = tên project Pages (ví dụ: `daop`).
+
+---
+
+## Bước 4: Deploy website lên Cloudflare Pages
+
+### Cách A: Build trên Cloudflare (đơn giản)
+
+1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+2. Chọn repo và nhánh `main`.
+3. Cấu hình build:
+   - **Framework preset:** None.
+   - **Build command:** `npm run build`
+   - **Build output directory:** `public`
+   - **Root directory:** (để trống)
+4. **Environment variables** (Build): thêm ít nhất `TMDB_API_KEY`, `SUPABASE_ADMIN_URL`, `SUPABASE_ADMIN_SERVICE_ROLE_KEY` (và các biến khác nếu build cần).
+5. Deploy. Sau khi xong, bạn có URL dạng `https://xxx.pages.dev`.
+
+### Cách B: Build bằng GitHub Actions, deploy bằng Cloudflare API
+
+1. Tạo **API Token** Cloudflare: My Profile → API Tokens → Create Token → mẫu "Edit Cloudflare Workers" hoặc custom với quyền **Account** → **Cloudflare Pages: Edit**, **Workers R2: Edit** (nếu dùng R2).
+2. Lấy **Account ID**: vào bất kỳ trang nào trong Cloudflare, URL hoặc Overview.
+3. **Workers & Pages** → **Create** → **Pages** → **Direct Upload** (không gắn Git). Đặt tên project (ví dụ: `daop`).
+4. Thêm secrets như bước 3 (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`). Workflow `.github/workflows/deploy.yml` sẽ chạy khi push `main`, build xong sẽ deploy thư mục `public/` lên project Pages này (cần sửa tên project trong workflow nếu khác `daop`).
+
+Nếu dùng Cách B, build phải chạy trước (local hoặc workflow `update-data`). Lần đầu có thể chạy local: `npm run build` rồi push thư mục `public/data` lên; sau đó workflow deploy sẽ đẩy `public/` lên Pages.
+
+---
+
+## Bước 5: Deploy Admin Panel + API lên Vercel
+
+1. Vào [vercel.com](https://vercel.com) → **Add New** → **Project** → Import repo GitHub (cùng repo DAOP).
+2. Cấu hình:
+   - **Root Directory:** để trống (repo root).
+   - **Install Command:** `npm install && cd admin && npm install` (bắt buộc để cài cả dependency admin).
+   - **Build Command:** `cd admin && npm run build`
+   - **Output Directory:** `admin/dist`
+3. **Environment Variables** (cho Admin frontend):
+   - `VITE_SUPABASE_ADMIN_URL` = URL Supabase Admin
+   - `VITE_SUPABASE_ADMIN_ANON_KEY` = anon key Supabase Admin
+4. **Environment Variables** cho API (trigger build):
+   - `GITHUB_TOKEN` = Personal Access Token GitHub (repo scope, để trigger workflow).
+   - `GITHUB_REPO` = `USERNAME/REPO` (ví dụ: `myuser/daop-movie`).
+   - `WEBHOOK_BUILD_TOKEN` = chuỗi bí mật tùy chọn (Admin gọi API kèm token này).
+5. Deploy. Vercel sẽ build `admin/` và nhận thư mục `api/` ở root thành serverless functions → URL dạng `https://xxx.vercel.app`. API trigger build: `https://xxx.vercel.app/api/trigger-build`.
+
+**Lưu ý:** Thư mục `api/` ở root repo sẽ được Vercel nhận thành serverless functions (URL `/api/trigger-build`). Nếu bạn chỉ muốn deploy Admin mà không cần API, có thể đặt **Root Directory** = `admin` và **Output** = `dist`; khi đó không có `/api/*`.
+
+---
+
+## Bước 6: Chạy build dữ liệu lần đầu
+
+Build tạo ra `public/data/` (movies-light.js, filters.js, actors.js, batches, config JSON).
+
+### Cách 1: Chạy trên máy
+
+```bash
+# Trong thư mục gốc dự án
+copy .env.example .env
+# Mở .env, điền TMDB_API_KEY, SUPABASE_ADMIN_URL, SUPABASE_ADMIN_SERVICE_ROLE_KEY
+
+npm install
+npm run build
+```
+
+Sau đó commit và push (ít nhất thư mục `public/data`, hoặc toàn bộ):
+
+```bash
+git add public/data
+git commit -m "Add initial build data"
+git push
+```
+
+Nếu dùng Cloudflare Pages Cách A, push sẽ kích hoạt build trên Cloudflare (dùng env đã cấu hình trên Pages). Nếu dùng Cách B (deploy bằng Actions), sau khi push cần chạy workflow deploy (hoặc trigger thủ công) để đẩy `public/` lên Pages.
+
+### Cách 2: Dùng GitHub Actions
+
+- Workflow **update-data** (chạy theo lịch hoặc **Run workflow** thủ công) sẽ chạy `npm run build` với secrets, rồi commit + push thay đổi.
+- Cần đảm bảo đã thêm đủ secrets (TMDB, Supabase Admin, …) như bước 3.
+
+Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động nếu đã cấu hình) để site dùng dữ liệu mới.
+
+---
+
+## Bước 7: Cấu hình Admin và website
+
+1. **Đăng nhập Admin:** Mở URL Vercel của Admin → đăng nhập bằng user Supabase Admin đã gán `role = admin`.
+2. **Cài đặt chung (Site Settings):**
+   - Tên site, Google Analytics ID, SimpleAnalytics (nếu dùng).
+   - **Twikoo Env ID** (nếu dùng bình luận).
+   - **Supabase User URL** và **Supabase User Anon Key** (project Supabase User) → để website đăng nhập và đồng bộ yêu thích/lịch sử.
+   - Cảnh báo dưới player: bật/tắt và nội dung.
+3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó deploy lại Pages (nếu dùng Cách B) hoặc đợi build trên Cloudflare (Cách A).
+
+---
+
+## Bước 8: Domain (tùy chọn)
+
+- **Website:** Trong Cloudflare Pages → project → **Custom domains** → thêm domain (ví dụ: `phim.example.com`). Trỏ DNS theo hướng dẫn.
+- **Admin:** Trong Vercel → project Admin → **Settings → Domains** → thêm (ví dụ: `admin.example.com`).
+- **SITE_URL:** Khi build, nếu dùng domain thật thì trong env (GitHub Secrets hoặc Cloudflare) đặt `SITE_URL=https://phim.example.com` để sitemap/robots dùng đúng domain.
+
+---
+
+## Bước 9: Tùy chọn bổ sung
+
+- **R2:** Tạo bucket, lấy key (xem `docs/r2/README.md`), thêm secrets R2. Build sẽ upload ảnh WebP lên R2 và cập nhật URL trong dữ liệu.
+- **Google Sheets:** Tạo service account, share sheet cho email service account, thêm `GOOGLE_SHEETS_ID` và đường dẫn/key JSON vào env. Build sẽ đọc sheet phim custom.
+- **Twikoo:** Deploy Twikoo (Vercel + MongoDB), lấy env id/URL, nhập vào Admin → Cài đặt chung → Twikoo Env ID, build lại.
+- **Capacitor (app Android/iOS):** Xem `docs/capacitor/README.md`; copy `public/` vào `app/www/` (hoặc cấu hình `webDir`), build và mở Android Studio / Xcode.
+
+---
+
+## Tóm tắt thứ tự triển khai
+
+1. Tạo 2 Supabase, chạy SQL, tạo user admin, lấy URL/key.
+2. Push code lên GitHub, thêm Secrets (và Variables) cho Actions.
+3. Deploy website: Cloudflare Pages (build trên CF hoặc qua Actions).
+4. Deploy Admin + API: Vercel, root repo, build `admin`, cấu hình env (Supabase Admin, GitHub token, webhook token).
+5. Chạy build dữ liệu lần đầu (local hoặc Actions), push `public/data`, deploy lại Pages nếu cần.
+6. Vào Admin, cấu hình Site Settings (Supabase User, Twikoo, tracking, cảnh báo), build lại rồi deploy lại site.
+7. (Tùy chọn) Gắn domain, R2, Google Sheets, Twikoo, Capacitor.
+
+Nếu gặp lỗi cụ thể (build, deploy, đăng nhập, sync user…), có thể đối chiếu thêm với `docs/` tương ứng (supabase, cloudflare-pages, vercel, github-actions, r2, twikoo).

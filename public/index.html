@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAOP Phim - Xem phim online</title>
+  <meta name="description" content="Xem phim online miễn phí, cập nhật nhanh.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/phim-bo.html">Phim bộ</a>
+      <a href="/phim-le.html">Phim lẻ</a>
+      <a href="/tim-kiem.html">Tìm kiếm</a>
+      <a href="/gioi-thieu.html">Giới thiệu</a>
+      <a href="/donate.html">Donate</a>
+      <a href="/login.html">Đăng nhập</a>
+    </nav>
+  </header>
+  <main class="container">
+    <div id="banner-wrap" class="banner-wrap"></div>
+    <div id="home-sections"></div>
+  </main>
+  <footer class="site-footer">
+    <p><a href="/donate.html">Donate</a></p>
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+    <p>Dữ liệu phim có thể từ TMDB. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a></p>
+  </footer>
+  <script src="/data/config/site-settings.json" type="application/json" id="site-settings-src"></script>
+  <script src="/data/movies-light.js"></script>
+  <script src="/data/filters.js"></script>
+  <script src="/data/config/homepage-sections.json" type="application/json" id="homepage-sections-src"></script>
+  <script src="/data/config/banners.json" type="application/json" id="banners-src"></script>
+  <script>
+    (function(){
+      var base = '';
+      window.DAOP = window.DAOP || {};
+      window.DAOP.basePath = base;
+      fetch(base + '/data/config/site-settings.json').then(function(r){ return r.json(); }).then(function(s){
+        window.DAOP.siteName = s.site_name || 'DAOP Phim';
+        window.DAOP.siteSettings = s;
+        window.DAOP.supabaseUserUrl = s.supabase_user_url || '';
+        window.DAOP.supabaseUserAnonKey = s.supabase_user_anon_key || '';
+        window.DAOP.serverSources = [];
+        fetch(base + '/data/config/server-sources.json').then(function(r){ return r.json(); }).then(function(arr){
+          window.DAOP.serverSources = arr || [];
+        }).catch(function(){});
+      }).catch(function(){});
+    })();
+  </script>
+  <script src="/js/main.js"></script>
+  <script src="/js/user-sync.js"></script>
+  <script>
+    (function(){
+      var base = window.DAOP && window.DAOP.basePath || '';
+      Promise.all([
+        fetch(base + '/data/config/homepage-sections.json').then(function(r){ return r.json(); }),
+        fetch(base + '/data/config/banners.json').then(function(r){ return r.json(); })
+      ]).then(function(res){
+        var sections = res[0] || [];
+        var banners = res[1] || [];
+        var fd = window.filtersData || {};
+        var list = window.moviesLight || [];
+        var bannerWrap = document.getElementById('banner-wrap');
+        if (banners.length && bannerWrap) {
+          var b = banners[0];
+          bannerWrap.innerHTML = '<a href="' + (b.link_url || '#') + '"><img src="' + (b.image_url || '') + '" alt=""></a>';
+        }
+        var container = document.getElementById('home-sections');
+        if (!container) return;
+        sections.sort(function(a,b){ return (a.sort_order || 0) - (b.sort_order || 0); });
+        sections.forEach(function(sec){
+          var ids = [];
+          if (sec.source_type === 'type' && fd.typeMap && fd.typeMap[sec.source_value]) ids = fd.typeMap[sec.source_value];
+          else if (sec.source_type === 'genre' && fd.genreMap && fd.genreMap[sec.source_value]) ids = fd.genreMap[sec.source_value];
+          else if (sec.source_type === 'status' && fd.statusMap && fd.statusMap[sec.source_value]) ids = fd.statusMap[sec.source_value];
+          var limit = sec.limit_count || 24;
+          var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
+          var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';
+          var html = '<section class="home-section"><h2>' + (sec.title || '') + ' ' + moreLink + '</h2><div class="movies-grid">';
+          movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base); });
+          html += '</div></section>';
+          container.insertAdjacentHTML('beforeend', html);
+        });
+      }).catch(function(){});
+    })();
+  </script>
+</body>
+</html>

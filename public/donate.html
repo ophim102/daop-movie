@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate | DAOP Phim</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <a href="/">Trang chủ</a>
+      <a href="/donate.html">Donate</a>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Donate</h1>
+    <div id="donate-target"></div>
+    <div id="donate-methods"></div>
+  </main>
+  <footer class="site-footer">
+    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
+  </footer>
+  <script>
+    fetch('/data/config/donate.json').then(function(r){ return r.json(); }).then(function(d){
+      var target = document.getElementById('donate-target');
+      var methods = document.getElementById('donate-methods');
+      if (target) {
+        var cur = Number(d.current_amount) || 0;
+        var goal = Number(d.target_amount) || 0;
+        var pct = goal ? Math.min(100, (cur / goal) * 100) : 0;
+        target.innerHTML = '<p>Mục tiêu: ' + (goal || 0) + ' ' + (d.target_currency || 'VND') + '</p>' +
+          '<p>Đã quyên góp: ' + cur + ' ' + (d.target_currency || 'VND') + '</p>' +
+          (goal ? '<div style="background:#30363d;border-radius:8px;height:12px;"><div style="width:' + pct + '%;height:100%;background:#58a6ff;border-radius:8px;"></div></div>' : '');
+      }
+      var html = '';
+      if (d.paypal_link) html += '<p>PayPal: <a href="' + d.paypal_link + '">Link donate PayPal</a></p>';
+      if (d.bank_info && d.bank_info.length) {
+        d.bank_info.forEach(function(b){ html += '<p>Chuyển khoản: ' + (b.bank_name || '') + ' - ' + (b.account_number || '') + ' - ' + (b.account_name || '') + '</p>'; });
+      }
+      if (d.crypto_addresses && d.crypto_addresses.length) {
+        d.crypto_addresses.forEach(function(c){ html += '<p>Crypto: ' + (c.symbol || '') + ' - ' + (c.address || '') + '</p>'; });
+      }
+      if (methods) methods.innerHTML = html || '<p>Chưa cấu hình phương thức donate.</p>';
+    }).catch(function(){
+      document.getElementById('donate-target').innerHTML = '<p>Chưa cấu hình donate.</p>';
+      document.getElementById('donate-methods').innerHTML = '';
+    });
+  </script>
+</body>
+</html>
