@@ -323,9 +323,10 @@ function mergeMovies(ophim, custom) {
   return Array.from(bySlug.values());
 }
 
-/** 5. Tạo movies-light.js */
+/** 5. Tạo movies-light.js (cùng thứ tự sắp xếp theo id như batch để getBatchPath tính đúng) */
 function writeMoviesLight(movies) {
-  const light = movies.map((m) => ({
+  const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  const light = sorted.map((m) => ({
     id: m.id,
     title: m.title,
     origin_name: m.origin_name || '',
@@ -461,7 +462,18 @@ async function exportConfigFromSupabase() {
   fs.writeFileSync(path.join(configDir, 'banners.json'), JSON.stringify(banners, null, 2));
   fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify((sections.data && sections.data.length) ? sections.data : defaultSections, null, 2));
   const settingsObj = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));
-  fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(settingsObj, null, 2));
+  const defaultSettings = {
+    site_name: 'DAOP Phim',
+    google_analytics_id: '',
+    simple_analytics_script: '',
+    twikoo_env_id: '',
+    supabase_user_url: '',
+    supabase_user_anon_key: '',
+    player_warning_enabled: 'true',
+    player_warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+  };
+  const mergedSettings = { ...defaultSettings, ...settingsObj };
+  fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'donate.json'), JSON.stringify(donate.data || {}, null, 2));
 }
@@ -497,7 +509,7 @@ function writeSitemap(movies) {
   let xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
   const pages = ['', '/phim-bo', '/phim-le', '/tim-kiem', '/gioi-thieu', '/donate'];
   for (const p of pages) xml += `<url><loc>${base}${p || '/'}</loc><changefreq>daily</changefreq></url>`;
-  for (const m of movies) xml += `<url><loc>${base}/phim/${m.slug}</loc><changefreq>weekly</changefreq></url>`;
+  for (const m of movies) xml += `<url><loc>${base}/phim/${m.slug}.html</loc><changefreq>weekly</changefreq></url>`;
   xml += '</urlset>';
   fs.writeFileSync(path.join(ROOT, 'public', 'sitemap.xml'), xml);
 }

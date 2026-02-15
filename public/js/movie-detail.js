@@ -25,7 +25,11 @@
     }
     var light = window.DAOP.getMovieBySlug(slug);
     if (!light) {
-      document.getElementById('movie-detail') && (document.getElementById('movie-detail').innerHTML = '<p>Không tìm thấy phim.</p>');
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      var msg = '<div class="movie-not-found"><p><strong>Không tìm thấy phim</strong> với đường dẫn này.</p>' +
+        '<p>Phim có thể chưa có trong dữ liệu (do giới hạn build hoặc chưa cập nhật).</p>' +
+        '<p><a href="' + base + '/tim-kiem.html">Tìm kiếm phim</a> · <a href="' + base + '/">Trang chủ</a></p></div>';
+      document.getElementById('movie-detail') && (document.getElementById('movie-detail').innerHTML = msg);
       return;
     }
     document.title = (light.title || slug) + ' | ' + (window.DAOP?.siteName || 'DAOP Phim');
