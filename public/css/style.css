@@ -95,6 +95,8 @@ a:hover {
   gap: 1rem;
   margin-top: 1rem;
   grid-template-columns: repeat(2, 1fr);
+  grid-column: 1 / -1;
+  width: 100%;
 }
 @media (min-width: 1280px) {
   .genre-grid,
@@ -131,6 +133,7 @@ a:hover {
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  min-width: 0;
 }
 .genre-card:hover,
 .country-card:hover {
@@ -144,6 +147,13 @@ a:hover {
 .country-card .country-flag {
   font-size: 1.75rem;
   line-height: 1;
+  margin-bottom: 0.35rem;
+}
+.country-card .country-flag-img {
+  width: 40px;
+  height: auto;
+  max-height: 28px;
+  object-fit: contain;
   margin-bottom: 0.35rem;
 }
 .country-card .country-flag {
