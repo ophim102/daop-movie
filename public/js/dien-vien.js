@@ -19,7 +19,8 @@
     return base + '/data/actors-' + key + '.js';
   }
 
-  function init() {
+  function init(retryCount) {
+    retryCount = retryCount || 0;
     var slug = getSlug();
     var names = {};
     var map = {};
@@ -45,16 +46,30 @@
       return;
     }
     var ids = (map[slug] || []).map(function (x) { return String(x); });
+    var moviesLight = window.moviesLight;
+    if (ids.length > 0 && (!moviesLight || moviesLight.length === 0) && retryCount < 3) {
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      var s = document.createElement('script');
+      s.src = base + '/data/movies-light.js';
+      s.onload = function () { init(retryCount + 1); };
+      s.onerror = function () { renderActorMovies(slug, names, ids, []); };
+      document.head.appendChild(s);
+      return;
+    }
     var idsSet = {};
     for (var i = 0; i < ids.length; i++) idsSet[ids[i]] = true;
+    var list = (moviesLight || []).filter(function (m) { return idsSet[String(m.id)]; });
+    renderActorMovies(slug, names, ids, list);
+  }
+
+  function renderActorMovies(slug, names, ids, list) {
     var name = names[slug] || slug;
     document.title = name + ' | Diễn viên | ' + (window.DAOP && window.DAOP.siteName ? window.DAOP.siteName : 'DAOP Phim');
     var titleEl = document.getElementById('actor-name');
     if (titleEl) titleEl.textContent = name;
-    var list = (window.moviesLight || []).filter(function (m) { return idsSet[String(m.id)]; });
     var grid = document.getElementById('movies-grid');
     if (grid) {
-      grid.innerHTML = list.length ? list.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('') : '<p>Chưa có phim nào.</p>';
+      grid.innerHTML = list.length ? list.map(function (m) { return window.DAOP && window.DAOP.renderMovieCard ? window.DAOP.renderMovieCard(m) : ''; }).join('') : '<p>Chưa có phim nào.</p>';
     }
   }
 
