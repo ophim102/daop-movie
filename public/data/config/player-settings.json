@@ -5,6 +5,6 @@
     "jwplayer": "JWPlayer"
   },
   "default_player": "plyr",
-  "warning_enabled_global": true,
+  "warning_enabled_global": false,
   "warning_text": "Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam."
 }
