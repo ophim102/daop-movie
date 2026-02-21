@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import AuthGuard from './components/AuthGuard';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Banners from './pages/Banners';
 import HomepageSections from './pages/HomepageSections';
@@ -17,7 +19,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<AuthGuard><Layout /></AuthGuard>}>
           <Route index element={<Dashboard />} />
           <Route path="banners" element={<Banners />} />
           <Route path="slider" element={<Slider />} />

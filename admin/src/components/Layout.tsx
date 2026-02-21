@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Layout as AntLayout, Menu, Button, message } from 'antd';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { LogoutOutlined } from '@ant-design/icons';
+import { supabase } from '../lib/supabase';
 import {
   DashboardOutlined,
   PictureOutlined,
@@ -33,6 +35,12 @@ const items = [
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login', { replace: true });
+  };
 
   const triggerBuild = async () => {
     try {
@@ -60,8 +68,9 @@ export default function Layout() {
         <Menu theme="dark" selectedKeys={[location.pathname]} mode="inline" items={items} />
       </Sider>
       <AntLayout>
-        <Header style={{ padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Header style={{ padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
           <Button type="primary" onClick={triggerBuild}>Build website</Button>
+          <Button icon={<LogoutOutlined />} onClick={handleLogout}>Đăng xuất</Button>
         </Header>
         <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', borderRadius: 8 }}>
           <Outlet />

@@ -324,6 +324,8 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
    - Cảnh báo dưới player: bật/tắt và nội dung.
 3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó deploy lại Pages (nếu dùng Cách B) hoặc đợi build trên Cloudflare (Cách A).
 
+**Nếu Admin không đọc/ghi được dữ liệu (sections, banners, cài đặt trống hoặc lỗi):** Admin cần đăng nhập và RLS phải đúng. (1) Mở `/login`, đăng nhập bằng user Supabase Admin đã gán `role = admin`. (2) Nếu đã đăng nhập mà vẫn trống: chạy `docs/supabase/fix-admin-rls.sql` trong SQL Editor của Supabase Admin (sửa RLS dùng `app_metadata.role`).
+
 **Nếu bấm Build website chạy xong nhưng thay đổi trên Admin không hiện trên site**, kiểm tra lần lượt:
 
 1. **GitHub Actions log**  
