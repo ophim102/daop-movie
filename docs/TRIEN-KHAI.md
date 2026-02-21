@@ -2,8 +2,6 @@
 
 Tài liệu này mô tả từng bước đưa dự án lên môi trường thật: website trên Cloudflare Pages, Admin trên Vercel, dữ liệu từ Supabase và (tùy chọn) R2, Google Sheets, Twikoo.
 
----
-
 ## Chuẩn bị tài khoản / dịch vụ
 
 | Dịch vụ | Dùng để | Bắt buộc |
