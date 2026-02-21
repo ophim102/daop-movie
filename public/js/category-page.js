@@ -59,27 +59,10 @@
     }).join('');
     container.innerHTML =
       '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>';
-    this.attachFilterScrollNav(container);
-  };
-
-  CategoryPage.prototype.attachFilterScrollNav = function (container) {
-    var scrollStep = 180;
-    container.querySelectorAll('.filter-nav-wrap').forEach(function (wrap) {
-      var scrollEl = wrap.querySelector('.filter-scroll');
-      var prevBtn = wrap.querySelector('.filter-nav-prev');
-      var nextBtn = wrap.querySelector('.filter-nav-next');
-      if (!scrollEl || !prevBtn || !nextBtn) return;
-      prevBtn.addEventListener('click', function () {
-        scrollEl.scrollLeft = Math.max(0, scrollEl.scrollLeft - scrollStep);
-      });
-      nextBtn.addEventListener('click', function () {
-        scrollEl.scrollLeft = Math.min(scrollEl.scrollWidth - scrollEl.clientWidth, scrollEl.scrollLeft + scrollStep);
-      });
-    });
+      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div></div>';
   };
 
   CategoryPage.prototype.applyFilters = function (baseSet, fd) {

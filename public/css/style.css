@@ -573,33 +573,6 @@ a:hover {
   font-size: 0.85rem;
   color: var(--muted);
 }
-.filter-bar .filter-nav-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex: 1;
-  min-width: 0;
-}
-.filter-bar .filter-nav {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  border-radius: 4px;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.filter-bar .filter-nav:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
 .filter-bar .filter-scroll {
   flex: 1;
   min-width: 0;
