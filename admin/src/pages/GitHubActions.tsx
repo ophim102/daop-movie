@@ -73,13 +73,14 @@ export default function GitHubActions() {
     const values = await form.validateFields();
     setSavingSettings(true);
     try {
-      await supabase.from('site_settings').upsert(
+      const { error } = await supabase.from('site_settings').upsert(
         [
           { key: OPHIM_KEYS.max_pages, value: String(values.max_pages ?? 5), updated_at: new Date().toISOString() },
           { key: OPHIM_KEYS.max_movies, value: String(values.max_movies ?? 500), updated_at: new Date().toISOString() },
         ],
         { onConflict: 'key' }
       );
+      if (error) throw error;
       setUpdateSettings({ max_pages: values.max_pages ?? 5, max_movies: values.max_movies ?? 500 });
       message.success('Đã lưu cài đặt.');
     } catch (e: any) {

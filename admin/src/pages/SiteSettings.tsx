@@ -42,7 +42,8 @@ export default function SiteSettings() {
         toSave[key] = value === true || value === false ? String(value) : (value ?? '');
       }
       for (const [key, value] of Object.entries(toSave)) {
-        await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+        const { error } = await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+        if (error) throw error;
       }
       message.success('Đã lưu cài đặt');
     } catch (e: any) {

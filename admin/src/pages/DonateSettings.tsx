@@ -24,7 +24,8 @@ export default function DonateSettings() {
     try {
       const { id, ...rest } = values;
       if (id) {
-        await supabase.from('donate_settings').upsert({ id, ...rest }, { onConflict: 'id' });
+        const { error } = await supabase.from('donate_settings').upsert({ id, ...rest }, { onConflict: 'id' });
+        if (error) throw error;
       } else {
         const { data, error } = await supabase.from('donate_settings').insert(rest).select('id').single();
         if (error) throw error;

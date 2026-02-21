@@ -58,35 +58,51 @@ export default function PrerollAds() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Xóa quảng cáo pre-roll này?')) return;
-    await supabase.from('ad_preroll').delete().eq('id', id);
-    message.success('Đã xóa');
-    await loadData();
+    try {
+      const { error } = await supabase.from('ad_preroll').delete().eq('id', id);
+      if (error) throw error;
+      message.success('Đã xóa');
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Xóa thất bại');
+    }
   };
 
   const toggleActive = async (row: PrerollRow) => {
-    await supabase.from('ad_preroll').update({ is_active: !row.is_active }).eq('id', row.id);
-    await loadData();
+    try {
+      const { error } = await supabase.from('ad_preroll').update({ is_active: !row.is_active }).eq('id', row.id);
+      if (error) throw error;
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Cập nhật thất bại');
+    }
   };
 
   const handleSubmit = async (values: any) => {
-    const payload = {
-      name: values.name || null,
-      video_url: values.video_url || null,
-      image_url: values.image_url || null,
-      duration: values.duration != null ? Number(values.duration) : null,
-      skip_after: values.skip_after != null ? Number(values.skip_after) : null,
-      weight: values.weight != null ? Number(values.weight) : 0,
-      is_active: !!values.is_active,
-    };
-    if (editingId) {
-      await supabase.from('ad_preroll').update(payload).eq('id', editingId);
-      message.success('Đã cập nhật');
-    } else {
-      await supabase.from('ad_preroll').insert(payload);
-      message.success('Đã thêm');
+    try {
+      const payload = {
+        name: values.name || null,
+        video_url: values.video_url || null,
+        image_url: values.image_url || null,
+        duration: values.duration != null ? Number(values.duration) : null,
+        skip_after: values.skip_after != null ? Number(values.skip_after) : null,
+        weight: values.weight != null ? Number(values.weight) : 0,
+        is_active: !!values.is_active,
+      };
+      if (editingId) {
+        const { error } = await supabase.from('ad_preroll').update(payload).eq('id', editingId);
+        if (error) throw error;
+        message.success('Đã cập nhật');
+      } else {
+        const { error } = await supabase.from('ad_preroll').insert(payload);
+        if (error) throw error;
+        message.success('Đã thêm');
+      }
+      setModalVisible(false);
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
-    setModalVisible(false);
-    await loadData();
   };
 
   return (

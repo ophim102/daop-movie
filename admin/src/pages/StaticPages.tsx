@@ -64,10 +64,14 @@ export default function StaticPages() {
 
   const onFinish = async (values: any) => {
     try {
-      await supabase.from('static_pages').upsert([
-        { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
-        { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link, testflight_link: values.testflight_link, updated_at: new Date().toISOString() },
-      ], { onConflict: 'page_key' });
+      const { error } = await supabase.from('static_pages').upsert(
+        [
+          { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
+          { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link ?? null, testflight_link: values.testflight_link ?? null, updated_at: new Date().toISOString() },
+        ],
+        { onConflict: 'page_key' }
+      );
+      if (error) throw error;
       message.success('Đã lưu trang tĩnh');
     } catch (e: any) {
       message.error(e?.message || 'Lưu thất bại');

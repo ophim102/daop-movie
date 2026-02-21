@@ -30,8 +30,13 @@ export default function ServerSources() {
   }, []);
 
   const toggleActive = async (row: any) => {
-    await supabase.from('server_sources').update({ is_active: !row.is_active }).eq('id', row.id);
-    await loadData();
+    try {
+      const { error } = await supabase.from('server_sources').update({ is_active: !row.is_active }).eq('id', row.id);
+      if (error) throw error;
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Cập nhật thất bại');
+    }
   };
 
   const handleAdd = () => {
@@ -48,24 +53,39 @@ export default function ServerSources() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc muốn xóa?')) return;
-    await supabase.from('server_sources').delete().eq('id', id);
-    message.success('Đã xóa');
-    await loadData();
+    try {
+      const { error } = await supabase.from('server_sources').delete().eq('id', id);
+      if (error) throw error;
+      message.success('Đã xóa');
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Xóa thất bại');
+    }
   };
 
   const handleSubmit = async (values: any) => {
-    if (!values.slug && values.name) {
-      values.slug = createSlug(values.name);
+    try {
+      const slug = values.slug?.trim() || createSlug(values.name || '');
+      const payload = {
+        name: (values.name || '').trim(),
+        slug,
+        sort_order: Number(values.sort_order ?? 0),
+        is_active: !!values.is_active,
+      };
+      if (editingId) {
+        const { error } = await supabase.from('server_sources').update(payload).eq('id', editingId);
+        if (error) throw error;
+        message.success('Đã cập nhật');
+      } else {
+        const { error } = await supabase.from('server_sources').insert(payload);
+        if (error) throw error;
+        message.success('Đã thêm');
+      }
+      setModalVisible(false);
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
-    if (editingId) {
-      await supabase.from('server_sources').update(values).eq('id', editingId);
-      message.success('Đã cập nhật');
-    } else {
-      await supabase.from('server_sources').insert(values);
-      message.success('Đã thêm');
-    }
-    setModalVisible(false);
-    await loadData();
   };
 
   return (

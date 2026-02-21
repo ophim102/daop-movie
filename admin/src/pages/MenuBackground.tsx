@@ -53,12 +53,13 @@ export default function MenuBackground() {
     try {
       for (const [key, value] of Object.entries(values)) {
         if (MENU_ITEMS.some((i) => i.key === key)) {
-          await supabase
+          const { error } = await supabase
             .from('site_settings')
             .upsert(
               { key, value: value ?? '', updated_at: new Date().toISOString() },
               { onConflict: 'key' }
             );
+          if (error) throw error;
         }
       }
       message.success('Đã lưu 10 ảnh nền menu');

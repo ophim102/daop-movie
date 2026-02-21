@@ -34,10 +34,11 @@ export default function ThemeSettings() {
   const onFinish = async (values: Record<string, string>) => {
     try {
       for (const key of THEME_KEYS) {
-        await supabase.from('site_settings').upsert(
+        const { error } = await supabase.from('site_settings').upsert(
           { key, value: values[key] || DEFAULTS[key] || '', updated_at: new Date().toISOString() },
           { onConflict: 'key' }
         );
+        if (error) throw error;
       }
       message.success('Đã lưu theme. Chạy Build website để áp dụng lên site.');
     } catch (e: any) {

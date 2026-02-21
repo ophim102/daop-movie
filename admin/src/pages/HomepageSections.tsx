@@ -85,29 +85,45 @@ export default function HomepageSections() {
   };
 
   const handleSubmit = async (values: any) => {
-    const payload = {
-      ...values,
-      is_active: !!values.is_active,
-      sort_order: Number(values.sort_order ?? 0),
-      limit_count: Number(values.limit_count ?? 24),
-    };
-    if (editingId) {
-      await supabase.from('homepage_sections').update(payload).eq('id', editingId);
-      message.success('Đã cập nhật section');
-    } else {
-      await supabase.from('homepage_sections').insert(payload);
-      message.success('Đã thêm section');
+    try {
+      const payload: Record<string, any> = {
+        title: values.title,
+        source_type: values.source_type,
+        source_value: values.source_value,
+        display_type: values.display_type || null,
+        more_link: values.more_link || null,
+        is_active: !!values.is_active,
+        sort_order: Number(values.sort_order ?? 0),
+        limit_count: Number(values.limit_count ?? 24),
+      };
+      if (editingId) {
+        payload.updated_at = new Date().toISOString();
+        const { error } = await supabase.from('homepage_sections').update(payload).eq('id', editingId);
+        if (error) throw error;
+        message.success('Đã cập nhật section');
+      } else {
+        const { error } = await supabase.from('homepage_sections').insert(payload);
+        if (error) throw error;
+        message.success('Đã thêm section');
+      }
+      setModalVisible(false);
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
-    setModalVisible(false);
-    await loadData();
   };
 
   const toggleActive = async (row: SectionRow) => {
-    await supabase
-      .from('homepage_sections')
-      .update({ is_active: !row.is_active })
-      .eq('id', row.id);
-    await loadData();
+    try {
+      const { error } = await supabase
+        .from('homepage_sections')
+        .update({ is_active: !row.is_active, updated_at: new Date().toISOString() })
+        .eq('id', row.id);
+      if (error) throw error;
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Cập nhật thất bại');
+    }
   };
 
   const changeOrder = async (row: SectionRow, direction: 'up' | 'down') => {
@@ -115,17 +131,17 @@ export default function HomepageSections() {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= data.length) return;
     const other = data[targetIndex];
-    await Promise.all([
-      supabase
-        .from('homepage_sections')
-        .update({ sort_order: other.sort_order })
-        .eq('id', row.id),
-      supabase
-        .from('homepage_sections')
-        .update({ sort_order: row.sort_order })
-        .eq('id', other.id),
-    ]);
-    await loadData();
+    try {
+      const [a, b] = await Promise.all([
+        supabase.from('homepage_sections').update({ sort_order: other.sort_order, updated_at: new Date().toISOString() }).eq('id', row.id),
+        supabase.from('homepage_sections').update({ sort_order: row.sort_order, updated_at: new Date().toISOString() }).eq('id', other.id),
+      ]);
+      if (a.error) throw a.error;
+      if (b.error) throw b.error;
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Đổi thứ tự thất bại');
+    }
   };
 
   const seedDefaults = async () => {

@@ -52,8 +52,13 @@ export default function Banners() {
   }, []);
 
   const toggleActive = async (row: BannerRow) => {
-    await supabase.from('ad_banners').update({ is_active: !row.is_active }).eq('id', row.id);
-    await loadData();
+    try {
+      const { error } = await supabase.from('ad_banners').update({ is_active: !row.is_active, updated_at: new Date().toISOString() }).eq('id', row.id);
+      if (error) throw error;
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Cập nhật thất bại');
+    }
   };
 
   const openAdd = () => {
@@ -75,38 +80,50 @@ export default function Banners() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Xóa banner này?')) return;
-    await supabase.from('ad_banners').delete().eq('id', id);
-    message.success('Đã xóa banner');
-    await loadData();
+    try {
+      const { error } = await supabase.from('ad_banners').delete().eq('id', id);
+      if (error) throw error;
+      message.success('Đã xóa banner');
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Xóa thất bại');
+    }
   };
 
   const handleSubmit = async (values: any) => {
-    const toSave: any = {
-      title: values.title,
-      image_url: values.image_url || null,
-      link_url: values.link_url || null,
-      html_code: values.html_code || null,
-      position: values.position || 'home_top',
-      is_active: !!values.is_active,
-      priority: typeof values.priority === 'number' ? values.priority : 0,
-      start_date:
-        values.start_date && typeof values.start_date.format === 'function'
-          ? values.start_date.format('YYYY-MM-DD')
-          : null,
-      end_date:
-        values.end_date && typeof values.end_date.format === 'function'
-          ? values.end_date.format('YYYY-MM-DD')
-          : null,
-    };
-    if (editingId) {
-      await supabase.from('ad_banners').update(toSave).eq('id', editingId);
-      message.success('Đã cập nhật banner');
-    } else {
-      await supabase.from('ad_banners').insert(toSave);
-      message.success('Đã thêm banner');
+    try {
+      const toSave: any = {
+        title: values.title,
+        image_url: values.image_url || null,
+        link_url: values.link_url || null,
+        html_code: values.html_code || null,
+        position: values.position || 'home_top',
+        is_active: !!values.is_active,
+        priority: typeof values.priority === 'number' ? values.priority : 0,
+        start_date:
+          values.start_date && typeof values.start_date.format === 'function'
+            ? values.start_date.format('YYYY-MM-DD')
+            : null,
+        end_date:
+          values.end_date && typeof values.end_date.format === 'function'
+            ? values.end_date.format('YYYY-MM-DD')
+            : null,
+      };
+      if (editingId) {
+        toSave.updated_at = new Date().toISOString();
+        const { error } = await supabase.from('ad_banners').update(toSave).eq('id', editingId);
+        if (error) throw error;
+        message.success('Đã cập nhật banner');
+      } else {
+        const { error } = await supabase.from('ad_banners').insert(toSave);
+        if (error) throw error;
+        message.success('Đã thêm banner');
+      }
+      setModalVisible(false);
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
-    setModalVisible(false);
-    await loadData();
   };
 
   return (

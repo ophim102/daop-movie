@@ -114,12 +114,17 @@ export default function Slider() {
   };
 
   const saveList = async (newList: SlideItem[]) => {
-    await supabase.from('site_settings').upsert(
-      { key: SLIDER_KEY, value: JSON.stringify(newList), updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
-    message.success('Đã lưu slider');
-    setList(newList);
+    try {
+      const { error } = await supabase.from('site_settings').upsert(
+        { key: SLIDER_KEY, value: JSON.stringify(newList), updated_at: new Date().toISOString() },
+        { onConflict: 'key' }
+      );
+      if (error) throw error;
+      message.success('Đã lưu slider');
+      setList(newList);
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
+    }
   };
 
   const openAdd = () => {
