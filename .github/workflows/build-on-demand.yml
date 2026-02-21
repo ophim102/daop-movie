@@ -32,9 +32,9 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add public/data
+          git add public/data public/the-loai public/quoc-gia public/nam-phat-hanh
           if git diff --staged --quiet; then
-            echo "No changes in public/data — không có gì để push."
+            echo "No changes — không có gì để push."
           else
             git commit -m "chore: build on demand" && git push
           fi

@@ -510,6 +510,31 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
     countryNames,
   })};`;
   fs.writeFileSync(path.join(PUBLIC_DATA, 'filters.js'), content, 'utf8');
+  return { genreMap, countryMap, yearMap, genreNames, countryNames };
+}
+
+/** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
+function writeCategoryPages(filters) {
+  const publicDir = path.join(ROOT, 'public');
+  const theLoaiIndex = fs.readFileSync(path.join(publicDir, 'the-loai', 'index.html'), 'utf8');
+  const quocGiaIndex = fs.readFileSync(path.join(publicDir, 'quoc-gia', 'index.html'), 'utf8');
+  const namPhatHanhIndex = fs.readFileSync(path.join(publicDir, 'nam-phat-hanh', 'index.html'), 'utf8');
+  const genres = Object.keys(filters.genreNames || filters.genreMap || {});
+  const countries = Object.keys(filters.countryNames || filters.countryMap || {});
+  const years = Object.keys(filters.yearMap || {});
+  for (const slug of genres) {
+    const safe = slug.replace(/[/\\?*:|"<>]/g, '_');
+    fs.writeFileSync(path.join(publicDir, 'the-loai', safe + '.html'), theLoaiIndex, 'utf8');
+  }
+  for (const slug of countries) {
+    const safe = slug.replace(/[/\\?*:|"<>]/g, '_');
+    fs.writeFileSync(path.join(publicDir, 'quoc-gia', safe + '.html'), quocGiaIndex, 'utf8');
+  }
+  for (const y of years) {
+    const safe = String(y).replace(/[/\\?*:|"<>]/g, '_');
+    fs.writeFileSync(path.join(publicDir, 'nam-phat-hanh', safe + '.html'), namPhatHanhIndex, 'utf8');
+  }
+  console.log('   Category pages: the-loai', genres.length, ', quoc-gia', countries.length, ', nam-phat-hanh', years.length);
 }
 
 /** 7. Tạo actors.js */
@@ -756,7 +781,8 @@ async function main() {
 
   console.log('5. Writing movies-light.js, filters.js, actors.js, batches...');
   writeMoviesLight(allMovies);
-  writeFilters(allMovies, genreNames, countryNames);
+  const filters = writeFilters(allMovies, genreNames, countryNames);
+  writeCategoryPages(filters);
   writeActors(allMovies);
   writeBatches(allMovies);
 
