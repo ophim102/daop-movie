@@ -1,5 +1,5 @@
 /**
- * CategoryPage: trang danh mục với bộ lọc (năm, thể loại, quốc gia, 4K, độc quyền)
+ * CategoryPage: trang danh mục với bộ lọc (năm, thể loại, quốc gia, loại video, ngôn ngữ)
  * baseFilter: function() => Set<id>  (tập id phim gốc, ví dụ typeMap.series)
  */
 (function () {
@@ -11,7 +11,7 @@
     this.filterContainerId = options.filterContainerId || 'filter-bar';
     this.paginationId = options.paginationId || 'pagination';
     this.currentPage = 1;
-    this.filters = { year: '', genre: [], country: [], is4k: false, exclusive: false };
+    this.filters = { year: '', genre: [], country: [], videoType: [], lang: [] };
     this.filteredIds = [];
   }
 
@@ -58,24 +58,42 @@
       return '<label><input type="checkbox" name="country" value="' + c + '"> ' + countryName(c).replace(/</g, '&lt;') + '</label>';
     }).join('');
     container.innerHTML =
-      '<label>Năm:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll"><div class="checkboxes">' + genreChecks + '</div></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll"><div class="checkboxes">' + countryChecks + '</div></div></div>' +
-      '<label><input type="checkbox" id="filter-4k"> 4K</label>' +
-      '<label><input type="checkbox" id="filter-exclusive"> Độc quyền</label>';
+      '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
+      '<div class="filter-item filter-item-video"><span class="filter-label">Loại video:</span><div class="checkboxes-inline"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div>' +
+      '<div class="filter-item filter-item-lang"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="checkboxes-inline"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div>';
+    this.attachFilterScrollNav(container);
+  };
+
+  CategoryPage.prototype.attachFilterScrollNav = function (container) {
+    var scrollStep = 180;
+    container.querySelectorAll('.filter-nav-wrap').forEach(function (wrap) {
+      var scrollEl = wrap.querySelector('.filter-scroll');
+      var prevBtn = wrap.querySelector('.filter-nav-prev');
+      var nextBtn = wrap.querySelector('.filter-nav-next');
+      if (!scrollEl || !prevBtn || !nextBtn) return;
+      prevBtn.addEventListener('click', function () {
+        scrollEl.scrollLeft = Math.max(0, scrollEl.scrollLeft - scrollStep);
+      });
+      nextBtn.addEventListener('click', function () {
+        scrollEl.scrollLeft = Math.min(scrollEl.scrollWidth - scrollEl.clientWidth, scrollEl.scrollLeft + scrollStep);
+      });
+    });
   };
 
   CategoryPage.prototype.applyFilters = function (baseSet, fd) {
     var self = this;
     var ids = Array.from(baseSet);
     var f = this.filters;
+    var list = window.moviesLight || [];
     if (f.year) ids = ids.filter(function (id) {
-      var m = (window.moviesLight || []).find(function (x) { return x.id === id; });
+      var m = list.find(function (x) { return x.id === id; });
       return m && String(m.year) === f.year;
     });
     if (f.genre && f.genre.length) {
       ids = ids.filter(function (id) {
-        var m = (window.moviesLight || []).find(function (x) { return x.id === id; });
+        var m = list.find(function (x) { return x.id === id; });
         if (!m || !m.genre) return false;
         return f.genre.some(function (g) {
           return m.genre.some(function (x) { return (x.slug || x.id) === g; });
@@ -84,15 +102,40 @@
     }
     if (f.country && f.country.length) {
       ids = ids.filter(function (id) {
-        var m = (window.moviesLight || []).find(function (x) { return x.id === id; });
+        var m = list.find(function (x) { return x.id === id; });
         if (!m || !m.country) return false;
         return f.country.some(function (c) {
           return m.country.some(function (x) { return (x.slug || x.id) === c; });
         });
       });
     }
-    if (f.is4k) ids = ids.filter(function (id) { return (fd.quality4kIds || []).indexOf(id) !== -1; });
-    if (f.exclusive) ids = ids.filter(function (id) { return (fd.exclusiveIds || []).indexOf(id) !== -1; });
+    if (f.videoType && f.videoType.length) {
+      ids = ids.filter(function (id) {
+        var m = list.find(function (x) { return x.id === id; });
+        if (!m) return false;
+        return f.videoType.some(function (v) {
+          if (v === 'tvshows') return (m.type || '') === 'tvshows';
+          if (v === 'hoathinh') return (m.type || '') === 'hoathinh';
+          if (v === '4k') return m.is_4k === true || (fd.quality4kIds || []).indexOf(id) !== -1;
+          if (v === 'exclusive') return m.sub_docquyen === true || (fd.exclusiveIds || []).indexOf(id) !== -1;
+          return false;
+        });
+      });
+    }
+    if (f.lang && f.lang.length) {
+      ids = ids.filter(function (id) {
+        var m = list.find(function (x) { return x.id === id; });
+        if (!m) return false;
+        var lk = (m.lang_key || '').toLowerCase();
+        return f.lang.some(function (lang) {
+          if (lang === 'vietsub') return lk.indexOf('vietsub') >= 0;
+          if (lang === 'thuyetminh') return lk.indexOf('thuyết minh') >= 0 || lk.indexOf('thuyet minh') >= 0;
+          if (lang === 'longtieng') return lk.indexOf('lồng tiếng') >= 0 || lk.indexOf('long tieng') >= 0;
+          if (lang === 'khac') return !lk || (lk.indexOf('vietsub') < 0 && lk.indexOf('thuyết minh') < 0 && lk.indexOf('thuyet minh') < 0 && lk.indexOf('lồng tiếng') < 0 && lk.indexOf('long tieng') < 0);
+          return false;
+        });
+      });
+    }
     this.filteredIds = ids;
   };
 
@@ -128,14 +171,18 @@
       container.addEventListener('change', function (e) {
         var t = e.target;
         if (t.id === 'filter-year') self.filters.year = t.value;
-        else if (t.id === 'filter-4k') self.filters.is4k = t.checked;
-        else if (t.id === 'filter-exclusive') self.filters.exclusive = t.checked;
         else if (t.name === 'genre') {
           var gens = container.querySelectorAll('input[name="genre"]:checked');
           self.filters.genre = Array.from(gens).map(function (x) { return x.value; });
         } else if (t.name === 'country') {
           var countries = container.querySelectorAll('input[name="country"]:checked');
           self.filters.country = Array.from(countries).map(function (x) { return x.value; });
+        } else if (t.name === 'videoType') {
+          var vt = container.querySelectorAll('input[name="videoType"]:checked');
+          self.filters.videoType = Array.from(vt).map(function (x) { return x.value; });
+        } else if (t.name === 'lang') {
+          var lang = container.querySelectorAll('input[name="lang"]:checked');
+          self.filters.lang = Array.from(lang).map(function (x) { return x.value; });
         }
         self.currentPage = 1;
         self.applyFilters(baseSet, fd);

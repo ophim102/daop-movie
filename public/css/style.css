@@ -418,13 +418,23 @@ a:hover {
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
+  gap: 0.75rem 1rem;
+  align-items: flex-start;
   margin-bottom: 1rem;
   padding: 0.75rem;
   background: var(--card);
   border-radius: 8px;
   border: 1px solid var(--border);
+}
+.filter-bar .filter-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.filter-bar .filter-item-video,
+.filter-bar .filter-item-lang {
+  flex: 1 1 100%;
 }
 .filter-bar label {
   font-size: 0.85rem;
@@ -451,28 +461,69 @@ a:hover {
   font-size: 0.85rem;
   color: var(--muted);
 }
+.filter-bar .filter-nav-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+.filter-bar .filter-nav {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 4px;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.filter-bar .filter-nav:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 .filter-bar .filter-scroll {
   flex: 1;
   min-width: 0;
-  max-height: 2.8em;
+  max-height: 3.4em;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   border-radius: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.filter-bar .filter-scroll .checkboxes {
+.filter-bar .filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+.filter-bar .filter-scroll .checkboxes.filter-two-rows {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 0.75rem;
   align-items: center;
   align-content: flex-start;
-  max-height: 2.8em;
+  max-height: 3.4em;
   width: max-content;
   min-width: 100%;
   padding: 0.15rem 0;
 }
-.filter-bar .filter-scroll .checkboxes label {
+.filter-bar .filter-scroll .checkboxes.filter-two-rows label {
   white-space: nowrap;
+  margin: 0;
+}
+.filter-bar .checkboxes-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+.filter-bar .checkboxes-inline label {
   margin: 0;
 }
 .filter-bar .checkboxes {
