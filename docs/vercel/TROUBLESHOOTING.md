@@ -29,10 +29,6 @@
 5. **Cảnh báo "1 high severity vulnerability"**  
    Chỉ là cảnh báo npm audit, không làm fail build. Lỗi thực tế nằm ở bước **Build** (dòng đỏ trong log).
 
-6. **Nút Build website trả 401 Unauthorized**  
-   - Cần **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị với `WEBHOOK_BUILD_TOKEN`) trong Vercel, chọn Production + Preview, rồi **Redeploy** (tắt Build Cache).  
-   - Nếu đã khớp mà vẫn 401 (lỗi encoding/ky tự ẩn): API có **fallback same-origin** — request từ chính domain Admin (Origin/Referer trùng host) vẫn được chấp nhận. Đảm bảo bạn đang mở Admin trên cùng domain với API (vd. cùng `xxx.vercel.app`), không gọi từ domain khác.
-
 ## Sau khi sửa
 
 Commit và push. Vercel build lại tự động. Xem log đầy đủ ở **Deployments** → bấm vào deployment → **Building** để thấy dòng báo lỗi cụ thể.

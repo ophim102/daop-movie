@@ -137,7 +137,7 @@ npm run dev
 Mở trình duyệt: **http://localhost:5174** (hoặc cổng Vite in ra trong terminal).
 
 - Đăng nhập Admin cần Supabase Auth với user có role `admin` (xem `docs/supabase/README.md`).
-- Nút "Build website" trong Admin sẽ gọi API trigger build (chỉ hoạt động khi đã cấu hình Vercel + GitHub webhook).
+- Nút "Build website" trong Admin gọi API trigger build (cần GITHUB_TOKEN, GITHUB_REPO trên Vercel).
 
 ---
 
@@ -190,6 +190,6 @@ Tóm tắt:
 1. **Supabase:** Tạo 2 project (User + Admin), chạy SQL trong `docs/supabase/`, tạo user admin.
 2. **GitHub:** Push code, thêm Secrets (TMDB, Supabase Admin, Cloudflare, …).
 3. **Cloudflare Pages:** Kết nối repo, build = `npm run build`, output = `public`; hoặc dùng GitHub Actions deploy.
-4. **Vercel:** Import repo, root = repo root, build = `cd admin && npm run build`, output = `admin/dist`; thêm env Supabase Admin + GITHUB_TOKEN, WEBHOOK_BUILD_TOKEN cho API.
+4. **Vercel:** Import repo, root = repo root, build = `cd admin && npm run build`, output = `admin/dist`; thêm env Supabase Admin + GITHUB_TOKEN, GITHUB_REPO cho API trigger build.
 5. **Build dữ liệu:** Chạy `npm run build` (local hoặc qua Actions), push `public/data`, deploy lại site.
 6. **Admin:** Đăng nhập, cấu hình Cài đặt chung (Supabase User URL/Key, Twikoo, tracking…), bấm Build website rồi deploy lại site nếu cần.

@@ -11,7 +11,7 @@ Trong repo đã có **vercel.json** (ở root) với cấu hình:
 3. Thư mục `api/` ở root (trigger-build.ts, upload-image.ts) tự deploy thành `/api/trigger-build`, `/api/upload-image`.
 4. Biến môi trường (Vercel Dashboard):
    - `VITE_SUPABASE_ADMIN_URL`, `VITE_SUPABASE_ADMIN_ANON_KEY` cho frontend admin.
-   - `GITHUB_TOKEN`, `GITHUB_REPO`, `WEBHOOK_BUILD_TOKEN` cho API trigger build.
+   - `GITHUB_TOKEN`, `GITHUB_REPO` cho API trigger build.
    - (Upload ảnh R2) `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL` cho `/api/upload-image`.
 5. Subdomain: cấu hình domain `admin.yourdomain.com` trỏ về project Vercel.
 

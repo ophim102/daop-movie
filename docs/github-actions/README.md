@@ -16,5 +16,5 @@
 
 ## Webhook từ Admin
 
-Admin gọi `POST /api/trigger-build` (Vercel function) với header `Authorization: Bearer <WEBHOOK_BUILD_TOKEN>`. Function này gọi GitHub API:  
+Admin gọi `POST /api/trigger-build` (Vercel function). Function dùng `GITHUB_TOKEN` và `GITHUB_REPO` để gọi GitHub API:  
 `POST /repos/{owner}/{repo}/dispatches` với `event_type: build-on-demand`.

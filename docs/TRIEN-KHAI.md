@@ -238,25 +238,15 @@ Cần hai biến để Admin kết nối Supabase Admin (đăng nhập, đọc/g
 
 ### Bước 5.4: Environment Variables — API trigger build
 
-API `api/trigger-build.ts` khi được gọi sẽ dùng GitHub API để trigger workflow **build-on-demand**. Cần hai biến bắt buộc, một tùy chọn:
+API `api/trigger-build.ts` khi được gọi sẽ dùng GitHub API để trigger workflow **build-on-demand**. Cần hai biến trong Vercel:
 
 | Name | Value | Bắt buộc | Ghi chú |
 |------|--------|----------|--------|
 | `GITHUB_TOKEN` | Personal Access Token (classic) | Có | Quyền **repo** (full). Tạo: GitHub → Settings (user) → Developer settings → Personal access tokens → Generate new token (classic), chọn scope **repo**. |
 | `GITHUB_REPO` | `owner/repo` | Có | Ví dụ: `ophim102/daop-movie`. Đúng với repo chứa workflow **build-on-demand**. |
-| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Dùng cho API (server). **Nếu đặt** thì bắt buộc thêm `VITE_WEBHOOK_BUILD_TOKEN` (cùng giá trị) cho client. |
-| `VITE_WEBHOOK_BUILD_TOKEN` | Cùng giá trị với `WEBHOOK_BUILD_TOKEN` | Khi có `WEBHOOK_BUILD_TOKEN` | Dùng cho Admin (client). Nhúng vào bundle lúc build → cần Redeploy sau khi thêm. |
 | `VITE_API_URL` | URL gốc của Admin (vd. `https://xxx.vercel.app`) | Không | Chỉ cần khi chạy Admin **local** (`npm run dev`) để nút Build gọi đúng API. Khi deploy, bỏ qua (dùng relative `/api/`). |
 
-- Thêm cả ba (hoặc ít nhất `GITHUB_TOKEN`, `GITHUB_REPO`) trong cùng project Vercel, Environment = Production (và Preview nếu bạn test qua preview).
-
-#### Cách 1: Bảo vệ API bằng token (khuyến nghị)
-
-1. Vào **Vercel** → Project → **Settings** → **Environment Variables**.
-2. Thêm `WEBHOOK_BUILD_TOKEN` = chuỗi bí mật (vd. `my-secret-build-2024`), chọn Production + Preview.
-3. Thêm `VITE_WEBHOOK_BUILD_TOKEN` = **cùng giá trị** với `WEBHOOK_BUILD_TOKEN` (vd. `my-secret-build-2024`), chọn Production + Preview.
-4. Vào **Deployments** → bấm **Redeploy** (tắt "Use existing Build Cache") để build lại Admin với env mới.
-5. Đăng nhập Admin, bấm **Build website** → nếu thành công sẽ thấy "Đã kích hoạt build".
+- Thêm `GITHUB_TOKEN` và `GITHUB_REPO` trong Vercel, Environment = Production (và Preview nếu cần).
 
 ---
 
@@ -279,7 +269,7 @@ Nếu bạn **không** cần API trigger build (chỉ cần giao diện Admin):
 1. **Settings** → **General** → **Root Directory:** đổi thành `admin`.
 2. **Build Command:** `npm run build` (đã ở trong `admin`).
 3. **Output Directory:** `dist`.
-4. Có thể xóa hoặc không cấu hình `GITHUB_TOKEN`, `GITHUB_REPO`, `WEBHOOK_BUILD_TOKEN`. Khi đó không có route `/api/trigger-build`.
+4. Có thể xóa hoặc không cấu hình `GITHUB_TOKEN`, `GITHUB_REPO`. Khi đó không có route `/api/trigger-build`.
 
 ---
 
@@ -358,7 +348,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
 1. Tạo 2 Supabase, chạy SQL, tạo user admin, lấy URL/key.
 2. Push code lên GitHub, thêm Secrets (và Variables) cho Actions.
 3. Deploy website: Cloudflare Pages (build trên CF hoặc qua Actions).
-4. Deploy Admin + API: Vercel, root repo, build `admin`, cấu hình env (Supabase Admin, GitHub token, webhook token).
+4. Deploy Admin + API: Vercel, root repo, build `admin`, cấu hình env (Supabase Admin, GITHUB_TOKEN, GITHUB_REPO).
 5. Chạy build dữ liệu lần đầu (local hoặc Actions), push `public/data`, deploy lại Pages nếu cần.
 6. Vào Admin, cấu hình Site Settings (Supabase User, Twikoo, tracking, cảnh báo), build lại rồi deploy lại site.
 7. (Tùy chọn) Gắn domain, R2, Google Sheets, Twikoo, Capacitor.

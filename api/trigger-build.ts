@@ -3,55 +3,10 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
-const WEBHOOK_TOKEN = process.env.WEBHOOK_BUILD_TOKEN;
-
-function normalize(s: string | undefined): string {
-  if (s == null || typeof s !== 'string') return '';
-  return s.replace(/\s+/g, ' ').trim();
-}
-
-/** Cho phép request từ chính Admin (cùng origin) khi token lỗi encoding/env */
-function isSameOrigin(req: VercelRequest): boolean {
-  const host = (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) || req.headers.host || '';
-  const origin = (req.headers.origin || req.headers.referer || '').toString();
-  if (!host) return false;
-  const hostNorm = host.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
-  const originNorm = origin.replace(/^https?:\/\//, '').split('/')[0].split(':')[0].toLowerCase();
-  return originNorm === hostNorm || originNorm.endsWith('.' + hostNorm);
-}
-
-export const config = { api: { bodyParser: true } };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-  let bodyToken: string | undefined;
-  if (typeof req.body === 'object' && req.body && 'token' in req.body) {
-    bodyToken = (req.body as { token?: string }).token;
-  } else if (typeof req.body === 'string') {
-    try {
-      const parsed = JSON.parse(req.body) as { token?: string };
-      bodyToken = parsed?.token;
-    } catch {
-      bodyToken = undefined;
-    }
-  }
-  const auth = normalize(
-    req.headers.authorization?.replace(/^Bearer\s+/i, '').trim() ||
-    (req.headers['x-build-token'] as string) ||
-    bodyToken ||
-    ''
-  );
-  const expected = normalize(WEBHOOK_TOKEN || '');
-  const tokenOk = !expected || auth === expected;
-  const allowSameOrigin = expected && isSameOrigin(req);
-  if (!tokenOk && !allowSameOrigin) {
-    res.status(401).json({
-      error: 'Unauthorized',
-      hint: `Token nhận được: ${auth.length} ký tự; token server: ${expected.length} ký tự. Nếu khác độ dài thì copy lại; nếu cùng độ dài thì có thể do ký tự ẩn — thử tạo token mới (chỉ chữ/số) trong Vercel.`,
-    });
     return;
   }
   if (!GITHUB_TOKEN || !GITHUB_REPO) {
