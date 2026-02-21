@@ -2,13 +2,23 @@ name: Deploy to Cloudflare Pages
 on:
   push:
     branches: [main]
+  # Chạy deploy sau khi "Build on demand" xong (push từ workflow không kích hoạt push event)
+  workflow_run:
+    workflows: ["Build on demand"]
+    types: [completed]
+    branches: [main]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    # Khi trigger bởi workflow_run thì chỉ deploy nếu Build on demand thành công
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # workflow_run: dùng main mới nhất (đã có commit push từ Build on demand)
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

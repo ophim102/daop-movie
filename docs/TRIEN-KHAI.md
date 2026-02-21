@@ -159,7 +159,7 @@ Workflow `deploy.yml` chỉ upload nội dung thư mục `public/` lên Pages, *
 
 - **Lần đầu:** Chạy build trên máy: `npm run build` (cần `.env` đã cấu hình). Commit và push cả thư mục `public/` (ít nhất `public/data` và các file tĩnh) lên nhánh `main`.
 - **Sau đó:** Mỗi lần push `main`, workflow deploy sẽ chạy và đẩy `public/` hiện tại lên Pages.
-- **Cập nhật dữ liệu:** Chạy workflow **update-data** (theo lịch hoặc thủ công) hoặc **build-on-demand** (trigger từ Admin). Các workflow này chạy `npm run build`, commit `public/data`, push lên `main` → push đó sẽ kích hoạt lại workflow deploy và đẩy `public/` mới lên Pages.
+- **Cập nhật dữ liệu:** Chạy workflow **update-data** (theo lịch hoặc thủ công) hoặc **build-on-demand** (trigger từ Admin). Các workflow này chạy `npm run build`, commit `public/data`, push lên `main`. Workflow **Deploy to Cloudflare Pages** được kích hoạt bởi: (1) push lên `main`, hoặc (2) khi **Build on demand** hoàn thành (`workflow_run`), để đẩy `public/` mới lên Pages.
 
 #### Bước 4.6: Đổi tên project (nếu không dùng `daop`)
 
