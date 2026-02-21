@@ -347,14 +347,21 @@ a:hover {
 }
 .home-section h2 {
   margin: 0 0 1rem;
-  font-size: 1.25rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .home-section h2 a {
-  font-size: 0.9rem;
-  font-weight: normal;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+.home-section h2 a:hover {
+  color: var(--accent-hover);
 }
 
 /* Section display: slider (horizontal scroll) */
@@ -934,13 +941,15 @@ a:hover {
     margin-bottom: 1.5rem;
   }
   .home-section h2 {
-    font-size: 1.1rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent);
     margin-bottom: 0.75rem;
     flex-wrap: wrap;
     gap: 0.35rem;
   }
   .home-section h2 a {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     width: 100%;
     text-align: right;
     margin-top: -0.25rem;
@@ -1023,7 +1032,9 @@ a:hover {
     max-height: 160px;
   }
   .home-section h2 {
-    font-size: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
   }
   .movies-grid {
     gap: 0.5rem;
