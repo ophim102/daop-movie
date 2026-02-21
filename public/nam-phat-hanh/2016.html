@@ -4,12 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Năm phát hành | DAOP Phim</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+  <script>
+    window.DAOP = window.DAOP || {};
+    (function(){
+      var path = window.location.pathname;
+      var m = path.match(/\/(?:quoc-gia|the-loai|nam-phat-hanh)(?:\/|$)/);
+      if (m) { var idx = path.indexOf(m[0]); var before = path.slice(0, idx); window.DAOP.basePath = before || ''; }
+    })();
+  </script>
   <header class="site-header">
-    <a href="/" class="site-logo">DAOP Phim</a>
-    <nav class="site-nav"><a href="/phim-bo.html">Phim bộ</a><a href="/phim-le.html">Phim lẻ</a><a href="/tim-kiem.html">Tìm kiếm</a><a href="/the-loai/">Thể loại</a><a href="/quoc-gia/">Quốc gia</a><a href="/danh-sach/">Danh sách</a></nav>
+    <a href="../" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav"><a href="../phim-bo.html">Phim bộ</a><a href="../phim-le.html">Phim lẻ</a><a href="../tim-kiem.html">Tìm kiếm</a><a href="../the-loai/">Thể loại</a><a href="../quoc-gia/">Quốc gia</a><a href="../danh-sach/">Danh sách</a></nav>
   </header>
   <main class="container">
     <h1 id="page-title">Năm phát hành</h1>
@@ -18,21 +26,22 @@
     <div id="pagination" class="pagination"></div>
   </main>
   <footer class="site-footer"><p>Trường Sa, Hoàng Sa là của Việt Nam!</p></footer>
-  <script src="/data/movies-light.js"></script>
-  <script src="/data/filters.js"></script>
-  <script src="/js/main.js"></script>
-  <script src="/js/category-page.js"></script>
+  <script src="../data/movies-light.js"></script>
+  <script src="../data/filters.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/category-page.js"></script>
   <script>
     (function(){
       var path = window.location.pathname;
       var m = path.match(/\/nam-phat-hanh\/([^/]+)(\.html)?$/);
+      if (!m) m = path.match(/.+\/nam-phat-hanh\/([^/]+)(\.html)?$/);
       var year = m ? decodeURIComponent(m[1]) : null;
       if (!year) {
         var fd = window.filtersData || {};
         var years = Object.keys(fd.yearMap || {}).sort(function(a,b){ return Number(b) - Number(a); });
         document.getElementById('page-title').textContent = 'Năm phát hành';
         document.getElementById('movies-grid').innerHTML = years.length
-          ? '<p>Chọn năm: ' + years.map(function(y){ return '<a href="/nam-phat-hanh/' + y + '.html">' + y + '</a>'; }).join(' · ') + '</p>'
+          ? '<p>Chọn năm: ' + years.map(function(y){ return '<a href="' + y + '.html">' + y + '</a>'; }).join(' · ') + '</p>'
           : '<p>Chưa có dữ liệu.</p>';
         document.getElementById('filter-bar').innerHTML = '';
         document.getElementById('pagination').innerHTML = '';
