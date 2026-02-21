@@ -469,6 +469,7 @@ async function exportConfigFromSupabase() {
   const url = process.env.SUPABASE_ADMIN_URL;
   const key = process.env.SUPABASE_ADMIN_SERVICE_ROLE_KEY;
   if (!url || !key) {
+    console.warn('SUPABASE_ADMIN_URL hoặc SUPABASE_ADMIN_SERVICE_ROLE_KEY chưa đặt — dùng config mặc định. Cập nhật trên Admin sẽ không xuất ra website. Thêm 2 secret này vào GitHub Actions (build-on-demand) để export đúng từ Supabase.');
     await writeDefaultConfig();
     return;
   }

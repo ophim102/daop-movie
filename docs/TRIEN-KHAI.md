@@ -324,6 +324,8 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
    - Cảnh báo dưới player: bật/tắt và nội dung.
 3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó deploy lại Pages (nếu dùng Cách B) hoặc đợi build trên Cloudflare (Cách A).
 
+**Nếu bấm Build website chạy xong nhưng thay đổi trên Admin không hiện trên site:** Workflow build-on-demand cần đọc config từ Supabase. Vào **GitHub** → repo → **Settings** → **Secrets and variables** → **Actions** → thêm **`SUPABASE_ADMIN_URL`** và **`SUPABASE_ADMIN_SERVICE_ROLE_KEY`** (cùng project Supabase Admin, lấy ở Supabase → Settings → API). Thiếu hai secret này thì build chỉ ghi config mặc định, không lấy dữ liệu từ Admin.
+
 ---
 
 ## Bước 8: Domain (tùy chọn)

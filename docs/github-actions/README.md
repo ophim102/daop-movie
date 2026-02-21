@@ -14,7 +14,11 @@
 - `GITHUB_TOKEN` (hoặc PAT) để push và trigger.
 - `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` cho deploy Pages.
 
-## Webhook từ Admin
+## Webhook từ Admin (Build website)
 
 Admin gọi `POST /api/trigger-build` (Vercel function). Function dùng `GITHUB_TOKEN` và `GITHUB_REPO` để gọi GitHub API:  
 `POST /repos/{owner}/{repo}/dispatches` với `event_type: build-on-demand`.
+
+**Để cập nhật trên Admin (sections, banners, cài đặt, theme…) xuất ra website:**  
+Workflow **build-on-demand** chạy `--incremental` và đọc config từ Supabase. Bắt buộc thêm **Secrets** trong repo: **`SUPABASE_ADMIN_URL`** và **`SUPABASE_ADMIN_SERVICE_ROLE_KEY`** (cùng project Supabase Admin mà trang Admin dùng). Nếu thiếu, build sẽ ghi config mặc định và thay đổi trên Admin không xuất hiện trên site.  
+→ GitHub repo → **Settings** → **Secrets and variables** → **Actions** → thêm hai secret trên (giá trị lấy từ Supabase Admin → Settings → API).
