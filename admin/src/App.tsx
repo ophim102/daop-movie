@@ -14,6 +14,7 @@ import Slider from './pages/Slider';
 import ThemeSettings from './pages/ThemeSettings';
 import PlayerSettings from './pages/PlayerSettings';
 import AuditLogs from './pages/AuditLogs';
+import GitHubActions from './pages/GitHubActions';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="static-pages" element={<StaticPages />} />
           <Route path="preroll" element={<PrerollAds />} />
           <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="github-actions" element={<GitHubActions />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

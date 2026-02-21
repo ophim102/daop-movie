@@ -58,13 +58,31 @@
 
   function run() {
     var slug = getSlug();
+    var base = (window.DAOP && window.DAOP.basePath) || '';
     var url = getShardUrl(slug);
     var script = document.createElement('script');
     script.src = url;
     script.onload = init;
     script.onerror = function () {
-      var grid = document.getElementById('movies-grid');
-      if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
+      var fallback = base + '/data/actors.js';
+      if (fallback === url) {
+        var grid = document.getElementById('movies-grid');
+        if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
+        return;
+      }
+      var s2 = document.createElement('script');
+      s2.src = fallback;
+      s2.onload = function () {
+        if (!slug && window.actorsData && window.actorsData.names) {
+          window.actorsIndex = { names: window.actorsData.names };
+        }
+        init();
+      };
+      s2.onerror = function () {
+        var grid = document.getElementById('movies-grid');
+        if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
+      };
+      document.head.appendChild(s2);
     };
     document.head.appendChild(script);
   }

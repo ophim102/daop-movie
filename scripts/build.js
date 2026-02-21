@@ -554,6 +554,8 @@ function writeActors(movies) {
     }
   }
   const slugs = Object.keys(names);
+  // Legacy: một file đầy đủ (fallback + dùng cho incremental sau này)
+  fs.writeFileSync(path.join(PUBLIC_DATA, 'actors.js'), `window.actorsData = ${JSON.stringify({ map, names })};`, 'utf8');
   // Index: chỉ names (cho trang danh sách "Chọn diễn viên")
   fs.writeFileSync(
     path.join(PUBLIC_DATA, 'actors-index.js'),
@@ -580,6 +582,35 @@ function writeActors(movies) {
   }
   const shardCount = keys.filter((k) => byFirst[k] && Object.keys(byFirst[k].map).length > 0).length;
   console.log('   Actors: index +', shardCount, 'shards (a-z, other)');
+}
+
+/** 7b. Tạo actors-index.js + shards từ object { map, names } (dùng trong incremental từ actors.js cũ) */
+function writeActorsShardsFromData(map = {}, names = {}) {
+  const slugs = Object.keys(names);
+  fs.writeFileSync(
+    path.join(PUBLIC_DATA, 'actors-index.js'),
+    `window.actorsIndex = ${JSON.stringify({ names })};`,
+    'utf8'
+  );
+  const byFirst = {};
+  for (const slug of slugs) {
+    const c = (slug[0] || '').toLowerCase();
+    const key = c >= 'a' && c <= 'z' ? c : 'other';
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {} };
+    byFirst[key].map[slug] = map[slug] || [];
+    byFirst[key].names[slug] = names[slug];
+  }
+  const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
+  for (const key of keys) {
+    const data = byFirst[key] || { map: {}, names: {} };
+    fs.writeFileSync(
+      path.join(PUBLIC_DATA, `actors-${key}.js`),
+      `window.actorsData = ${JSON.stringify(data)};`,
+      'utf8'
+    );
+  }
+  const shardCount = keys.filter((k) => byFirst[k] && Object.keys(byFirst[k].map).length > 0).length;
+  console.log('   Actors (từ actors.js): index +', shardCount, 'shards');
 }
 
 /** 8. Tạo batch files */
@@ -788,6 +819,17 @@ async function main() {
         writeCategoryPages(filters);
       } catch (e) {
         console.warn('   Không parse được filters.js, bỏ qua writeCategoryPages:', e.message);
+      }
+    }
+    const actorsPath = path.join(PUBLIC_DATA, 'actors.js');
+    if (await fs.pathExists(actorsPath)) {
+      const raw = fs.readFileSync(actorsPath, 'utf8');
+      const jsonStr = raw.replace(/^window\.actorsData\s*=\s*/, '').replace(/;\s*$/, '');
+      try {
+        const actorsData = JSON.parse(jsonStr);
+        writeActorsShardsFromData(actorsData.map || {}, actorsData.names || {});
+      } catch (e) {
+        console.warn('   Không parse được actors.js, bỏ qua writeActorsShardsFromData:', e.message);
       }
     }
     const buildVersion = { builtAt: new Date().toISOString() };

@@ -13,6 +13,7 @@ import {
   DollarOutlined,
   FileTextOutlined,
   AuditOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -29,6 +30,7 @@ const items = [
   { key: '/player-settings', icon: <PlaySquareOutlined />, label: <Link to="/player-settings">Player</Link> },
   { key: '/donate', icon: <DollarOutlined />, label: <Link to="/donate">Donate</Link> },
   { key: '/static-pages', icon: <FileTextOutlined />, label: <Link to="/static-pages">Trang tĩnh</Link> },
+  { key: '/github-actions', icon: <ThunderboltOutlined />, label: <Link to="/github-actions">GitHub Actions</Link> },
   { key: '/audit-logs', icon: <AuditOutlined />, label: <Link to="/audit-logs">Audit</Link> },
 ];
 
