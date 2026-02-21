@@ -47,23 +47,27 @@ export default function PlayerSettings() {
       message.error('available_players phải là JSON hợp lệ');
       return;
     }
-    await supabase.from('player_settings').upsert(
-      { key: 'available_players', value: available, updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
-    await supabase.from('player_settings').upsert(
-      { key: 'default_player', value: values.default_player ?? 'plyr', updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
-    await supabase.from('player_settings').upsert(
-      { key: 'warning_enabled_global', value: !!values.warning_enabled_global, updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
-    await supabase.from('player_settings').upsert(
-      { key: 'warning_text', value: values.warning_text ?? '', updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
-    message.success('Đã lưu. Chạy Build website để áp dụng lên player.');
+    try {
+      await supabase.from('player_settings').upsert(
+        { key: 'available_players', value: available, updated_at: new Date().toISOString() },
+        { onConflict: 'key' }
+      );
+      await supabase.from('player_settings').upsert(
+        { key: 'default_player', value: values.default_player ?? 'plyr', updated_at: new Date().toISOString() },
+        { onConflict: 'key' }
+      );
+      await supabase.from('player_settings').upsert(
+        { key: 'warning_enabled_global', value: !!values.warning_enabled_global, updated_at: new Date().toISOString() },
+        { onConflict: 'key' }
+      );
+      await supabase.from('player_settings').upsert(
+        { key: 'warning_text', value: values.warning_text ?? '', updated_at: new Date().toISOString() },
+        { onConflict: 'key' }
+      );
+      message.success('Đã lưu. Chạy Build website để áp dụng lên player.');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
+    }
   };
 
   return (

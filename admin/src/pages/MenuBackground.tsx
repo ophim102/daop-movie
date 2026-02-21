@@ -62,6 +62,8 @@ export default function MenuBackground() {
         }
       }
       message.success('Đã lưu 10 ảnh nền menu');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     } finally {
       setSaving(false);
     }

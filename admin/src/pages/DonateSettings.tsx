@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, InputNumber, Button } from 'antd';
+import { Card, Form, Input, InputNumber, Button, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
 export default function DonateSettings() {
@@ -7,18 +7,33 @@ export default function DonateSettings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void Promise.resolve(
-      supabase.from('donate_settings').select('*').limit(1).single(),
-    )
+    supabase
+      .from('donate_settings')
+      .select('*')
+      .limit(1)
+      .maybeSingle()
       .then((r) => {
         if (r.data) form.setFieldsValue(r.data);
+        else form.setFieldsValue({ target_amount: 0, current_amount: 0, target_currency: 'VND', paypal_link: '' });
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [form]);
 
   const onFinish = async (values: any) => {
-    await supabase.from('donate_settings').upsert(values, { onConflict: 'id' });
+    try {
+      const { id, ...rest } = values;
+      if (id) {
+        await supabase.from('donate_settings').upsert({ id, ...rest }, { onConflict: 'id' });
+      } else {
+        const { data, error } = await supabase.from('donate_settings').insert(rest).select('id').single();
+        if (error) throw error;
+        if (data?.id) form.setFieldValue('id', data.id);
+      }
+      message.success('Đã lưu Donate');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
+    }
   };
 
   return (

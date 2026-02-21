@@ -32,13 +32,17 @@ export default function ThemeSettings() {
   }, [form]);
 
   const onFinish = async (values: Record<string, string>) => {
-    for (const key of THEME_KEYS) {
-      await supabase.from('site_settings').upsert(
-        { key, value: values[key] || DEFAULTS[key] || '', updated_at: new Date().toISOString() },
-        { onConflict: 'key' }
-      );
+    try {
+      for (const key of THEME_KEYS) {
+        await supabase.from('site_settings').upsert(
+          { key, value: values[key] || DEFAULTS[key] || '', updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+      }
+      message.success('Đã lưu theme. Chạy Build website để áp dụng lên site.');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
-    message.success('Đã lưu theme. Chạy Build website để áp dụng lên site.');
   };
 
   const values = Form.useWatch([], form) || {};

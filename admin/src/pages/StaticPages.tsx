@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, Form, Input, Button, Tabs } from 'antd';
+import { Card, Form, Input, Button, Tabs, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
 type RichTextEditorProps = {
@@ -63,10 +63,15 @@ export default function StaticPages() {
   }, [form]);
 
   const onFinish = async (values: any) => {
-    await supabase.from('static_pages').upsert([
-      { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
-      { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link, testflight_link: values.testflight_link, updated_at: new Date().toISOString() },
-    ], { onConflict: 'page_key' });
+    try {
+      await supabase.from('static_pages').upsert([
+        { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
+        { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link, testflight_link: values.testflight_link, updated_at: new Date().toISOString() },
+      ], { onConflict: 'page_key' });
+      message.success('Đã lưu trang tĩnh');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
+    }
   };
 
   return (

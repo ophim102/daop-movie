@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, Switch } from 'antd';
+import { Card, Form, Input, Button, Switch, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
 export default function SiteSettings() {
@@ -25,6 +25,7 @@ export default function SiteSettings() {
         player_warning_text: data.player_warning_text ?? 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
         movies_data_url: data.movies_data_url ?? '',
         social_facebook: data.social_facebook ?? '',
+        social_twitter: data.social_twitter ?? '',
         social_instagram: data.social_instagram ?? '',
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
@@ -35,12 +36,17 @@ export default function SiteSettings() {
   }, [form]);
 
   const onFinish = async (values: Record<string, any>) => {
-    const toSave: Record<string, string> = {};
-    for (const [key, value] of Object.entries(values)) {
-      toSave[key] = value === true || value === false ? String(value) : (value ?? '');
-    }
-    for (const [key, value] of Object.entries(toSave)) {
-      await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    try {
+      const toSave: Record<string, string> = {};
+      for (const [key, value] of Object.entries(values)) {
+        toSave[key] = value === true || value === false ? String(value) : (value ?? '');
+      }
+      for (const [key, value] of Object.entries(toSave)) {
+        await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+      }
+      message.success('Đã lưu cài đặt');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu thất bại');
     }
   };
 
