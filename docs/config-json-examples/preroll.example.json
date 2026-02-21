@@ -1,0 +1,11 @@
+[
+  {
+    "id": "uuid",
+    "name": "Pre-roll mẫu",
+    "video_url": "https://example.com/preroll.mp4",
+    "image_url": "",
+    "duration": 5,
+    "skip_after": 3,
+    "weight": 0
+  }
+]

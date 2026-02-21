@@ -33,3 +33,7 @@ R2 dùng để lưu ảnh (thumb, poster đã chuyển WebP), video quảng cáo
 - Poster: `posters/{slug}.webp`
 
 Script build tạo key theo slug phim và ghi URL dạng: `{R2_PUBLIC_URL}/{key}`.
+
+## Upload ảnh từ Admin (Banner, Slider)
+
+API `POST /api/upload-image` (Vercel serverless) nhận body JSON `{ image: base64, contentType }`, upload lên R2 với key `banners/{timestamp}-{id}.{ext}`, trả về `{ url }`. Trang Admin (Banners, Slider) có nút **Upload R2** để chọn ảnh (≤ 4MB); cần cấu hình đủ biến R2 trên **Vercel** (Environment Variables cho project deploy Admin + API) thì upload mới hoạt động.

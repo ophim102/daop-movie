@@ -1,46 +1,258 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Space, Image, Tag } from 'antd';
+import {
+  Table,
+  Button,
+  Space,
+  Image,
+  Tag,
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  InputNumber,
+  Switch,
+  message,
+} from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
+type BannerRow = {
+  id: string;
+  title: string;
+  image_url: string | null;
+  link_url: string | null;
+  html_code: string | null;
+  position: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_active: boolean;
+  priority: number | null;
+};
+
 export default function Banners() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<BannerRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form] = Form.useForm();
+
+  const loadData = async () => {
+    setLoading(true);
+    const r = await supabase
+      .from('ad_banners')
+      .select('*')
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: false });
+    setData((r.data as BannerRow[]) ?? []);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    supabase.from('ad_banners').select('*').order('created_at', { ascending: false }).then((r) => {
-      setData(r.data ?? []);
-      setLoading(false);
-    });
+    loadData();
   }, []);
 
-  const toggleActive = async (row: any) => {
+  const toggleActive = async (row: BannerRow) => {
     await supabase.from('ad_banners').update({ is_active: !row.is_active }).eq('id', row.id);
-    setData((prev) => prev.map((p) => (p.id === row.id ? { ...p, is_active: !p.is_active } : p)));
+    await loadData();
+  };
+
+  const openAdd = () => {
+    setEditingId(null);
+    form.resetFields();
+    form.setFieldsValue({
+      is_active: true,
+      priority: 0,
+    });
+    setModalVisible(true);
+  };
+
+  const openEdit = (row: BannerRow) => {
+    setEditingId(row.id);
+    const { start_date, end_date, ...rest } = row;
+    form.setFieldsValue(rest);
+    setModalVisible(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Xóa banner này?')) return;
+    await supabase.from('ad_banners').delete().eq('id', id);
+    message.success('Đã xóa banner');
+    await loadData();
+  };
+
+  const handleSubmit = async (values: any) => {
+    const toSave: any = {
+      title: values.title,
+      image_url: values.image_url || null,
+      link_url: values.link_url || null,
+      html_code: values.html_code || null,
+      position: values.position || 'home_top',
+      is_active: !!values.is_active,
+      priority: typeof values.priority === 'number' ? values.priority : 0,
+      start_date:
+        values.start_date && typeof values.start_date.format === 'function'
+          ? values.start_date.format('YYYY-MM-DD')
+          : null,
+      end_date:
+        values.end_date && typeof values.end_date.format === 'function'
+          ? values.end_date.format('YYYY-MM-DD')
+          : null,
+    };
+    if (editingId) {
+      await supabase.from('ad_banners').update(toSave).eq('id', editingId);
+      message.success('Đã cập nhật banner');
+    } else {
+      await supabase.from('ad_banners').insert(toSave);
+      message.success('Đã thêm banner');
+    }
+    setModalVisible(false);
+    await loadData();
   };
 
   return (
     <>
       <h1>Quản lý quảng cáo / Banner</h1>
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>
+          Thêm banner
+        </Button>
+      </div>
       <Table
         loading={loading}
         dataSource={data}
         rowKey="id"
         columns={[
-          { title: 'Ảnh', dataIndex: 'image_url', key: 'img', render: (url: string) => url ? <Image src={url} width={80} height={45} style={{ objectFit: 'cover' }} alt="" /> : '-' },
+          {
+            title: 'Ảnh',
+            dataIndex: 'image_url',
+            key: 'img',
+            render: (url: string) =>
+              url ? (
+                <Image
+                  src={url}
+                  width={80}
+                  height={45}
+                  style={{ objectFit: 'cover' }}
+                  alt=""
+                />
+              ) : (
+                '-'
+              ),
+          },
           { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
           { title: 'Vị trí', dataIndex: 'position', key: 'position' },
-          { title: 'Trạng thái', dataIndex: 'is_active', key: 'is_active', render: (v: boolean) => <Tag color={v ? 'green' : 'default'}>{v ? 'Bật' : 'Tắt'}</Tag> },
+          { title: 'Ưu tiên', dataIndex: 'priority', key: 'priority', width: 80 },
+          {
+            title: 'Trạng thái',
+            dataIndex: 'is_active',
+            key: 'is_active',
+            render: (v: boolean) => (
+              <Tag color={v ? 'green' : 'default'}>{v ? 'Bật' : 'Tắt'}</Tag>
+            ),
+          },
           {
             title: '',
             key: 'action',
-            render: (_: any, row: any) => (
+            render: (_: any, row: BannerRow) => (
               <Space>
-                <Button size="small" onClick={() => toggleActive(row)}>{row.is_active ? 'Tắt' : 'Bật'}</Button>
+                <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(row)}>
+                  Sửa
+                </Button>
+                <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(row.id)}>
+                  Xóa
+                </Button>
+                <Button size="small" onClick={() => toggleActive(row)}>
+                  {row.is_active ? 'Tắt' : 'Bật'}
+                </Button>
               </Space>
             ),
           },
         ]}
       />
+      <Modal
+        title={editingId ? 'Sửa banner' : 'Thêm banner'}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onOk={() => form.submit()}
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item name="title" label="Tiêu đề" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="image_url" label="Ảnh (URL hoặc upload)">
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <Input placeholder="Dán URL ảnh hoặc upload bên dưới" style={{ flex: 1 }} />
+              <label style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || file.size > 4 * 1024 * 1024) {
+                      message.warning('Chọn ảnh ≤ 4MB');
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      const base64 = (reader.result as string)?.split(',')[1];
+                      if (!base64) return;
+                      try {
+                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
+                        const r = await fetch(apiBase + '/api/upload-image', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            image: base64,
+                            contentType: file.type || 'image/jpeg',
+                          }),
+                        });
+                        const data = await r.json();
+                        if (data.url) {
+                          form.setFieldValue('image_url', data.url);
+                          message.success('Đã upload ảnh');
+                        } else message.error(data.error || 'Upload thất bại');
+                      } catch (err) {
+                        message.error('Lỗi kết nối API upload');
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    e.target.value = '';
+                  }}
+                />
+                <Button type="default" size="small">Upload R2</Button>
+              </label>
+            </div>
+          </Form.Item>
+          <Form.Item name="link_url" label="Link khi click">
+            <Input placeholder="https://..." />
+          </Form.Item>
+          <Form.Item name="html_code" label="HTML (tùy chọn)">
+            <Input.TextArea rows={3} placeholder="<div>...</div>" />
+          </Form.Item>
+          <Form.Item name="position" label="Vị trí">
+            <Input placeholder="home_top, home_middle, detail_top, ..." />
+          </Form.Item>
+          <Form.Item name="priority" label="Ưu tiên">
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="start_date" label="Ngày bắt đầu">
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="end_date" label="Ngày kết thúc">
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item
+            name="is_active"
+            label="Kích hoạt"
+            valuePropName="checked"
+            initialValue={true}
+          >
+            <Switch />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 }

@@ -1,8 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, Form, Input, Button, Tabs } from 'antd';
 import { supabase } from '../lib/supabase';
 
-const { TextArea } = Input;
+type RichTextEditorProps = {
+  value?: string;
+  onChange?: (val: string) => void;
+};
+
+function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (ref.current && typeof value === 'string' && ref.current.innerHTML !== value) {
+      ref.current.innerHTML = value;
+    }
+  }, [value]);
+
+  const handleInput = () => {
+    if (!onChange || !ref.current) return;
+    onChange(ref.current.innerHTML);
+  };
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        contentEditable
+        onInput={handleInput}
+        style={{
+          minHeight: 180,
+          padding: 8,
+          borderRadius: 4,
+          border: '1px solid #d9d9d9',
+          background: '#ffffff',
+          overflowY: 'auto',
+        }}
+      />
+      <div style={{ marginTop: 4, fontSize: 12, color: '#999' }}>
+        Soạn nội dung trực tiếp (hỗ trợ định dạng cơ bản qua trình duyệt).
+      </div>
+    </div>
+  );
+}
 
 export default function StaticPages() {
   const [form] = Form.useForm();
@@ -41,8 +80,8 @@ export default function StaticPages() {
                 key: 'about',
                 label: 'Trang giới thiệu',
                 children: (
-                  <Form.Item name="about_content" label="Nội dung (HTML hoặc text)">
-                    <TextArea rows={10} />
+                  <Form.Item name="about_content" label="Nội dung (HTML)">
+                    <RichTextEditor />
                   </Form.Item>
                 ),
               },
@@ -52,7 +91,7 @@ export default function StaticPages() {
                 children: (
                   <>
                     <Form.Item name="app_guide_content" label="Nội dung">
-                      <TextArea rows={8} />
+                      <RichTextEditor />
                     </Form.Item>
                     <Form.Item name="apk_link" label="Link APK">
                       <Input placeholder="https://..." />

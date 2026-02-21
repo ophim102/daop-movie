@@ -343,7 +343,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
 ## Bước 9: Tùy chọn bổ sung
 
 - **R2:** Tạo bucket, lấy key (xem `docs/r2/README.md`), thêm secrets R2. Build sẽ upload ảnh WebP lên R2 và cập nhật URL trong dữ liệu.
-- **Google Sheets:** Tạo service account, share sheet cho email service account, thêm `GOOGLE_SHEETS_ID` và đường dẫn/key JSON vào env. Build sẽ đọc sheet phim custom.
+- **Google Sheets:** Tạo service account, share spreadsheet (tên tùy ý, vd. "ophim data") cho email service account, thêm `GOOGLE_SHEETS_ID` (ID trong URL) và `GOOGLE_SERVICE_ACCOUNT_KEY` (đường dẫn file JSON) vào env. Trong spreadsheet cần **hai sheet (tab)** đúng tên: **movies** và **episodes**. Cấu trúc cột và file mẫu CSV: xem **docs/google-sheets/README.md**.
 - **Twikoo:** Deploy Twikoo (Vercel + MongoDB), lấy env id/URL, nhập vào Admin → Cài đặt chung → Twikoo Env ID, build lại.
 - **Capacitor (app Android/iOS):** Xem `docs/capacitor/README.md`; copy `public/` vào `app/www/` (hoặc cấu hình `webDir`), build và mở Android Studio / Xcode.
 

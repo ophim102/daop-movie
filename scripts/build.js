@@ -241,7 +241,10 @@ function parseSheetMovies(moviesRows, episodesRows) {
     const title = row[idx('title')] || row[idx('name')] || '';
     if (!title) continue;
     const extId = `ext_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 9)}`;
-    const slug = slugify((row[idx('title')] || '').toString(), { lower: true }) || extId;
+    const idValue = (row[idx('id')] ?? '').toString().trim();
+    const movieId = idValue || extId;
+    const slugFromSheet = (row[idx('slug')] ?? '').toString().trim();
+    const baseSlug = slugFromSheet || slugify((row[idx('title')] || '').toString(), { lower: true }) || extId;
     const genre = (row[idx('genre')] || '')
       .toString()
       .split(',')
@@ -253,10 +256,10 @@ function parseSheetMovies(moviesRows, episodesRows) {
     const quality = (row[idx('quality')] || '').toString();
     const is4k = /4k|uhd|2160p/i.test(quality);
     const movie = {
-      id: extId,
+      id: movieId,
       title: title.toString(),
       origin_name: (row[idx('origin_name')] || '').toString(),
-      slug,
+      slug: baseSlug,
       thumb: (row[idx('thumb_url')] || row[idx('thumb')] || '').toString(),
       poster: (row[idx('poster_url')] || row[idx('poster')] || '').toString(),
       year: (row[idx('year')] || '').toString(),
@@ -282,15 +285,31 @@ function parseSheetMovies(moviesRows, episodesRows) {
     };
     movies.push(movie);
   }
+  // Đảm bảo slug không trùng (phim trùng tên → slug trùng): thêm hậu tố -2, -3...
+  const usedSlugs = new Set();
+  for (const m of movies) {
+    let s = m.slug;
+    let n = 1;
+    while (usedSlugs.has(s)) {
+      n++;
+      s = m.slug + '-' + n;
+    }
+    m.slug = s;
+    usedSlugs.add(s);
+  }
   const epHeaders = episodesRows[0]?.map((h) => (h || '').toString().toLowerCase().trim()) || [];
-  const epIdx = (name) => epHeaders.indexOf(name);
+  const epIdx = (name) => {
+    const i = epHeaders.indexOf(name);
+    return i >= 0 ? i : epHeaders.indexOf(name.replace('_', ' '));
+  };
   const movieIdCol = epIdx('movie_id') >= 0 ? 'movie_id' : epHeaders.find((h) => h.includes('movie'));
   const movieBySlug = Object.fromEntries(movies.map((m) => [m.slug, m]));
+  const movieByTitle = Object.fromEntries(movies.map((m) => [(m.title || '').toString().trim(), m]));
   for (let i = 1; i < episodesRows.length; i++) {
     const row = episodesRows[i];
-    const mid = row[epHeaders.indexOf(movieIdCol)]?.toString() || row[0]?.toString();
-    const slug = movies.find((m) => m.id === mid || m.slug === mid)?.slug;
-    const movie = slug ? movieBySlug[slug] : null;
+    const mid = (row[epHeaders.indexOf(movieIdCol)] ?? row[0])?.toString()?.trim() || '';
+    const movie = movies.find((m) => String(m.id) === String(mid) || m.slug === mid) || movieByTitle[mid] || (mid && movieBySlug[slugify(mid, { lower: true })]);
+    const slug = movie?.slug;
     if (!movie) continue;
     const name = (epIdx('name') >= 0 ? row[epIdx('name')] : row[1]) || `Tap ${i}`;
     let sources = [];
@@ -458,13 +477,15 @@ async function exportConfigFromSupabase() {
   fs.ensureDirSync(configDir);
 
   const today = new Date().toISOString().slice(0, 10);
-  const [sources, bannersRes, sections, settings, staticPages, donate] = await Promise.all([
+  const [sources, bannersRes, sections, settings, staticPages, donate, playerSettingsRes, prerollRes] = await Promise.all([
     supabase.from('server_sources').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('ad_banners').select('*').eq('is_active', true),
     supabase.from('homepage_sections').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('site_settings').select('key, value'),
     supabase.from('static_pages').select('*'),
     supabase.from('donate_settings').select('*').limit(1).single(),
+    supabase.from('player_settings').select('key, value'),
+    supabase.from('ad_preroll').select('*').eq('is_active', true).order('weight', { ascending: false }),
   ]);
 
   const banners = (bannersRes.data || []).filter((b) => {
@@ -486,6 +507,8 @@ async function exportConfigFromSupabase() {
   const settingsObj = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));
   const defaultSettings = {
     site_name: 'DAOP Phim',
+    logo_url: '',
+    favicon_url: '',
     google_analytics_id: '',
     simple_analytics_script: '',
     twikoo_env_id: '',
@@ -493,11 +516,52 @@ async function exportConfigFromSupabase() {
     supabase_user_anon_key: '',
     player_warning_enabled: 'true',
     player_warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+    social_facebook: '',
+    social_twitter: '',
+    social_instagram: '',
+    social_youtube: '',
+    footer_content: '',
+    tmdb_attribution: 'true',
+    homepage_slider: '[]',
+    theme_primary: '#58a6ff',
+    theme_bg: '#0d1117',
+    theme_card: '#161b22',
+    theme_accent: '#58a6ff',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'donate.json'), JSON.stringify(donate.data || {}, null, 2));
+  
+  // Player settings: merge từ player_settings table
+  const playerSettingsData = playerSettingsRes.data || [];
+  const playerSettingsObj = {};
+  for (const row of playerSettingsData) {
+    try {
+      playerSettingsObj[row.key] = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+    } catch {
+      playerSettingsObj[row.key] = row.value;
+    }
+  }
+  const defaultPlayerSettings = {
+    available_players: { 'plyr': 'Plyr', 'videojs': 'Video.js', 'jwplayer': 'JWPlayer' },
+    default_player: 'plyr',
+    warning_enabled_global: true,
+    warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+  };
+  const mergedPlayerSettings = { ...defaultPlayerSettings, ...playerSettingsObj };
+  fs.writeFileSync(path.join(configDir, 'player-settings.json'), JSON.stringify(mergedPlayerSettings, null, 2));
+
+  const prerollList = (prerollRes.data || []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    video_url: p.video_url,
+    image_url: p.image_url,
+    duration: p.duration,
+    skip_after: p.skip_after,
+    weight: p.weight,
+  }));
+  fs.writeFileSync(path.join(configDir, 'preroll.json'), JSON.stringify(prerollList, null, 2));
 }
 
 async function writeDefaultConfig() {
@@ -516,6 +580,8 @@ async function writeDefaultConfig() {
     ],
     'site-settings.json': {
       site_name: 'DAOP Phim',
+      logo_url: '',
+      favicon_url: '',
       google_analytics_id: '',
       simple_analytics_script: '',
       twikoo_env_id: '',
@@ -523,9 +589,22 @@ async function writeDefaultConfig() {
       supabase_user_anon_key: '',
       player_warning_enabled: 'true',
       player_warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+      social_facebook: '',
+      social_twitter: '',
+      social_instagram: '',
+      social_youtube: '',
+      footer_content: '',
+      tmdb_attribution: 'true',
     },
     'static-pages.json': [],
     'donate.json': { target_amount: 0, target_currency: 'VND', current_amount: 0 },
+    'player-settings.json': {
+      available_players: { 'plyr': 'Plyr', 'videojs': 'Video.js', 'jwplayer': 'JWPlayer' },
+      default_player: 'plyr',
+      warning_enabled_global: true,
+      warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+    },
+    'preroll.json': [],
   };
   for (const [file, data] of Object.entries(defaults)) {
     fs.writeFileSync(path.join(configDir, file), JSON.stringify(data, null, 2));
@@ -556,6 +635,16 @@ Sitemap: ${base}/sitemap.xml
 async function main() {
   const incremental = process.argv.includes('--incremental');
   console.log('Build started (incremental:', incremental, ')');
+
+  if (incremental) {
+    await fs.ensureDir(PUBLIC_DATA);
+    await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
+    console.log('Incremental: chỉ export config từ Supabase (bỏ qua fetch phim, batches, sitemap).');
+    await exportConfigFromSupabase();
+    console.log('Incremental build (config only) xong.');
+    return;
+  }
+
   await fs.ensureDir(PUBLIC_DATA);
   await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
   await fs.ensureDir(path.join(PUBLIC_DATA, 'batches'));

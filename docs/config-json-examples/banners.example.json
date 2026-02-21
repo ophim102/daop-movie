@@ -1,0 +1,14 @@
+[
+  {
+    "id": "uuid-optional",
+    "title": "Banner chính",
+    "image_url": "https://example.com/banner.jpg",
+    "link_url": "https://example.com/promo",
+    "html_code": null,
+    "position": "home_top",
+    "priority": 10,
+    "start_date": null,
+    "end_date": null,
+    "is_active": true
+  }
+]

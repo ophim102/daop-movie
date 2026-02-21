@@ -1,0 +1,10 @@
+[
+  {
+    "id": "uuid-optional",
+    "name": "Server Vietsub #1",
+    "slug": "vietsub-1",
+    "base_url": "https://example.com",
+    "sort_order": 0,
+    "is_active": true
+  }
+]

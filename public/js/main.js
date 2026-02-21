@@ -79,11 +79,96 @@
     );
   };
 
+  /** Render slider carousel từ homepage_slider (array) vào el */
+  window.DAOP.renderSlider = function (el, slides) {
+    if (!el || !Array.isArray(slides) || slides.length === 0) return;
+    var base = BASE || '';
+    var html = '<div class="slider-viewport"><div class="slider-track">';
+    slides.forEach(function (s, i) {
+      var href = (s.link_url || '#').replace(/"/g, '&quot;');
+      var img = (s.image_url || '').replace(/"/g, '&quot;');
+      var title = (s.title || '').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+      html += '<div class="slider-slide" data-index="' + i + '"><a href="' + href + '"><img src="' + img + '" alt="' + title + '"></a></div>';
+    });
+    html += '</div></div><button type="button" class="slider-btn slider-prev" aria-label="Trước">‹</button><button type="button" class="slider-btn slider-next" aria-label="Sau">›</button><div class="slider-dots"></div>';
+    el.innerHTML = html;
+    var track = el.querySelector('.slider-track');
+    var dotContainer = el.querySelector('.slider-dots');
+    var len = slides.length;
+    for (var d = 0; d < len; d++) {
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'slider-dot' + (d === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Slide ' + (d + 1));
+      dot.dataset.index = String(d);
+      dotContainer.appendChild(dot);
+    }
+    var idx = 0;
+    function goTo(i) {
+      idx = (i + len) % len;
+      if (track) track.style.transform = 'translateX(-' + idx * 100 + '%)';
+      el.querySelectorAll('.slider-dot').forEach(function (dot, j) {
+        dot.classList.toggle('active', j === idx);
+      });
+    }
+    el.querySelector('.slider-prev')?.addEventListener('click', function () { goTo(idx - 1); });
+    el.querySelector('.slider-next')?.addEventListener('click', function () { goTo(idx + 1); });
+    dotContainer.querySelectorAll('.slider-dot').forEach(function (dot) {
+      dot.addEventListener('click', function () { goTo(parseInt(dot.dataset.index, 10)); });
+    });
+    var t = setInterval(function () { goTo(idx + 1); }, 5000);
+    el._sliderInterval = t;
+  };
+
+  /** Áp dụng site-settings lên trang: theme, logo, favicon, footer, TMDB, slider */
+  window.DAOP.applySiteSettings = function (settings) {
+    if (!settings) return;
+    var root = document.documentElement;
+    if (settings.theme_primary) root.style.setProperty('--accent', settings.theme_primary);
+    if (settings.theme_accent) root.style.setProperty('--accent-hover', settings.theme_accent);
+    if (settings.theme_bg) root.style.setProperty('--bg', settings.theme_bg);
+    if (settings.theme_card) root.style.setProperty('--card', settings.theme_card);
+    var logo = document.querySelector('.site-logo');
+    if (logo && settings.logo_url) {
+      logo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + (settings.site_name || '').replace(/"/g, '&quot;') + '">';
+      if (!logo.getAttribute('href')) logo.setAttribute('href', BASE || '/');
+    } else if (logo && settings.site_name && !logo.querySelector('img')) {
+      logo.textContent = settings.site_name;
+    }
+    if (settings.favicon_url) {
+      var link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+      link.rel = 'icon';
+      link.href = settings.favicon_url;
+      if (!link.parentNode) document.head.appendChild(link);
+    }
+    var footer = document.querySelector('.site-footer');
+    if (footer && settings.footer_content) {
+      footer.innerHTML = settings.footer_content;
+    } else if (footer && settings.tmdb_attribution === 'false') {
+      var tmdbEl = footer.querySelector('.footer-tmdb');
+      if (tmdbEl) tmdbEl.style.display = 'none';
+    }
+    var sliderWrap = document.getElementById('slider-wrap');
+    if (sliderWrap) {
+      try {
+        var raw = settings.homepage_slider;
+        var arr = typeof raw === 'string' ? (raw ? JSON.parse(raw) : []) : (Array.isArray(raw) ? raw : []);
+        if (Array.isArray(arr) && arr.length > 0) {
+          arr.sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+          window.DAOP.renderSlider(sliderWrap, arr);
+          var bannerWrap = document.getElementById('banner-wrap');
+          if (bannerWrap) bannerWrap.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+  };
+
   /** Inject tracking from site-settings */
   window.DAOP.injectTracking = async function () {
     try {
       const settings = await window.DAOP.loadConfig('site-settings');
       if (!settings) return;
+      window.DAOP.applySiteSettings(settings);
       if (settings.google_analytics_id) {
         const s = document.createElement('script');
         s.async = true;

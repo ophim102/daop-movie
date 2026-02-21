@@ -20,13 +20,14 @@
     </nav>
   </header>
   <main class="container">
+    <div id="slider-wrap" class="slider-wrap"></div>
     <div id="banner-wrap" class="banner-wrap"></div>
     <div id="home-sections"></div>
   </main>
   <footer class="site-footer">
     <p><a href="/donate.html">Donate</a></p>
     <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
-    <p>Dữ liệu phim có thể từ TMDB. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a></p>
+    <p class="footer-tmdb">Dữ liệu phim có thể từ TMDB. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a></p>
   </footer>
   <script src="/data/config/site-settings.json" type="application/json" id="site-settings-src"></script>
   <script src="/data/movies-light.js"></script>
@@ -89,10 +90,37 @@
           var limit = sec.limit_count || 24;
           var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
           var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';
-          var html = '<section class="home-section"><h2>' + (sec.title || '') + ' ' + moreLink + '</h2><div class="movies-grid">';
-          movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base); });
-          html += '</div></section>';
+          var layout = (sec.display_type || 'grid').toLowerCase();
+          var html = '<section class="home-section home-section-' + layout + '"><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
+          if (layout === 'slider') {
+            html += '<div class="section-slider-wrap"><div class="section-slider-track">';
+            movies.forEach(function(m){ html += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base) + '</div>'; });
+            html += '</div><button type="button" class="section-slider-prev" aria-label="Trước">‹</button><button type="button" class="section-slider-next" aria-label="Sau">›</button></div>';
+          } else if (layout === 'list') {
+            html += '<div class="movies-list">';
+            movies.forEach(function(m){
+              var href = base + '/phim/' + (m.slug || m.id) + '.html';
+              var thumb = (m.thumb || m.poster || '').replace(/^\/\//, 'https://');
+              var title = (m.title || '').replace(/</g, '&lt;');
+              html += '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + thumb + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (m.episode_current ? ' • ' + m.episode_current + ' tập' : '') + '</span></a>';
+            });
+            html += '</div>';
+          } else {
+            html += '<div class="movies-grid">';
+            movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base); });
+            html += '</div>';
+          }
+          html += '</section>';
           container.insertAdjacentHTML('beforeend', html);
+        });
+        container.querySelectorAll('.section-slider-wrap').forEach(function(wrap){
+          var track = wrap.querySelector('.section-slider-track');
+          var prev = wrap.querySelector('.section-slider-prev');
+          var next = wrap.querySelector('.section-slider-next');
+          if (!track) return;
+          var step = 220;
+          if (prev) prev.addEventListener('click', function(){ track.scrollBy({ left: -step, behavior: 'smooth' }); });
+          if (next) next.addEventListener('click', function(){ track.scrollBy({ left: step, behavior: 'smooth' }); });
         });
       }).catch(function(){});
     })();

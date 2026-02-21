@@ -4,6 +4,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
   PictureOutlined,
+  PlaySquareOutlined,
   AppstoreOutlined,
   CloudServerOutlined,
   SettingOutlined,
@@ -17,9 +18,13 @@ const { Header, Sider, Content } = AntLayout;
 const items = [
   { key: '/', icon: <DashboardOutlined />, label: <Link to="/">Dashboard</Link> },
   { key: '/banners', icon: <PictureOutlined />, label: <Link to="/banners">Banner</Link> },
+  { key: '/slider', icon: <PictureOutlined />, label: <Link to="/slider">Slider</Link> },
+  { key: '/preroll', icon: <PlaySquareOutlined />, label: <Link to="/preroll">Pre-roll</Link> },
   { key: '/homepage-sections', icon: <AppstoreOutlined />, label: <Link to="/homepage-sections">Sections</Link> },
   { key: '/server-sources', icon: <CloudServerOutlined />, label: <Link to="/server-sources">Server</Link> },
   { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">Cài đặt</Link> },
+  { key: '/theme', icon: <SettingOutlined />, label: <Link to="/theme">Theme</Link> },
+  { key: '/player-settings', icon: <PlaySquareOutlined />, label: <Link to="/player-settings">Player</Link> },
   { key: '/donate', icon: <DollarOutlined />, label: <Link to="/donate">Donate</Link> },
   { key: '/static-pages', icon: <FileTextOutlined />, label: <Link to="/static-pages">Trang tĩnh</Link> },
   { key: '/audit-logs', icon: <AuditOutlined />, label: <Link to="/audit-logs">Audit</Link> },

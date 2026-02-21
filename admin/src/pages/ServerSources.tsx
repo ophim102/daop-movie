@@ -1,26 +1,79 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Tag } from 'antd';
+import { Table, Button, Tag, Modal, Form, Input, InputNumber, Space, message } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
+
+function createSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 export default function ServerSources() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form] = Form.useForm();
+
+  const loadData = async () => {
+    const r = await supabase.from('server_sources').select('*').order('sort_order');
+    setData(r.data ?? []);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    supabase.from('server_sources').select('*').order('sort_order').then((r) => {
-      setData(r.data ?? []);
-      setLoading(false);
-    });
+    loadData();
   }, []);
 
   const toggleActive = async (row: any) => {
     await supabase.from('server_sources').update({ is_active: !row.is_active }).eq('id', row.id);
-    setData((prev) => prev.map((p) => (p.id === row.id ? { ...p, is_active: !p.is_active } : p)));
+    await loadData();
+  };
+
+  const handleAdd = () => {
+    setEditingId(null);
+    form.resetFields();
+    setModalVisible(true);
+  };
+
+  const handleEdit = (row: any) => {
+    setEditingId(row.id);
+    form.setFieldsValue(row);
+    setModalVisible(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Bạn có chắc muốn xóa?')) return;
+    await supabase.from('server_sources').delete().eq('id', id);
+    message.success('Đã xóa');
+    await loadData();
+  };
+
+  const handleSubmit = async (values: any) => {
+    if (!values.slug && values.name) {
+      values.slug = createSlug(values.name);
+    }
+    if (editingId) {
+      await supabase.from('server_sources').update(values).eq('id', editingId);
+      message.success('Đã cập nhật');
+    } else {
+      await supabase.from('server_sources').insert(values);
+      message.success('Đã thêm');
+    }
+    setModalVisible(false);
+    await loadData();
   };
 
   return (
     <>
       <h1>Nguồn server</h1>
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>Thêm nguồn</Button>
+      </div>
       <Table
         loading={loading}
         dataSource={data}
@@ -30,9 +83,41 @@ export default function ServerSources() {
           { title: 'Tên', dataIndex: 'name', key: 'name' },
           { title: 'Slug', dataIndex: 'slug', key: 'slug' },
           { title: 'Trạng thái', dataIndex: 'is_active', key: 'is_active', render: (v: boolean) => <Tag color={v ? 'green' : 'default'}>{v ? 'Bật' : 'Tắt'}</Tag> },
-          { title: '', key: 'action', render: (_: any, row: any) => <Button size="small" onClick={() => toggleActive(row)}>{row.is_active ? 'Tắt' : 'Bật'}</Button> },
+          {
+            title: '',
+            key: 'action',
+            width: 150,
+            render: (_: any, row: any) => (
+              <Space>
+                <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(row)}>Sửa</Button>
+                <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(row.id)}>Xóa</Button>
+                <Button size="small" onClick={() => toggleActive(row)}>{row.is_active ? 'Tắt' : 'Bật'}</Button>
+              </Space>
+            ),
+          },
         ]}
       />
+      <Modal
+        title={editingId ? 'Sửa nguồn server' : 'Thêm nguồn server'}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onOk={() => form.submit()}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item name="name" label="Tên" rules={[{ required: true }]}>
+            <Input placeholder="Ví dụ: Vietsub #1" />
+          </Form.Item>
+          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+            <Input placeholder="Tự động tạo từ tên nếu để trống" />
+          </Form.Item>
+          <Form.Item name="sort_order" label="Thứ tự" initialValue={0}>
+            <InputNumber min={0} />
+          </Form.Item>
+          <Form.Item name="is_active" label="Bật" valuePropName="checked" initialValue={true}>
+            <input type="checkbox" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 }
