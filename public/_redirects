@@ -1,1 +1,2 @@
-/phim/:slug  /phim/index.html  200
+# Trang chi tiết phim: không dùng rewrite ở đây (Cloudflare có thể trả 308 → mất slug).
+# URL /phim/xxx.html sẽ 404 → Cloudflare serve 404.html → redirect sang /phim/index.html#xxx
