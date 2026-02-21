@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layout as AntLayout, Menu, Button } from 'antd';
+import { Layout as AntLayout, Menu, Button, message } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -34,11 +34,22 @@ export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
-  const triggerBuild = () => {
-    fetch('/api/trigger-build', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-      .then((r) => r.json())
-      .then(console.log)
-      .catch(console.error);
+  const triggerBuild = async () => {
+    try {
+      const base = ((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '');
+      const token = (import.meta as any).env?.VITE_WEBHOOK_BUILD_TOKEN;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`${base}/api/trigger-build`, { method: 'POST', headers, body: JSON.stringify({}) });
+      const data = await res.json().catch(() => ({ error: await res.text() }));
+      if (res.ok && data?.ok) {
+        message.success('Đã kích hoạt build. GitHub Actions đang chạy.');
+      } else {
+        message.error(data?.error || data?.message || `Lỗi ${res.status}`);
+      }
+    } catch (e: any) {
+      message.error(e?.message || 'Không kết nối được API. Kiểm tra URL Admin và env GITHUB_TOKEN, GITHUB_REPO.');
+    }
   };
 
   return (

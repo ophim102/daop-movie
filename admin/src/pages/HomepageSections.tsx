@@ -42,6 +42,15 @@ const DISPLAY_TYPE_OPTIONS = [
   { value: 'list', label: 'List' },
 ];
 
+const DEFAULT_SECTIONS = [
+  { title: 'Phim bộ', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0, more_link: '/phim-bo.html', display_type: 'grid', is_active: true },
+  { title: 'Phim lẻ', source_type: 'type', source_value: 'single', limit_count: 24, sort_order: 1, more_link: '/phim-le.html', display_type: 'grid', is_active: true },
+  { title: 'Phim 4K', source_type: 'quality_4k', source_value: '', limit_count: 24, sort_order: 2, more_link: '/danh-sach/phim-4k.html', display_type: 'grid', is_active: true },
+  { title: 'Thể loại (mẫu)', source_type: 'genre', source_value: 'hanh-dong', limit_count: 18, sort_order: 3, more_link: '/the-loai/', display_type: 'grid', is_active: true },
+  { title: 'Quốc gia (mẫu)', source_type: 'country', source_value: 'au-my', limit_count: 18, sort_order: 4, more_link: '/quoc-gia/', display_type: 'grid', is_active: true },
+  { title: 'Năm phát hành (mẫu)', source_type: 'year', source_value: '2024', limit_count: 18, sort_order: 5, more_link: '/nam-phat-hanh/', display_type: 'grid', is_active: true },
+];
+
 export default function HomepageSections() {
   const [data, setData] = useState<SectionRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,12 +134,32 @@ export default function HomepageSections() {
     await loadData();
   };
 
+  const seedDefaults = async () => {
+    if (data.length > 0) {
+      message.info('Đã có section. Xóa hết trước khi thêm mặc định, hoặc bấm Thêm section.');
+      return;
+    }
+    try {
+      await supabase.from('homepage_sections').insert(DEFAULT_SECTIONS);
+      message.success('Đã thêm 6 sections mặc định.');
+      await loadData();
+    } catch (e: any) {
+      message.error(e?.message || 'Lỗi khi thêm sections mặc định');
+    }
+  };
+
   return (
     <>
       <h1>Homepage Sections</h1>
-      <div style={{ marginBottom: 16 }}>
+      <p style={{ color: '#666', marginBottom: 16 }}>
+        Các section hiển thị trên trang chủ. Khi chưa có dữ liệu, bấm <strong>Thêm sections mặc định</strong> để tạo mẫu.
+      </p>
+      <div style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>
           Thêm section
+        </Button>
+        <Button onClick={seedDefaults} disabled={data.length > 0}>
+          Thêm sections mặc định
         </Button>
       </div>
       <Table

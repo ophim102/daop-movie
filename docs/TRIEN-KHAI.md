@@ -244,7 +244,8 @@ API `api/trigger-build.ts` khi được gọi sẽ dùng GitHub API để trigge
 |------|--------|----------|--------|
 | `GITHUB_TOKEN` | Personal Access Token (classic) | Có | Quyền **repo** (full). Tạo: GitHub → Settings (user) → Developer settings → Personal access tokens → Generate new token (classic), chọn scope **repo**. |
 | `GITHUB_REPO` | `owner/repo` | Có | Ví dụ: `ophim102/daop-movie`. Đúng với repo chứa workflow **build-on-demand**. |
-| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Nếu đặt, client gọi `/api/trigger-build` phải gửi đúng token (header `Authorization: Bearer <token>` hoặc body `{ "token": "<token>" }`). Hiện Admin UI chưa gửi token; nếu bạn đặt biến này thì cần sửa Admin để gửi token hoặc tạm không đặt. |
+| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Nếu đặt, Admin phải gửi token. Thêm biến **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị) trong Vercel env để nút Build gửi token. |
+| `VITE_API_URL` | URL gốc của Admin (vd. `https://xxx.vercel.app`) | Không | Chỉ cần khi chạy Admin **local** (`npm run dev`) để nút Build gọi đúng API. Khi deploy, bỏ qua (dùng relative `/api/`). |
 
 - Thêm cả ba (hoặc ít nhất `GITHUB_TOKEN`, `GITHUB_REPO`) trong cùng project Vercel, Environment = Production (và Preview nếu bạn test qua preview).
 
