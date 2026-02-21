@@ -516,6 +516,9 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
 /** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
 function writeCategoryPages(filters) {
   const publicDir = path.join(ROOT, 'public');
+  fs.ensureDirSync(path.join(publicDir, 'the-loai'));
+  fs.ensureDirSync(path.join(publicDir, 'quoc-gia'));
+  fs.ensureDirSync(path.join(publicDir, 'nam-phat-hanh'));
   const theLoaiIndex = fs.readFileSync(path.join(publicDir, 'the-loai', 'index.html'), 'utf8');
   const quocGiaIndex = fs.readFileSync(path.join(publicDir, 'quoc-gia', 'index.html'), 'utf8');
   const namPhatHanhIndex = fs.readFileSync(path.join(publicDir, 'nam-phat-hanh', 'index.html'), 'utf8');
@@ -749,11 +752,22 @@ async function main() {
   if (incremental) {
     await fs.ensureDir(PUBLIC_DATA);
     await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
-    console.log('Incremental: chỉ export config từ Supabase (bỏ qua fetch phim, batches, sitemap).');
+    console.log('Incremental: export config từ Supabase + tạo lại trang thể loại/quốc gia/năm.');
     await exportConfigFromSupabase();
+    const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
+    if (await fs.pathExists(filtersPath)) {
+      const raw = fs.readFileSync(filtersPath, 'utf8');
+      const jsonStr = raw.replace(/^window\.filtersData\s*=\s*/, '').replace(/;\s*$/, '');
+      try {
+        const filters = JSON.parse(jsonStr);
+        writeCategoryPages(filters);
+      } catch (e) {
+        console.warn('   Không parse được filters.js, bỏ qua writeCategoryPages:', e.message);
+      }
+    }
     const buildVersion = { builtAt: new Date().toISOString() };
     fs.writeFileSync(path.join(PUBLIC_DATA, 'build_version.json'), JSON.stringify(buildVersion, null, 2));
-    console.log('Incremental build (config only) xong.');
+    console.log('Incremental build xong.');
     return;
   }
 
