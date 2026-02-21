@@ -3,5 +3,8 @@
   "buildCommand": "cd admin && npm run build",
   "outputDirectory": "admin/dist",
   "installCommand": "npm install && cd admin && npm install",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
