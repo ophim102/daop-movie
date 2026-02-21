@@ -17,7 +17,7 @@ jobs:
       - run: npm install
       - run: npm run build
         env:
-          OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL }}
+          OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
           OPHIM_MAX_PAGES: ${{ vars.OPHIM_MAX_PAGES || '5' }}
           OPHIM_MAX_MOVIES: ${{ vars.OPHIM_MAX_MOVIES || '500' }}
           OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
