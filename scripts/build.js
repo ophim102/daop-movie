@@ -130,9 +130,10 @@ async function fetchOPhimMovies() {
       await sleep(OPHIM_DELAY_MS);
       try {
         const detail = await fetchJsonWithTimeout(`${OPHIM_BASE}/phim/${slug}`);
-        const movie = detail?.data?.movie || detail?.data;
+        const movie = detail?.data?.item || detail?.data?.movie || detail?.data;
         if (!movie) continue;
-        const m = normalizeOPhimMovie(movie, slug);
+        const cdnBase = (detail?.data?.APP_DOMAIN_CDN_IMAGE || '').replace(/\/$/, '') || 'https://img.ophim.live';
+        const m = normalizeOPhimMovie(movie, slug, cdnBase);
         list.push(m);
       } catch (e) {
         console.warn('OPhim detail skip:', slug, e.message);
@@ -143,21 +144,29 @@ async function fetchOPhimMovies() {
   return list;
 }
 
-function normalizeOPhimMovie(m, slug) {
+function normalizeOPhimMovie(m, slug, cdnBase = 'https://img.ophim.live') {
   const rawId = m._id || m.id || `ophim_${slug}`;
   const id = String(rawId);
   const rawSlug = (m.slug || slug || '').toString().trim();
   const slugNorm = rawSlug ? rawSlug.toLowerCase() : '';
   const quality = (m.quality || '').toLowerCase();
   const is4k = /4k|uhd|2160p/.test(quality);
+  const thumbRaw = m.thumb_url || m.poster_url || m.thumb || '';
+  const posterRaw = m.poster_url || m.poster || m.thumb || '';
+  const thumb = thumbRaw && !/^https?:\/\//i.test(thumbRaw)
+    ? `${cdnBase}/uploads/movies/${thumbRaw.replace(/^\/+/, '')}`
+    : thumbRaw;
+  const poster = posterRaw && !/^https?:\/\//i.test(posterRaw)
+    ? `${cdnBase}/uploads/movies/${posterRaw.replace(/^\/+/, '')}`
+    : posterRaw;
   return {
     id,
     _id: id,
     title: m.name || m.title || '',
     origin_name: m.origin_name || m.original_title || '',
     slug: slugNorm || id,
-    thumb: m.thumb_url || m.poster_url || m.thumb || '',
-    poster: m.poster_url || m.poster || m.thumb || '',
+    thumb,
+    poster,
     year: m.year || '',
     type: m.type || 'single',
     genre: m.category?.map((c) => ({ id: c.id, name: c.name, slug: c.slug || slugify(c.name, { lower: true }) })) || [],
@@ -165,7 +174,6 @@ function normalizeOPhimMovie(m, slug) {
     lang_key: m.lang || '',
     episode_current: m.episode_current || m.episodes?.length || '1',
     quality: m.quality || '',
-    modified: m.modified || m.updated_at || new Date().toISOString(),
     is_4k: is4k,
     is_exclusive: false,
     status: '',
@@ -176,6 +184,10 @@ function normalizeOPhimMovie(m, slug) {
     time: m.time,
     description: m.content || m.description || '',
     tmdb: m.tmdb || null,
+    modified:
+      (m.modified && typeof m.modified === 'object' && m.modified.time)
+        ? m.modified.time
+        : (m.modified || m.updated_at || new Date().toISOString()),
   };
 }
 
