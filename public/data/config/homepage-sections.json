@@ -2,7 +2,7 @@
   {
     "id": "56948f2b-66c4-4500-abec-ade04429b862",
     "title": "Phim bộ",
-    "display_type": "grid",
+    "display_type": "slider",
     "source_type": "type",
     "source_value": "series",
     "filter_config": null,
@@ -17,7 +17,7 @@
   {
     "id": "2281e75b-ff45-4818-a4f9-aa0c6667823d",
     "title": "Phim lẻ",
-    "display_type": "grid",
+    "display_type": "slider",
     "source_type": "type",
     "source_value": "single",
     "filter_config": null,
@@ -47,7 +47,7 @@
   {
     "id": "91aab5f2-0bf7-4dc1-92f3-f3aa65144501",
     "title": "Phim Hành động",
-    "display_type": "grid",
+    "display_type": "list",
     "source_type": "genre",
     "source_value": "hanh-dong",
     "filter_config": null,
@@ -62,7 +62,7 @@
   {
     "id": "be9f2f08-194f-4c8e-b89f-ab8f325c723b",
     "title": "Phim Âu Mỹ",
-    "display_type": "grid",
+    "display_type": "list",
     "source_type": "country",
     "source_value": "au-my",
     "filter_config": null,
