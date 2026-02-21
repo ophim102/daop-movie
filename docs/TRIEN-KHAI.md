@@ -211,16 +211,10 @@ Trên màn hình **Configure Project**:
    - Để **trống** (hoặc `.`) để Vercel dùng **root của repo**.  
    - Cần root repo vì thư mục `api/` nằm ở root; nếu đặt Root = `admin` thì sẽ không có `/api/*`.
 
-3. **Build and Output Settings** — chỉnh thủ công nếu Vercel chưa nhận đúng:
-   - **Install Command:**  
-     `npm install && cd admin && npm install`  
-     (cài dependency ở root và trong `admin/` vì build cần cả hai).
-   - **Build Command:**  
-     `cd admin && npm run build`  
-     (chạy build Vite trong thư mục `admin/`).
-   - **Output Directory:**  
-     `admin/dist`  
-     (thư mục Vite build ra, so với root repo).
+3. **Build and Output Settings** — repo đã có file **vercel.json** ở root với Install/Build/Output đúng. Giữ **Root Directory** trống; nếu Dashboard có override Build/Install/Output thì có thể xóa để dùng `vercel.json`:
+   - **Install Command:** `npm install && cd admin && npm install`
+   - **Build Command:** `cd admin && npm run build`
+   - **Output Directory:** `admin/dist`
 
 4. **Development Command:** có thể để mặc định hoặc `cd admin && npm run dev`.
 
