@@ -61,8 +61,8 @@
       '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>' +
       '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
       '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-nav-wrap"><button type="button" class="filter-nav filter-nav-prev" aria-label="Trước">‹</button><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div><button type="button" class="filter-nav filter-nav-next" aria-label="Sau">›</button></div></div>' +
-      '<div class="filter-item filter-item-video"><span class="filter-label">Loại video:</span><div class="checkboxes-inline"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div>' +
-      '<div class="filter-item filter-item-lang"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="checkboxes-inline"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div>';
+      '<div class="filter-item filter-item-video"><span class="filter-label">Loại video:</span><div class="filter-scroll filter-scroll-inline"><div class="checkboxes-inline"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div></div>' +
+      '<div class="filter-item filter-item-lang"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll filter-scroll-inline"><div class="checkboxes-inline"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div></div>';
     this.attachFilterScrollNav(container);
   };
 
@@ -152,14 +152,23 @@
     }).join('');
     grid.innerHTML = html || '<p>Không có phim nào.</p>';
 
-    var total = Math.ceil(this.filteredIds.length / perPage);
+    var total = Math.ceil(this.filteredIds.length / perPage) || 1;
     var pagEl = document.getElementById(this.paginationId);
     if (pagEl) {
+      var cur = this.currentPage;
       var pagHtml = '';
-      for (var i = 1; i <= total; i++) {
-        if (i === this.currentPage) pagHtml += '<span class="current">' + i + '</span>';
+      pagHtml += '<a href="#" class="pagination-nav" data-page="1" aria-label="Về đầu">«</a>';
+      pagHtml += '<a href="#" class="pagination-nav" data-page="' + Math.max(1, cur - 1) + '" aria-label="Trước">‹</a>';
+      var win = 5;
+      var start = Math.max(1, Math.min(cur - 2, total - win + 1));
+      var end = Math.min(total, start + win - 1);
+      for (var i = start; i <= end; i++) {
+        if (i === cur) pagHtml += '<span class="current">' + i + '</span>';
         else pagHtml += '<a href="#" data-page="' + i + '">' + i + '</a>';
       }
+      pagHtml += '<a href="#" class="pagination-nav" data-page="' + Math.min(total, cur + 1) + '" aria-label="Sau">›</a>';
+      pagHtml += '<a href="#" class="pagination-nav" data-page="' + total + '" aria-label="Về cuối">»</a>';
+      pagHtml += '<span class="pagination-jump"><input type="number" min="1" max="' + total + '" value="" placeholder="Trang" id="pagination-goto" aria-label="Trang"><button type="button" id="pagination-goto-btn">Đến</button></span>';
       pagEl.innerHTML = pagHtml;
     }
   };
@@ -189,14 +198,43 @@
         self.renderPage();
       });
     }
-    document.getElementById(self.paginationId)?.addEventListener('click', function (e) {
-      e.preventDefault();
-      var p = e.target.getAttribute('data-page');
-      if (p) {
-        self.currentPage = parseInt(p, 10);
-        self.renderPage();
-      }
-    });
+    var pagContainer = document.getElementById(self.paginationId);
+    if (pagContainer) {
+      pagContainer.addEventListener('click', function (e) {
+        e.preventDefault();
+        var t = e.target;
+        var p = t.getAttribute('data-page');
+        if (p) {
+          self.currentPage = parseInt(p, 10);
+          self.renderPage();
+        }
+        if (t.id === 'pagination-goto-btn') {
+          var inp = document.getElementById('pagination-goto');
+          if (inp) {
+            var num = parseInt(inp.value, 10);
+            var total = Math.ceil(self.filteredIds.length / self.itemsPerPage) || 1;
+            if (num >= 1 && num <= total) {
+              self.currentPage = num;
+              self.renderPage();
+            }
+          }
+        }
+      });
+      pagContainer.addEventListener('keydown', function (e) {
+        if (e.target.id === 'pagination-goto' && e.key === 'Enter') {
+          e.preventDefault();
+          var inp = document.getElementById('pagination-goto');
+          if (inp) {
+            var num = parseInt(inp.value, 10);
+            var total = Math.ceil(self.filteredIds.length / self.itemsPerPage) || 1;
+            if (num >= 1 && num <= total) {
+              self.currentPage = num;
+              self.renderPage();
+            }
+          }
+        }
+      });
+    }
   };
 
   window.CategoryPage = CategoryPage;
