@@ -540,7 +540,7 @@ function writeCategoryPages(filters) {
   console.log('   Category pages: the-loai', genres.length, ', quoc-gia', countries.length, ', nam-phat-hanh', years.length);
 }
 
-/** 7. Tạo actors.js */
+/** 7. Tạo actors: index (names only) + shard theo ký tự đầu (actors-a.js ... actors-z.js, actors-other.js) */
 function writeActors(movies) {
   const map = {};
   const names = {};
@@ -553,8 +553,33 @@ function writeActors(movies) {
       names[s] = name;
     }
   }
-  const content = `window.actorsData = ${JSON.stringify({ map, names })};`;
-  fs.writeFileSync(path.join(PUBLIC_DATA, 'actors.js'), content, 'utf8');
+  const slugs = Object.keys(names);
+  // Index: chỉ names (cho trang danh sách "Chọn diễn viên")
+  fs.writeFileSync(
+    path.join(PUBLIC_DATA, 'actors-index.js'),
+    `window.actorsIndex = ${JSON.stringify({ names })};`,
+    'utf8'
+  );
+  // Shard theo ký tự đầu (a-z, other)
+  const byFirst = {};
+  for (const slug of slugs) {
+    const c = (slug[0] || '').toLowerCase();
+    const key = c >= 'a' && c <= 'z' ? c : 'other';
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {} };
+    byFirst[key].map[slug] = map[slug];
+    byFirst[key].names[slug] = names[slug];
+  }
+  const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
+  for (const key of keys) {
+    const data = byFirst[key] || { map: {}, names: {} };
+    fs.writeFileSync(
+      path.join(PUBLIC_DATA, `actors-${key}.js`),
+      `window.actorsData = ${JSON.stringify(data)};`,
+      'utf8'
+    );
+  }
+  const shardCount = keys.filter((k) => byFirst[k] && Object.keys(byFirst[k].map).length > 0).length;
+  console.log('   Actors: index +', shardCount, 'shards (a-z, other)');
 }
 
 /** 8. Tạo batch files */
@@ -793,7 +818,7 @@ async function main() {
   console.log('4b. Fetching OPhim genres & countries...');
   const { genreNames, countryNames } = await fetchOPhimGenresAndCountries();
 
-  console.log('5. Writing movies-light.js, filters.js, actors.js, batches...');
+  console.log('5. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);
   const filters = writeFilters(allMovies, genreNames, countryNames);
   writeCategoryPages(filters);

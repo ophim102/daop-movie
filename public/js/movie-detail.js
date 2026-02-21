@@ -68,12 +68,13 @@
     var countryStr = (movie.country || []).map(function (c) { return c.name; }).join(', ');
     var desc = (movie.description || movie.content || '').replace(/</g, '&lt;').replace(/\n/g, '<br>');
     var actorNames = (movie.cast || []).slice(0, 10);
-    var namesMap = (window.actorsData && window.actorsData.names) || {};
+    var namesMap = (window.actorsData && window.actorsData.names) || (window.actorsIndex && window.actorsIndex.names) || {};
     var castStr = actorNames.map(function (name) {
       var slug = null;
       for (var s in namesMap) if (namesMap[s] === name) { slug = s; break; }
       var safe = (name || '').replace(/</g, '&lt;');
-      return slug ? '<a href="/dien-vien/' + slug + '.html">' + safe + '</a>' : safe;
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      return slug ? '<a href="' + base + '/dien-vien/' + slug + '.html">' + safe + '</a>' : safe;
     }).join(', ');
     var directorStr = (movie.director || []).join(', ');
     var showtimes = movie.status === 'theater' && movie.showtimes ? '<p class="meta-line">Lịch chiếu: ' + (movie.showtimes || '').replace(/</g, '&lt;') + '</p>' : '';

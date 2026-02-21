@@ -4,21 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diễn viên | DAOP Phim</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+  <script>
+    window.DAOP = window.DAOP || {};
+    (function(){
+      var path = window.location.pathname;
+      var m = path.match(/\/(?:dien-vien)(?:\/|$)/);
+      if (m) { var idx = path.indexOf(m[0]); var before = path.slice(0, idx); window.DAOP.basePath = before || ''; }
+    })();
+  </script>
   <header class="site-header">
-    <a href="/" class="site-logo">DAOP Phim</a>
-    <nav class="site-nav"><a href="/phim-bo.html">Phim bộ</a><a href="/phim-le.html">Phim lẻ</a><a href="/tim-kiem.html">Tìm kiếm</a><a href="/the-loai/">Thể loại</a><a href="/quoc-gia/">Quốc gia</a><a href="/danh-sach/">Danh sách</a></nav>
+    <a href="../" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav"><a href="../phim-bo.html">Phim bộ</a><a href="../phim-le.html">Phim lẻ</a><a href="../tim-kiem.html">Tìm kiếm</a><a href="../the-loai/">Thể loại</a><a href="../quoc-gia/">Quốc gia</a><a href="../danh-sach/">Danh sách</a></nav>
   </header>
   <main class="container">
     <h1 id="actor-name">Diễn viên</h1>
     <div id="movies-grid" class="movies-grid"></div>
   </main>
   <footer class="site-footer"><p>Trường Sa, Hoàng Sa là của Việt Nam!</p></footer>
-  <script src="/data/movies-light.js"></script>
-  <script src="/data/actors.js"></script>
-  <script src="/js/main.js"></script>
-  <script src="/js/dien-vien.js"></script>
+  <script src="../data/movies-light.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/dien-vien.js"></script>
 </body>
 </html>
