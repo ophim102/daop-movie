@@ -7,7 +7,7 @@ Các file trong thư mục này là **mẫu định dạng** cho output của `s
 | File | Mô tả |
 |------|--------|
 | `site-settings.json` | Cài đặt chung: tên site, logo, favicon, analytics, social, footer, theme, slider |
-| `homepage-sections.json` | Các section trang chủ: title, source_type, source_value, limit_count, display_type, more_link |
+| `homepage-sections.json` | Các section trang chủ: title, source_type, source_value, limit_count, display_type, more_link, is_active. Nguồn mặc định: `config/default-sections.json` (dùng chung cho build và Admin) |
 | `banners.json` | Banner quảng cáo: image_url, link_url, position, priority, start_date, end_date |
 | `server-sources.json` | Nguồn server phát: name, slug, base_url, is_active |
 | `player-settings.json` | Cài đặt player: available_players, default_player, warning_* |
@@ -19,3 +19,4 @@ Các file trong thư mục này là **mẫu định dạng** cho output của `s
 
 - Tham khảo `*.example.json` để biết cấu trúc khi tự chỉnh tay hoặc viết script.
 - Config thực tế do build tạo ra từ Supabase; không cần copy file mẫu vào `public/data/config/` trừ khi chạy build không có Supabase (khi đó build ghi default).
+- **Sections mặc định:** `config/default-sections.json` là nguồn chung cho build script và trang Admin Homepage Sections. Chỉnh file này để đồng bộ sections mặc định ở mọi nơi.

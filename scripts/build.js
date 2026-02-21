@@ -493,14 +493,9 @@ async function exportConfigFromSupabase() {
     if (b.end_date && b.end_date < today) return false;
     return true;
   });
-  const defaultSections = [
-    { title: 'Phim bộ', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0, more_link: '/phim-bo.html' },
-    { title: 'Phim lẻ', source_type: 'type', source_value: 'single', limit_count: 24, sort_order: 1, more_link: '/phim-le.html' },
-    { title: 'Phim 4K', source_type: 'quality_4k', source_value: '', limit_count: 24, sort_order: 2, more_link: '/danh-sach/phim-4k.html' },
-    { title: 'Thể loại (mẫu)', source_type: 'genre', source_value: 'hanh-dong', limit_count: 18, sort_order: 3, more_link: '/the-loai/' },
-    { title: 'Quốc gia (mẫu)', source_type: 'country', source_value: 'au-my', limit_count: 18, sort_order: 4, more_link: '/quoc-gia/' },
-    { title: 'Năm phát hành (mẫu)', source_type: 'year', source_value: '2024', limit_count: 18, sort_order: 5, more_link: '/nam-phat-hanh/' },
-  ];
+  const defaultSections = JSON.parse(
+    fs.readFileSync(path.join(ROOT, 'config', 'default-sections.json'), 'utf-8')
+  );
   fs.writeFileSync(path.join(configDir, 'server-sources.json'), JSON.stringify(sources.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'banners.json'), JSON.stringify(banners, null, 2));
   fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify((sections.data && sections.data.length) ? sections.data : defaultSections, null, 2));
@@ -570,14 +565,9 @@ async function writeDefaultConfig() {
   const defaults = {
     'server-sources.json': [],
     'banners.json': [],
-    'homepage-sections.json': [
-      { title: 'Phim bộ', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0, more_link: '/phim-bo.html' },
-      { title: 'Phim lẻ', source_type: 'type', source_value: 'single', limit_count: 24, sort_order: 1, more_link: '/phim-le.html' },
-      { title: 'Phim 4K', source_type: 'quality_4k', source_value: '', limit_count: 24, sort_order: 2, more_link: '/danh-sach/phim-4k.html' },
-      { title: 'Thể loại (mẫu)', source_type: 'genre', source_value: 'hanh-dong', limit_count: 18, sort_order: 3, more_link: '/the-loai/' },
-      { title: 'Quốc gia (mẫu)', source_type: 'country', source_value: 'au-my', limit_count: 18, sort_order: 4, more_link: '/quoc-gia/' },
-      { title: 'Năm phát hành (mẫu)', source_type: 'year', source_value: '2024', limit_count: 18, sort_order: 5, more_link: '/nam-phat-hanh/' },
-    ],
+    'homepage-sections.json': JSON.parse(
+      fs.readFileSync(path.join(ROOT, 'config', 'default-sections.json'), 'utf-8')
+    ),
     'site-settings.json': {
       site_name: 'DAOP Phim',
       logo_url: '',
