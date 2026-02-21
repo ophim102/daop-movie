@@ -30,7 +30,8 @@
    Chỉ là cảnh báo npm audit, không làm fail build. Lỗi thực tế nằm ở bước **Build** (dòng đỏ trong log).
 
 6. **Nút Build website trả 401 Unauthorized**  
-   Khi `WEBHOOK_BUILD_TOKEN` đã đặt trong Vercel, Admin **bắt buộc** gửi token. Cần thêm biến **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị) trong Vercel → Settings → Environment Variables, chọn Production + Preview. Sau đó **Redeploy** (tắt "Use existing Build Cache") vì biến `VITE_*` được nhúng vào bundle lúc build. Kiểm tra: cả hai biến phải có trong cùng project Vercel.
+   - Cần **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị với `WEBHOOK_BUILD_TOKEN`) trong Vercel, chọn Production + Preview, rồi **Redeploy** (tắt Build Cache).  
+   - Nếu đã khớp mà vẫn 401 (lỗi encoding/ky tự ẩn): API có **fallback same-origin** — request từ chính domain Admin (Origin/Referer trùng host) vẫn được chấp nhận. Đảm bảo bạn đang mở Admin trên cùng domain với API (vd. cùng `xxx.vercel.app`), không gọi từ domain khác.
 
 ## Sau khi sửa
 
