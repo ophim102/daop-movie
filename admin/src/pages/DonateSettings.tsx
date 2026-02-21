@@ -7,17 +7,17 @@ export default function DonateSettings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from('donate_settings')
-      .select('*')
-      .limit(1)
-      .maybeSingle()
-      .then((r) => {
+    (async () => {
+      try {
+        const r = await supabase.from('donate_settings').select('*').limit(1).maybeSingle();
         if (r.data) form.setFieldsValue(r.data);
         else form.setFieldsValue({ target_amount: 0, current_amount: 0, target_currency: 'VND', paypal_link: '' });
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [form]);
 
   const onFinish = async (values: any) => {
