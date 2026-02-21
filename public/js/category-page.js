@@ -36,36 +36,31 @@
   CategoryPage.prototype.buildFilterUI = function (baseSet, fd) {
     var container = document.getElementById(this.filterContainerId);
     if (!container) return;
-    var years = [],
-      genres = [],
-      countries = [];
+    var years = [];
     var list = window.moviesLight || [];
     list.forEach(function (m) {
       if (!baseSet.has(m.id)) return;
       if (m.year && years.indexOf(m.year) === -1) years.push(m.year);
-      (m.genre || []).forEach(function (g) {
-        var s = g.slug || g.id;
-        if (s && genres.indexOf(s) === -1) genres.push(s);
-      });
-      (m.country || []).forEach(function (c) {
-        var s = c.slug || c.id;
-        if (s && countries.indexOf(s) === -1) countries.push(s);
-      });
     });
     years.sort(function (a, b) { return Number(b) - Number(a); });
-    var yearOpts = years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
-    var genreName = function (s) { return (fd.genreNames && fd.genreNames[s]) || s; };
-    var countryName = function (s) { return (fd.countryNames && fd.countryNames[s]) || s; };
-    var genreChecks = genres.slice(0, 12).map(function (g) {
+    var genreNames = fd.genreNames || {};
+    var genreMap = fd.genreMap || {};
+    var countryNames = fd.countryNames || {};
+    var countryMap = fd.countryMap || {};
+    var genres = Object.keys(genreNames).length ? Object.keys(genreNames).sort() : Object.keys(genreMap).sort();
+    var countries = Object.keys(countryNames).length ? Object.keys(countryNames).sort() : Object.keys(countryMap).sort();
+    var genreName = function (s) { return genreNames[s] || s; };
+    var countryName = function (s) { return countryNames[s] || s; };
+    var genreChecks = genres.map(function (g) {
       return '<label><input type="checkbox" name="genre" value="' + g + '"> ' + genreName(g).replace(/</g, '&lt;') + '</label>';
     }).join('');
-    var countryChecks = countries.slice(0, 10).map(function (c) {
+    var countryChecks = countries.map(function (c) {
       return '<label><input type="checkbox" name="country" value="' + c + '"> ' + countryName(c).replace(/</g, '&lt;') + '</label>';
     }).join('');
     container.innerHTML =
-      '<label>Năm:</label><select id="filter-year"><option value="">Tất cả</option>' + yearOpts + '</select>' +
-      '<div class="checkboxes"><span>Thể loại:</span>' + genreChecks + '</div>' +
-      '<div class="checkboxes"><span>Quốc gia:</span>' + countryChecks + '</div>' +
+      '<label>Năm:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll"><div class="checkboxes">' + genreChecks + '</div></div></div>' +
+      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll"><div class="checkboxes">' + countryChecks + '</div></div></div>' +
       '<label><input type="checkbox" id="filter-4k"> 4K</label>' +
       '<label><input type="checkbox" id="filter-exclusive"> Độc quyền</label>';
   };

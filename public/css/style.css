@@ -439,6 +439,42 @@ a:hover {
   border-radius: 4px;
   font-size: 0.9rem;
 }
+.filter-bar .filter-row-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1 1 100%;
+}
+.filter-bar .filter-label {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.filter-bar .filter-scroll {
+  flex: 1;
+  min-width: 0;
+  max-height: 2.8em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 4px;
+}
+.filter-bar .filter-scroll .checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  align-content: flex-start;
+  max-height: 2.8em;
+  width: max-content;
+  min-width: 100%;
+  padding: 0.15rem 0;
+}
+.filter-bar .filter-scroll .checkboxes label {
+  white-space: nowrap;
+  margin: 0;
+}
 .filter-bar .checkboxes {
   display: flex;
   flex-wrap: wrap;
