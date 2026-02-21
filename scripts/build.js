@@ -261,7 +261,7 @@ function parseSheetMovies(moviesRows, episodesRows) {
       origin_name: (row[idx('origin_name')] || '').toString(),
       slug: baseSlug,
       thumb: (row[idx('thumb_url')] || row[idx('thumb')] || '').toString(),
-      poster: (row[idx('poster_url')] || row[idx('poster')] || '').toString(),
+      poster: (row[idx('poster_url')] || row[idx('poster')] || row[idx('thumb_url')] || row[idx('thumb')] || '').toString(),
       year: (row[idx('year')] || '').toString(),
       type: (row[idx('type')] || 'single').toString(),
       genre,
@@ -324,7 +324,9 @@ function parseSheetMovies(moviesRows, episodesRows) {
   return movies;
 }
 
-/** 3. Làm giàu TMDB (credits, keywords) */
+const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+
+/** 3. Làm giàu TMDB (credits, keywords, poster khi thiếu) */
 async function enrichTmdb(movies) {
   if (!TMDB_KEY) return;
   for (const m of movies) {
@@ -333,7 +335,8 @@ async function enrichTmdb(movies) {
     const type = (m.type || 'movie') === 'single' ? 'movie' : 'tv';
     await sleep(150);
     try {
-      const [creditsRes, keywordsRes] = await Promise.all([
+      const [detailRes, creditsRes, keywordsRes] = await Promise.all([
+        fetchJson(`${TMDB_BASE}/${type}/${tid}?api_key=${TMDB_KEY}`).catch(() => null),
         fetchJson(`${TMDB_BASE}/${type}/${tid}/credits?api_key=${TMDB_KEY}`),
         fetchJson(`${TMDB_BASE}/${type}/${tid}/keywords?api_key=${TMDB_KEY}`).catch(() => ({ keywords: [] })),
       ]);
@@ -343,6 +346,9 @@ async function enrichTmdb(movies) {
       m.cast = m.cast?.length ? m.cast : cast;
       m.director = m.director?.length ? m.director : director;
       m.keywords = m.keywords?.length ? m.keywords : keywords;
+      if (!m.poster && detailRes?.poster_path) {
+        m.poster = TMDB_IMG_BASE + detailRes.poster_path;
+      }
     } catch {}
   }
 }
@@ -354,7 +360,11 @@ function mergeMovies(ophim, custom) {
   for (const m of custom) {
     if (!bySlug.has(m.slug)) bySlug.set(m.slug, m);
   }
-  return Array.from(bySlug.values());
+  const merged = Array.from(bySlug.values());
+  for (const m of merged) {
+    if (!m.poster && m.thumb) m.poster = m.thumb;
+  }
+  return merged;
 }
 
 /** 5. Tạo movies-light.js (cùng thứ tự sắp xếp theo id như batch để getBatchPath tính đúng) */

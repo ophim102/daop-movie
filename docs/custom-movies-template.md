@@ -26,7 +26,7 @@ Sẽ tạo ra **custom_movies_template.xlsx**. Đổi tên thành `custom_movies
 | quality | Không | HD, 4K, ... (có 4K → is_4k = true) |
 | episode_current | Không | Số tập hiện tại (vd: 6 hoặc "Hoàn tất (6/6)") |
 | thumb_url hoặc thumb | Không | URL ảnh thumb |
-| poster_url hoặc poster | Không | URL ảnh poster |
+| poster_url hoặc poster | Không | URL ảnh poster. Nếu trống, build dùng thumb; nếu có tmdb_id và TMDB_API_KEY, build lấy poster từ TMDB. |
 | description hoặc content | Không | Mô tả |
 | status | Không | current / upcoming / theater |
 | showtimes | Không | Thông tin suất chiếu (tùy dùng) |

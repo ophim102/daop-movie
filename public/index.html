@@ -107,9 +107,9 @@
             html += '<div class="movies-list">';
             movies.forEach(function(m){
               var href = base + '/phim/' + (m.slug || m.id) + '.html';
-              var thumb = (m.thumb || m.poster || '').replace(/^\/\//, 'https://');
+              var posterUrl = (m.poster || m.thumb || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="84"%3E%3Crect fill="%2321262d" width="60" height="84"/%3E%3C/svg%3E';
               var title = (m.title || '').replace(/</g, '&lt;');
-              html += '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + thumb + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (m.episode_current ? ' • ' + m.episode_current + ' tập' : '') + '</span></a>';
+              html += '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + posterUrl + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (m.episode_current ? ' • ' + m.episode_current + ' tập' : '') + '</span></a>';
             });
             html += '</div>';
           } else {
