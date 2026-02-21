@@ -122,6 +122,10 @@ Nếu dùng R2, Google Sheets, OPhim custom URL thì thêm:
 4. **Environment variables** (Build): thêm ít nhất `TMDB_API_KEY`, `SUPABASE_ADMIN_URL`, `SUPABASE_ADMIN_SERVICE_ROLE_KEY` (và các biến khác nếu build cần).
 5. Deploy. Sau khi xong, bạn có URL dạng `https://xxx.pages.dev`.
 
+**Routing trang chi tiết phim:** Trong `public/` cần có:
+- **`_redirects`** (một dòng): `/phim/:slug  /phim/index.html  200` — Cloudflare dùng rule này (proxying) để trả nội dung `phim/index.html` cho mọi URL dạng `/phim/xxx.html` mà không đổi URL trên trình duyệt.
+- **`404.html`** — Nếu request không match redirect (ví dụ một số trường hợp), Cloudflare trả 404 và serve `404.html`. File này chuyển hướng `/phim/xxx` hoặc `/phim/xxx.html` sang `/phim/index.html#xxx` để trang chi tiết vẫn hoạt động. JS trong `movie-detail.js` đọc slug từ pathname hoặc hash và chuẩn hóa (bỏ đuôi `.html`) trước khi tra cứu phim.
+
 ### Cách B: Build bằng GitHub Actions, deploy bằng Cloudflare API
 
 Workflow này: khi bạn push lên nhánh `main`, GitHub Actions sẽ **chỉ đẩy** thư mục `public/` lên Cloudflare Pages (không chạy build trên Actions). Build phải đã có sẵn (chạy local hoặc workflow `update-data` / `build-on-demand`).

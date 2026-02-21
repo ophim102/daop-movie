@@ -112,7 +112,7 @@ async function fetchOPhimMovies() {
       console.log('   OPhim: đạt giới hạn số phim:', OPHIM_MAX_MOVIES);
       break;
     }
-    const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=100`;
+    const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=24`;
     let data;
     try {
       data = await fetchJsonWithTimeout(url);

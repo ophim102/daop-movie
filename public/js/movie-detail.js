@@ -14,7 +14,9 @@
     }
     var path = window.location.pathname;
     var m = path.match(/\/phim\/([^/]+)(\.html)?$/);
-    return m ? decodeURIComponent(m[1]) : null;
+    if (!m) return null;
+    var raw = decodeURIComponent(m[1]);
+    return raw.replace(/\.html$/i, '') || null;
   }
 
   function init() {
