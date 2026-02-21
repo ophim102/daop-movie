@@ -48,8 +48,9 @@
   }
 
   function renderFromLight(light) {
+    var posterUrl = (light.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
     var html = '<div class="movie-detail-header">' +
-      '<div class="movie-detail-poster"><img src="' + (light.poster || light.thumb || '').replace(/^\/\//, 'https://') + '" alt=""></div>' +
+      '<div class="movie-detail-poster"><img src="' + posterUrl + '" alt=""></div>' +
       '<div class="movie-detail-info">' +
       '<h1>' + (light.title || '').replace(/</g, '&lt;') + '</h1>' +
       (light.origin_name ? '<p class="origin-name">' + (light.origin_name || '').replace(/</g, '&lt;') + '</p>' : '') +
@@ -60,7 +61,7 @@
   }
 
   function renderFull(movie) {
-    var poster = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
+    var poster = (movie.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
     var title = (movie.title || '').replace(/</g, '&lt;');
     var origin = (movie.origin_name || '').replace(/</g, '&lt;');
     var genreStr = (movie.genre || []).map(function (g) { return g.name; }).join(', ');
