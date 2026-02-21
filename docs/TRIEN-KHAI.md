@@ -244,10 +244,19 @@ API `api/trigger-build.ts` khi được gọi sẽ dùng GitHub API để trigge
 |------|--------|----------|--------|
 | `GITHUB_TOKEN` | Personal Access Token (classic) | Có | Quyền **repo** (full). Tạo: GitHub → Settings (user) → Developer settings → Personal access tokens → Generate new token (classic), chọn scope **repo**. |
 | `GITHUB_REPO` | `owner/repo` | Có | Ví dụ: `ophim102/daop-movie`. Đúng với repo chứa workflow **build-on-demand**. |
-| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Nếu đặt, Admin phải gửi token. Thêm biến **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị) trong Vercel env để nút Build gửi token. |
+| `WEBHOOK_BUILD_TOKEN` | Chuỗi bí mật bất kỳ | Không | Dùng cho API (server). **Nếu đặt** thì bắt buộc thêm `VITE_WEBHOOK_BUILD_TOKEN` (cùng giá trị) cho client. |
+| `VITE_WEBHOOK_BUILD_TOKEN` | Cùng giá trị với `WEBHOOK_BUILD_TOKEN` | Khi có `WEBHOOK_BUILD_TOKEN` | Dùng cho Admin (client). Nhúng vào bundle lúc build → cần Redeploy sau khi thêm. |
 | `VITE_API_URL` | URL gốc của Admin (vd. `https://xxx.vercel.app`) | Không | Chỉ cần khi chạy Admin **local** (`npm run dev`) để nút Build gọi đúng API. Khi deploy, bỏ qua (dùng relative `/api/`). |
 
 - Thêm cả ba (hoặc ít nhất `GITHUB_TOKEN`, `GITHUB_REPO`) trong cùng project Vercel, Environment = Production (và Preview nếu bạn test qua preview).
+
+#### Cách 1: Bảo vệ API bằng token (khuyến nghị)
+
+1. Vào **Vercel** → Project → **Settings** → **Environment Variables**.
+2. Thêm `WEBHOOK_BUILD_TOKEN` = chuỗi bí mật (vd. `my-secret-build-2024`), chọn Production + Preview.
+3. Thêm `VITE_WEBHOOK_BUILD_TOKEN` = **cùng giá trị** với `WEBHOOK_BUILD_TOKEN` (vd. `my-secret-build-2024`), chọn Production + Preview.
+4. Vào **Deployments** → bấm **Redeploy** (tắt "Use existing Build Cache") để build lại Admin với env mới.
+5. Đăng nhập Admin, bấm **Build website** → nếu thành công sẽ thấy "Đã kích hoạt build".
 
 ---
 

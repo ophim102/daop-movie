@@ -29,6 +29,9 @@
 5. **Cảnh báo "1 high severity vulnerability"**  
    Chỉ là cảnh báo npm audit, không làm fail build. Lỗi thực tế nằm ở bước **Build** (dòng đỏ trong log).
 
+6. **Nút Build website trả 401 Unauthorized**  
+   Khi `WEBHOOK_BUILD_TOKEN` đã đặt trong Vercel, Admin **bắt buộc** gửi token. Cần thêm biến **`VITE_WEBHOOK_BUILD_TOKEN`** (cùng giá trị) trong Vercel → Settings → Environment Variables, chọn Production + Preview. Sau đó **Redeploy** (tắt "Use existing Build Cache") vì biến `VITE_*` được nhúng vào bundle lúc build. Kiểm tra: cả hai biến phải có trong cùng project Vercel.
+
 ## Sau khi sửa
 
 Commit và push. Vercel build lại tự động. Xem log đầy đủ ở **Deployments** → bấm vào deployment → **Building** để thấy dòng báo lỗi cụ thể.

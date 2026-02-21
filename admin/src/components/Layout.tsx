@@ -39,11 +39,22 @@ export default function Layout() {
       const base = ((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '');
       const token = (import.meta as any).env?.VITE_WEBHOOK_BUILD_TOKEN;
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(`${base}/api/trigger-build`, { method: 'POST', headers, body: JSON.stringify({}) });
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        headers['X-Build-Token'] = token;
+      }
+      const res = await fetch(`${base}/api/trigger-build`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(token ? { token } : {}),
+      });
       const data = await res.json().catch(async () => ({ error: await res.text() }));
       if (res.ok && data?.ok) {
         message.success('Đã kích hoạt build. GitHub Actions đang chạy.');
+      } else if (res.status === 401) {
+        message.error(
+          'Unauthorized. Thêm VITE_WEBHOOK_BUILD_TOKEN trong Vercel (cùng giá trị với WEBHOOK_BUILD_TOKEN) rồi redeploy Admin.'
+        );
       } else {
         message.error(data?.error || data?.message || `Lỗi ${res.status}`);
       }
