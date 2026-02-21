@@ -18,10 +18,25 @@ type SlideItem = {
   image_url: string;
   link_url?: string;
   title?: string;
+  year?: string | number;
+  country?: string;
+  episode_current?: string;
+  genres?: string[] | { name: string }[];
+  description?: string;
   sort_order?: number;
 };
 
-type MovieLight = { slug?: string; name?: string; thumb?: string };
+type MovieLight = {
+  slug?: string;
+  title?: string;
+  origin_name?: string;
+  name?: string;
+  thumb?: string;
+  year?: string | number;
+  country?: { name?: string }[];
+  genre?: { name?: string }[];
+  episode_current?: string;
+};
 
 const SLIDER_KEY = 'homepage_slider';
 const MOVIES_DATA_URL_KEY = 'movies_data_url';
@@ -97,15 +112,24 @@ export default function Slider() {
       const base = moviesDataUrl.replace(/\/data\/movies-light\.js.*$/, '') || new URL(moviesDataUrl).origin;
       const linkUrl = base + '/phim/' + (movie.slug || slug) + '.html';
       const thumb = (movie.thumb || '').replace(/^\/\//, 'https://');
+      const title = movie.title || movie.origin_name || (movie as any).name || '';
+      const countryName = Array.isArray(movie.country) && movie.country[0] ? (movie.country[0].name || '') : '';
+      const genreNames = Array.isArray(movie.genre)
+        ? movie.genre.map((g: any) => (g && g.name) ? g.name : '').filter(Boolean)
+        : [];
       const newSlide: SlideItem = {
         image_url: thumb,
         link_url: linkUrl,
-        title: movie.name || '',
+        title,
+        year: movie.year != null ? String(movie.year) : undefined,
+        country: countryName || undefined,
+        episode_current: movie.episode_current || undefined,
+        genres: genreNames.length ? genreNames : undefined,
         sort_order: list.length,
       };
       await saveList([...list, newSlide]);
       setMovieLinkInput('');
-      message.success('Đã thêm slide từ phim: ' + (movie.name || slug));
+      message.success('Đã thêm slide từ phim: ' + (title || slug));
     } catch (e: any) {
       message.error(e?.message || 'Lỗi lấy thông tin phim');
     } finally {
@@ -146,10 +170,19 @@ export default function Slider() {
   };
 
   const handleSubmit = async (values: any) => {
+    const genresRaw = values.genres;
+    const genres = typeof genresRaw === 'string'
+      ? (genresRaw || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+      : Array.isArray(genresRaw) ? genresRaw : undefined;
     const slide: SlideItem = {
       image_url: values.image_url || '',
       link_url: values.link_url || '',
       title: values.title || '',
+      year: values.year != null && values.year !== '' ? String(values.year) : undefined,
+      country: values.country || undefined,
+      episode_current: values.episode_current || undefined,
+      genres: genres?.length ? genres : undefined,
+      description: values.description || undefined,
       sort_order: typeof values.sort_order === 'number' ? values.sort_order : list.length,
     };
     let next: SlideItem[];
@@ -274,6 +307,21 @@ export default function Slider() {
           </Form.Item>
           <Form.Item name="title" label="Tiêu đề">
             <Input />
+          </Form.Item>
+          <Form.Item name="year" label="Năm (tùy chọn)">
+            <Input placeholder="2026" />
+          </Form.Item>
+          <Form.Item name="country" label="Quốc gia (tùy chọn)">
+            <Input placeholder="Hàn Quốc" />
+          </Form.Item>
+          <Form.Item name="episode_current" label="Tập / Trọn bộ (tùy chọn)">
+            <Input placeholder="Tập 3 hoặc Trọn bộ 8 tập" />
+          </Form.Item>
+          <Form.Item name="genres" label="Thể loại (tùy chọn, cách nhau bằng dấu phẩy)">
+            <Input placeholder="Chính Kịch, Hài Hước, Tâm Lý" />
+          </Form.Item>
+          <Form.Item name="description" label="Mô tả ngắn (tùy chọn)">
+            <Input.TextArea rows={2} placeholder="Một hai câu giới thiệu phim..." />
           </Form.Item>
           <Form.Item name="sort_order" label="Thứ tự">
             <InputNumber min={0} style={{ width: '100%' }} />

@@ -557,35 +557,114 @@ a:hover {
   display: block;
 }
 
-/* Slider (homepage carousel) */
+/* Slider homepage kiểu ONFLIX: hero với overlay, tiêu đề, meta, thể loại, mô tả, CTA */
 .slider-wrap {
   position: relative;
   margin-bottom: 1.5rem;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   background: var(--card);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 .slider-viewport {
   overflow: hidden;
   width: 100%;
+  aspect-ratio: 16 / 7;
+  max-height: 420px;
 }
 .slider-track {
   display: flex;
-  transition: transform 0.35s ease;
+  transition: transform 0.4s ease;
+  height: 100%;
 }
 .slider-slide {
   flex: 0 0 100%;
   width: 100%;
+  height: 100%;
+  position: relative;
 }
-.slider-slide a {
+.slider-slide-link {
   display: block;
-  line-height: 0;
+  position: absolute;
+  inset: 0;
+  text-decoration: none;
+  color: #fff;
 }
-.slider-slide img {
+.slider-slide-bg {
+  position: absolute;
+  inset: 0;
+}
+.slider-slide-bg img {
   width: 100%;
-  max-height: 320px;
+  height: 100%;
   object-fit: cover;
   display: block;
+}
+.slider-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 45%, transparent 70%);
+  pointer-events: none;
+}
+.slider-slide-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2rem 1.5rem 3rem;
+  max-width: 640px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+.slider-slide-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.slider-slide-meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.85);
+}
+.slider-slide-genres {
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.slider-genre {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  color: #fff;
+}
+.slider-slide-desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.slider-slide-cta {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+.slider-slide-link:hover .slider-slide-cta {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
 }
 .slider-btn {
   position: absolute;
@@ -609,7 +688,7 @@ a:hover {
 .slider-next { right: 8px; }
 .slider-dots {
   position: absolute;
-  bottom: 12px;
+  bottom: 14px;
   left: 0;
   right: 0;
   display: flex;
@@ -1026,8 +1105,18 @@ a:hover {
   .banner-wrap img {
     max-height: 200px;
   }
-  .slider-slide img {
-    max-height: 200px;
+  .slider-viewport {
+    max-height: 280px;
+    aspect-ratio: 16 / 9;
+  }
+  .slider-slide-content {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+  .slider-slide-title {
+    font-size: 1.35rem;
+  }
+  .slider-slide-desc {
+    -webkit-line-clamp: 1;
   }
   .slider-btn {
     width: 36px;
@@ -1127,8 +1216,11 @@ a:hover {
   .banner-wrap img {
     max-height: 160px;
   }
-  .slider-slide img {
-    max-height: 160px;
+  .slider-viewport {
+    max-height: 200px;
+  }
+  .slider-slide-title {
+    font-size: 1.15rem;
   }
   .home-section h2 {
     font-size: 1.2rem;

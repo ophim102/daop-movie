@@ -79,7 +79,13 @@
     );
   };
 
-  /** Render slider carousel từ homepage_slider (array) vào el */
+  /** Escape HTML */
+  function esc(s) {
+    if (s == null || s === '') return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /** Render slider carousel kiểu ONFLIX: ảnh nền, overlay, tiêu đề, meta (năm | quốc gia | tập), thể loại, mô tả, nút Xem ngay */
   window.DAOP.renderSlider = function (el, slides) {
     if (!el || !Array.isArray(slides) || slides.length === 0) return;
     var base = BASE || '';
@@ -87,8 +93,34 @@
     slides.forEach(function (s, i) {
       var href = (s.link_url || '#').replace(/"/g, '&quot;');
       var img = (s.image_url || '').replace(/"/g, '&quot;');
-      var title = (s.title || '').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-      html += '<div class="slider-slide" data-index="' + i + '"><a href="' + href + '"><img src="' + img + '" alt="' + title + '"></a></div>';
+      var title = esc(s.title || '');
+      var year = esc(s.year || '');
+      var country = esc(s.country || '');
+      var episode = (s.episode_current != null && s.episode_current !== '') ? String(s.episode_current) : '';
+      if (episode && episode.indexOf(' tập') < 0 && episode.indexOf('Trọn bộ') < 0) episode = episode + ' tập';
+      var metaParts = [];
+      if (year) metaParts.push(year);
+      if (country) metaParts.push(country);
+      if (episode) metaParts.push(episode);
+      var metaLine = metaParts.join(' | ');
+      var genres = s.genres;
+      if (typeof genres === 'string') genres = genres ? [genres] : [];
+      if (!Array.isArray(genres)) genres = [];
+      var genreTags = genres.slice(0, 5).map(function (g) { return '<span class="slider-genre">' + esc(typeof g === 'string' ? g : (g && g.name) ? g.name : '') + '</span>'; }).join('');
+      var desc = esc((s.description || '').slice(0, 160));
+      if (desc.length === 160) desc += '...';
+      html +=
+        '<div class="slider-slide" data-index="' + i + '">' +
+        '<a href="' + href + '" class="slider-slide-link">' +
+        '<div class="slider-slide-bg"><img src="' + img + '" alt="' + title + '"></div>' +
+        '<div class="slider-slide-overlay"></div>' +
+        '<div class="slider-slide-content">' +
+        '<h2 class="slider-slide-title">' + title + '</h2>' +
+        (metaLine ? '<p class="slider-slide-meta">' + metaLine + '</p>' : '') +
+        (genreTags ? '<div class="slider-slide-genres">' + genreTags + '</div>' : '') +
+        (desc ? '<p class="slider-slide-desc">' + desc + '</p>' : '') +
+        '<span class="slider-slide-cta">Xem ngay</span>' +
+        '</div></a></div>';
     });
     html += '</div></div><button type="button" class="slider-btn slider-prev" aria-label="Trước">‹</button><button type="button" class="slider-btn slider-next" aria-label="Sau">›</button><div class="slider-dots"></div>';
     el.innerHTML = html;
