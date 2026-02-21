@@ -15,7 +15,7 @@
   "social_youtube": "",
   "footer_content": "",
   "tmdb_attribution": "true",
-  "homepage_slider": "[]",
+  "homepage_slider": "[{\"image_url\":\"https://img.ophim.live/uploads/movies/gui-ten-trom-yeu-dau-cua-ta-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/gui-ten-trom-yeu-dau-cua-ta.html\",\"title\":\"\",\"sort_order\":0},{\"image_url\":\"https://img.ophim.live/uploads/movies/se-duyen-dia-dai-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/se-duyen-dia-dai.html\",\"title\":\"\",\"sort_order\":1},{\"image_url\":\"https://img.ophim.live/uploads/movies/no-tail-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/no-tail.html\",\"title\":\"\",\"sort_order\":2},{\"image_url\":\"https://img.ophim.live/uploads/movies/love-phobia-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/love-phobia.html\",\"title\":\"\",\"sort_order\":3},{\"image_url\":\"https://img.ophim.live/uploads/movies/hau-vua-nhu-hau-cop-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/hau-vua-nhu-hau-cop.html\",\"title\":\"\",\"sort_order\":4},{\"image_url\":\"https://img.ophim.live/uploads/movies/cong-chua-gia-dao-thumb-1765704202670.jpg\",\"link_url\":\"https://daop.pages.dev/phim/cong-chua-gia-dao.html\",\"title\":\"\",\"sort_order\":5},{\"image_url\":\"https://img.ophim.live/uploads/movies/kinh-song-thanh-thumb.jpg\",\"link_url\":\"https://daop.pages.dev/phim/kinh-song-thanh.html\",\"title\":\"\",\"sort_order\":6},{\"image_url\":\"https://img.ophim.live/uploads/movies/ba-duong-luan-hoi-2025-thumb-1766118235512.jpg\",\"link_url\":\"https://daop.pages.dev/phim/ba-duong-luan-hoi-2025.html\",\"title\":\"\",\"sort_order\":7}]",
   "menu_bg_1": "",
   "menu_bg_2": "",
   "menu_bg_3": "",
@@ -26,11 +26,11 @@
   "menu_bg_8": "",
   "menu_bg_9": "",
   "menu_bg_10": "",
-  "movies_data_url": "",
+  "movies_data_url": "https://daop.pages.dev/data/movies-light.js",
   "theme_primary": "#58a6ff",
   "theme_bg": "#0d1117",
   "theme_card": "#161b22",
   "theme_accent": "#58a6ff",
-  "ophim_max_pages": "5",
-  "ophim_max_movies": "500"
+  "ophim_max_pages": "10",
+  "ophim_max_movies": "1000"
 }
