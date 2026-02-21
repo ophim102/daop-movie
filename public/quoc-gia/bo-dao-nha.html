@@ -42,9 +42,21 @@
         var countryMap = fd.countryMap || {};
         var countries = Object.keys(countryNames).length ? Object.keys(countryNames).sort() : Object.keys(countryMap).sort();
         var name = function(s){ return countryNames[s] || s; };
+        var countryFlags = { 'viet-nam':'VN','han-quoc':'KR','nhat-ban':'JP','thai-lan':'TH','trung-quoc':'CN','au-my':'US','anh':'GB','phap':'FR','duc':'DE','tay-ban-nha':'ES','y':'IT','nga':'RU','canada':'CA','uc':'AU','brazil':'BR','an-do':'IN','indonesia':'ID','malaysia':'MY','philippines':'PH','singapore':'SG','dai-loan':'TW','hong-kong':'HK','ha-lan':'NL','thuy-dien':'SE','phan-lan':'FI','na-uy':'NO','dan-mach':'DK','ba-lan':'PL','ukraina':'UA','hy-lap':'GR','tho-nhi-ky':'TR','argentina':'AR','mexico':'MX','colombia':'CO','chile':'CL','nam-phi':'ZA','nigeria':'NG','uae':'AE','quoc-gia-khac':'🌐' };
+        function flag(iso2) {
+          if (!iso2 || iso2 === '🌐') return '🌐';
+          if (iso2.length !== 2) return '🏳️';
+          return String.fromCodePoint(0x1F1E6 - 65 + iso2.charCodeAt(0), 0x1F1E6 - 65 + iso2.charCodeAt(1));
+        }
+        var base = (window.DAOP && window.DAOP.basePath) || '';
         document.getElementById('page-title').textContent = 'Quốc gia';
         document.getElementById('movies-grid').innerHTML = countries.length
-          ? '<p>Chọn quốc gia: ' + countries.map(function(c){ return '<a href="' + encodeURIComponent(c) + '.html">' + (name(c).replace(/</g, '&lt;')) + '</a>'; }).join(' · ') + '</p>'
+          ? '<div class="country-grid">' + countries.map(function(c){
+              var iso2 = countryFlags[c];
+              var emoji = iso2 ? flag(iso2) : '🏳️';
+              var label = (name(c) || c).replace(/</g, '&lt;');
+              return '<a class="country-card" href="' + base + '/quoc-gia/' + encodeURIComponent(c) + '.html"><span class="country-flag">' + emoji + '</span><span class="country-name">' + label + '</span></a>';
+            }).join('') + '</div>'
           : '<p>Chưa có dữ liệu.</p>';
         document.getElementById('filter-bar').innerHTML = '';
         document.getElementById('pagination').innerHTML = '';

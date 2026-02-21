@@ -42,9 +42,15 @@
         var genreMap = fd.genreMap || {};
         var genres = Object.keys(genreNames).length ? Object.keys(genreNames).sort() : Object.keys(genreMap).sort();
         var name = function(s){ return genreNames[s] || s; };
+        var genreIcons = { 'hanh-dong':'🥷','tinh-cam':'💕','hai-huoc':'😂','co-trang':'🏯','tam-ly':'🧠','hinh-su':'🔍','chien-tranh':'⚔️','the-thao':'⚽','vo-thuat':'🥋','vien-tuong':'🚀','phieu-luu':'🗺️','khoa-hoc':'🔬','kinh-di':'👻','am-nhac':'🎵','than-thoai':'⚡','tai-lieu':'📽️','gia-dinh':'👨‍👩‍👧‍👦','chinh-kich':'🎭','bi-an':'🕵️','hoc-duong':'📚','kinh-dien':'🎞️','phim-18':'🔞','short-drama':'📺' };
+        var base = (window.DAOP && window.DAOP.basePath) || '';
         document.getElementById('page-title').textContent = 'Thể loại';
         document.getElementById('movies-grid').innerHTML = genres.length
-          ? '<p>Chọn thể loại: ' + genres.map(function(g){ return '<a href="' + encodeURIComponent(g) + '.html">' + (name(g).replace(/</g, '&lt;')) + '</a>'; }).join(' · ') + '</p>'
+          ? '<div class="genre-grid">' + genres.map(function(g){
+              var icon = genreIcons[g] || '🎬';
+              var label = (name(g) || g).replace(/</g, '&lt;');
+              return '<a class="genre-card" href="' + base + '/the-loai/' + encodeURIComponent(g) + '.html"><span class="genre-icon">' + icon + '</span><span class="genre-name">' + label + '</span></a>';
+            }).join('') + '</div>'
           : '<p>Chưa có dữ liệu.</p>';
         document.getElementById('filter-bar').innerHTML = '';
         document.getElementById('pagination').innerHTML = '';
