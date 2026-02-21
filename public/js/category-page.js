@@ -54,12 +54,13 @@
     });
     years.sort(function (a, b) { return Number(b) - Number(a); });
     var yearOpts = years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    var genreName = function (s) { return (fd.genreNames && fd.genreNames[s]) || s; };
+    var countryName = function (s) { return (fd.countryNames && fd.countryNames[s]) || s; };
     var genreChecks = genres.slice(0, 12).map(function (g) {
-      var name = (fd.genreMap && fd.genreMap[g]) ? g : g;
-      return '<label><input type="checkbox" name="genre" value="' + g + '"> ' + name + '</label>';
+      return '<label><input type="checkbox" name="genre" value="' + g + '"> ' + genreName(g).replace(/</g, '&lt;') + '</label>';
     }).join('');
     var countryChecks = countries.slice(0, 10).map(function (c) {
-      return '<label><input type="checkbox" name="country" value="' + c + '"> ' + c + '</label>';
+      return '<label><input type="checkbox" name="country" value="' + c + '"> ' + countryName(c).replace(/</g, '&lt;') + '</label>';
     }).join('');
     container.innerHTML =
       '<label>Năm:</label><select id="filter-year"><option value="">Tất cả</option>' + yearOpts + '</select>' +

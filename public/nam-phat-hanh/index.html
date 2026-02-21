@@ -32,7 +32,7 @@
         var years = Object.keys(fd.yearMap || {}).sort(function(a,b){ return Number(b) - Number(a); });
         document.getElementById('page-title').textContent = 'Năm phát hành';
         document.getElementById('movies-grid').innerHTML = years.length
-          ? '<p>Chọn năm: ' + years.map(function(y){ return '<a href="/nam-phat-hanh/' + y + '.html">' + y + '</a>'; }).join(' | ') + '</p>'
+          ? '<p>Chọn năm: ' + years.map(function(y){ return '<a href="/nam-phat-hanh/' + y + '.html">' + y + '</a>'; }).join(' · ') + '</p>'
           : '<p>Chưa có dữ liệu.</p>';
         document.getElementById('filter-bar').innerHTML = '';
         document.getElementById('pagination').innerHTML = '';

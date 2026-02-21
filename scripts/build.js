@@ -396,8 +396,33 @@ function writeMoviesLight(movies) {
   fs.writeFileSync(path.join(PUBLIC_DATA, 'movies-light.js'), content, 'utf8');
 }
 
+/** 5b. Lấy danh sách thể loại + quốc gia đầy đủ từ OPhim API */
+async function fetchOPhimGenresAndCountries() {
+  const base = process.env.OPHIM_BASE_URL || 'https://ophim1.com/v1/api';
+  let genreNames = {};
+  let countryNames = {};
+  try {
+    const [genresRes, countriesRes] = await Promise.all([
+      fetchJsonWithTimeout(`${base}/the-loai`).catch(() => null),
+      fetchJsonWithTimeout(`${base}/quoc-gia`).catch(() => null),
+    ]);
+    const genres = genresRes?.data?.items || [];
+    const countries = countriesRes?.data?.items || [];
+    for (const g of genres) {
+      if (g.slug && g.name) genreNames[g.slug] = g.name;
+    }
+    for (const c of countries) {
+      if (c.slug && c.name) countryNames[c.slug] = c.name;
+    }
+    console.log('   OPhim genres:', Object.keys(genreNames).length, ', countries:', Object.keys(countryNames).length);
+  } catch (e) {
+    console.warn('   OPhim genres/countries fetch failed:', e.message);
+  }
+  return { genreNames, countryNames };
+}
+
 /** 6. Tạo filters.js */
-function writeFilters(movies) {
+function writeFilters(movies, genreNames = {}, countryNames = {}) {
   const genreMap = {};
   const countryMap = {};
   const yearMap = {};
@@ -405,6 +430,7 @@ function writeFilters(movies) {
   const statusMap = {};
   const quality4kIds = [];
   const exclusiveIds = [];
+  const yearsSet = new Set();
   for (const m of movies) {
     if (m.is_4k) quality4kIds.push(m.id);
     if (m.is_exclusive) exclusiveIds.push(m.id);
@@ -418,6 +444,7 @@ function writeFilters(movies) {
     }
     const y = (m.year || '').toString();
     if (y) {
+      yearsSet.add(y);
       if (!yearMap[y]) yearMap[y] = [];
       yearMap[y].push(m.id);
     }
@@ -425,12 +452,21 @@ function writeFilters(movies) {
       const s = g.slug || slugify(g.name, { lower: true });
       if (!genreMap[s]) genreMap[s] = [];
       genreMap[s].push(m.id);
+      if (g.name && !genreNames[s]) genreNames[s] = g.name;
     }
     for (const c of m.country || []) {
       const s = c.slug || slugify(c.name, { lower: true });
       if (!countryMap[s]) countryMap[s] = [];
       countryMap[s].push(m.id);
+      if (c.name && !countryNames[s]) countryNames[s] = c.name;
     }
+  }
+  const yearsArr = Array.from(yearsSet).map(Number).filter((y) => !Number.isNaN(y));
+  const minYear = yearsArr.length ? Math.min(...yearsArr) : new Date().getFullYear();
+  const maxYear = new Date().getFullYear();
+  for (let y = minYear; y <= maxYear; y++) {
+    const ys = String(y);
+    if (!yearMap[ys]) yearMap[ys] = [];
   }
   const content = `window.filtersData = ${JSON.stringify({
     genreMap,
@@ -440,6 +476,8 @@ function writeFilters(movies) {
     statusMap,
     quality4kIds,
     exclusiveIds,
+    genreNames,
+    countryNames,
   })};`;
   fs.writeFileSync(path.join(PUBLIC_DATA, 'filters.js'), content, 'utf8');
 }
@@ -683,9 +721,12 @@ async function main() {
   const allMovies = mergeMovies(ophim, custom);
   console.log('4. Total movies:', allMovies.length);
 
+  console.log('4b. Fetching OPhim genres & countries...');
+  const { genreNames, countryNames } = await fetchOPhimGenresAndCountries();
+
   console.log('5. Writing movies-light.js, filters.js, actors.js, batches...');
   writeMoviesLight(allMovies);
-  writeFilters(allMovies);
+  writeFilters(allMovies, genreNames, countryNames);
   writeActors(allMovies);
   writeBatches(allMovies);
 
