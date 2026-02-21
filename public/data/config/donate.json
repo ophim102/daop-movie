@@ -1,1 +1,10 @@
-{}
+{
+  "id": "ba4b6dca-a959-4875-8046-08f14f2cc561",
+  "target_amount": 99,
+  "target_currency": "USD",
+  "current_amount": 1,
+  "paypal_link": null,
+  "bank_info": null,
+  "crypto_addresses": null,
+  "updated_at": "2026-02-21T13:42:39.98839+00:00"
+}
