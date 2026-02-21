@@ -161,6 +161,10 @@
         }
       } catch (e) {}
     }
+    for (var i = 1; i <= 10; i++) {
+      var menuBgUrl = settings['menu_bg_' + i];
+      if (menuBgUrl) root.style.setProperty('--menu-bg-' + i, 'url(' + menuBgUrl + ')');
+    }
   };
 
   /** Inject tracking from site-settings */
@@ -189,7 +193,7 @@
     } catch (e) {}
   };
 
-  /** Mobile: nút 3 gạch ẩn/hiện menu */
+  /** Mobile: nút 3 gạch ẩn/hiện menu; mỗi mục dùng ảnh nền riêng (CSS: menu-1.png … menu-10.png) */
   function initMobileNav() {
     var header = document.querySelector('.site-header');
     var nav = header && header.querySelector('.site-nav');
@@ -206,7 +210,7 @@
       btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    nav.parentNode.insertBefore(btn, nav);
+    header.insertBefore(btn, header.firstChild);
     document.addEventListener('click', function (e) {
       if (!header.classList.contains('menu-open')) return;
       if (header.contains(e.target)) return;

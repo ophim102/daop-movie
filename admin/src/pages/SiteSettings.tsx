@@ -23,8 +23,8 @@ export default function SiteSettings() {
         supabase_user_anon_key: data.supabase_user_anon_key ?? '',
         player_warning_enabled: data.player_warning_enabled !== 'false',
         player_warning_text: data.player_warning_text ?? 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+        movies_data_url: data.movies_data_url ?? '',
         social_facebook: data.social_facebook ?? '',
-        social_twitter: data.social_twitter ?? '',
         social_instagram: data.social_instagram ?? '',
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
@@ -78,6 +78,10 @@ export default function SiteSettings() {
           </Form.Item>
           <Form.Item name="player_warning_text" label="Nội dung cảnh báo">
             <Input.TextArea rows={2} />
+          </Form.Item>
+          <Form.Item name="movies_data_url" label="URL dữ liệu phim (movies-light.js)">
+            <Input placeholder="https://your-site.com/data/movies-light.js" />
+            <span style={{ color: '#666', fontSize: 12 }}>Dùng cho Slider: thêm slide từ link phim. Để trống = tắt.</span>
           </Form.Item>
           <Form.Item name="social_facebook" label="Facebook (URL)">
             <Input placeholder="https://facebook.com/..." />

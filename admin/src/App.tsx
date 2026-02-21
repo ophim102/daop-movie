@@ -11,6 +11,7 @@ import DonateSettings from './pages/DonateSettings';
 import StaticPages from './pages/StaticPages';
 import PrerollAds from './pages/PrerollAds';
 import Slider from './pages/Slider';
+import MenuBackground from './pages/MenuBackground';
 import ThemeSettings from './pages/ThemeSettings';
 import PlayerSettings from './pages/PlayerSettings';
 import AuditLogs from './pages/AuditLogs';
@@ -25,6 +26,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="banners" element={<Banners />} />
           <Route path="slider" element={<Slider />} />
+          <Route path="menu-background" element={<MenuBackground />} />
           <Route path="homepage-sections" element={<HomepageSections />} />
           <Route path="server-sources" element={<ServerSources />} />
           <Route path="settings" element={<SiteSettings />} />

@@ -722,6 +722,8 @@ async function exportConfigFromSupabase() {
     footer_content: '',
     tmdb_attribution: 'true',
     homepage_slider: '[]',
+    ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
+    movies_data_url: '',
     theme_primary: '#58a6ff',
     theme_bg: '#0d1117',
     theme_card: '#161b22',

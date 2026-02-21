@@ -9,8 +9,9 @@ import {
   InputNumber,
   message,
   Image,
+  Card,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
 type SlideItem = {
@@ -20,30 +21,97 @@ type SlideItem = {
   sort_order?: number;
 };
 
+type MovieLight = { slug?: string; name?: string; thumb?: string };
+
 const SLIDER_KEY = 'homepage_slider';
+const MOVIES_DATA_URL_KEY = 'movies_data_url';
 
 export default function Slider() {
   const [list, setList] = useState<SlideItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [moviesDataUrl, setMoviesDataUrl] = useState<string>('');
+  const [movieLinkInput, setMovieLinkInput] = useState('');
+  const [addingFromMovie, setAddingFromMovie] = useState(false);
   const [form] = Form.useForm();
 
   const loadData = async () => {
     setLoading(true);
-    const { data } = await supabase.from('site_settings').select('value').eq('key', SLIDER_KEY).single();
+    const [sliderRes, settingsRes] = await Promise.all([
+      supabase.from('site_settings').select('value').eq('key', SLIDER_KEY).single(),
+      supabase.from('site_settings').select('value').eq('key', MOVIES_DATA_URL_KEY).maybeSingle(),
+    ]);
     try {
-      const parsed = data?.value ? JSON.parse(data.value) : [];
+      const parsed = sliderRes.data?.value ? JSON.parse(sliderRes.data.value) : [];
       setList(Array.isArray(parsed) ? parsed : []);
     } catch {
       setList([]);
     }
+    setMoviesDataUrl(settingsRes.data?.value ?? '');
     setLoading(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  const addSlideFromMovieLink = async () => {
+    const raw = movieLinkInput.trim();
+    if (!raw) {
+      message.warning('Nhập link trang phim hoặc slug phim');
+      return;
+    }
+    if (!moviesDataUrl) {
+      message.warning('Cấu hình URL dữ liệu phim trong Cài đặt (movies_data_url) để dùng tính năng này.');
+      return;
+    }
+    let slug = '';
+    try {
+      if (/^https?:\/\//i.test(raw)) {
+        const path = new URL(raw).pathname;
+        const m = path.match(/\/phim\/([^/]+)\.html$/);
+        slug = m ? m[1] : path.replace(/^\/phim\//, '').replace(/\.html$/, '');
+      } else {
+        slug = raw.replace(/\.html$/, '');
+      }
+    } catch {
+      slug = raw.replace(/\.html$/, '');
+    }
+    if (!slug) {
+      message.warning('Không tìm thấy slug phim trong link');
+      return;
+    }
+    setAddingFromMovie(true);
+    try {
+      const res = await fetch(moviesDataUrl);
+      if (!res.ok) throw new Error('Không tải được dữ liệu phim');
+      let text = await res.text();
+      text = text.replace(/^[\s\S]*?window\.moviesLight\s*=\s*/, '').replace(/;\s*$/, '');
+      const movies: MovieLight[] = JSON.parse(text);
+      const movie = movies.find((m) => (m.slug || '').toLowerCase() === slug.toLowerCase());
+      if (!movie) {
+        message.error('Không tìm thấy phim với slug: ' + slug);
+        return;
+      }
+      const base = moviesDataUrl.replace(/\/data\/movies-light\.js.*$/, '') || new URL(moviesDataUrl).origin;
+      const linkUrl = base + '/phim/' + (movie.slug || slug) + '.html';
+      const thumb = (movie.thumb || '').replace(/^\/\//, 'https://');
+      const newSlide: SlideItem = {
+        image_url: thumb,
+        link_url: linkUrl,
+        title: movie.name || '',
+        sort_order: list.length,
+      };
+      await saveList([...list, newSlide]);
+      setMovieLinkInput('');
+      message.success('Đã thêm slide từ phim: ' + (movie.name || slug));
+    } catch (e: any) {
+      message.error(e?.message || 'Lỗi lấy thông tin phim');
+    } finally {
+      setAddingFromMovie(false);
+    }
+  };
 
   const saveList = async (newList: SlideItem[]) => {
     await supabase.from('site_settings').upsert(
@@ -96,9 +164,25 @@ export default function Slider() {
       <p style={{ color: '#666', marginBottom: 16 }}>
         Các slide hiển thị dạng carousel trên trang chủ. Lưu trong Cài đặt chung (site_settings).
       </p>
+      <Card title="Thêm slide từ phim" style={{ marginBottom: 16 }}>
+        <p style={{ color: '#666', marginBottom: 8 }}>
+          Nhập link trang phim (ví dụ: https://your-site.com/phim/nam-em-la-ba-anh.html) hoặc slug phim. Cần cấu hình URL dữ liệu phim trong Cài đặt.
+        </p>
+        <Space.Compact style={{ width: '100%', maxWidth: 480 }}>
+          <Input
+            placeholder="Link phim hoặc slug (vd: nam-em-la-ba-anh)"
+            value={movieLinkInput}
+            onChange={(e) => setMovieLinkInput(e.target.value)}
+            onPressEnter={addSlideFromMovieLink}
+          />
+          <Button type="primary" icon={<LinkOutlined />} loading={addingFromMovie} onClick={addSlideFromMovieLink}>
+            Lấy và thêm
+          </Button>
+        </Space.Compact>
+      </Card>
       <div style={{ marginBottom: 16 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>
-          Thêm slide
+          Thêm slide (ảnh + link tùy chỉnh)
         </Button>
       </div>
       <Table
