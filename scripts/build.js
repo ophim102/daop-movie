@@ -498,7 +498,7 @@ async function exportConfigFromSupabase() {
     [donate, 'donate_settings'],
     [playerSettingsRes, 'player_settings'],
     [prerollRes, 'ad_preroll'],
-  ].filter(([r]) => r[0].error).map(([r, name]) => `${name}: ${r[0].error?.message || r[0].error}`);
+  ].filter(([r]) => r && r.error).map(([r, name]) => `${name}: ${r.error?.message || r.error}`);
   if (errors.length) {
     console.error('Supabase lỗi (kiểm tra SUPABASE_ADMIN_URL và SUPABASE_ADMIN_SERVICE_ROLE_KEY trong GitHub Secrets):', errors);
     throw new Error('Export config từ Supabase thất bại: ' + errors.join('; '));
