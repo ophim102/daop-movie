@@ -23,6 +23,28 @@ const OPHIM_BASE = process.env.OPHIM_BASE_URL || 'https://ophim1.com/v1/api';
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const TMDB_KEY = process.env.TMDB_API_KEY;
 
+/** Fallback: 23 thể loại + 45 quốc gia (OPhim) khi API lỗi/timeout */
+const OPHIM_GENRES_FALLBACK = {
+  'hanh-dong': 'Hành Động', 'tinh-cam': 'Tình Cảm', 'hai-huoc': 'Hài Hước', 'co-trang': 'Cổ Trang',
+  'tam-ly': 'Tâm Lý', 'hinh-su': 'Hình Sự', 'chien-tranh': 'Chiến Tranh', 'the-thao': 'Thể Thao',
+  'vo-thuat': 'Võ Thuật', 'vien-tuong': 'Viễn Tưởng', 'phieu-luu': 'Phiêu Lưu', 'khoa-hoc': 'Khoa Học',
+  'kinh-di': 'Kinh Dị', 'am-nhac': 'Âm Nhạc', 'than-thoai': 'Thần Thoại', 'tai-lieu': 'Tài Liệu',
+  'gia-dinh': 'Gia Đình', 'chinh-kich': 'Chính kịch', 'bi-an': 'Bí ẩn', 'hoc-duong': 'Học Đường',
+  'kinh-dien': 'Kinh Điển', 'phim-18': 'Phim 18+', 'short-drama': 'Short Drama',
+};
+const OPHIM_COUNTRIES_FALLBACK = {
+  'trung-quoc': 'Trung Quốc', 'han-quoc': 'Hàn Quốc', 'nhat-ban': 'Nhật Bản', 'thai-lan': 'Thái Lan',
+  'au-my': 'Âu Mỹ', 'dai-loan': 'Đài Loan', 'hong-kong': 'Hồng Kông', 'an-do': 'Ấn Độ', 'anh': 'Anh',
+  'phap': 'Pháp', 'canada': 'Canada', 'quoc-gia-khac': 'Quốc Gia Khác', 'duc': 'Đức',
+  'tay-ban-nha': 'Tây Ban Nha', 'tho-nhi-ky': 'Thổ Nhĩ Kỳ', 'ha-lan': 'Hà Lan', 'indonesia': 'Indonesia',
+  'nga': 'Nga', 'mexico': 'Mexico', 'ba-lan': 'Ba lan', 'uc': 'Úc', 'thuy-dien': 'Thụy Điển',
+  'malaysia': 'Malaysia', 'brazil': 'Brazil', 'philippines': 'Philippines', 'bo-dao-nha': 'Bồ Đào Nha',
+  'y': 'Ý', 'dan-mach': 'Đan Mạch', 'uae': 'UAE', 'na-uy': 'Na Uy', 'thuy-si': 'Thụy Sĩ',
+  'chau-phi': 'Châu Phi', 'nam-phi': 'Nam Phi', 'ukraina': 'Ukraina', 'a-rap-xe-ut': 'Ả Rập Xê Út',
+  'bi': 'Bỉ', 'ireland': 'Ireland', 'colombia': 'Colombia', 'phan-lan': 'Phần Lan', 'viet-nam': 'Việt Nam',
+  'chile': 'Chile', 'hy-lap': 'Hy Lạp', 'nigeria': 'Nigeria', 'argentina': 'Argentina', 'singapore': 'Singapore',
+};
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -396,11 +418,11 @@ function writeMoviesLight(movies) {
   fs.writeFileSync(path.join(PUBLIC_DATA, 'movies-light.js'), content, 'utf8');
 }
 
-/** 5b. Lấy danh sách thể loại + quốc gia đầy đủ từ OPhim API */
+/** 5b. Lấy danh sách thể loại (23) + quốc gia (45) từ OPhim API, fallback danh sách tĩnh nếu API lỗi */
 async function fetchOPhimGenresAndCountries() {
   const base = process.env.OPHIM_BASE_URL || 'https://ophim1.com/v1/api';
-  let genreNames = {};
-  let countryNames = {};
+  let genreNames = { ...OPHIM_GENRES_FALLBACK };
+  let countryNames = { ...OPHIM_COUNTRIES_FALLBACK };
   try {
     const [genresRes, countriesRes] = await Promise.all([
       fetchJsonWithTimeout(`${base}/the-loai`).catch(() => null),
@@ -408,15 +430,23 @@ async function fetchOPhimGenresAndCountries() {
     ]);
     const genres = genresRes?.data?.items || [];
     const countries = countriesRes?.data?.items || [];
-    for (const g of genres) {
-      if (g.slug && g.name) genreNames[g.slug] = g.name;
+    if (genres.length) {
+      genreNames = {};
+      for (const g of genres) {
+        if (g.slug && g.name) genreNames[g.slug] = g.name;
+      }
+      genreNames = { ...OPHIM_GENRES_FALLBACK, ...genreNames };
     }
-    for (const c of countries) {
-      if (c.slug && c.name) countryNames[c.slug] = c.name;
+    if (countries.length) {
+      countryNames = {};
+      for (const c of countries) {
+        if (c.slug && c.name) countryNames[c.slug] = c.name;
+      }
+      countryNames = { ...OPHIM_COUNTRIES_FALLBACK, ...countryNames };
     }
     console.log('   OPhim genres:', Object.keys(genreNames).length, ', countries:', Object.keys(countryNames).length);
   } catch (e) {
-    console.warn('   OPhim genres/countries fetch failed:', e.message);
+    console.warn('   OPhim genres/countries fetch failed, using fallback:', e.message);
   }
   return { genreNames, countryNames };
 }
