@@ -2,6 +2,26 @@ import { useEffect, useState } from 'react';
 import { Card, Form, Input, Button, Switch, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
+const SITE_SETTINGS_KEYS = [
+  'site_name',
+  'logo_url',
+  'favicon_url',
+  'google_analytics_id',
+  'simple_analytics_script',
+  'twikoo_env_id',
+  'supabase_user_url',
+  'supabase_user_anon_key',
+  'player_warning_enabled',
+  'player_warning_text',
+  'movies_data_url',
+  'social_facebook',
+  'social_twitter',
+  'social_instagram',
+  'social_youtube',
+  'footer_content',
+  'tmdb_attribution',
+] as const;
+
 export default function SiteSettings() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -38,11 +58,14 @@ export default function SiteSettings() {
   const onFinish = async (values: Record<string, any>) => {
     try {
       const toSave: Record<string, string> = {};
-      for (const [key, value] of Object.entries(values)) {
-        toSave[key] = value === true || value === false ? String(value) : (value ?? '');
+      for (const key of SITE_SETTINGS_KEYS) {
+        const raw = values[key];
+        toSave[key] = raw === true || raw === false ? String(raw) : (raw ?? '');
       }
       for (const [key, value] of Object.entries(toSave)) {
-        const { error } = await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+        const { error } = await supabase
+          .from('site_settings')
+          .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
         if (error) throw error;
       }
       message.success('Đã lưu cài đặt');
@@ -88,8 +111,8 @@ export default function SiteSettings() {
           </Form.Item>
           <Form.Item name="movies_data_url" label="URL dữ liệu phim (movies-light.js)">
             <Input placeholder="https://your-site.com/data/movies-light.js" />
-            <span style={{ color: '#666', fontSize: 12 }}>Dùng cho Slider: thêm slide từ link phim. Để trống = tắt.</span>
           </Form.Item>
+          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Dùng cho Slider: thêm slide từ link phim. Để trống = tắt.</p>
           <Form.Item name="social_facebook" label="Facebook (URL)">
             <Input placeholder="https://facebook.com/..." />
           </Form.Item>
