@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
-    "build:incremental": "node scripts/build.js --incremental"
+    "build:incremental": "node scripts/build.js --incremental",
+    "regenerate-actors": "node scripts/regenerate-actors-shards.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.490.0",

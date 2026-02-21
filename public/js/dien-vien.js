@@ -46,19 +46,23 @@
       return;
     }
     var ids = (map[slug] || []).map(function (x) { return String(x); });
-    var moviesLight = window.moviesLight;
-    if (ids.length > 0 && (!moviesLight || moviesLight.length === 0) && retryCount < 3) {
-      var base = (window.DAOP && window.DAOP.basePath) || '';
-      var s = document.createElement('script');
-      s.src = base + '/data/movies-light.js';
-      s.onload = function () { init(retryCount + 1); };
-      s.onerror = function () { renderActorMovies(slug, names, ids, []); };
-      document.head.appendChild(s);
-      return;
+    var list = (data && data.movies && data.movies[slug]) ? data.movies[slug] : [];
+    if (list.length === 0 && ids.length > 0) {
+      var moviesLight = window.moviesLight;
+      if (moviesLight && moviesLight.length > 0) {
+        var idsSet = {};
+        for (var i = 0; i < ids.length; i++) idsSet[ids[i]] = true;
+        list = moviesLight.filter(function (m) { return idsSet[String(m.id)]; });
+      } else if (retryCount < 2) {
+        var base = (window.DAOP && window.DAOP.basePath) || '';
+        var s = document.createElement('script');
+        s.src = base + '/data/movies-light.js';
+        s.onload = function () { init(retryCount + 1); };
+        s.onerror = function () { renderActorMovies(slug, names, ids, []); };
+        document.head.appendChild(s);
+        return;
+      }
     }
-    var idsSet = {};
-    for (var i = 0; i < ids.length; i++) idsSet[ids[i]] = true;
-    var list = (moviesLight || []).filter(function (m) { return idsSet[String(m.id)]; });
     renderActorMovies(slug, names, ids, list);
   }
 

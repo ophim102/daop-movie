@@ -540,16 +540,33 @@ function writeCategoryPages(filters) {
   console.log('   Category pages: the-loai', genres.length, ', quoc-gia', countries.length, ', nam-phat-hanh', years.length);
 }
 
-/** 7. Tạo actors: index (names only) + shard theo ký tự đầu (actors-a.js ... actors-z.js, actors-other.js) */
+/** Helper: tạo light object cho renderMovieCard */
+function toLightMovie(m) {
+  return {
+    id: String(m.id),
+    title: m.title,
+    origin_name: m.origin_name || '',
+    slug: m.slug,
+    thumb: m.thumb,
+    poster: m.poster,
+    year: m.year,
+    type: m.type,
+    episode_current: m.episode_current,
+  };
+}
+
+/** 7. Tạo actors: index (names only) + shard theo ký tự đầu, mỗi shard có thêm movies (light) để trang diễn viên không cần movies-light.js */
 function writeActors(movies) {
   const map = {};
   const names = {};
+  const movieById = new Map();
   for (const m of movies) {
+    movieById.set(String(m.id), toLightMovie(m));
     for (const name of m.cast || []) {
       const s = slugify(name, { lower: true });
       if (!s) continue;
       if (!map[s]) map[s] = [];
-      map[s].push(m.id);
+      map[s].push(String(m.id));
       names[s] = name;
     }
   }
@@ -562,18 +579,21 @@ function writeActors(movies) {
     `window.actorsIndex = ${JSON.stringify({ names })};`,
     'utf8'
   );
-  // Shard theo ký tự đầu (a-z, other)
+  // Shard theo ký tự đầu (a-z, other), mỗi shard có thêm movies: { slug: [light objects] }
   const byFirst = {};
   for (const slug of slugs) {
     const c = (slug[0] || '').toLowerCase();
     const key = c >= 'a' && c <= 'z' ? c : 'other';
-    if (!byFirst[key]) byFirst[key] = { map: {}, names: {} };
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, movies: {} };
     byFirst[key].map[slug] = map[slug];
     byFirst[key].names[slug] = names[slug];
+    byFirst[key].movies[slug] = (map[slug] || [])
+      .map((id) => movieById.get(String(id)))
+      .filter(Boolean);
   }
   const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
   for (const key of keys) {
-    const data = byFirst[key] || { map: {}, names: {} };
+    const data = byFirst[key] || { map: {}, names: {}, movies: {} };
     fs.writeFileSync(
       path.join(PUBLIC_DATA, `actors-${key}.js`),
       `window.actorsData = ${JSON.stringify(data)};`,
@@ -581,11 +601,11 @@ function writeActors(movies) {
     );
   }
   const shardCount = keys.filter((k) => byFirst[k] && Object.keys(byFirst[k].map).length > 0).length;
-  console.log('   Actors: index +', shardCount, 'shards (a-z, other)');
+  console.log('   Actors: index +', shardCount, 'shards (a-z, other) + movies per shard');
 }
 
-/** 7b. Tạo actors-index.js + shards từ object { map, names } (dùng trong incremental từ actors.js cũ) */
-function writeActorsShardsFromData(map = {}, names = {}) {
+/** 7b. Tạo actors-index.js + shards từ object { map, names }, thêm movies nếu có movies-light.js (incremental) */
+function writeActorsShardsFromData(map = {}, names = {}, movieById = null) {
   const slugs = Object.keys(names);
   fs.writeFileSync(
     path.join(PUBLIC_DATA, 'actors-index.js'),
@@ -596,13 +616,18 @@ function writeActorsShardsFromData(map = {}, names = {}) {
   for (const slug of slugs) {
     const c = (slug[0] || '').toLowerCase();
     const key = c >= 'a' && c <= 'z' ? c : 'other';
-    if (!byFirst[key]) byFirst[key] = { map: {}, names: {} };
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, movies: {} };
     byFirst[key].map[slug] = map[slug] || [];
     byFirst[key].names[slug] = names[slug];
+    if (movieById) {
+      byFirst[key].movies[slug] = (map[slug] || [])
+        .map((id) => movieById.get(String(id)))
+        .filter(Boolean);
+    }
   }
   const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
   for (const key of keys) {
-    const data = byFirst[key] || { map: {}, names: {} };
+    const data = byFirst[key] || { map: {}, names: {}, movies: {} };
     fs.writeFileSync(
       path.join(PUBLIC_DATA, `actors-${key}.js`),
       `window.actorsData = ${JSON.stringify(data)};`,
@@ -610,7 +635,7 @@ function writeActorsShardsFromData(map = {}, names = {}) {
     );
   }
   const shardCount = keys.filter((k) => byFirst[k] && Object.keys(byFirst[k].map).length > 0).length;
-  console.log('   Actors (từ actors.js): index +', shardCount, 'shards');
+  console.log('   Actors (từ actors.js): index +', shardCount, 'shards', movieById ? '+ movies' : '');
 }
 
 /** 8. Tạo batch files */
@@ -828,7 +853,20 @@ async function main() {
       try {
         const actorsData = JSON.parse(jsonStr);
         const { map: m, names: n } = actorsData;
-  writeActorsShardsFromData(m || {}, n || {});
+        let movieById = null;
+        const mlPath = path.join(PUBLIC_DATA, 'movies-light.js');
+        if (await fs.pathExists(mlPath)) {
+          const mlRaw = fs.readFileSync(mlPath, 'utf8');
+          const mlStr = mlRaw.replace(/^window\.moviesLight\s*=\s*/, '').replace(/;\s*$/, '');
+          try {
+            const light = JSON.parse(mlStr);
+            movieById = new Map();
+            for (const mv of light || []) movieById.set(String(mv.id), mv);
+          } catch (ee) {
+            console.warn('   Không parse được movies-light.js:', ee.message);
+          }
+        }
+        writeActorsShardsFromData(m || {}, n || {}, movieById);
       } catch (e) {
         console.warn('   Không parse được actors.js, bỏ qua writeActorsShardsFromData:', e.message);
       }
