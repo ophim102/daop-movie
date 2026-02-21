@@ -68,12 +68,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (action === 'update-data') {
+      const maxPages = req.body?.max_pages != null ? String(req.body.max_pages) : undefined;
+      const maxMovies = req.body?.max_movies != null ? String(req.body.max_movies) : undefined;
+      const inputs: Record<string, string> = {};
+      if (maxPages !== undefined) inputs.max_pages = maxPages;
+      if (maxMovies !== undefined) inputs.max_movies = maxMovies;
       const r = await fetch(
         `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`,
         {
           method: 'POST',
           headers,
-          body: JSON.stringify({ ref: GITHUB_REF }),
+          body: JSON.stringify({ ref: GITHUB_REF, inputs: Object.keys(inputs).length ? inputs : undefined }),
         }
       );
       if (!r.ok) {

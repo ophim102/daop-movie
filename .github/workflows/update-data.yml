@@ -3,6 +3,15 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+    inputs:
+      max_pages:
+        description: 'Số trang OPhim tối đa (0 = không giới hạn)'
+        required: false
+        default: '5'
+      max_movies:
+        description: 'Số phim tối đa (0 = không giới hạn)'
+        required: false
+        default: '500'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,8 +27,8 @@ jobs:
       - run: npm run build
         env:
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
-          OPHIM_MAX_PAGES: ${{ vars.OPHIM_MAX_PAGES || '5' }}
-          OPHIM_MAX_MOVIES: ${{ vars.OPHIM_MAX_MOVIES || '500' }}
+          OPHIM_MAX_PAGES: ${{ inputs.max_pages || vars.OPHIM_MAX_PAGES || '5' }}
+          OPHIM_MAX_MOVIES: ${{ inputs.max_movies || vars.OPHIM_MAX_MOVIES || '500' }}
           OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
