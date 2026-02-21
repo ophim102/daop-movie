@@ -42,11 +42,9 @@ export default function ThemeSettings() {
   };
 
   const values = Form.useWatch([], form) || {};
-  const previewStyle = {
-    '--bg': values.theme_bg || DEFAULTS.theme_bg,
-    '--card': values.theme_card || DEFAULTS.theme_card,
-    '--accent': values.theme_primary || DEFAULTS.theme_primary,
-  } as React.CSSProperties;
+  const previewBg = values.theme_bg || DEFAULTS.theme_bg;
+  const previewCard = values.theme_card || DEFAULTS.theme_card;
+  const previewAccent = values.theme_primary || DEFAULTS.theme_primary;
 
   return (
     <>
@@ -71,17 +69,17 @@ export default function ThemeSettings() {
           <Form.Item label="Xem trước">
             <div
               style={{
-                background: previewStyle['--bg'],
+                background: previewBg,
                 color: '#e6edf3',
                 padding: 16,
                 borderRadius: 8,
                 border: '1px solid #30363d',
               }}
             >
-              <div style={{ background: previewStyle['--card'], padding: 12, borderRadius: 6, marginBottom: 8 }}>
+              <div style={{ background: previewCard, padding: 12, borderRadius: 6, marginBottom: 8 }}>
                 Header / Card
               </div>
-              <a href="#" style={{ color: previewStyle['--accent'] }}>Link mẫu</a>
+              <a href="#" style={{ color: previewAccent }}>Link mẫu</a>
             </div>
           </Form.Item>
           <Form.Item>

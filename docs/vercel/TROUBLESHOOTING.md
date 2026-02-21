@@ -5,7 +5,7 @@
 | File | Trạng thái |
 |------|------------|
 | **vercel.json** | Đúng: buildCommand, outputDirectory, installCommand; thêm rewrites SPA (mọi route không phải /api/* → index.html). |
-| **admin/package.json** | Build script: `tsc -b && vite build`. Không thiếu dependency. |
+| **admin/package.json** | Build script: `tsc --noEmit && vite build` (dùng `--noEmit` thay cho `-b` để tránh lỗi build mode trên Vercel). |
 | **admin/tsconfig.json** | include "src", noEmit true, paths @/*. Không dùng @/ trong code → không cần alias Vite. |
 | **admin/vite.config.ts** | Plugin React, server port 5174. Base mặc định '/' phù hợp deploy. |
 | **admin/index.html** | Entry /src/main.tsx. |
@@ -17,8 +17,8 @@
 1. **Thiếu biến môi trường**  
    Cần `VITE_SUPABASE_ADMIN_URL`, `VITE_SUPABASE_ADMIN_ANON_KEY` (Production). Nếu build Vite tham chiếu env khác, cũng cần khai báo trên Vercel.
 
-2. **Lỗi TypeScript (tsc -b)**  
-   Chạy local: `cd admin && npm run build`. Nếu báo lỗi type thì sửa trong `admin/src` rồi commit lại.
+2. **Lỗi TypeScript (tsc)**  
+   Build dùng `tsc --noEmit` rồi `vite build`. Chạy local: `cd admin && npm run build`. Nếu báo lỗi type thì sửa trong `admin/src` rồi commit lại.
 
 3. **Node version**  
    Vercel mặc định Node 18. Nếu cần Node 20: Project Settings → General → Node.js Version → 20.x.
