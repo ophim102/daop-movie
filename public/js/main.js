@@ -189,12 +189,41 @@
     } catch (e) {}
   };
 
-  /** Run on DOM ready */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      window.DAOP.injectTracking();
+  /** Mobile: nút 3 gạch ẩn/hiện menu */
+  function initMobileNav() {
+    var header = document.querySelector('.site-header');
+    var nav = header && header.querySelector('.site-nav');
+    if (!header || !nav) return;
+    if (header.querySelector('.nav-toggle')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nav-toggle';
+    btn.setAttribute('aria-label', 'Mở menu');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>';
+    btn.addEventListener('click', function () {
+      var open = header.classList.toggle('menu-open');
+      btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-  } else {
+    nav.parentNode.insertBefore(btn, nav);
+    document.addEventListener('click', function (e) {
+      if (!header.classList.contains('menu-open')) return;
+      if (header.contains(e.target)) return;
+      header.classList.remove('menu-open');
+      btn.setAttribute('aria-label', 'Mở menu');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  /** Run on DOM ready */
+  function onReady() {
     window.DAOP.injectTracking();
+    initMobileNav();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
   }
 })();

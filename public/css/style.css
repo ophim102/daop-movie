@@ -81,6 +81,89 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* Nút 3 gạch (hamburger) - ẩn trên desktop */
+.site-header .nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  gap: 5px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.site-header .nav-toggle:hover {
+  background: rgba(88, 166, 255, 0.1);
+  border-color: var(--accent);
+}
+.site-header .nav-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.site-header .nav-toggle .nav-toggle-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.site-header .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.site-header .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.site-header .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile: hiện nút hamburger, menu trở thành dropdown */
+@media (max-width: 768px) {
+  .site-header {
+    position: relative;
+  }
+  .site-header .nav-toggle {
+    display: flex;
+    order: 1;
+  }
+  .site-header .site-logo {
+    order: 0;
+  }
+  .site-header .site-nav {
+    order: 2;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    padding: 0.5rem 1rem;
+    gap: 0;
+    margin: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .site-header.menu-open .site-nav {
+    display: flex;
+  }
+  .site-nav a {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: none;
+  }
+}
+
 /* Container */
 .container {
   max-width: 1280px;
@@ -146,8 +229,7 @@ a:hover {
   .country-grid,
   .list-grid { grid-template-columns: repeat(2, 1fr); }
 }
-.list-links { margin-top: 1.5rem; color: var(--muted); font-size: 0.9rem; }
-.list-links a { color: var(--accent); }
+.list-section-title { margin-top: 2rem; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--text); }
 .genre-card,
 .country-card {
   aspect-ratio: 3/2;
