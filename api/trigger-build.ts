@@ -17,15 +17,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
       method: 'POST',
       headers: {
-        Accept: 'application/vnd.github.v3+json',
-        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        Authorization: `Bearer ${GITHUB_TOKEN.trim()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ event_type: 'build-on-demand', client_payload: {} }),
     });
     if (!r.ok) {
       const t = await r.text();
-      res.status(r.status).json({ error: t });
+      let errMsg = t;
+      if (r.status === 401) {
+        try {
+          const j = JSON.parse(t);
+          if (j.message === 'Bad credentials') {
+            errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn. Tạo Personal Access Token (classic) mới tại GitHub → Settings → Developer settings → Personal access tokens, chọn quyền repo (full), rồi cập nhật biến trên Vercel.';
+          }
+        } catch {
+          // keep raw t
+        }
+      }
+      res.status(r.status).json({ error: errMsg });
       return;
     }
     res.status(200).json({ ok: true, message: 'Build triggered' });
