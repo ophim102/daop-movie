@@ -42,8 +42,8 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f2f5' }}>
-      <Card title="DAOP Admin" style={{ width: 360 }}>
+    <div className="login-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f2f5', padding: 16 }}>
+      <Card title="DAOP Admin" className="login-card" style={{ width: 360, maxWidth: '100%' }}>
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
             <Input placeholder="admin@example.com" />

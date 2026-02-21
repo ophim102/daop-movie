@@ -25,14 +25,14 @@ export default function Dashboard() {
   return (
     <>
       <h1>Dashboard</h1>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={8}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={24} md={8}>
           <Card title="Banner" extra={stats.banners}>Số lượng banner quảng cáo</Card>
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={24} md={8}>
           <Card title="Homepage Sections" extra={stats.sections}>Số section trang chủ</Card>
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={24} md={8}>
           <Card title="Nguồn server" extra={stats.servers}>Server active</Card>
         </Col>
       </Row>
@@ -48,6 +48,7 @@ export default function Dashboard() {
           ]}
           pagination={false}
           size="small"
+          scroll={{ x: 400 }}
         />
       </Card>
     </>

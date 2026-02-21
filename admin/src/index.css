@@ -1,2 +1,53 @@
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 #root { min-height: 100vh; }
+
+/* Admin layout: header & content responsive */
+.admin-header {
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin-header .admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.admin-content {
+  margin: 24px 16px !important;
+  padding: 24px !important;
+  background: #fff;
+  border-radius: 8px;
+  min-height: 280px;
+}
+@media (max-width: 767px) {
+  .admin-content {
+    margin: 12px 8px !important;
+    padding: 12px !important;
+  }
+  .admin-layout .ant-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-layout .ant-table {
+    min-width: 500px;
+  }
+  .admin-layout .ant-form-item {
+    margin-bottom: 16px;
+  }
+  .admin-layout h1 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Login page: full width card on mobile */
+.login-page {
+  padding: 12px !important;
+}
+.login-card {
+  width: 100% !important;
+  max-width: 360px !important;
+}

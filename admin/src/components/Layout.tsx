@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Layout as AntLayout, Menu, Button, message } from 'antd';
+import { useState, useEffect } from 'react';
+import { Layout as AntLayout, Menu, Button, message, Drawer, Grid } from 'antd';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LogoutOutlined } from '@ant-design/icons';
+import { LogoutOutlined, MenuOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 import {
   DashboardOutlined,
@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
+const { useBreakpoint } = Grid;
 
 const items = [
   { key: '/', icon: <DashboardOutlined />, label: <Link to="/">Dashboard</Link> },
@@ -36,8 +37,15 @@ const items = [
 
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const screens = useBreakpoint();
+  const isMobile = !screens.md; // md = 768px and up
+
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -63,18 +71,53 @@ export default function Layout() {
     }
   };
 
+  const menuContent = (
+    <>
+      <div style={{ height: 32, margin: 16, color: '#fff', fontWeight: 'bold' }}>DAOP Admin</div>
+      <Menu
+        theme="dark"
+        selectedKeys={[location.pathname]}
+        mode="inline"
+        items={items}
+        style={{ borderRight: 0 }}
+      />
+    </>
+  );
+
   return (
-    <AntLayout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-        <div style={{ height: 32, margin: 16, color: '#fff', fontWeight: 'bold' }}>DAOP Admin</div>
-        <Menu theme="dark" selectedKeys={[location.pathname]} mode="inline" items={items} />
-      </Sider>
+    <AntLayout style={{ minHeight: '100vh' }} className="admin-layout">
+      {isMobile ? (
+        <Drawer
+          title="Menu"
+          placement="left"
+          onClose={() => setDrawerOpen(false)}
+          open={drawerOpen}
+          bodyStyle={{ padding: 0, background: '#001529' }}
+          width={280}
+          styles={{ header: { background: '#001529', color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.1)' } }}
+        >
+          {menuContent}
+        </Drawer>
+      ) : (
+        <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} breakpoint="lg" collapsedWidth={80}>
+          {menuContent}
+        </Sider>
+      )}
       <AntLayout>
-        <Header style={{ padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
-          <Button type="primary" onClick={triggerBuild}>Build website</Button>
-          <Button icon={<LogoutOutlined />} onClick={handleLogout}>Đăng xuất</Button>
+        <Header className="admin-header">
+          {isMobile && (
+            <Button type="text" icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} aria-label="Mở menu" style={{ color: '#fff', fontSize: 18 }} />
+          )}
+          <div className="admin-header-actions">
+            <Button type="primary" size={isMobile ? 'small' : 'middle'} onClick={triggerBuild}>
+              {isMobile ? 'Build' : 'Build website'}
+            </Button>
+            <Button icon={<LogoutOutlined />} size={isMobile ? 'small' : 'middle'} onClick={handleLogout}>
+              {isMobile ? '' : 'Đăng xuất'}
+            </Button>
+          </div>
         </Header>
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', borderRadius: 8 }}>
+        <Content className="admin-content">
           <Outlet />
         </Content>
       </AntLayout>
