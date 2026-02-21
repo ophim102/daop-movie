@@ -1,0 +1,1 @@
+window.actorsData = {"map":{"qiao-su":["65711707efed8b7739873bf4"],"qianhan-liu":["693259fb476a373e3f3e22c0"],"qiao-shiyu":["688db7e7e1abf8e219335e78"],"quang-tuan":["6992f02f97c71dcd0d6b87f7"]},"names":{"qiao-su":"Qiao Su","qianhan-liu":"Qianhan Liu","qiao-shiyu":"Qiao Shiyu","quang-tuan":"Quang Tuấn"}};
