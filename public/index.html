@@ -56,10 +56,14 @@
   <script>
     (function(){
       var base = window.DAOP && window.DAOP.basePath || '';
-      Promise.all([
-        fetch(base + '/data/config/homepage-sections.json').then(function(r){ return r.json(); }),
-        fetch(base + '/data/config/banners.json').then(function(r){ return r.json(); })
-      ]).then(function(res){
+      fetch(base + '/data/build_version.json').then(function(r){ return r.json(); }).catch(function(){ return {}; }).then(function(v){
+        var ver = (v && v.builtAt) ? encodeURIComponent(v.builtAt) : '';
+        var q = ver ? '?v=' + ver : '';
+        return Promise.all([
+          fetch(base + '/data/config/homepage-sections.json' + q).then(function(r){ return r.json(); }),
+          fetch(base + '/data/config/banners.json' + q).then(function(r){ return r.json(); })
+        ]);
+      }).then(function(res){
         var sections = (res[0] && res[0].length) ? res[0] : [
           { title: 'Phim bộ', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0, more_link: '/phim-bo.html' },
           { title: 'Phim lẻ', source_type: 'type', source_value: 'single', limit_count: 24, sort_order: 1, more_link: '/phim-le.html' },

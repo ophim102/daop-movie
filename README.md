@@ -11,11 +11,10 @@ Hệ thống gồm: **Website phim tĩnh** (Cloudflare Pages), **Admin Panel** (
 | Cách làm | Cần Node.js trên PC? |
 |----------|----------------------|
 | **Build trên GitHub Actions** (workflow `update-data` / `build-on-demand`) | **Không.** Build chạy trên server GitHub, bạn chỉ cần push code và cấu hình Secrets. |
-| **Build trên Cloudflare Pages** (khi deploy site, Cloudflare chạy `npm run build`) | **Không.** Build chạy trên Cloudflare. |
 | **Chạy build trên máy** (`npm run build`) rồi push `public/data` lên Git | **Có.** Cần cài Node.js trên PC để chạy script build. |
 | **Chạy Admin local** (`cd admin && npm run dev`) để sửa giao diện | **Có.** Cần Node.js để chạy Vercel dev. |
 
-**Tóm lại:** Nếu bạn chỉ cấu hình Supabase/Vercel/Cloudflare, push code lên GitHub và dùng GitHub Actions (hoặc build trên Cloudflare) để tạo dữ liệu và deploy thì **không cần cài Node.js trên PC**. Chỉ khi muốn chạy build hoặc chạy Admin (dev) ngay trên máy mới cần cài Node.js.
+**Tóm lại:** Nếu bạn chỉ cấu hình Supabase/Vercel/Cloudflare, push code lên GitHub và dùng GitHub Actions để tạo dữ liệu + deploy thì **không cần cài Node.js trên PC**. Chỉ khi muốn chạy build hoặc chạy Admin (dev) ngay trên máy mới cần cài Node.js.
 
 ---
 
@@ -28,9 +27,9 @@ Hệ thống gồm: **Website phim tĩnh** (Cloudflare Pages), **Admin Panel** (
 1. Cài **Git** trên máy (nếu chưa có). Không cần cài Node.js.
 2. Đẩy toàn bộ code lên GitHub (clone/pull rồi `git add .` → `git commit` → `git push`). Kể cả khi chưa có thư mục `public/data` đầy đủ (hoặc chỉ có file mẫu rỗng) vẫn push bình thường.
 3. Trên **GitHub**: vào Settings → Secrets, thêm TMDB_API_KEY, SUPABASE_ADMIN_*, CLOUDFLARE_* (theo `docs/TRIEN-KHAI.md`).
-4. **Cloudflare Pages**: kết nối repo, cấu hình build = `npm run build`, output = `public`. Khi bạn push, Cloudflare tự chạy build trên server (không chạy trên PC).
+4. **Cloudflare Pages**: tạo project **Direct Upload**. Deploy dùng GitHub Actions (`deploy.yml`) để đẩy thư mục `public`.
 5. **Vercel**: import repo, cấu hình build Admin. Vercel tự chạy `npm install` và build trên server.
-6. **Build dữ liệu lần đầu**: vào GitHub → Actions → chạy workflow **update-data** (hoặc đợi lịch). Workflow sẽ chạy `npm run build` trên server GitHub, tạo `public/data/` rồi commit + push. Hoặc nếu bạn đã cấu hình Cloudflare build thì lần deploy đầu Cloudflare sẽ chạy build và tạo luôn dữ liệu.
+6. **Build dữ liệu lần đầu**: vào GitHub → Actions → chạy workflow **update-data** (hoặc đợi lịch). Workflow sẽ chạy `npm run build` trên server GitHub, tạo `public/data/` rồi commit + push.
 
 Vậy **chỉ cần Git trên PC** để push code; các bước 1–6 trong README là để **chạy thử trên máy** (xem site local, sửa Admin local), không bắt buộc trước khi triển khai lên GitHub.
 
@@ -189,7 +188,7 @@ Tóm tắt:
 
 1. **Supabase:** Tạo 2 project (User + Admin), chạy SQL trong `docs/supabase/`, tạo user admin.
 2. **GitHub:** Push code, thêm Secrets (TMDB, Supabase Admin, Cloudflare, …).
-3. **Cloudflare Pages:** Kết nối repo, build = `npm run build`, output = `public`; hoặc dùng GitHub Actions deploy.
+3. **Cloudflare Pages:** dùng **Direct Upload + GitHub Actions deploy**.
 4. **Vercel:** Import repo, root = repo root, build = `cd admin && npm run build`, output = `admin/dist`; thêm env Supabase Admin + GITHUB_TOKEN, GITHUB_REPO cho API trigger build.
 5. **Build dữ liệu:** Chạy `npm run build` (local hoặc qua Actions), push `public/data`, deploy lại site.
 6. **Admin:** Đăng nhập, cấu hình Cài đặt chung (Supabase User URL/Key, Twikoo, tracking…), bấm Build website rồi deploy lại site nếu cần.

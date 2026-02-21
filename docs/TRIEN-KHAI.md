@@ -110,28 +110,16 @@ Nếu dùng R2, Google Sheets, OPhim custom URL thì thêm:
 
 ## Bước 4: Deploy website lên Cloudflare Pages
 
-### Cách A: Build trên Cloudflare (đơn giản)
-
-1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-2. Chọn repo và nhánh `main`.
-3. Cấu hình build:
-   - **Framework preset:** None.
-   - **Build command:** `npm run build`
-   - **Build output directory:** `public`
-   - **Root directory:** (để trống)
-4. **Environment variables** (Build): thêm ít nhất `TMDB_API_KEY`, `SUPABASE_ADMIN_URL`, `SUPABASE_ADMIN_SERVICE_ROLE_KEY` (và các biến khác nếu build cần).
-5. Deploy. Sau khi xong, bạn có URL dạng `https://xxx.pages.dev`.
+### Build bằng GitHub Actions, deploy bằng Cloudflare API (Direct Upload)
 
 **Routing trang chi tiết phim:** Không dùng rule `_redirects` cho `/phim/:slug` vì Cloudflare Pages có thể trả 308 thay vì rewrite 200, dẫn tới URL bị chuyển về `/phim/` và mất slug. Cách dùng hiện tại:
 - Khi mở `/phim/soa-nhi-su-truong.html` → không có file nên Cloudflare trả **404** và serve **`404.html`**.
 - **`404.html`** đọc path, lấy slug (bỏ đuôi `.html`), rồi chuyển hướng sang **`/phim/index.html#soa-nhi-su-truong`**.
 - Trang `phim/index.html` load, `movie-detail.js` đọc slug từ **hash** (ưu tiên) hoặc pathname và hiển thị chi tiết phim. URL trên thanh địa chỉ sẽ là `/phim/index.html#slug` (có hash); nội dung vẫn đúng.
 
-### Cách B: Build bằng GitHub Actions, deploy bằng Cloudflare API
-
 Workflow này: khi bạn push lên nhánh `main`, GitHub Actions sẽ **chỉ đẩy** thư mục `public/` lên Cloudflare Pages (không chạy build trên Actions). Build phải đã có sẵn (chạy local hoặc workflow `update-data` / `build-on-demand`).
 
-#### Bước B.1: Tạo API Token Cloudflare
+#### Bước 4.1: Tạo API Token Cloudflare
 
 1. Đăng nhập [Cloudflare Dashboard](https://dash.cloudflare.com).
 2. Bấm **My Profile** (icon người góc phải) → **API Tokens**.
@@ -144,30 +132,30 @@ Workflow này: khi bạn push lên nhánh `main`, GitHub Actions sẽ **chỉ đ
 5. **Continue to summary** → **Create Token**.
 6. **Copy** token ngay (chỉ hiển thị một lần). Lưu vào nơi an toàn → dùng làm giá trị secret `CLOUDFLARE_API_TOKEN`.
 
-#### Bước B.2: Lấy Account ID
+#### Bước 4.2: Lấy Account ID
 
 1. Trong Cloudflare Dashboard, ở thanh bên trái hoặc trang **Overview** của bất kỳ domain/zone nào.
 2. **Account ID** là chuỗi 32 ký tự hex (vd: `74d232c91b824ba3218e83bc576cb392`).
 3. Copy → dùng làm giá trị secret `CLOUDFLARE_ACCOUNT_ID`.
 
-#### Bước B.3: Tạo project Cloudflare Pages (Direct Upload)
+#### Bước 4.3: Tạo project Cloudflare Pages (Direct Upload)
 
 1. **Workers & Pages** (menu trái) → **Create** → **Pages**.
 2. Chọn **Direct Upload** (không chọn "Connect to Git").
 3. **Project name:** đặt tên (vd: `daop`) — tên này dùng trong workflow.
 4. **Create project**. Project trống sẽ được tạo, chưa có deployment nào.
 
-#### Bước B.4: Thêm Secrets và Variables trên GitHub
+#### Bước 4.4: Thêm Secrets và Variables trên GitHub
 
 1. Vào repo GitHub → **Settings** → **Secrets and variables** → **Actions**.
 2. **Repository secrets** → **New repository secret**:
-   - Tên: `CLOUDFLARE_API_TOKEN` → Value: token đã copy ở B.1.
-   - Tên: `CLOUDFLARE_ACCOUNT_ID` → Value: Account ID ở B.2.
+  - Tên: `CLOUDFLARE_API_TOKEN` → Value: token đã copy ở bước 4.1.
+  - Tên: `CLOUDFLARE_ACCOUNT_ID` → Value: Account ID ở bước 4.2.
 3. (Tùy chọn) **Variables** → **New repository variable**:
-   - Tên: `CLOUDFLARE_PAGES_PROJECT_NAME` → Value: tên project đã đặt ở B.3 (vd: `daop`).
+  - Tên: `CLOUDFLARE_PAGES_PROJECT_NAME` → Value: tên project đã đặt ở bước 4.3 (vd: `daop`).
    - Nếu không tạo variable này, workflow mặc định dùng tên `daop` (xem `.github/workflows/deploy.yml`).
 
-#### Bước B.5: Đảm bảo thư mục `public/` có sẵn trước khi deploy
+#### Bước 4.5: Đảm bảo thư mục `public/` có sẵn trước khi deploy
 
 Workflow `deploy.yml` chỉ upload nội dung thư mục `public/` lên Pages, **không** chạy `npm run build`. Do đó:
 
@@ -175,11 +163,11 @@ Workflow `deploy.yml` chỉ upload nội dung thư mục `public/` lên Pages, *
 - **Sau đó:** Mỗi lần push `main`, workflow deploy sẽ chạy và đẩy `public/` hiện tại lên Pages.
 - **Cập nhật dữ liệu:** Chạy workflow **update-data** (theo lịch hoặc thủ công) hoặc **build-on-demand** (trigger từ Admin). Các workflow này chạy `npm run build`, commit `public/data`, push lên `main` → push đó sẽ kích hoạt lại workflow deploy và đẩy `public/` mới lên Pages.
 
-#### Bước B.6: Đổi tên project (nếu không dùng `daop`)
+#### Bước 4.6: Đổi tên project (nếu không dùng `daop`)
 
 Nếu bạn đặt tên project Pages khác (vd: `my-phim-site`):
 
-- Cách 1: Tạo variable `CLOUDFLARE_PAGES_PROJECT_NAME` = `my-phim-site` (như B.4).
+- Cách 1: Tạo variable `CLOUDFLARE_PAGES_PROJECT_NAME` = `my-phim-site` (như bước 4.4).
 - Cách 2: Sửa file `.github/workflows/deploy.yml`, dòng `projectName`: đổi `'daop'` thành tên project của bạn.
 
 Sau khi cấu hình xong, URL site sẽ dạng `https://<project-name>.pages.dev` (vd: `https://daop.pages.dev`).
@@ -303,7 +291,7 @@ git commit -m "Add initial build data"
 git push
 ```
 
-Nếu dùng Cloudflare Pages Cách A, push sẽ kích hoạt build trên Cloudflare (dùng env đã cấu hình trên Pages). Nếu dùng Cách B (deploy bằng Actions), sau khi push cần chạy workflow deploy (hoặc trigger thủ công) để đẩy `public/` lên Pages.
+Khi dùng Direct Upload + GitHub Actions, sau khi push cần workflow deploy chạy (hoặc trigger thủ công) để đẩy `public/` lên Pages.
 
 ### Cách 2: Dùng GitHub Actions
 
@@ -322,7 +310,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
    - **Twikoo Env ID** (nếu dùng bình luận).
    - **Supabase User URL** và **Supabase User Anon Key** (project Supabase User) → để website đăng nhập và đồng bộ yêu thích/lịch sử.
    - Cảnh báo dưới player: bật/tắt và nội dung.
-3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó deploy lại Pages (nếu dùng Cách B) hoặc đợi build trên Cloudflare (Cách A).
+3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó để workflow deploy đẩy `public/` mới lên Pages.
 
 **Nếu Admin không đọc/ghi được dữ liệu (sections, banners, cài đặt trống hoặc lỗi):** Admin cần đăng nhập và RLS phải đúng. (1) Mở `/login`, đăng nhập bằng user Supabase Admin đã gán `role = admin`. (2) Nếu đã đăng nhập mà vẫn trống: chạy `docs/supabase/fix-admin-rls.sql` trong SQL Editor của Supabase Admin (sửa RLS dùng `app_metadata.role`).
 
@@ -343,7 +331,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
    Sau khi push lên **main**, workflow **Deploy to Cloudflare Pages** phải chạy (trigger: push branches main). Vào **Actions** xem deploy có chạy và thành công không. Nếu thiếu **CLOUDFLARE_API_TOKEN** / **CLOUDFLARE_ACCOUNT_ID** thì deploy sẽ lỗi và site không nhận bản mới.
 
 4. **Cache**  
-   Sau khi deploy xong, thử mở site ở chế độ ẩn danh hoặc hard refresh (Ctrl+F5) để tránh cache trình duyệt/CDN.
+   Trang chủ dùng `build_version.json` để cache-bust config. Nếu vẫn thấy dữ liệu cũ: mở chế độ ẩn danh hoặc Ctrl+F5. Đảm bảo project Pages đang dùng **Direct Upload** (không Connect to Git) để tránh build riêng ghi đè `public/data`.
 
 ---
 
@@ -368,7 +356,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
 
 1. Tạo 2 Supabase, chạy SQL, tạo user admin, lấy URL/key.
 2. Push code lên GitHub, thêm Secrets (và Variables) cho Actions.
-3. Deploy website: Cloudflare Pages (build trên CF hoặc qua Actions).
+3. Deploy website: Cloudflare Pages bằng **Direct Upload + GitHub Actions**.
 4. Deploy Admin + API: Vercel, root repo, build `admin`, cấu hình env (Supabase Admin, GITHUB_TOKEN, GITHUB_REPO).
 5. Chạy build dữ liệu lần đầu (local hoặc Actions), push `public/data`, deploy lại Pages nếu cần.
 6. Vào Admin, cấu hình Site Settings (Supabase User, Twikoo, tracking, cảnh báo), build lại rồi deploy lại site.

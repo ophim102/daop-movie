@@ -648,6 +648,8 @@ async function main() {
     await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
     console.log('Incremental: chỉ export config từ Supabase (bỏ qua fetch phim, batches, sitemap).');
     await exportConfigFromSupabase();
+    const buildVersion = { builtAt: new Date().toISOString() };
+    fs.writeFileSync(path.join(PUBLIC_DATA, 'build_version.json'), JSON.stringify(buildVersion, null, 2));
     console.log('Incremental build (config only) xong.');
     return;
   }
@@ -679,6 +681,9 @@ async function main() {
 
   console.log('6. Exporting config from Supabase Admin...');
   await exportConfigFromSupabase();
+
+  const buildVersion = { builtAt: new Date().toISOString() };
+  fs.writeFileSync(path.join(PUBLIC_DATA, 'build_version.json'), JSON.stringify(buildVersion, null, 2));
 
   console.log('7. Writing sitemap.xml & robots.txt...');
   writeSitemap(allMovies);
