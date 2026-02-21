@@ -98,14 +98,16 @@
     if (movie.episodes && movie.episodes.length) {
       episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
       movie.episodes.forEach(function (ep) {
-        var name = ep.name || ep.slug || '';
+        var serverName = ep.server_name || ep.name || ep.slug || '';
         (ep.server_data || []).forEach(function (srv) {
+          var epName = (typeof srv === 'object' && (srv.name || srv.slug)) ? (srv.name || srv.slug) : (srv && (srv.name || srv.slug)) || serverName || '';
+          var epSlug = (typeof srv === 'object' && srv.slug) ? srv.slug : (typeof srv === 'object' && srv.name) ? srv.name : (srv && (srv.slug || srv.name)) || epName;
           var srvSlug = (typeof srv === 'object' && srv.slug) ? srv.slug : (servers[0] && servers[0].slug) || 'default';
-          var link = (typeof srv === 'object' && srv.link) ? srv.link : (srv.link || '');
-          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (ep.slug || name) + '" data-server="' + srvSlug + '" data-link="' + (link || '').replace(/"/g, '&quot;') + '">' + name + '</button>';
+          var link = (typeof srv === 'object' && (srv.link_embed || srv.link_m3u8 || srv.link)) ? (srv.link_embed || srv.link_m3u8 || srv.link) : (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
+          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (epSlug || '').replace(/"/g, '&quot;') + '" data-server="' + srvSlug + '" data-link="' + (link || '').replace(/"/g, '&quot;') + '">Tập ' + (epName || '').replace(/</g, '&lt;') + '</button>';
         });
         if (!(ep.server_data && ep.server_data.length)) {
-          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (ep.slug || name) + '">' + name + '</button>';
+          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (ep.slug || serverName || '').replace(/"/g, '&quot;') + '">' + (serverName || 'Xem').replace(/</g, '&lt;') + '</button>';
         }
       });
       episodesHtml += '</div>';

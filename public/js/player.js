@@ -15,9 +15,16 @@
     if (overlay) overlay.remove();
     overlay = document.createElement('div');
     overlay.className = 'player-overlay';
+    var safeLink = (link || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    var isDirectStream = link && (/\.m3u8($|\?)/i.test(link) || /\/stream\//i.test(link) || /\/hls\//i.test(link));
+    var playerHtml = !link
+      ? '<p>Chưa có link phát.</p>'
+      : isDirectStream
+        ? '<video id="daop-video" controls src="' + safeLink + '"></video>'
+        : '<iframe id="daop-embed" src="' + safeLink + '" allowfullscreen allow="autoplay; fullscreen"></iframe>';
     overlay.innerHTML =
       '<button type="button" class="close-player" aria-label="Đóng">Đóng</button>' +
-      (link ? '<video id="daop-video" controls src="' + (link || '').replace(/"/g, '&quot;') + '"></video>' : '<p>Chưa có link phát.</p>') +
+      playerHtml +
       (showWarning ? '<p class="player-warning">' + (warningText || defaultWarning).replace(/</g, '&lt;') + '</p>' : '');
     document.body.appendChild(overlay);
 

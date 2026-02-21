@@ -364,9 +364,16 @@ a:hover {
   cursor: pointer;
   font-size: 1rem;
 }
-.player-overlay video {
+.player-overlay video,
+.player-overlay iframe {
   max-width: 100%;
+  width: 90vw;
+  height: 50.625vw;
   max-height: 90vh;
+}
+.player-overlay iframe {
+  border: none;
+  border-radius: 4px;
 }
 .player-warning {
   margin-top: 0.5rem;
