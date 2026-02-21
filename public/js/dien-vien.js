@@ -44,12 +44,14 @@
       if (grid) grid.innerHTML = listHtml;
       return;
     }
-    var ids = map[slug] || [];
+    var ids = (map[slug] || []).map(function (x) { return String(x); });
+    var idsSet = {};
+    for (var i = 0; i < ids.length; i++) idsSet[ids[i]] = true;
     var name = names[slug] || slug;
     document.title = name + ' | Diễn viên | ' + (window.DAOP && window.DAOP.siteName ? window.DAOP.siteName : 'DAOP Phim');
     var titleEl = document.getElementById('actor-name');
     if (titleEl) titleEl.textContent = name;
-    var list = (window.moviesLight || []).filter(function (m) { return ids.indexOf(m.id) !== -1; });
+    var list = (window.moviesLight || []).filter(function (m) { return idsSet[String(m.id)]; });
     var grid = document.getElementById('movies-grid');
     if (grid) {
       grid.innerHTML = list.length ? list.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('') : '<p>Chưa có phim nào.</p>';
