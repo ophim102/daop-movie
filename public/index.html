@@ -59,7 +59,14 @@
         fetch(base + '/data/config/homepage-sections.json').then(function(r){ return r.json(); }),
         fetch(base + '/data/config/banners.json').then(function(r){ return r.json(); })
       ]).then(function(res){
-        var sections = (res[0] && res[0].length) ? res[0] : [{ title: 'Phim mới', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0 }];
+        var sections = (res[0] && res[0].length) ? res[0] : [
+          { title: 'Phim bộ', source_type: 'type', source_value: 'series', limit_count: 24, sort_order: 0, more_link: '/phim-bo.html' },
+          { title: 'Phim lẻ', source_type: 'type', source_value: 'single', limit_count: 24, sort_order: 1, more_link: '/phim-le.html' },
+          { title: 'Phim 4K', source_type: 'quality_4k', source_value: '', limit_count: 24, sort_order: 2, more_link: '/danh-sach/phim-4k.html' },
+          { title: 'Thể loại (mẫu)', source_type: 'genre', source_value: 'hanh-dong', limit_count: 18, sort_order: 3, more_link: '/the-loai/' },
+          { title: 'Quốc gia (mẫu)', source_type: 'country', source_value: 'au-my', limit_count: 18, sort_order: 4, more_link: '/quoc-gia/' },
+          { title: 'Năm phát hành (mẫu)', source_type: 'year', source_value: '2024', limit_count: 18, sort_order: 5, more_link: '/nam-phat-hanh/' }
+        ];
         var banners = res[1] || [];
         var fd = window.filtersData || {};
         var list = window.moviesLight || [];
@@ -75,7 +82,10 @@
           var ids = [];
           if (sec.source_type === 'type' && fd.typeMap && fd.typeMap[sec.source_value]) ids = fd.typeMap[sec.source_value];
           else if (sec.source_type === 'genre' && fd.genreMap && fd.genreMap[sec.source_value]) ids = fd.genreMap[sec.source_value];
+          else if (sec.source_type === 'country' && fd.countryMap && fd.countryMap[sec.source_value]) ids = fd.countryMap[sec.source_value];
+          else if (sec.source_type === 'year' && fd.yearMap && fd.yearMap[sec.source_value]) ids = fd.yearMap[sec.source_value];
           else if (sec.source_type === 'status' && fd.statusMap && fd.statusMap[sec.source_value]) ids = fd.statusMap[sec.source_value];
+          else if (sec.source_type === 'quality_4k' && fd.quality4kIds) ids = fd.quality4kIds;
           var limit = sec.limit_count || 24;
           var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
           var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';

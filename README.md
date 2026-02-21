@@ -162,6 +162,21 @@ Mở trình duyệt: **http://localhost:5174** (hoặc cổng Vite in ra trong t
 - **`app/`** – Cấu hình Capacitor (Android/iOS/Android TV).
 - **`docs/`** – Hướng dẫn chi tiết: Supabase, R2, Vercel, Cloudflare Pages, GitHub Actions, Twikoo, Capacitor, Google Sheets.
 
+### Section trang chủ (mặc định)
+
+Trang chủ load `public/data/config/homepage-sections.json` (build xuất từ Supabase Admin bảng `homepage_sections`). **Mặc định chỉ có 1 section mẫu cho thể loại, 1 cho quốc gia, 1 cho năm**; thêm/bớt và điều chỉnh chi tiết (tiêu đề, nguồn, link "Xem thêm", thứ tự) thực hiện từ **Admin Panel** (Quản lý giao diện → Homepage Sections), sau đó build lại để xuất JSON mới.
+
+| Section (mặc định)     | Nguồn              | Link "Xem thêm"   |
+|------------------------|--------------------|-------------------|
+| Phim bộ                | type: series       | /phim-bo.html     |
+| Phim lẻ                | type: single       | /phim-le.html     |
+| Phim 4K                | quality_4k         | /danh-sach/phim-4k.html |
+| Thể loại (mẫu)         | genre: hanh-dong   | /the-loai/        |
+| Quốc gia (mẫu)         | country: au-my     | /quoc-gia/        |
+| Năm phát hành (mẫu)    | year: 2024         | /nam-phat-hanh/   |
+
+Trong Admin: chọn **source_type** (type / genre / country / year / status / quality_4k), **source_value** (slug hoặc giá trị tương ứng), **limit_count**, **more_link**, **sort_order**; kéo thả để sắp xếp. Build sẽ ghi đè `homepage-sections.json` theo cấu hình đã lưu.
+
 Chi tiết từng dịch vụ (tạo Supabase, R2, deploy…) xem trong từng thư mục con của **`docs/`**.
 
 ---
