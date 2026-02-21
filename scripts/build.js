@@ -484,10 +484,26 @@ async function exportConfigFromSupabase() {
     supabase.from('homepage_sections').select('*').eq('is_active', true).order('sort_order'),
     supabase.from('site_settings').select('key, value'),
     supabase.from('static_pages').select('*'),
-    supabase.from('donate_settings').select('*').limit(1).single(),
+    supabase.from('donate_settings').select('*').limit(1).maybeSingle(),
     supabase.from('player_settings').select('key, value'),
     supabase.from('ad_preroll').select('*').eq('is_active', true).order('weight', { ascending: false }),
   ]);
+
+  const errors = [
+    [sources, 'server_sources'],
+    [bannersRes, 'ad_banners'],
+    [sections, 'homepage_sections'],
+    [settings, 'site_settings'],
+    [staticPages, 'static_pages'],
+    [donate, 'donate_settings'],
+    [playerSettingsRes, 'player_settings'],
+    [prerollRes, 'ad_preroll'],
+  ].filter(([r]) => r[0].error).map(([r, name]) => `${name}: ${r[0].error?.message || r[0].error}`);
+  if (errors.length) {
+    console.error('Supabase lỗi (kiểm tra SUPABASE_ADMIN_URL và SUPABASE_ADMIN_SERVICE_ROLE_KEY trong GitHub Secrets):', errors);
+    throw new Error('Export config từ Supabase thất bại: ' + errors.join('; '));
+  }
+  console.log('Export config từ Supabase OK (sections:', (sections.data || []).length, ', settings:', (settings.data || []).length, ')');
 
   const banners = (bannersRes.data || []).filter((b) => {
     if (b.start_date && b.start_date > today) return false;

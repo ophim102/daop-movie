@@ -324,7 +324,24 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
    - Cảnh báo dưới player: bật/tắt và nội dung.
 3. **Lưu** → chạy build lại (local `npm run build` hoặc nút **Build website** trong Admin gọi `/api/trigger-build`). Build sẽ xuất lại `site-settings.json` và các config khác. Sau đó deploy lại Pages (nếu dùng Cách B) hoặc đợi build trên Cloudflare (Cách A).
 
-**Nếu bấm Build website chạy xong nhưng thay đổi trên Admin không hiện trên site:** Workflow build-on-demand cần đọc config từ Supabase. Vào **GitHub** → repo → **Settings** → **Secrets and variables** → **Actions** → thêm **`SUPABASE_ADMIN_URL`** và **`SUPABASE_ADMIN_SERVICE_ROLE_KEY`** (cùng project Supabase Admin, lấy ở Supabase → Settings → API). Thiếu hai secret này thì build chỉ ghi config mặc định, không lấy dữ liệu từ Admin.
+**Nếu bấm Build website chạy xong nhưng thay đổi trên Admin không hiện trên site**, kiểm tra lần lượt:
+
+1. **GitHub Actions log**  
+   Vào **GitHub** → repo → **Actions** → chạy workflow **Build on demand** mới nhất → mở job **build**:
+   - Nếu thấy dòng **"SUPABASE_ADMIN_URL hoặc SUPABASE_ADMIN_SERVICE_ROLE_KEY chưa đặt"** → thêm hai secret này trong **Settings** → **Secrets and variables** → **Actions** (giá trị lấy từ **Supabase Admin** → Settings → API: URL + **service_role** key).
+   - Nếu thấy **"Supabase lỗi"** hoặc **"Export config từ Supabase thất bại"** → URL hoặc **service_role** key sai (copy lại từ Supabase, không dùng anon key).
+   - Nếu thấy **"Export config từ Supabase OK"** → build đã đọc đúng Supabase; kiểm tra bước sau.
+
+2. **Commit và push**  
+   Trong cùng log, bước **Commit and push**:
+   - Nếu in **"No changes in public/data"** → có thể config trên Supabase trùng với lần build trước; thử sửa một mục trong Admin (vd. tên site) rồi Build website lại.
+   - Nếu báo lỗi **push** (permission denied) → cần token có quyền push (vd. **GH_PAT** trong Secrets).
+
+3. **Deploy**  
+   Sau khi push lên **main**, workflow **Deploy to Cloudflare Pages** phải chạy (trigger: push branches main). Vào **Actions** xem deploy có chạy và thành công không. Nếu thiếu **CLOUDFLARE_API_TOKEN** / **CLOUDFLARE_ACCOUNT_ID** thì deploy sẽ lỗi và site không nhận bản mới.
+
+4. **Cache**  
+   Sau khi deploy xong, thử mở site ở chế độ ẩn danh hoặc hard refresh (Ctrl+F5) để tránh cache trình duyệt/CDN.
 
 ---
 
