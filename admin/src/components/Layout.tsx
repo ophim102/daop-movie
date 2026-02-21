@@ -41,7 +41,7 @@ export default function Layout() {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const res = await fetch(`${base}/api/trigger-build`, { method: 'POST', headers, body: JSON.stringify({}) });
-      const data = await res.json().catch(() => ({ error: await res.text() }));
+      const data = await res.json().catch(async () => ({ error: await res.text() }));
       if (res.ok && data?.ok) {
         message.success('Đã kích hoạt build. GitHub Actions đang chạy.');
       } else {
