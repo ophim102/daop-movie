@@ -1,5 +1,5 @@
 # Trang chi tiết phim: không dùng rewrite ở đây (Cloudflare có thể trả 308 → mất slug).
 # URL /phim/xxx.html sẽ 404 → Cloudflare serve 404.html → redirect sang /phim/index.html#xxx
 
-# Diễn viên: một trang index phục vụ mọi slug (tránh tạo hàng trăm file HTML)
-/dien-vien/*  /dien-vien/index.html  200
+# Diễn viên: proxying 200 (Cloudflare). Nếu không hoạt động, build sẽ tạo file HTML từng diễn viên.
+/dien-vien/* /dien-vien/index.html 200

@@ -827,7 +827,8 @@ async function main() {
       const jsonStr = raw.replace(/^window\.actorsData\s*=\s*/, '').replace(/;\s*$/, '');
       try {
         const actorsData = JSON.parse(jsonStr);
-        writeActorsShardsFromData(actorsData.map || {}, actorsData.names || {});
+        const { map: m, names: n } = actorsData;
+  writeActorsShardsFromData(m || {}, n || {});
       } catch (e) {
         console.warn('   Không parse được actors.js, bỏ qua writeActorsShardsFromData:', e.message);
       }
