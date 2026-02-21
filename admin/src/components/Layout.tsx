@@ -53,7 +53,9 @@ export default function Layout() {
         message.success('Đã kích hoạt build. GitHub Actions đang chạy.');
       } else if (res.status === 401) {
         message.error(
-          'Unauthorized. Thêm VITE_WEBHOOK_BUILD_TOKEN trong Vercel (cùng giá trị với WEBHOOK_BUILD_TOKEN) rồi redeploy Admin.'
+          token
+            ? 'Unauthorized. Token không khớp — kiểm tra VITE_WEBHOOK_BUILD_TOKEN và WEBHOOK_BUILD_TOKEN có cùng giá trị chính xác (không thừa khoảng trắng).'
+            : 'Unauthorized. Token chưa gửi — thêm VITE_WEBHOOK_BUILD_TOKEN trong Vercel (cùng giá trị WEBHOOK_BUILD_TOKEN), chọn Production + Preview, rồi Redeploy (tắt "Use existing Build Cache").'
         );
       } else {
         message.error(data?.error || data?.message || `Lỗi ${res.status}`);

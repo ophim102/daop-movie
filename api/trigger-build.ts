@@ -10,11 +10,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
-  const auth =
+  const auth = (
     req.headers.authorization?.replace(/^Bearer\s+/i, '').trim() ||
     (req.headers['x-build-token'] as string) ||
-    req.body?.token;
-  if (WEBHOOK_TOKEN && auth !== WEBHOOK_TOKEN) {
+    req.body?.token ||
+    ''
+  ).trim();
+  const expected = (WEBHOOK_TOKEN || '').trim();
+  if (expected && auth !== expected) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
