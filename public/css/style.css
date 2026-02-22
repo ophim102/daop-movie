@@ -190,7 +190,7 @@ a:hover {
     gap: 0.75rem;
     align-content: start;
   }
-  /* Mỗi mục menu mobile có một ảnh nền riêng (10 mục), độ trong suốt 20% */
+  /* Mỗi mục menu mobile: ảnh nền rõ 100%, không mờ không chèn nền */
   .site-header.menu-open .site-nav-main a::after,
   .site-header.menu-open .site-nav a::after {
     content: "";
@@ -198,10 +198,10 @@ a:hover {
     inset: 0;
     z-index: -1;
     border-radius: 12px;
-    background-size: cover;
+    background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.2;
+    opacity: 1;
     pointer-events: none;
   }
   .site-header.menu-open .site-nav-main a[href*="phim-bo"]::after   { background-image: var(--menu-bg-1, url("/images/menu-1.png")); }
@@ -218,13 +218,14 @@ a:hover {
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    min-height: 72px;
-    padding: 0.75rem 0.5rem;
+    gap: 0.4rem;
+    min-height: 56px;
+    padding: 0.6rem 0.5rem;
     border-radius: 12px;
-    background: rgba(22, 27, 34, 0.85);
+    background: transparent;
     border: 1px solid var(--border);
     color: var(--text);
     font-size: 0.85rem;
@@ -233,17 +234,17 @@ a:hover {
     text-decoration: none;
     transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
   .site-header.menu-open .site-nav-main a:hover {
     border-color: var(--accent);
-    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
     transform: translateY(-2px);
   }
   .site-header.menu-open .site-nav-main a::before {
-    display: block;
-    font-size: 1.75rem;
+    font-size: 1rem;
     line-height: 1;
-    margin-bottom: 0.35rem;
+    flex-shrink: 0;
   }
   .site-nav-main a[href*="phim-bo"]::before { content: "📺"; }
   .site-nav-main a[href*="phim-le"]::before { content: "🎬"; }
@@ -603,7 +604,7 @@ a:hover {
 .slider-slide-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 45%, transparent 70%);
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.15) 65%, transparent 85%);
   pointer-events: none;
 }
 .slider-slide-content {
@@ -613,20 +614,22 @@ a:hover {
   bottom: 0;
   padding: 2rem 1.5rem 3rem;
   max-width: 640px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 .slider-slide-title {
   margin: 0 0 0.4rem;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
   color: #fff;
+  text-shadow: 0 0 20px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.9);
 }
 .slider-slide-meta {
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+  color: var(--accent);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 .slider-slide-genres {
   margin: 0 0 0.5rem;
@@ -636,17 +639,23 @@ a:hover {
 }
 .slider-genre {
   display: inline-block;
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
-  background: rgba(255,255,255,0.2);
-  border-radius: 4px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--accent);
+  border-radius: 6px;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 6px rgba(88, 166, 255, 0.35);
 }
 .slider-slide-desc {
   margin: 0 0 0.75rem;
   font-size: 0.9rem;
-  line-height: 1.45;
-  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 12px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.8);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -654,17 +663,20 @@ a:hover {
 }
 .slider-slide-cta {
   display: inline-block;
-  padding: 0.5rem 1.25rem;
+  padding: 0.55rem 1.35rem;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   background: var(--accent);
   color: #fff;
   border-radius: 8px;
-  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 4px 14px rgba(88, 166, 255, 0.45);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .slider-slide-link:hover .slider-slide-cta {
   background: var(--accent-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(88, 166, 255, 0.5);
 }
 .slider-btn {
   position: absolute;
