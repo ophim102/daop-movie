@@ -47,29 +47,25 @@ a:hover {
   .site-header {
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
     gap: 0.75rem 1rem;
-    align-items: start;
+    align-items: center;
     padding: 0.75rem 1.5rem;
-    position: relative;
   }
   .site-header > .site-logo {
     grid-column: 1;
-    grid-row: 1;
     display: flex;
     align-items: center;
     padding: 0;
   }
   .site-header > .site-nav {
     grid-column: 2;
-    grid-row: 1 / -1;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    align-content: flex-start;
-    gap: 0.25rem;
+    align-content: center;
+    gap: 0.2rem;
     min-width: 0;
   }
   .site-header .site-nav-main {
@@ -78,24 +74,27 @@ a:hover {
     min-width: 0;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.2rem;
     justify-content: flex-end;
-    width: 100%;
   }
   .site-header .site-nav-main a {
     white-space: nowrap;
     flex-shrink: 0;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
   }
   .site-header .site-nav-actions {
-    position: absolute;
-    left: 1.5rem;
-    top: calc(0.75rem + 3.5rem + 0.5rem);
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    justify-content: flex-start;
-    margin: 0;
+    gap: 0.2rem;
+    margin-left: 0.35rem;
+  }
+  .site-header .site-nav-actions a {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
   }
 }
 @media (min-width: 1024px) {
@@ -104,14 +103,15 @@ a:hover {
     padding: 0.85rem 2rem;
   }
   .site-header .site-nav-main {
-    gap: 0.35rem;
+    gap: 0.25rem;
   }
   .site-header .site-nav-main a {
-    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+    padding: 0.25rem 0.5rem;
   }
-  .site-header .site-nav-actions {
-    left: 2rem;
-    top: calc(0.85rem + 3.5rem + 0.5rem);
+  .site-header .site-nav-actions a {
+    font-size: 0.82rem;
+    padding: 0.25rem 0.5rem;
   }
 }
 @media (min-width: 1280px) {
@@ -120,11 +120,15 @@ a:hover {
     padding: 1rem 2.5rem;
   }
   .site-header .site-nav-main {
-    gap: 0.5rem;
+    gap: 0.3rem;
   }
-  .site-header .site-nav-actions {
-    left: 2.5rem;
-    top: calc(1rem + 3.5rem + 0.5rem);
+  .site-header .site-nav-main a {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.55rem;
+  }
+  .site-header .site-nav-actions a {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.55rem;
   }
 }
 .site-logo {
