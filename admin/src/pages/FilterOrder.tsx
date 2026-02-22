@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, message } from 'antd';
+import { Card, Button, message } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
@@ -12,9 +12,60 @@ const ROW_LABELS: Record<string, string> = {
   lang: 'Kiểu ngôn ngữ',
 };
 
+/** Danh sách đầy đủ thể loại (slug -> tên), đồng bộ với build OPhim fallback */
+const GENRE_OPTIONS: Record<string, string> = {
+  'hanh-dong': 'Hành Động', 'tinh-cam': 'Tình Cảm', 'hai-huoc': 'Hài Hước', 'co-trang': 'Cổ Trang',
+  'tam-ly': 'Tâm Lý', 'hinh-su': 'Hình Sự', 'chien-tranh': 'Chiến Tranh', 'the-thao': 'Thể Thao',
+  'vo-thuat': 'Võ Thuật', 'vien-tuong': 'Viễn Tưởng', 'phieu-luu': 'Phiêu Lưu', 'khoa-hoc': 'Khoa Học',
+  'kinh-di': 'Kinh Dị', 'am-nhac': 'Âm Nhạc', 'than-thoai': 'Thần Thoại', 'tai-lieu': 'Tài Liệu',
+  'gia-dinh': 'Gia Đình', 'chinh-kich': 'Chính kịch', 'bi-an': 'Bí ẩn', 'hoc-duong': 'Học Đường',
+  'kinh-dien': 'Kinh Điển', 'phim-18': 'Phim 18+', 'short-drama': 'Short Drama',
+};
+
+/** Danh sách đầy đủ quốc gia (slug -> tên) */
+const COUNTRY_OPTIONS: Record<string, string> = {
+  'trung-quoc': 'Trung Quốc', 'han-quoc': 'Hàn Quốc', 'nhat-ban': 'Nhật Bản', 'thai-lan': 'Thái Lan',
+  'au-my': 'Âu Mỹ', 'dai-loan': 'Đài Loan', 'hong-kong': 'Hồng Kông', 'an-do': 'Ấn Độ', 'anh': 'Anh',
+  'phap': 'Pháp', 'canada': 'Canada', 'quoc-gia-khac': 'Quốc Gia Khác', 'duc': 'Đức',
+  'tay-ban-nha': 'Tây Ban Nha', 'tho-nhi-ky': 'Thổ Nhĩ Kỳ', 'ha-lan': 'Hà Lan', 'indonesia': 'Indonesia',
+  'nga': 'Nga', 'mexico': 'Mexico', 'ba-lan': 'Ba lan', 'uc': 'Úc', 'thuy-dien': 'Thụy Điển',
+  'malaysia': 'Malaysia', 'brazil': 'Brazil', 'philippines': 'Philippines', 'bo-dao-nha': 'Bồ Đào Nha',
+  'y': 'Ý', 'dan-mach': 'Đan Mạch', 'uae': 'UAE', 'na-uy': 'Na Uy', 'thuy-si': 'Thụy Sĩ',
+  'chau-phi': 'Châu Phi', 'nam-phi': 'Nam Phi', 'ukraina': 'Ukraina', 'a-rap-xe-ut': 'Ả Rập Xê Út',
+  'bi': 'Bỉ', 'ireland': 'Ireland', 'colombia': 'Colombia', 'phan-lan': 'Phần Lan', 'viet-nam': 'Việt Nam',
+  'chile': 'Chile', 'hy-lap': 'Hy Lạp', 'nigeria': 'Nigeria', 'argentina': 'Argentina', 'singapore': 'Singapore',
+};
+
+const VIDEO_TYPE_OPTIONS: Record<string, string> = {
+  tvshows: 'TV Shows',
+  hoathinh: 'Hoạt hình',
+  '4k': '4K',
+  exclusive: 'Độc quyền',
+};
+
+const LANG_OPTIONS: Record<string, string> = {
+  vietsub: 'Vietsub',
+  thuyetminh: 'Thuyết minh',
+  longtieng: 'Lồng tiếng',
+  khac: 'Khác',
+};
+
+const DEFAULT_VIDEO_TYPE_ORDER = Object.keys(VIDEO_TYPE_OPTIONS);
+const DEFAULT_LANG_ORDER = Object.keys(LANG_OPTIONS);
+
 const FILTER_ROW_ORDER_KEY = 'filter_row_order';
 const FILTER_GENRE_ORDER_KEY = 'filter_genre_order';
 const FILTER_COUNTRY_ORDER_KEY = 'filter_country_order';
+const FILTER_VIDEO_TYPE_ORDER_KEY = 'filter_video_type_order';
+const FILTER_LANG_ORDER_KEY = 'filter_lang_order';
+
+const SETTING_KEYS = [
+  FILTER_ROW_ORDER_KEY,
+  FILTER_GENRE_ORDER_KEY,
+  FILTER_COUNTRY_ORDER_KEY,
+  FILTER_VIDEO_TYPE_ORDER_KEY,
+  FILTER_LANG_ORDER_KEY,
+] as const;
 
 function parseJsonArray(value: string | null | undefined): string[] {
   if (value == null || value === '') return [];
@@ -27,48 +78,77 @@ function parseJsonArray(value: string | null | undefined): string[] {
   }
 }
 
+function mergeDisplayOrder(savedOrder: string[], allIds: string[]): string[] {
+  const valid = savedOrder.filter((id) => allIds.includes(id));
+  const missing = allIds.filter((id) => !savedOrder.includes(id));
+  return [...valid, ...missing];
+}
+
+function moveInList(list: string[], index: number, dir: number): string[] {
+  const next = [...list];
+  const target = index + dir;
+  if (target < 0 || target >= next.length) return list;
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+}
+
 export default function FilterOrder() {
   const [rowOrder, setRowOrder] = useState<string[]>([]);
-  const [genreOrderText, setGenreOrderText] = useState('');
-  const [countryOrderText, setCountryOrderText] = useState('');
+  const [genreOrder, setGenreOrder] = useState<string[]>([]);
+  const [countryOrder, setCountryOrder] = useState<string[]>([]);
+  const [videoTypeOrder, setVideoTypeOrder] = useState<string[]>([]);
+  const [langOrder, setLangOrder] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('site_settings').select('key, value').in('key', [FILTER_ROW_ORDER_KEY, FILTER_GENRE_ORDER_KEY, FILTER_COUNTRY_ORDER_KEY]);
+      const { data } = await supabase.from('site_settings').select('key, value').in('key', [...SETTING_KEYS]);
       const map = (data ?? []).reduce((acc: Record<string, string>, row: any) => {
         acc[row.key] = row.value ?? '';
         return acc;
       }, {});
-      const rowArr = parseJsonArray(map[FILTER_ROW_ORDER_KEY]);
-      setRowOrder(rowArr.length ? rowArr : [...ROW_IDS]);
-      const genreArr = parseJsonArray(map[FILTER_GENRE_ORDER_KEY]);
-      setGenreOrderText(Array.isArray(genreArr) ? genreArr.join('\n') : '');
-      const countryArr = parseJsonArray(map[FILTER_COUNTRY_ORDER_KEY]);
-      setCountryOrderText(Array.isArray(countryArr) ? countryArr.join('\n') : '');
+      setRowOrder(parseJsonArray(map[FILTER_ROW_ORDER_KEY]).length ? parseJsonArray(map[FILTER_ROW_ORDER_KEY]) : [...ROW_IDS]);
+      setGenreOrder(parseJsonArray(map[FILTER_GENRE_ORDER_KEY]));
+      setCountryOrder(parseJsonArray(map[FILTER_COUNTRY_ORDER_KEY]));
+      setVideoTypeOrder(parseJsonArray(map[FILTER_VIDEO_TYPE_ORDER_KEY]).length ? parseJsonArray(map[FILTER_VIDEO_TYPE_ORDER_KEY]) : DEFAULT_VIDEO_TYPE_ORDER);
+      setLangOrder(parseJsonArray(map[FILTER_LANG_ORDER_KEY]).length ? parseJsonArray(map[FILTER_LANG_ORDER_KEY]) : DEFAULT_LANG_ORDER);
       setLoading(false);
     })();
   }, []);
 
   const moveRow = (index: number, dir: number) => {
-    const list = [...displayOrder];
-    const target = index + dir;
-    if (target < 0 || target >= list.length) return;
-    [list[index], list[target]] = [list[target], list[index]];
+    const list = moveInList(displayRowOrder, index, dir);
     setRowOrder(list);
   };
+
+  const genreIds = Object.keys(GENRE_OPTIONS);
+  const countryIds = Object.keys(COUNTRY_OPTIONS);
+  const displayGenreOrder = mergeDisplayOrder(genreOrder, genreIds);
+  const displayCountryOrder = mergeDisplayOrder(countryOrder, countryIds);
+  const displayVideoTypeOrder = mergeDisplayOrder(videoTypeOrder, DEFAULT_VIDEO_TYPE_ORDER);
+  const displayLangOrder = mergeDisplayOrder(langOrder, DEFAULT_LANG_ORDER);
+
+  const moveGenre = (index: number, dir: number) => setGenreOrder(moveInList(displayGenreOrder, index, dir));
+  const moveCountry = (index: number, dir: number) => setCountryOrder(moveInList(displayCountryOrder, index, dir));
+  const moveVideoType = (index: number, dir: number) => setVideoTypeOrder(moveInList(displayVideoTypeOrder, index, dir));
+  const moveLang = (index: number, dir: number) => setLangOrder(moveInList(displayLangOrder, index, dir));
+
+  const currentRows = rowOrder.length ? rowOrder : [...ROW_IDS];
+  const validRows = currentRows.filter((id) => ROW_IDS.includes(id as any));
+  const missingRows = ROW_IDS.filter((id) => !currentRows.includes(id));
+  const displayRowOrder = [...validRows, ...missingRows];
 
   const onSave = async () => {
     setSaving(true);
     try {
-      const genreOrder = genreOrderText.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
-      const countryOrder = countryOrderText.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
       await supabase.from('site_settings').upsert(
         [
-          { key: FILTER_ROW_ORDER_KEY, value: JSON.stringify(rowOrder), updated_at: new Date().toISOString() },
-          { key: FILTER_GENRE_ORDER_KEY, value: JSON.stringify(genreOrder), updated_at: new Date().toISOString() },
-          { key: FILTER_COUNTRY_ORDER_KEY, value: JSON.stringify(countryOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_ROW_ORDER_KEY, value: JSON.stringify(displayRowOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_GENRE_ORDER_KEY, value: JSON.stringify(displayGenreOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_COUNTRY_ORDER_KEY, value: JSON.stringify(displayCountryOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_VIDEO_TYPE_ORDER_KEY, value: JSON.stringify(displayVideoTypeOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_LANG_ORDER_KEY, value: JSON.stringify(displayLangOrder), updated_at: new Date().toISOString() },
         ],
         { onConflict: 'key' }
       );
@@ -80,53 +160,43 @@ export default function FilterOrder() {
     }
   };
 
-  const currentRows = rowOrder.length ? rowOrder : [...ROW_IDS];
-  const validRows = currentRows.filter((id) => ROW_IDS.includes(id as any));
-  const missingRows = ROW_IDS.filter((id) => !currentRows.includes(id));
-  const displayOrder = [...validRows, ...missingRows];
+  const renderOrderList = (
+    title: string,
+    displayOrder: string[],
+    labels: Record<string, string>,
+    onMove: (index: number, dir: number) => void
+  ) => (
+    <>
+      <h3 style={{ marginBottom: 12 }}>{title}</h3>
+      <p style={{ color: '#666', fontSize: 12, marginBottom: 12 }}>Dùng nút mũi tên để đổi vị trí. Thứ tự hiển thị trên trang từ trên xuống.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 24, maxHeight: 320, overflow: 'auto' }}>
+        {displayOrder.map((id, index) => (
+          <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: '#fafafa', borderRadius: 8 }}>
+            <Button type="text" size="small" icon={<ArrowUpOutlined />} onClick={() => onMove(index, -1)} disabled={index === 0} />
+            <Button type="text" size="small" icon={<ArrowDownOutlined />} onClick={() => onMove(index, 1)} disabled={index === displayOrder.length - 1} />
+            <span style={{ flex: 1, fontWeight: 500 }}>{labels[id] || id}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 
   return (
     <>
       <h1>Sắp xếp bộ lọc</h1>
       <p style={{ color: '#666', marginBottom: 16 }}>
-        Thay đổi thứ tự các hàng lọc (ví dụ đưa Quốc gia lên trước Thể loại) và thứ tự từng mục Thể loại / Quốc gia (ví dụ Trung Quốc trước Hàn Quốc). Sau khi lưu, cần chạy <strong>Build website</strong> để áp dụng.
+        Thay đổi thứ tự các hàng lọc và thứ tự từng mục trong mỗi bộ lọc (Thể loại, Quốc gia, Loại video, Kiểu ngôn ngữ). Sau khi lưu, cần chạy <strong>Build website</strong> để áp dụng.
       </p>
       <Card loading={loading}>
-        <h3 style={{ marginBottom: 12 }}>Thứ tự các hàng lọc</h3>
-        <p style={{ color: '#666', fontSize: 12, marginBottom: 12 }}>Dùng nút mũi tên để đổi vị trí. Hàng hiển thị trên trang theo thứ tự từ trên xuống.</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
-          {displayOrder.map((id, index) => (
-            <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#fafafa', borderRadius: 8 }}>
-              <Button type="text" size="small" icon={<ArrowUpOutlined />} onClick={() => moveRow(index, -1)} disabled={index === 0} />
-              <Button type="text" size="small" icon={<ArrowDownOutlined />} onClick={() => moveRow(index, 1)} disabled={index === displayOrder.length - 1} />
-              <span style={{ flex: 1, fontWeight: 500 }}>{ROW_LABELS[id] || id}</span>
-            </div>
-          ))}
-        </div>
+        {renderOrderList('Thứ tự các hàng lọc', displayRowOrder, ROW_LABELS, moveRow)}
 
-        <h3 style={{ marginBottom: 12 }}>Thứ tự Thể loại</h3>
-        <p style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>
-          Mỗi dòng một slug thể loại (ví dụ: hanh-dong, tinh-cam, co-trang). Để trống = giữ thứ tự mặc định (A–Z). Chỉ cần liệt kê các slug muốn ưu tiên lên trước.
-        </p>
-        <Input.TextArea
-          rows={6}
-          value={genreOrderText}
-          onChange={(e) => setGenreOrderText(e.target.value)}
-          placeholder={'hanh-dong\ntinh-cam\nco-trang\nhai-huoc\n...'}
-          style={{ marginBottom: 24 }}
-        />
+        {renderOrderList('Thứ tự Thể loại', displayGenreOrder, GENRE_OPTIONS, moveGenre)}
 
-        <h3 style={{ marginBottom: 12 }}>Thứ tự Quốc gia</h3>
-        <p style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>
-          Mỗi dòng một slug quốc gia (ví dụ: trung-quoc, han-quoc, au-my). Để trống = thứ tự mặc định. Liệt kê slug muốn hiển thị lên trước.
-        </p>
-        <Input.TextArea
-          rows={6}
-          value={countryOrderText}
-          onChange={(e) => setCountryOrderText(e.target.value)}
-          placeholder={'trung-quoc\nhan-quoc\nau-my\nnhat-ban\n...'}
-          style={{ marginBottom: 24 }}
-        />
+        {renderOrderList('Thứ tự Quốc gia', displayCountryOrder, COUNTRY_OPTIONS, moveCountry)}
+
+        {renderOrderList('Thứ tự Loại video', displayVideoTypeOrder, VIDEO_TYPE_OPTIONS, moveVideoType)}
+
+        {renderOrderList('Thứ tự Kiểu ngôn ngữ', displayLangOrder, LANG_OPTIONS, moveLang)}
 
         <Button type="primary" onClick={onSave} loading={saving}>
           Lưu

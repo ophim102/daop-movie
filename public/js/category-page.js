@@ -68,22 +68,34 @@
     var fo = fd.filterOrder || {};
     var genreOrder = fo.genreOrder || [];
     var countryOrder = fo.countryOrder || [];
+    var videoTypeOrder = fo.videoTypeOrder || ['tvshows', 'hoathinh', '4k', 'exclusive'];
+    var langOrder = fo.langOrder || ['vietsub', 'thuyetminh', 'longtieng', 'khac'];
     var rowOrder = fo.rowOrder && fo.rowOrder.length ? fo.rowOrder : ROW_IDS;
     var genres = sortByOrder(allGenres, genreOrder);
     var countries = sortByOrder(allCountries, countryOrder);
     var genreName = function (s) { return genreNames[s] || s; };
     var countryName = function (s) { return countryNames[s] || s; };
+    var videoTypeLabels = { tvshows: 'TV Shows', hoathinh: 'Hoạt hình', '4k': '4K', exclusive: 'Độc quyền' };
+    var langLabels = { vietsub: 'Vietsub', thuyetminh: 'Thuyết minh', longtieng: 'Lồng tiếng', khac: 'Khác' };
+    var videoTypeIds = sortByOrder(['tvshows', 'hoathinh', '4k', 'exclusive'], videoTypeOrder);
+    var langIds = sortByOrder(['vietsub', 'thuyetminh', 'longtieng', 'khac'], langOrder);
     var genreChecks = genres.map(function (g) {
       return '<label><input type="checkbox" name="genre" value="' + g + '"> ' + genreName(g).replace(/</g, '&lt;') + '</label>';
     }).join('');
     var countryChecks = countries.map(function (c) {
       return '<label><input type="checkbox" name="country" value="' + c + '"> ' + countryName(c).replace(/</g, '&lt;') + '</label>';
     }).join('');
+    var videoTypeChecks = videoTypeIds.map(function (v) {
+      return '<label><input type="checkbox" name="videoType" value="' + v + '"> ' + (videoTypeLabels[v] || v).replace(/</g, '&lt;') + '</label>';
+    }).join('');
+    var langChecks = langIds.map(function (l) {
+      return '<label><input type="checkbox" name="lang" value="' + l + '"> ' + (langLabels[l] || l).replace(/</g, '&lt;') + '</label>';
+    }).join('');
     var yearHtml = '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>';
     var genreHtml = '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div></div>';
     var countryHtml = '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div></div>';
-    var videoTypeHtml = '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div></div>';
-    var langHtml = '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div></div>';
+    var videoTypeHtml = '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows">' + videoTypeChecks + '</div></div></div>';
+    var langHtml = '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows">' + langChecks + '</div></div></div>';
     var rowHtml = { year: yearHtml, genre: genreHtml, country: countryHtml, videoType: videoTypeHtml, lang: langHtml };
     var ordered = [];
     var seen = {};

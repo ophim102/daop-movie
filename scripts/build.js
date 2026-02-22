@@ -500,13 +500,21 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
   }
   const configDir = path.join(PUBLIC_DATA, 'config');
   const filterOrderPath = path.join(configDir, 'filter-order.json');
-  let filterOrder = { rowOrder: ['year', 'genre', 'country', 'videoType', 'lang'], genreOrder: [], countryOrder: [] };
+  let filterOrder = {
+    rowOrder: ['year', 'genre', 'country', 'videoType', 'lang'],
+    genreOrder: [],
+    countryOrder: [],
+    videoTypeOrder: ['tvshows', 'hoathinh', '4k', 'exclusive'],
+    langOrder: ['vietsub', 'thuyetminh', 'longtieng', 'khac'],
+  };
   if (fs.existsSync(filterOrderPath)) {
     try {
       const fo = JSON.parse(fs.readFileSync(filterOrderPath, 'utf8'));
       if (fo.rowOrder && Array.isArray(fo.rowOrder)) filterOrder.rowOrder = fo.rowOrder;
       if (fo.genreOrder && Array.isArray(fo.genreOrder)) filterOrder.genreOrder = fo.genreOrder;
       if (fo.countryOrder && Array.isArray(fo.countryOrder)) filterOrder.countryOrder = fo.countryOrder;
+      if (fo.videoTypeOrder && Array.isArray(fo.videoTypeOrder)) filterOrder.videoTypeOrder = fo.videoTypeOrder;
+      if (fo.langOrder && Array.isArray(fo.langOrder)) filterOrder.langOrder = fo.langOrder;
     } catch (_) {}
   }
   const content = `window.filtersData = ${JSON.stringify({
@@ -739,6 +747,8 @@ async function exportConfigFromSupabase() {
     filter_row_order: JSON.stringify(['year', 'genre', 'country', 'videoType', 'lang']),
     filter_genre_order: '[]',
     filter_country_order: '[]',
+    filter_video_type_order: JSON.stringify(['tvshows', 'hoathinh', '4k', 'exclusive']),
+    filter_lang_order: JSON.stringify(['vietsub', 'thuyetminh', 'longtieng', 'khac']),
     theme_primary: '#58a6ff',
     theme_bg: '#0d1117',
     theme_card: '#161b22',
@@ -778,9 +788,37 @@ async function exportConfigFromSupabase() {
       return [];
     }
   })();
+  const defaultVideoTypeOrder = ['tvshows', 'hoathinh', '4k', 'exclusive'];
+  const filterVideoTypeOrder = (() => {
+    try {
+      const v = mergedSettings.filter_video_type_order;
+      if (!v) return defaultVideoTypeOrder;
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) && a.length ? a : defaultVideoTypeOrder;
+    } catch {
+      return defaultVideoTypeOrder;
+    }
+  })();
+  const defaultLangOrder = ['vietsub', 'thuyetminh', 'longtieng', 'khac'];
+  const filterLangOrder = (() => {
+    try {
+      const v = mergedSettings.filter_lang_order;
+      if (!v) return defaultLangOrder;
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) && a.length ? a : defaultLangOrder;
+    } catch {
+      return defaultLangOrder;
+    }
+  })();
   fs.writeFileSync(
     path.join(configDir, 'filter-order.json'),
-    JSON.stringify({ rowOrder: filterRowOrder, genreOrder: filterGenreOrder, countryOrder: filterCountryOrder }, null, 2)
+    JSON.stringify({
+      rowOrder: filterRowOrder,
+      genreOrder: filterGenreOrder,
+      countryOrder: filterCountryOrder,
+      videoTypeOrder: filterVideoTypeOrder,
+      langOrder: filterLangOrder,
+    }, null, 2)
   );
 
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
@@ -857,6 +895,8 @@ async function writeDefaultConfig() {
       rowOrder: ['year', 'genre', 'country', 'videoType', 'lang'],
       genreOrder: [],
       countryOrder: [],
+      videoTypeOrder: ['tvshows', 'hoathinh', '4k', 'exclusive'],
+      langOrder: ['vietsub', 'thuyetminh', 'longtieng', 'khac'],
     },
   };
   for (const [file, data] of Object.entries(defaults)) {
