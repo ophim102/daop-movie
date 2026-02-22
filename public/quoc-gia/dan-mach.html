@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quốc gia | DAOP Phim</title>
+  <title>Quốc gia | GoTV</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
     })();
   </script>
   <header class="site-header">
-    <a href="../" class="site-logo">DAOP Phim</a>
+    <a href="../" class="site-logo">GoTV</a>
     <nav class="site-nav"><div class="site-nav-main"><a href="../phim-bo.html">Phim bộ</a><a href="../phim-le.html">Phim lẻ</a><a href="../the-loai/">Thể loại</a><a href="../quoc-gia/">Quốc gia</a><a href="../danh-sach/">Danh sách</a><a href="../dien-vien/">Diễn viên</a><a href="../hoat-hinh.html">Hoạt hình</a><a href="../shows.html">TV Shows</a><a href="../gioi-thieu.html">Giới thiệu</a><a href="../donate.html">Donate</a></div><div class="site-nav-actions"><a href="../tim-kiem.html">Tìm kiếm</a><a href="../login.html">Đăng nhập</a></div></nav>
   </header>
   <main class="container">
@@ -25,7 +25,8 @@
     <div id="movies-grid" class="movies-grid"></div>
     <div id="pagination" class="pagination"></div>
   </main>
-  <footer class="site-footer"><p>Trường Sa, Hoàng Sa là của Việt Nam!</p></footer>
+  <footer class="site-footer"><p>Trường Sa, Hoàng Sa là của Việt Nam!</p><p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>
+  </footer>
   <script src="../data/movies-light.js"></script>
   <script src="../data/filters.js"></script>
   <script src="../js/main.js"></script>
@@ -40,7 +41,19 @@
         var fd = window.filtersData || {};
         var countryNames = fd.countryNames || {};
         var countryMap = fd.countryMap || {};
-        var countries = Object.keys(countryNames).length ? Object.keys(countryNames).sort() : Object.keys(countryMap).sort();
+        var countries = Object.keys(countryNames).length ? Object.keys(countryNames) : Object.keys(countryMap);
+        var countryOrder = (fd.filterOrder && fd.filterOrder.countryOrder) || [];
+        if (countryOrder.length) {
+          var orderSet = {};
+          countryOrder.forEach(function(k,i){ orderSet[k]=i; });
+          countries = countries.slice().sort(function(a,b){
+            var ia=orderSet[a], ib=orderSet[b];
+            if (ia!==undefined && ib!==undefined) return ia-ib;
+            if (ia!==undefined) return -1;
+            if (ib!==undefined) return 1;
+            return a<b?-1:a>b?1:0;
+          });
+        } else countries = countries.slice().sort();
         var name = function(s){ return countryNames[s] || s; };
         var countryFlags = { 'viet-nam':'vn','han-quoc':'kr','nhat-ban':'jp','thai-lan':'th','trung-quoc':'cn','au-my':'us','anh':'gb','phap':'fr','duc':'de','tay-ban-nha':'es','y':'it','nga':'ru','canada':'ca','uc':'au','brazil':'br','an-do':'in','indonesia':'id','malaysia':'my','philippines':'ph','singapore':'sg','dai-loan':'tw','hong-kong':'hk','ha-lan':'nl','thuy-dien':'se','phan-lan':'fi','na-uy':'no','dan-mach':'dk','ba-lan':'pl','ukraina':'ua','hy-lap':'gr','tho-nhi-ky':'tr','argentina':'ar','mexico':'mx','colombia':'co','chile':'cl','nam-phi':'za','nigeria':'ng','uae':'ae','quoc-gia-khac':'' };
         var flagCdn = 'https://flagcdn.com/w80';

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "phim-4k",
+    "label": "Phim 4K",
+    "href": "/danh-sach/phim-4k.html",
+    "icon": "📺"
+  },
+  {
+    "id": "shows",
+    "label": "TV Shows",
+    "href": "/shows.html",
+    "icon": "📺"
+  },
+  {
+    "id": "hoat-hinh",
+    "label": "Hoạt hình",
+    "href": "/hoat-hinh.html",
+    "icon": "🎬"
+  },
+  {
+    "id": "phim-vietsub",
+    "label": "Phim Vietsub",
+    "href": "/danh-sach/phim-vietsub.html",
+    "icon": "🇻🇳"
+  },
+  {
+    "id": "phim-thuyet-minh",
+    "label": "Phim Thuyết minh",
+    "href": "/danh-sach/phim-thuyet-minh.html",
+    "icon": "🎙️"
+  },
+  {
+    "id": "phim-long-tieng",
+    "label": "Phim Lồng tiếng",
+    "href": "/danh-sach/phim-long-tieng.html",
+    "icon": "🔊"
+  },
+  {
+    "id": "phim-doc-quyen",
+    "label": "Phim Độc quyền",
+    "href": "/danh-sach/phim-doc-quyen.html",
+    "icon": "⭐"
+  },
+  {
+    "id": "phim-dang-chieu",
+    "label": "Phim đang chiếu",
+    "href": "/danh-sach/phim-dang-chieu.html",
+    "icon": "🎞️"
+  },
+  {
+    "id": "phim-sap-chieu",
+    "label": "Phim sắp chiếu",
+    "href": "/danh-sach/phim-sap-chieu.html",
+    "icon": "📅"
+  },
+  {
+    "id": "phim-chieu-rap",
+    "label": "Phim chiếu rạp",
+    "href": "/danh-sach/phim-chieu-rap.html",
+    "icon": "🎭"
+  },
+  {
+    "id": "the-loai",
+    "label": "Thể loại",
+    "href": "/the-loai/",
+    "icon": "🎬"
+  },
+  {
+    "id": "quoc-gia",
+    "label": "Quốc gia",
+    "href": "/quoc-gia/",
+    "icon": "🌐"
+  },
+  {
+    "id": "nam-phat-hanh",
+    "label": "Năm phát hành",
+    "href": "/nam-phat-hanh/",
+    "icon": "📅"
+  },
+  {
+    "id": "dien-vien",
+    "label": "Diễn viên",
+    "href": "/dien-vien/",
+    "icon": "👤"
+  }
+]
