@@ -18,15 +18,13 @@ const FILTER_COUNTRY_ORDER_KEY = 'filter_country_order';
 
 function parseJsonArray(value: string | null | undefined): string[] {
   if (value == null || value === '') return [];
-  if (typeof value === 'string') {
-    try {
-      const a = JSON.parse(value);
-      return Array.isArray(a) ? a.map(String) : [];
-    } catch {
-      return value.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
-    }
+  if (typeof value !== 'string') return [];
+  try {
+    const a = JSON.parse(value);
+    return Array.isArray(a) ? a.map(String) : [];
+  } catch {
+    return value.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
   }
-  return Array.isArray(value) ? value.map(String) : [];
 }
 
 export default function FilterOrder() {
