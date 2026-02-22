@@ -53,7 +53,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const client = getR2Client();
   const bucket = process.env.R2_BUCKET_NAME;
   if (!client || !bucket) {
-    res.status(503).json({ error: 'Chưa cấu hình R2' });
+    const missing = [];
+    if (!process.env.R2_ACCOUNT_ID) missing.push('R2_ACCOUNT_ID');
+    if (!process.env.R2_ACCESS_KEY_ID) missing.push('R2_ACCESS_KEY_ID');
+    if (!process.env.R2_SECRET_ACCESS_KEY) missing.push('R2_SECRET_ACCESS_KEY');
+    if (!process.env.R2_BUCKET_NAME) missing.push('R2_BUCKET_NAME');
+    if (!process.env.R2_PUBLIC_URL) missing.push('R2_PUBLIC_URL');
+    const msg = missing.length
+      ? `Chưa cấu hình R2. Thiếu biến môi trường: ${missing.join(', ')}. Vui lòng thêm vào Vercel Environment Variables.`
+      : 'Chưa cấu hình R2. Vui lòng thêm các biến R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC_URL vào Vercel Environment Variables.';
+    res.status(503).json({ error: msg });
     return;
   }
   const key = `banners/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;

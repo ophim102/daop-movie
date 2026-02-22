@@ -229,7 +229,10 @@ export default function Banners() {
                         if (data.url) {
                           form.setFieldValue('image_url', data.url);
                           message.success('Đã upload ảnh');
-                        } else message.error(data.error || 'Upload thất bại');
+                        } else {
+                          const errMsg = data.error || 'Upload thất bại';
+                          message.error({ content: errMsg, duration: 8 });
+                        }
                       } catch (err) {
                         message.error('Lỗi kết nối API upload');
                       }

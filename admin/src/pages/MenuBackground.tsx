@@ -90,7 +90,10 @@ export default function MenuBackground() {
         if (data.url) {
           form.setFieldValue(key, data.url);
           message.success('Đã upload ảnh');
-        } else message.error(data.error || 'Upload thất bại');
+        } else {
+          const errMsg = data.error || 'Upload thất bại';
+          message.error({ content: errMsg, duration: 8 });
+        }
       } catch {
         message.error('Lỗi kết nối API upload');
       }
