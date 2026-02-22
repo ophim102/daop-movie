@@ -87,14 +87,25 @@
     "display_type": "list",
     "source_type": "year",
     "source_value": "2026",
-    "filter_config": null,
+    "filter_config": {
+      "use_poster": true,
+      "grid_columns_lg": 6,
+      "grid_columns_md": 4,
+      "grid_columns_sm": 3,
+      "grid_columns_xs": 2
+    },
     "manual_movies": null,
     "limit_count": 12,
     "more_link": "/nam-phat-hanh/",
     "sort_order": 5,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-21T10:42:17.223991+00:00"
+    "updated_at": "2026-02-22T11:09:52.307+00:00",
+    "use_poster": true,
+    "grid_columns_lg": 6,
+    "grid_columns_md": 4,
+    "grid_columns_sm": 3,
+    "grid_columns_xs": 2
   },
   {
     "id": "342c70a5-c426-4ac0-8975-efc517b46991",
