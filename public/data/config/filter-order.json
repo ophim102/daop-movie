@@ -89,5 +89,21 @@
     "thuyetminh",
     "longtieng",
     "khac"
+  ],
+  "listOrder": [
+    "phim-4k",
+    "shows",
+    "hoat-hinh",
+    "phim-vietsub",
+    "phim-thuyet-minh",
+    "phim-long-tieng",
+    "phim-doc-quyen",
+    "phim-dang-chieu",
+    "phim-sap-chieu",
+    "phim-chieu-rap",
+    "the-loai",
+    "quoc-gia",
+    "nam-phat-hanh",
+    "dien-vien"
   ]
 }
