@@ -568,14 +568,18 @@ function injectSiteNameIntoHtml() {
 /** 5c. Cập nhật footer: hộp bo tròn 1 dòng, hàng 2 logo+links, hàng cuối copyright */
 function injectFooterIntoHtml() {
   const publicDir = path.join(ROOT, 'public');
+  const flagSvg = '<span class="footer-flag" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid meet"><rect width="30" height="20" fill="#DA251D"/><path fill="#FFFF00" d="M15 4l2.47 7.6H25l-6.23 4.5 2.36 7.3L15 16.2l-6.13 4.2 2.36-7.3L5 11.6h7.53z"/></svg></span>';
   const newFooterInner = [
-    '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>',
+    '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner">' + flagSvg + ' Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>',
     '<div class="footer-bottom">',
-    '  <a href="/" class="footer-logo">GoTV</a>',
-    '  <div class="footer-links-col">',
-    '    <a href="/hoi-dap.html">Hỏi - đáp</a>',
-    '    <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>',
-    '    <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
+    '  <div class="footer-bottom-inner">',
+    '    <a href="/" class="footer-logo">GoTV</a>',
+    '    <span class="footer-divider" aria-hidden="true"></span>',
+    '    <div class="footer-links-col">',
+    '      <a href="/hoi-dap.html">Hỏi - đáp</a>',
+    '      <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>',
+    '      <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
+    '    </div>',
     '  </div>',
     '</div>',
     '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>',
@@ -592,10 +596,46 @@ function injectFooterIntoHtml() {
         content = content.replace(/<p>\s*<a[^>]*href="[^"]*donate[^"]*"[^>]*>Donate<\/a>\s*<\/p>\s*/gi, '');
         content = content.replace(/<p[^>]*class="footer-tmdb"[^>]*>[\s\S]*?<\/p>\s*/i, '');
         content = content.replace(/<p>[\s\S]*?Dữ liệu phim có thể từ TMDB[\s\S]*?<\/p>\s*/i, '');
+        if (content.includes('footer-flag')) {
+          content = content.replace(/<span class="footer-flag"[^>]*>[\s\S]*?<\/span>/gi, flagSvg);
+        }
         if (content.includes('site-footer') && !content.includes('footer-vietnam-banner')) {
           content = content.replace(
             /<footer[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/i,
             '<footer class="site-footer">\n    ' + newFooterInner + '\n  </footer>'
+          );
+        }
+        if (content.includes('footer-vietnam-banner') && !content.includes('footer-vietnam-wrap')) {
+          content = content.replace(
+            /<div class="footer-vietnam-banner">/i,
+            '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner">'
+          );
+          content = content.replace(
+            /(<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner">[\s\S]*?)<\/div>\s*(<div class="footer-bottom">)/i,
+            '$1</div></div>\n    $2'
+          );
+        }
+        if (content.includes('footer-bottom') && !content.includes('footer-bottom-inner')) {
+          const oldBottom = /<div class="footer-bottom">\s*<a href="[^"]*" class="footer-logo">[^<]*<\/a>\s*<div class="footer-links-col">[\s\S]*?<\/div>\s*<\/div>/i;
+          const newBottom = [
+            '<div class="footer-bottom">',
+            '  <div class="footer-bottom-inner">',
+            '    <a href="/" class="footer-logo">GoTV</a>',
+            '    <span class="footer-divider" aria-hidden="true"></span>',
+            '    <div class="footer-links-col">',
+            '      <a href="/hoi-dap.html">Hỏi - đáp</a>',
+            '      <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>',
+            '      <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
+            '    </div>',
+            '  </div>',
+            '</div>',
+          ].join('\n    ');
+          content = content.replace(oldBottom, newBottom);
+        }
+        if (content.includes('site-footer') && !content.includes('footer-copyright')) {
+          content = content.replace(
+            /\s*<\/footer>/i,
+            '\n    <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>\n  </footer>'
           );
         }
         if (content !== orig) fs.writeFileSync(full, content, 'utf8');
@@ -871,6 +911,7 @@ async function exportConfigFromSupabase() {
     footer_content: '',
     tmdb_attribution: 'true',
     loading_screen_enabled: 'true',
+    loading_screen_min_seconds: '0',
     homepage_slider: '[]',
     ...Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
     movies_data_url: '',
@@ -1073,6 +1114,7 @@ async function writeDefaultConfig() {
       footer_content: '',
       tmdb_attribution: 'true',
       loading_screen_enabled: 'true',
+      loading_screen_min_seconds: '0',
     },
     'static-pages.json': [],
     'donate.json': { target_amount: 0, target_currency: 'VND', current_amount: 0 },

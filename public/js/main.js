@@ -5,25 +5,33 @@
   window.DAOP = window.DAOP || {};
   const BASE = window.DAOP.basePath || '';
 
-  /** Ẩn màn hình Loading (bật/tắt theo site_settings.loading_screen_enabled) */
+  /** Ẩn màn hình Loading (bật/tắt + thời gian tối thiểu theo site_settings) */
   function initLoadingScreen() {
     var el = document.getElementById('loading-screen');
     if (!el) return;
+    var startTime = Date.now();
     function hide() {
       el.classList.add('loading-screen-hidden');
       el.setAttribute('aria-hidden', 'true');
+    }
+    function tryHide(minMs) {
+      var elapsed = Date.now() - startTime;
+      if (elapsed >= minMs) hide();
+      else setTimeout(function () { hide(); }, minMs - elapsed);
     }
     window.DAOP.loadConfig('site-settings').then(function (s) {
       if (s && s.loading_screen_enabled === 'false') {
         hide();
         return;
       }
+      var minSec = Math.max(0, parseInt(s && s.loading_screen_min_seconds, 10) || 0);
+      var minMs = minSec * 1000;
       function onLoad() {
-        hide();
         window.removeEventListener('load', onLoad);
+        tryHide(minMs);
       }
       if (document.readyState === 'complete') {
-        setTimeout(hide, 50);
+        tryHide(minMs);
       } else {
         window.addEventListener('load', onLoad);
       }

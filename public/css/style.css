@@ -1296,72 +1296,104 @@ a:hover {
 .site-footer .footer-vietnam-wrap {
   text-align: center;
 }
-.site-footer .footer-vietnam-banner .footer-flag {
-  font-size: 1.2em;
-  line-height: 1;
-  vertical-align: middle;
+.site-footer > .footer-vietnam-banner {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
-/* Hàng 2: màn hình nhỏ = 3 link trái, logo phải; màn hình lớn = tất cả một hàng */
+/* Cờ VN bằng SVG - hiển thị đúng trên mọi thiết bị (PC không render emoji 🇻🇳) */
+.site-footer .footer-vietnam-banner .footer-flag {
+  display: inline-block;
+  width: 1.25em;
+  height: 0.833em;
+  vertical-align: middle;
+  margin-right: 0.35em;
+  flex-shrink: 0;
+}
+.site-footer .footer-vietnam-banner .footer-flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Hàng 2: Logo + 3 link - đẹp trên mọi thiết bị */
 .site-footer .footer-bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #d4edda;
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
-@media (max-width: 767px) {
-  .site-footer .footer-bottom {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  .site-footer .footer-links-col {
-    order: 1;
-    align-items: flex-start;
-  }
-  .site-footer .footer-logo {
-    order: 2;
-  }
-}
-@media (min-width: 768px) {
-  .site-footer .footer-bottom {
-    flex-direction: row;
-    justify-content: center;
-    gap: 1.5rem;
-  }
-  .site-footer .footer-links-col {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.site-footer .footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 .site-footer .footer-logo {
   font-weight: 700;
   color: var(--text);
   text-decoration: none;
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
 }
 .site-footer .footer-logo:hover {
   color: var(--accent);
+  background: rgba(255, 255, 255, 0.6);
+}
+.site-footer .footer-divider {
+  width: 1px;
+  height: 1.5em;
+  background: rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+@media (max-width: 479px) {
+  .site-footer .footer-divider {
+    width: 100%;
+    height: 1px;
+  }
 }
 .site-footer .footer-links-col {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 .site-footer .footer-links-col a {
-  display: block;
-  padding: 0.35rem 0.6rem;
-  background: rgba(40, 167, 69, 0.25);
-  color: #155724;
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1b5e20;
   text-decoration: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .site-footer .footer-links-col a:hover {
-  background: rgba(40, 167, 69, 0.4);
+  background: #fff;
   color: #0d3d1a;
+  border-color: var(--accent);
+}
+@media (max-width: 479px) {
+  .site-footer .footer-bottom-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .site-footer .footer-links-col {
+    width: 100%;
+    justify-content: center;
+  }
 }
 /* Hàng cuối: Copyright */
 .site-footer .footer-copyright {
