@@ -47,20 +47,21 @@ a:hover {
   .site-header {
     display: grid;
     grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
     gap: 0.75rem 1rem;
-    align-items: center;
+    align-items: start;
     padding: 0.75rem 1.5rem;
   }
   .site-header > .site-logo {
     grid-column: 1;
-    grid-row: 1 / -1;
-    align-self: center;
+    grid-row: 1;
     display: flex;
     align-items: center;
     padding: 0;
   }
   .site-header > .site-nav {
     grid-column: 2;
+    grid-row: 1 / -1;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -78,21 +79,22 @@ a:hover {
     align-items: center;
     gap: 0.25rem;
     justify-content: flex-end;
-    order: 1;
-    flex: 1 1 auto;
-    min-width: min-content;
+    width: 100%;
   }
   .site-header .site-nav-main a {
     white-space: nowrap;
     flex-shrink: 0;
   }
   .site-header .site-nav-actions {
+    grid-column: 1;
+    grid-row: 2;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    order: 2;
-    margin-left: auto;
+    justify-content: flex-start;
+    margin-top: 0.5rem;
+    margin-left: 0;
   }
 }
 @media (min-width: 1024px) {
