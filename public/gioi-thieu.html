@@ -35,6 +35,7 @@
   <footer class="site-footer">
     <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
   </footer>
+  <script src="/js/main.js"></script>
   <script>
     fetch('/data/config/static-pages.json').then(function(r){ return r.json(); }).then(function(pages){
       var about = Array.isArray(pages) ? pages.find(function(p){ return p.page_key === 'about'; }) : null;

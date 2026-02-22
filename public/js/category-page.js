@@ -233,6 +233,7 @@
         if (p) {
           self.currentPage = parseInt(p, 10);
           self.renderPage();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         if (t.id === 'pagination-goto-btn') {
           var inp = document.getElementById('pagination-goto');
@@ -242,6 +243,7 @@
             if (num >= 1 && num <= total) {
               self.currentPage = num;
               self.renderPage();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }
         }
@@ -256,6 +258,7 @@
             if (num >= 1 && num <= total) {
               self.currentPage = num;
               self.renderPage();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }
         }

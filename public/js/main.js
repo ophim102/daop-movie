@@ -252,10 +252,30 @@
     });
   }
 
+  /** Nút cuộn về đầu trang (góc phải dưới) */
+  function initScrollToTop() {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scroll-to-top';
+    btn.setAttribute('aria-label', 'Cuộn lên đầu trang');
+    btn.innerHTML = '↑';
+    btn.style.display = 'none';
+    document.body.appendChild(btn);
+    function toggle() {
+      btn.style.display = (window.pageYOffset || document.documentElement.scrollTop) > 300 ? 'flex' : 'none';
+    }
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
   /** Run on DOM ready */
   function onReady() {
     window.DAOP.injectTracking();
     initMobileNav();
+    initScrollToTop();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', onReady);
