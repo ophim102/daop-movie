@@ -1403,7 +1403,7 @@ a:hover {
 }
 @media (max-width: 768px) {
   .site-footer .footer-logo-text {
-    display: none;
+    font-size: clamp(0.75rem, 1.8vw, 0.9rem);
   }
 }
 .site-footer .footer-divider {

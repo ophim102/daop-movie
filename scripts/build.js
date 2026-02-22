@@ -633,10 +633,22 @@ function injectFooterIntoHtml() {
           content = content.replace(oldBottom, newBottom);
         }
         if (content.includes('site-footer') && !content.includes('footer-copyright')) {
-          content = content.replace(
-            /\s*<\/footer>/i,
-            '\n    <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>\n  </footer>'
-          );
+          const footerClose = content.match(/<\/footer>/i);
+          if (footerClose) {
+            content = content.replace(
+              /\s*<\/footer>/i,
+              '\n    <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>\n  </footer>'
+            );
+          }
+        }
+        if (content.includes('footer-bottom') && !content.includes('footer-copyright') && content.includes('site-footer')) {
+          const footerClose = content.match(/<\/footer>/i);
+          if (footerClose) {
+            content = content.replace(
+              /(<\/div>\s*<\/div>\s*)(<\/footer>)/i,
+              '$1<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>\n  $2'
+            );
+          }
         }
         if (content !== orig) fs.writeFileSync(full, content, 'utf8');
       }
