@@ -753,6 +753,13 @@ async function exportConfigFromSupabase() {
     theme_bg: '#0d1117',
     theme_card: '#161b22',
     theme_accent: '#58a6ff',
+    theme_text: '#e6edf3',
+    theme_muted: '#8b949e',
+    theme_slider_title: '#ffffff',
+    theme_slider_meta: 'rgba(255,255,255,0.75)',
+    theme_slider_desc: 'rgba(255,255,255,0.7)',
+    theme_movie_card_title: '#f85149',
+    theme_movie_card_meta: '#8b949e',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));

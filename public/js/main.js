@@ -159,6 +159,13 @@
     if (settings.theme_accent) root.style.setProperty('--accent-hover', settings.theme_accent);
     if (settings.theme_bg) root.style.setProperty('--bg', settings.theme_bg);
     if (settings.theme_card) root.style.setProperty('--card', settings.theme_card);
+    if (settings.theme_text) root.style.setProperty('--text', settings.theme_text);
+    if (settings.theme_muted) root.style.setProperty('--muted', settings.theme_muted);
+    if (settings.theme_slider_title) root.style.setProperty('--slider-title-color', settings.theme_slider_title);
+    if (settings.theme_slider_meta) root.style.setProperty('--slider-meta-color', settings.theme_slider_meta);
+    if (settings.theme_slider_desc) root.style.setProperty('--slider-desc-color', settings.theme_slider_desc);
+    if (settings.theme_movie_card_title) root.style.setProperty('--movie-card-title-color', settings.theme_movie_card_title);
+    if (settings.theme_movie_card_meta) root.style.setProperty('--movie-card-meta-color', settings.theme_movie_card_meta);
     var logo = document.querySelector('.site-logo');
     if (logo && settings.logo_url) {
       logo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + (settings.site_name || '').replace(/"/g, '&quot;') + '">';
