@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, Form, Input, Button, Switch, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
@@ -26,6 +26,8 @@ const SITE_SETTINGS_KEYS = [
 export default function SiteSettings() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.from('site_settings').select('key, value').then((r) => {
@@ -85,92 +87,102 @@ export default function SiteSettings() {
             <Input />
           </Form.Item>
           <Form.Item name="logo_url" label="Logo (URL ảnh)">
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Input placeholder="https://... hoặc chọn ảnh bên dưới" style={{ flex: 1, minWidth: 200 }} />
-              <label>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  style={{ display: 'none' }}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file || file.size > 4 * 1024 * 1024) {
-                      message.warning('Chọn ảnh ≤ 4MB');
-                      return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                      const base64 = (reader.result as string)?.split(',')[1];
-                      if (!base64) return;
-                      try {
-                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
-                        const r = await fetch(apiBase + '/api/upload-image', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ image: base64, contentType: file.type || 'image/jpeg' }),
-                        });
-                        const data = await r.json();
-                        if (data.url) {
-                          form.setFieldValue('logo_url', data.url);
-                          message.success('Đã upload ảnh logo');
-                        } else {
-                          message.error(data.error || 'Upload thất bại');
-                        }
-                      } catch {
-                        message.error('Lỗi kết nối API upload');
+            <Input
+              placeholder="https://... hoặc bấm nút bên cạnh để tải ảnh"
+              addonAfter={
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || file.size > 4 * 1024 * 1024) {
+                        message.warning('Chọn ảnh ≤ 4MB');
+                        return;
                       }
-                    };
-                    reader.readAsDataURL(file);
-                    e.target.value = '';
-                  }}
-                />
-                <Button type="default" size="small">Chọn ảnh / Tải lên</Button>
-              </label>
-            </div>
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = (reader.result as string)?.split(',')[1];
+                        if (!base64) return;
+                        try {
+                          const apiBase = ((import.meta as any).env?.VITE_API_URL || window.location.origin).replace(/\/$/, '');
+                          const r = await fetch(apiBase + '/api/upload-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ image: base64, contentType: file.type || 'image/jpeg' }),
+                          });
+                          const data = await r.json();
+                          if (data.url) {
+                            form.setFieldValue('logo_url', data.url);
+                            message.success('Đã upload ảnh logo');
+                          } else {
+                            message.error(data.error || 'Upload thất bại');
+                          }
+                        } catch {
+                          message.error('Lỗi kết nối API upload. Cần deploy Admin lên Vercel và cấu hình R2.');
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = '';
+                    }}
+                  />
+                  <Button type="link" size="small" onClick={() => logoInputRef.current?.click()}>
+                    Chọn ảnh / Tải lên
+                  </Button>
+                </span>
+              }
+            />
           </Form.Item>
           <Form.Item name="favicon_url" label="Favicon (URL ảnh)">
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Input placeholder="https://... hoặc chọn ảnh bên dưới" style={{ flex: 1, minWidth: 200 }} />
-              <label>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  style={{ display: 'none' }}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file || file.size > 4 * 1024 * 1024) {
-                      message.warning('Chọn ảnh ≤ 4MB');
-                      return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                      const base64 = (reader.result as string)?.split(',')[1];
-                      if (!base64) return;
-                      try {
-                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
-                        const r = await fetch(apiBase + '/api/upload-image', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ image: base64, contentType: file.type || 'image/png' }),
-                        });
-                        const data = await r.json();
-                        if (data.url) {
-                          form.setFieldValue('favicon_url', data.url);
-                          message.success('Đã upload ảnh favicon');
-                        } else {
-                          message.error(data.error || 'Upload thất bại');
-                        }
-                      } catch {
-                        message.error('Lỗi kết nối API upload');
+            <Input
+              placeholder="https://... hoặc bấm nút bên cạnh để tải ảnh"
+              addonAfter={
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <input
+                    ref={faviconInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || file.size > 4 * 1024 * 1024) {
+                        message.warning('Chọn ảnh ≤ 4MB');
+                        return;
                       }
-                    };
-                    reader.readAsDataURL(file);
-                    e.target.value = '';
-                  }}
-                />
-                <Button type="default" size="small">Chọn ảnh / Tải lên</Button>
-              </label>
-            </div>
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = (reader.result as string)?.split(',')[1];
+                        if (!base64) return;
+                        try {
+                          const apiBase = ((import.meta as any).env?.VITE_API_URL || window.location.origin).replace(/\/$/, '');
+                          const r = await fetch(apiBase + '/api/upload-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ image: base64, contentType: file.type || 'image/png' }),
+                          });
+                          const data = await r.json();
+                          if (data.url) {
+                            form.setFieldValue('favicon_url', data.url);
+                            message.success('Đã upload ảnh favicon');
+                          } else {
+                            message.error(data.error || 'Upload thất bại');
+                          }
+                        } catch {
+                          message.error('Lỗi kết nối API upload. Cần deploy Admin lên Vercel và cấu hình R2.');
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = '';
+                    }}
+                  />
+                  <Button type="link" size="small" onClick={() => faviconInputRef.current?.click()}>
+                    Chọn ảnh / Tải lên
+                  </Button>
+                </span>
+              }
+            />
           </Form.Item>
           <Form.Item name="google_analytics_id" label="Google Analytics ID">
             <Input placeholder="G-XXXXXXXXXX" />

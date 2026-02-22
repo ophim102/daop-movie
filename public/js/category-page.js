@@ -58,6 +58,7 @@
     var self = this;
     var grid = document.getElementById(this.gridId);
     if (!grid) return;
+    var filterWrap = document.querySelector('.filter-and-toolbar-wrap');
     var opts = self.gridColumnsOptions || [2, 3, 4, 8];
     var extra = self.gridColumnsExtra || 8;
     var bar = document.createElement('div');
@@ -71,7 +72,11 @@
     colPart += '<button type="button" class="grid-cols-btn' + (extra === self.gridCols ? ' active' : '') + '" data-cols="' + extra + '" id="grid-cols-extra-btn">' + extra + '</button>';
     colPart += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!self.usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (self.usePoster ? ' selected' : '') + '>Poster</option></select></label>';
     bar.innerHTML = colPart;
-    grid.parentNode.insertBefore(bar, grid);
+    if (filterWrap) {
+      filterWrap.appendChild(bar);
+    } else {
+      grid.parentNode.insertBefore(bar, grid);
+    }
     bar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         self.gridCols = parseInt(btn.getAttribute('data-cols'), 10);
@@ -125,6 +130,13 @@
   CategoryPage.prototype.buildFilterUI = function (baseSet, fd) {
     var container = document.getElementById(this.filterContainerId);
     if (!container) return;
+    var parent = container.parentNode;
+    if (parent && !parent.classList.contains('filter-and-toolbar-wrap')) {
+      var wrap = document.createElement('div');
+      wrap.className = 'filter-and-toolbar-wrap filter-and-toolbar-wrap--sticky';
+      parent.insertBefore(wrap, container);
+      wrap.appendChild(container);
+    }
     var list = window.moviesLight || [];
     var years = [];
     list.forEach(function (m) {
@@ -186,7 +198,9 @@
     pinBtn.innerHTML = '✕';
     pinBtn.title = 'Bỏ ghim (khi ghim) / Ghim lại (khi đã bỏ ghim)';
     pinBtn.addEventListener('click', function () {
-      var unpinned = container.classList.toggle('filter-bar-unpinned');
+      var wrap = container.closest('.filter-and-toolbar-wrap');
+      var unpinned = wrap ? wrap.classList.toggle('filter-and-toolbar-wrap--unpinned') : container.classList.toggle('filter-bar-unpinned');
+      if (!wrap) unpinned = container.classList.contains('filter-bar-unpinned');
       pinBtn.innerHTML = unpinned ? '📌' : '✕';
       pinBtn.setAttribute('aria-label', unpinned ? 'Ghim thanh lọc' : 'Bỏ ghim');
     });
