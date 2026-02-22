@@ -565,9 +565,11 @@ function injectSiteNameIntoHtml() {
   console.log('   Injected site_name "' + siteName + '" into HTML files');
 }
 
-/** 5c. Cập nhật footer mọi trang: xóa Donate, thay TMDB bằng GoTV copyright */
+/** 5c. Cập nhật footer mọi trang: Trường Sa & Hoàng Sa, footer links, GoTV copyright */
 function injectFooterIntoHtml() {
   const publicDir = path.join(ROOT, 'public');
+  const footerVietnam = '<p class="footer-vietnam">Trường Sa &amp; Hoàng Sa là của Việt Nam!</p>';
+  const footerLinks = '<p class="footer-links"><a href="/hoi-dap.html">Hỏi-đáp</a> · <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a> · <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></p>';
   const footerCopyright = '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>';
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -577,18 +579,56 @@ function injectFooterIntoHtml() {
       else if (e.isFile() && e.name.endsWith('.html')) {
         let content = fs.readFileSync(full, 'utf8');
         const orig = content;
+        content = content.replace(/Trường Sa,\s*Hoàng Sa/gi, 'Trường Sa & Hoàng Sa');
         content = content.replace(/<p>\s*<a[^>]*href="[^"]*donate[^"]*"[^>]*>Donate<\/a>\s*<\/p>\s*/gi, '');
         content = content.replace(/<p[^>]*class="footer-tmdb"[^>]*>[\s\S]*?<\/p>\s*/i, '');
         content = content.replace(/<p>[\s\S]*?Dữ liệu phim có thể từ TMDB[\s\S]*?<\/p>\s*/i, '');
-        if (!content.includes('footer-copyright') && content.includes('site-footer')) {
-          content = content.replace(/(<\/footer>)/, footerCopyright + '\n  $1');
+        if (content.includes('site-footer')) {
+          if (!content.includes('footer-vietnam')) {
+            content = content.replace(/(<footer[^>]*class="site-footer"[^>]*>)\s*<p(?![^>]*footer-vietnam)[^>]*>\s*Trường Sa[^<]*Hoàng Sa[^<]*Việt Nam[^<]*!?\s*<\/p>\s*/gi, '$1\n    ' + footerVietnam);
+            if (!content.includes('footer-vietnam')) content = content.replace(/(<footer[^>]*class="site-footer"[^>]*>)/i, '$1\n    ' + footerVietnam);
+          }
+          if (!content.includes('footer-links')) {
+            content = content.replace(/(<\/footer>)/, '\n    ' + footerLinks + '\n  $1');
+          }
+          if (!content.includes('footer-copyright')) {
+            content = content.replace(/(<\/footer>)/, '\n    ' + footerCopyright + '\n  $1');
+          }
         }
         if (content !== orig) fs.writeFileSync(full, content, 'utf8');
       }
     }
   }
   walk(publicDir);
-  console.log('   Injected footer (GoTV copyright) into HTML files');
+  console.log('   Injected footer into HTML files');
+}
+
+/** 5d. Thêm Tải app, Liên hệ vào nav mọi trang */
+function injectNavIntoHtml() {
+  const publicDir = path.join(ROOT, 'public');
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && e.name.endsWith('.html')) {
+        let content = fs.readFileSync(full, 'utf8');
+        if (content.includes('huong-dan-app')) continue;
+        const prefix = content.includes('href="../') ? 'href="../' : 'href="/';
+        const taiApp = '<a ' + prefix + 'huong-dan-app.html">Tải app</a>';
+        const lienHe = '<a ' + prefix + 'lien-he.html">Liên hệ</a>';
+        const added = taiApp + lienHe;
+        if (content.includes('donate')) {
+          content = content.replace(/(<a [^>]*donate[^"']*"[^>]*>Donate<\/a>)/i, '$1' + added);
+        } else if (content.includes('gioi-thieu')) {
+          content = content.replace(/(<a [^>]*gioi-thieu[^"']*"[^>]*>Giới thiệu<\/a>)/i, '$1' + added);
+        }
+        if (content.includes('huong-dan-app')) fs.writeFileSync(full, content, 'utf8');
+      }
+    }
+  }
+  walk(publicDir);
+  console.log('   Injected nav (Tải app, Liên hệ) into HTML files');
 }
 
 /** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
@@ -1051,7 +1091,7 @@ async function writeDefaultConfig() {
 function writeSitemap(movies) {
   const base = process.env.SITE_URL || 'https://yourdomain.com';
   let xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-  const pages = ['', '/phim-bo', '/phim-le', '/tim-kiem', '/gioi-thieu', '/donate'];
+  const pages = ['', '/phim-bo', '/phim-le', '/tim-kiem', '/gioi-thieu', '/donate', '/huong-dan-app', '/lien-he', '/hoi-dap', '/chinh-sach-bao-mat', '/dieu-khoan-su-dung'];
   for (const p of pages) xml += `<url><loc>${base}${p || '/'}</loc><changefreq>daily</changefreq></url>`;
   for (const m of movies) xml += `<url><loc>${base}/phim/${m.slug}.html</loc><changefreq>weekly</changefreq></url>`;
   xml += '</urlset>';
@@ -1079,6 +1119,7 @@ async function main() {
     await exportConfigFromSupabase();
     injectSiteNameIntoHtml();
     injectFooterIntoHtml();
+    injectNavIntoHtml();
     const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
     const filterOrderPath = path.join(PUBLIC_DATA, 'config', 'filter-order.json');
     if (await fs.pathExists(filtersPath)) {
@@ -1162,6 +1203,8 @@ async function main() {
   injectSiteNameIntoHtml();
   console.log('5c. Injecting footer into HTML files...');
   injectFooterIntoHtml();
+  console.log('5d. Injecting nav into HTML files...');
+  injectNavIntoHtml();
 
   console.log('6. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);

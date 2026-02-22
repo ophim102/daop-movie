@@ -50,13 +50,16 @@ export default function StaticPages() {
   useEffect(() => {
     supabase.from('static_pages').select('*').then((r) => {
       const pages = r.data ?? [];
-      const about = pages.find((p: any) => p.page_key === 'about');
-      const appGuide = pages.find((p: any) => p.page_key === 'app_guide');
+      const find = (key: string) => pages.find((p: any) => p.page_key === key);
       form.setFieldsValue({
-        about_content: about?.content ?? '',
-        app_guide_content: appGuide?.content ?? '',
-        apk_link: (appGuide as any)?.apk_link ?? '',
-        testflight_link: (appGuide as any)?.testflight_link ?? '',
+        about_content: find('about')?.content ?? '',
+        app_guide_content: find('app_guide')?.content ?? '',
+        apk_link: (find('app_guide') as any)?.apk_link ?? '',
+        testflight_link: (find('app_guide') as any)?.testflight_link ?? '',
+        contact_content: find('contact')?.content ?? '',
+        faq_content: find('faq')?.content ?? '',
+        privacy_content: find('privacy')?.content ?? '',
+        terms_content: find('terms')?.content ?? '',
       });
       setLoading(false);
     });
@@ -64,13 +67,15 @@ export default function StaticPages() {
 
   const onFinish = async (values: any) => {
     try {
-      const { error } = await supabase.from('static_pages').upsert(
-        [
-          { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
-          { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link ?? null, testflight_link: values.testflight_link ?? null, updated_at: new Date().toISOString() },
-        ],
-        { onConflict: 'page_key' }
-      );
+      const rows = [
+        { page_key: 'about', content: values.about_content, updated_at: new Date().toISOString() },
+        { page_key: 'app_guide', content: values.app_guide_content, apk_link: values.apk_link ?? null, testflight_link: values.testflight_link ?? null, updated_at: new Date().toISOString() },
+        { page_key: 'contact', content: values.contact_content, updated_at: new Date().toISOString() },
+        { page_key: 'faq', content: values.faq_content, updated_at: new Date().toISOString() },
+        { page_key: 'privacy', content: values.privacy_content, updated_at: new Date().toISOString() },
+        { page_key: 'terms', content: values.terms_content, updated_at: new Date().toISOString() },
+      ];
+      const { error } = await supabase.from('static_pages').upsert(rows, { onConflict: 'page_key' });
       if (error) throw error;
       message.success('Đã lưu trang tĩnh');
     } catch (e: any) {
@@ -85,29 +90,19 @@ export default function StaticPages() {
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Tabs
             items={[
-              {
-                key: 'about',
-                label: 'Trang giới thiệu',
-                children: (
-                  <Form.Item name="about_content" label="Nội dung (HTML)">
-                    <RichTextEditor />
-                  </Form.Item>
-                ),
-              },
+              { key: 'about', label: 'Giới thiệu', children: <Form.Item name="about_content" label="Nội dung (HTML)"><RichTextEditor /></Form.Item> },
+              { key: 'contact', label: 'Liên hệ', children: <Form.Item name="contact_content" label="Nội dung (HTML)"><RichTextEditor /></Form.Item> },
+              { key: 'faq', label: 'Hỏi-đáp', children: <Form.Item name="faq_content" label="Nội dung (HTML)"><RichTextEditor /></Form.Item> },
+              { key: 'privacy', label: 'Chính sách bảo mật', children: <Form.Item name="privacy_content" label="Nội dung (HTML)"><RichTextEditor /></Form.Item> },
+              { key: 'terms', label: 'Điều khoản sử dụng', children: <Form.Item name="terms_content" label="Nội dung (HTML)"><RichTextEditor /></Form.Item> },
               {
                 key: 'app_guide',
                 label: 'Hướng dẫn app',
                 children: (
                   <>
-                    <Form.Item name="app_guide_content" label="Nội dung">
-                      <RichTextEditor />
-                    </Form.Item>
-                    <Form.Item name="apk_link" label="Link APK">
-                      <Input placeholder="https://..." />
-                    </Form.Item>
-                    <Form.Item name="testflight_link" label="Link TestFlight">
-                      <Input placeholder="https://..." />
-                    </Form.Item>
+                    <Form.Item name="app_guide_content" label="Nội dung"><RichTextEditor /></Form.Item>
+                    <Form.Item name="apk_link" label="Link APK"><Input placeholder="https://..." /></Form.Item>
+                    <Form.Item name="testflight_link" label="Link TestFlight"><Input placeholder="https://..." /></Form.Item>
                   </>
                 ),
               },

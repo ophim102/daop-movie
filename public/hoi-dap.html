@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hỏi đáp | DAOP Phim</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">DAOP Phim</a>
+    <nav class="site-nav">
+      <div class="site-nav-main">
+        <a href="/phim-bo.html">Phim bộ</a>
+        <a href="/phim-le.html">Phim lẻ</a>
+        <a href="/the-loai/">Thể loại</a>
+        <a href="/quoc-gia/">Quốc gia</a>
+        <a href="/danh-sach/">Danh sách</a>
+        <a href="/dien-vien/">Diễn viên</a>
+        <a href="/hoat-hinh.html">Hoạt hình</a>
+        <a href="/shows.html">TV Shows</a>
+        <a href="/gioi-thieu.html">Giới thiệu</a>
+        <a href="/donate.html">Donate</a>
+        <a href="/huong-dan-app.html">Tải app</a>
+        <a href="/lien-he.html">Liên hệ</a>
+      </div>
+      <div class="site-nav-actions">
+        <a href="/tim-kiem.html">Tìm kiếm</a>
+        <a href="/login.html">Đăng nhập</a>
+      </div>
+    </nav>
+  </header>
+  <main class="container">
+    <h1>Hỏi đáp</h1>
+    <div id="static-content">Đang tải...</div>
+  </main>
+  <footer class="site-footer">
+    <p class="footer-vietnam">Trường Sa &amp; Hoàng Sa là của Việt Nam!</p>
+    <p class="footer-links"><a href="/hoi-dap.html">Hỏi-đáp</a> · <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a> · <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></p>
+    <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script>
+    fetch('/data/config/static-pages.json').then(function(r){ return r.json(); }).then(function(pages){
+      var p = Array.isArray(pages) ? pages.find(function(x){ return x.page_key === 'faq'; }) : null;
+      var el = document.getElementById('static-content');
+      if (el) el.innerHTML = (p && p.content) ? p.content : '<p>Nội dung trang hỏi đáp.</p>';
+    }).catch(function(){ document.getElementById('static-content').innerHTML = '<p>Nội dung trang hỏi đáp.</p>'; });
+  </script>
+</body>
+</html>
