@@ -235,10 +235,10 @@ export default function HomepageSections() {
             width: 120,
             render: (_: any, row: SectionRow) => {
               const fc = (row.filter_config as Record<string, unknown>) || {};
-              const xs = row.grid_columns_xs ?? fc.grid_columns_xs ?? 2;
-              const sm = row.grid_columns_sm ?? fc.grid_columns_sm ?? 3;
-              const md = row.grid_columns_md ?? fc.grid_columns_md ?? 4;
-              const lg = row.grid_columns_lg ?? fc.grid_columns_lg ?? 6;
+              const xs = Number(row.grid_columns_xs ?? fc.grid_columns_xs ?? 2);
+              const sm = Number(row.grid_columns_sm ?? fc.grid_columns_sm ?? 3);
+              const md = Number(row.grid_columns_md ?? fc.grid_columns_md ?? 4);
+              const lg = Number(row.grid_columns_lg ?? fc.grid_columns_lg ?? 6);
               return <Tag>{xs}/{sm}/{md}/{lg}</Tag>;
             },
           },
