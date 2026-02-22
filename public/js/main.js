@@ -237,6 +237,14 @@
     if (footer && settings.footer_content) {
       footer.innerHTML = settings.footer_content;
     }
+    var footerLogo = document.querySelector('.site-footer .footer-logo');
+    if (footerLogo && settings.logo_url) {
+      var alt = (settings.site_name || 'GoTV').replace(/"/g, '&quot;');
+      footerLogo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + alt + '">';
+      if (!footerLogo.getAttribute('href')) footerLogo.setAttribute('href', BASE || '/');
+    } else if (footerLogo && settings.site_name && !footerLogo.querySelector('img')) {
+      footerLogo.textContent = settings.site_name;
+    }
     var sliderWrap = document.getElementById('slider-wrap');
     if (sliderWrap) {
       try {

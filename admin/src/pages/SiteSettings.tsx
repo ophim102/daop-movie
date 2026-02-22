@@ -2,6 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { Card, Form, Input, Button, Switch, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
+/** Footer HTML mặc định (banner + logo + 3 link + copyright). Logo dùng ảnh từ Logo URL ở trên. */
+const DEFAULT_FOOTER_HTML = `<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid meet"><rect width="30" height="20" fill="#DA251D"/><path fill="#FFFF00" d="M15 4l2.47 7.6H25l-6.23 4.5 2.36 7.3L15 16.2l-6.13 4.2 2.36-7.3L5 11.6h7.53z"/></svg></span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>
+<div class="footer-bottom"><div class="footer-bottom-inner"><a href="/" class="footer-logo">GoTV</a><span class="footer-divider" aria-hidden="true"></span><div class="footer-links-col"><a href="/hoi-dap.html">Hỏi - đáp</a><a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a><a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></div></div></div>
+<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>`;
+
 const SITE_SETTINGS_KEYS = [
   'site_name',
   'logo_url',
@@ -229,9 +234,28 @@ export default function SiteSettings() {
           <Form.Item name="social_youtube" label="YouTube (URL)">
             <Input placeholder="https://youtube.com/..." />
           </Form.Item>
-          <Form.Item name="footer_content" label="Nội dung footer (HTML, để trống = dùng mặc định)">
-            <Input.TextArea rows={4} placeholder="<p>Donate</p><p>Trường Sa, Hoàng Sa...</p>" />
-          </Form.Item>
+          <Card title="Nội dung Footer" style={{ marginTop: 24 }}>
+            <p style={{ color: '#666', fontSize: 13, marginBottom: 12 }}>
+              Để trống = dùng footer mặc định (banner Trường Sa &amp; Hoàng Sa, logo — dùng chung ảnh Logo ở trên —, 3 link Hỏi đáp / Chính sách bảo mật / Điều khoản, copyright). Nếu nhập HTML bên dưới, toàn bộ nội dung footer sẽ thay bằng HTML này.
+            </p>
+            <Form.Item name="footer_content" label="HTML tùy chỉnh (để trống = mặc định)">
+              <Input.TextArea
+                rows={10}
+                placeholder="Để trống để dùng footer mặc định..."
+                style={{ fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </Form.Item>
+            <Button
+              type="default"
+              onClick={() => form.setFieldValue('footer_content', '')}
+              style={{ marginRight: 8 }}
+            >
+              Xóa (dùng mặc định)
+            </Button>
+            <Button type="default" onClick={() => form.setFieldValue('footer_content', DEFAULT_FOOTER_HTML)}>
+              Khôi phục mẫu mặc định
+            </Button>
+          </Card>
           <Form.Item name="tmdb_attribution" label="Hiển thị ghi nhận TMDB" valuePropName="checked">
             <Switch />
           </Form.Item>

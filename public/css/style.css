@@ -1323,7 +1323,6 @@ a:hover {
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
   padding: 1.25rem 1rem;
-  background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 .site-footer .footer-bottom-inner {
@@ -1340,13 +1339,27 @@ a:hover {
   color: var(--text);
   text-decoration: none;
   font-size: clamp(1rem, 2.5vw, 1.25rem);
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s;
 }
 .site-footer .footer-logo:hover {
   color: var(--accent);
-  background: rgba(255, 255, 255, 0.6);
+  opacity: 0.9;
+}
+.site-footer .footer-logo img {
+  display: block;
+  height: 2rem;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+@media (min-width: 480px) {
+  .site-footer .footer-logo img {
+    height: 2.25rem;
+    max-width: 160px;
+  }
 }
 .site-footer .footer-divider {
   width: 1px;
