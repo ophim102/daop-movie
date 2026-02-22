@@ -498,6 +498,17 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
     const ys = String(y);
     if (!yearMap[ys]) yearMap[ys] = [];
   }
+  const configDir = path.join(PUBLIC_DATA, 'config');
+  const filterOrderPath = path.join(configDir, 'filter-order.json');
+  let filterOrder = { rowOrder: ['year', 'genre', 'country', 'videoType', 'lang'], genreOrder: [], countryOrder: [] };
+  if (fs.existsSync(filterOrderPath)) {
+    try {
+      const fo = JSON.parse(fs.readFileSync(filterOrderPath, 'utf8'));
+      if (fo.rowOrder && Array.isArray(fo.rowOrder)) filterOrder.rowOrder = fo.rowOrder;
+      if (fo.genreOrder && Array.isArray(fo.genreOrder)) filterOrder.genreOrder = fo.genreOrder;
+      if (fo.countryOrder && Array.isArray(fo.countryOrder)) filterOrder.countryOrder = fo.countryOrder;
+    } catch (_) {}
+  }
   const content = `window.filtersData = ${JSON.stringify({
     genreMap,
     countryMap,
@@ -508,6 +519,7 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
     exclusiveIds,
     genreNames,
     countryNames,
+    filterOrder,
   })};`;
   fs.writeFileSync(path.join(PUBLIC_DATA, 'filters.js'), content, 'utf8');
   return { genreMap, countryMap, yearMap, genreNames, countryNames };
@@ -724,6 +736,9 @@ async function exportConfigFromSupabase() {
     homepage_slider: '[]',
     ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
     movies_data_url: '',
+    filter_row_order: JSON.stringify(['year', 'genre', 'country', 'videoType', 'lang']),
+    filter_genre_order: '[]',
+    filter_country_order: '[]',
     theme_primary: '#58a6ff',
     theme_bg: '#0d1117',
     theme_card: '#161b22',
@@ -731,6 +746,43 @@ async function exportConfigFromSupabase() {
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));
+
+  const defaultRowOrder = ['year', 'genre', 'country', 'videoType', 'lang'];
+  const filterRowOrder = (() => {
+    try {
+      const v = mergedSettings.filter_row_order;
+      if (!v) return defaultRowOrder;
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) && a.length ? a : defaultRowOrder;
+    } catch {
+      return defaultRowOrder;
+    }
+  })();
+  const filterGenreOrder = (() => {
+    try {
+      const v = mergedSettings.filter_genre_order;
+      if (!v) return [];
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) ? a : [];
+    } catch {
+      return [];
+    }
+  })();
+  const filterCountryOrder = (() => {
+    try {
+      const v = mergedSettings.filter_country_order;
+      if (!v) return [];
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) ? a : [];
+    } catch {
+      return [];
+    }
+  })();
+  fs.writeFileSync(
+    path.join(configDir, 'filter-order.json'),
+    JSON.stringify({ rowOrder: filterRowOrder, genreOrder: filterGenreOrder, countryOrder: filterCountryOrder }, null, 2)
+  );
+
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'donate.json'), JSON.stringify(donate.data || {}, null, 2));
   
@@ -801,6 +853,11 @@ async function writeDefaultConfig() {
       warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
     },
     'preroll.json': [],
+    'filter-order.json': {
+      rowOrder: ['year', 'genre', 'country', 'videoType', 'lang'],
+      genreOrder: [],
+      countryOrder: [],
+    },
   };
   for (const [file, data] of Object.entries(defaults)) {
     fs.writeFileSync(path.join(configDir, file), JSON.stringify(data, null, 2));
@@ -901,15 +958,15 @@ async function main() {
   console.log('4b. Fetching OPhim genres & countries...');
   const { genreNames, countryNames } = await fetchOPhimGenresAndCountries();
 
-  console.log('5. Writing movies-light.js, filters.js, actors (index + shards), batches...');
+  console.log('5. Exporting config from Supabase Admin (để có filter-order, site-settings...)...');
+  await exportConfigFromSupabase();
+
+  console.log('6. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);
   const filters = writeFilters(allMovies, genreNames, countryNames);
   writeCategoryPages(filters);
   writeActors(allMovies);
   writeBatches(allMovies);
-
-  console.log('6. Exporting config from Supabase Admin...');
-  await exportConfigFromSupabase();
 
   const buildVersion = { builtAt: new Date().toISOString() };
   fs.writeFileSync(path.join(PUBLIC_DATA, 'build_version.json'), JSON.stringify(buildVersion, null, 2));

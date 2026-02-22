@@ -33,11 +33,27 @@
     this.attachEvents(baseSet, filtersData);
   };
 
+  var ROW_IDS = ['year', 'genre', 'country', 'videoType', 'lang'];
+
+  function sortByOrder(allKeys, orderArray) {
+    if (!orderArray || !orderArray.length) return allKeys.slice().sort();
+    var orderSet = {};
+    orderArray.forEach(function (k, i) { orderSet[k] = i; });
+    return allKeys.slice().sort(function (a, b) {
+      var ia = orderSet[a];
+      var ib = orderSet[b];
+      if (ia !== undefined && ib !== undefined) return ia - ib;
+      if (ia !== undefined) return -1;
+      if (ib !== undefined) return 1;
+      return a < b ? -1 : a > b ? 1 : 0;
+    });
+  }
+
   CategoryPage.prototype.buildFilterUI = function (baseSet, fd) {
     var container = document.getElementById(this.filterContainerId);
     if (!container) return;
-    var years = [];
     var list = window.moviesLight || [];
+    var years = [];
     list.forEach(function (m) {
       if (!baseSet.has(m.id)) return;
       if (m.year && years.indexOf(m.year) === -1) years.push(m.year);
@@ -47,8 +63,14 @@
     var genreMap = fd.genreMap || {};
     var countryNames = fd.countryNames || {};
     var countryMap = fd.countryMap || {};
-    var genres = Object.keys(genreNames).length ? Object.keys(genreNames).sort() : Object.keys(genreMap).sort();
-    var countries = Object.keys(countryNames).length ? Object.keys(countryNames).sort() : Object.keys(countryMap).sort();
+    var allGenres = Object.keys(genreNames).length ? Object.keys(genreNames) : Object.keys(genreMap || {});
+    var allCountries = Object.keys(countryNames).length ? Object.keys(countryNames) : Object.keys(countryMap || {});
+    var fo = fd.filterOrder || {};
+    var genreOrder = fo.genreOrder || [];
+    var countryOrder = fo.countryOrder || [];
+    var rowOrder = fo.rowOrder && fo.rowOrder.length ? fo.rowOrder : ROW_IDS;
+    var genres = sortByOrder(allGenres, genreOrder);
+    var countries = sortByOrder(allCountries, countryOrder);
     var genreName = function (s) { return genreNames[s] || s; };
     var countryName = function (s) { return countryNames[s] || s; };
     var genreChecks = genres.map(function (g) {
@@ -57,12 +79,21 @@
     var countryChecks = countries.map(function (c) {
       return '<label><input type="checkbox" name="country" value="' + c + '"> ' + countryName(c).replace(/</g, '&lt;') + '</label>';
     }).join('');
-    container.innerHTML =
-      '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div></div>' +
-      '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div></div>';
+    var yearHtml = '<div class="filter-item"><label class="filter-label">Năm phát hành:</label><select id="filter-year"><option value="">Tất cả</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('') + '</select></div>';
+    var genreHtml = '<div class="filter-row-wrap"><span class="filter-label">Thể loại:</span><div class="filter-scroll" id="filter-scroll-genre"><div class="checkboxes filter-two-rows">' + genreChecks + '</div></div></div>';
+    var countryHtml = '<div class="filter-row-wrap"><span class="filter-label">Quốc gia:</span><div class="filter-scroll" id="filter-scroll-country"><div class="checkboxes filter-two-rows">' + countryChecks + '</div></div></div>';
+    var videoTypeHtml = '<div class="filter-row-wrap"><span class="filter-label">Loại video:</span><div class="filter-scroll" id="filter-scroll-videoType"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="videoType" value="tvshows"> TV Shows</label><label><input type="checkbox" name="videoType" value="hoathinh"> Hoạt hình</label><label><input type="checkbox" name="videoType" value="4k"> 4K</label><label><input type="checkbox" name="videoType" value="exclusive"> Độc quyền</label></div></div></div>';
+    var langHtml = '<div class="filter-row-wrap"><span class="filter-label">Kiểu ngôn ngữ:</span><div class="filter-scroll" id="filter-scroll-lang"><div class="checkboxes filter-two-rows"><label><input type="checkbox" name="lang" value="vietsub"> Vietsub</label><label><input type="checkbox" name="lang" value="thuyetminh"> Thuyết minh</label><label><input type="checkbox" name="lang" value="longtieng"> Lồng tiếng</label><label><input type="checkbox" name="lang" value="khac"> Khác</label></div></div></div>';
+    var rowHtml = { year: yearHtml, genre: genreHtml, country: countryHtml, videoType: videoTypeHtml, lang: langHtml };
+    var ordered = [];
+    var seen = {};
+    rowOrder.forEach(function (id) {
+      if (rowHtml[id] && !seen[id]) { ordered.push(rowHtml[id]); seen[id] = true; }
+    });
+    ROW_IDS.forEach(function (id) {
+      if (!seen[id] && rowHtml[id]) ordered.push(rowHtml[id]);
+    });
+    container.innerHTML = ordered.join('');
   };
 
   CategoryPage.prototype.applyFilters = function (baseSet, fd) {
