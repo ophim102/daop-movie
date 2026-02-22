@@ -17,7 +17,7 @@ function injectFooter() {
     '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner">' + flagSvg + ' Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>',
     '<div class="footer-bottom">',
     '  <div class="footer-bottom-inner">',
-    '    <a href="/" class="footer-logo">GoTV</a>',
+    '    <a href="/" class="footer-logo">GoTV<span class="footer-logo-text">GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao.</span></a>',
     '    <span class="footer-divider" aria-hidden="true"></span>',
     '    <div class="footer-links-col">',
     '      <a href="/hoi-dap.html">Hỏi - đáp</a>',

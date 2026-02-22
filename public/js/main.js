@@ -43,7 +43,11 @@
         window.addEventListener('load', onLoad);
       }
     }).catch(function () {
-      window.addEventListener('load', function () { hide(); });
+      if (document.readyState === 'complete') {
+        hide();
+      } else {
+        window.addEventListener('load', function () { hide(); });
+      }
     });
   }
   if (document.readyState === 'loading') {

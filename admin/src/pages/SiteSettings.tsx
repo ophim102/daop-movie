@@ -252,6 +252,9 @@ export default function SiteSettings() {
             <p style={{ color: '#666', fontSize: 13, marginBottom: 12 }}>
               Để trống = dùng footer mặc định (banner Trường Sa &amp; Hoàng Sa, logo — dùng chung ảnh Logo ở trên —, 3 link Hỏi đáp / Chính sách bảo mật / Điều khoản, copyright). Nếu nhập HTML bên dưới, toàn bộ nội dung footer sẽ thay bằng HTML này.
             </p>
+            <p style={{ color: '#888', fontSize: 12, marginBottom: 12 }}>
+              Khi dùng HTML tùy chỉnh: giữ phần tử có class <code>footer-logo</code> (và <code>footer-logo-text</code> bên trong) nếu muốn logo + mô tả footer tự lấy từ cài đặt Logo / Tên site ở trên.
+            </p>
             <Form.Item name="footer_content" label="HTML tùy chỉnh (để trống = mặc định)">
               <Input.TextArea
                 rows={10}
