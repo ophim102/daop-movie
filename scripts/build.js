@@ -533,6 +533,38 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
   return { genreMap, countryMap, yearMap, genreNames, countryNames };
 }
 
+/** 5b. Inject site_name vào tất cả HTML (title, site-logo) để tên web đúng ngay khi load trang */
+function injectSiteNameIntoHtml() {
+  const configDir = path.join(PUBLIC_DATA, 'config');
+  const siteSettingsPath = path.join(configDir, 'site-settings.json');
+  if (!fs.existsSync(siteSettingsPath)) return;
+  let settings;
+  try {
+    settings = JSON.parse(fs.readFileSync(siteSettingsPath, 'utf8'));
+  } catch {
+    return;
+  }
+  const siteName = settings.site_name || 'DAOP Phim';
+  if (siteName === 'DAOP Phim') return;
+
+  const publicDir = path.join(ROOT, 'public');
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && e.name.endsWith('.html')) {
+        let content = fs.readFileSync(full, 'utf8');
+        const orig = content;
+        content = content.replace(/DAOP Phim/g, siteName);
+        if (content !== orig) fs.writeFileSync(full, content, 'utf8');
+      }
+    }
+  }
+  walk(publicDir);
+  console.log('   Injected site_name "' + siteName + '" into HTML files');
+}
+
 /** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
 function writeCategoryPages(filters) {
   const publicDir = path.join(ROOT, 'public');
@@ -1045,6 +1077,9 @@ async function main() {
 
   console.log('5. Exporting config from Supabase Admin (để có filter-order, site-settings...)...');
   await exportConfigFromSupabase();
+
+  console.log('5b. Injecting site_name into HTML files...');
+  injectSiteNameIntoHtml();
 
   console.log('6. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);
