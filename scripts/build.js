@@ -935,11 +935,23 @@ async function main() {
     console.log('Incremental: export config từ Supabase + tạo lại trang thể loại/quốc gia/năm.');
     await exportConfigFromSupabase();
     const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
+    const filterOrderPath = path.join(PUBLIC_DATA, 'config', 'filter-order.json');
     if (await fs.pathExists(filtersPath)) {
       const raw = fs.readFileSync(filtersPath, 'utf8');
       const jsonStr = raw.replace(/^window\.filtersData\s*=\s*/, '').replace(/;\s*$/, '');
       try {
         const filters = JSON.parse(jsonStr);
+        if (fs.existsSync(filterOrderPath)) {
+          const fo = JSON.parse(fs.readFileSync(filterOrderPath, 'utf8'));
+          filters.filterOrder = {
+            rowOrder: fo.rowOrder && Array.isArray(fo.rowOrder) ? fo.rowOrder : (filters.filterOrder && filters.filterOrder.rowOrder) || ['year', 'genre', 'country', 'videoType', 'lang'],
+            genreOrder: fo.genreOrder && Array.isArray(fo.genreOrder) ? fo.genreOrder : (filters.filterOrder && filters.filterOrder.genreOrder) || [],
+            countryOrder: fo.countryOrder && Array.isArray(fo.countryOrder) ? fo.countryOrder : (filters.filterOrder && filters.filterOrder.countryOrder) || [],
+            videoTypeOrder: fo.videoTypeOrder && Array.isArray(fo.videoTypeOrder) ? fo.videoTypeOrder : (filters.filterOrder && filters.filterOrder.videoTypeOrder) || ['tvshows', 'hoathinh', '4k', 'exclusive'],
+            langOrder: fo.langOrder && Array.isArray(fo.langOrder) ? fo.langOrder : (filters.filterOrder && filters.filterOrder.langOrder) || ['vietsub', 'thuyetminh', 'longtieng', 'khac'],
+          };
+          fs.writeFileSync(filtersPath, `window.filtersData = ${JSON.stringify(filters)};`, 'utf8');
+        }
         writeCategoryPages(filters);
       } catch (e) {
         console.warn('   Không parse được filters.js, bỏ qua writeCategoryPages:', e.message);
