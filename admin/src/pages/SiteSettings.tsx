@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, Switch, Select, message } from 'antd';
+import { Card, Form, Input, Button, Switch, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
 const SITE_SETTINGS_KEYS = [
@@ -21,20 +21,7 @@ const SITE_SETTINGS_KEYS = [
   'social_youtube',
   'footer_content',
   'tmdb_attribution',
-  'default_grid_cols_xs',
-  'default_grid_cols_sm',
-  'default_grid_cols_md',
-  'default_grid_cols_lg',
-  'grid_columns_extra',
-  'default_use_poster',
 ] as const;
-
-const COLUMN_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: String(n), label: String(n) }));
-const COLUMN_EXTRA_OPTIONS = [6, 8, 10, 12, 14, 16].map((n) => ({ value: String(n), label: String(n) }));
-const IMAGE_TYPE_OPTIONS = [
-  { value: 'thumb', label: 'Thumb (ảnh ngang)' },
-  { value: 'poster', label: 'Poster (ảnh dọc)' },
-];
 
 export default function SiteSettings() {
   const [form] = Form.useForm();
@@ -65,12 +52,6 @@ export default function SiteSettings() {
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
         tmdb_attribution: data.tmdb_attribution !== 'false',
-        default_grid_cols_xs: data.default_grid_cols_xs ?? '2',
-        default_grid_cols_sm: data.default_grid_cols_sm ?? '3',
-        default_grid_cols_md: data.default_grid_cols_md ?? '4',
-        default_grid_cols_lg: data.default_grid_cols_lg ?? '6',
-        grid_columns_extra: data.grid_columns_extra ?? '8',
-        default_use_poster: data.default_use_poster === 'true' || data.default_use_poster === 'poster' ? 'poster' : 'thumb',
       });
       setLoading(false);
     });
@@ -104,10 +85,92 @@ export default function SiteSettings() {
             <Input />
           </Form.Item>
           <Form.Item name="logo_url" label="Logo (URL ảnh)">
-            <Input placeholder="https://..." />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <Input placeholder="https://... hoặc chọn ảnh bên dưới" style={{ flex: 1, minWidth: 200 }} />
+              <label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || file.size > 4 * 1024 * 1024) {
+                      message.warning('Chọn ảnh ≤ 4MB');
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      const base64 = (reader.result as string)?.split(',')[1];
+                      if (!base64) return;
+                      try {
+                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
+                        const r = await fetch(apiBase + '/api/upload-image', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ image: base64, contentType: file.type || 'image/jpeg' }),
+                        });
+                        const data = await r.json();
+                        if (data.url) {
+                          form.setFieldValue('logo_url', data.url);
+                          message.success('Đã upload ảnh logo');
+                        } else {
+                          message.error(data.error || 'Upload thất bại');
+                        }
+                      } catch {
+                        message.error('Lỗi kết nối API upload');
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    e.target.value = '';
+                  }}
+                />
+                <Button type="default" size="small">Chọn ảnh / Tải lên</Button>
+              </label>
+            </div>
           </Form.Item>
           <Form.Item name="favicon_url" label="Favicon (URL ảnh)">
-            <Input placeholder="https://..." />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <Input placeholder="https://... hoặc chọn ảnh bên dưới" style={{ flex: 1, minWidth: 200 }} />
+              <label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || file.size > 4 * 1024 * 1024) {
+                      message.warning('Chọn ảnh ≤ 4MB');
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      const base64 = (reader.result as string)?.split(',')[1];
+                      if (!base64) return;
+                      try {
+                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
+                        const r = await fetch(apiBase + '/api/upload-image', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ image: base64, contentType: file.type || 'image/png' }),
+                        });
+                        const data = await r.json();
+                        if (data.url) {
+                          form.setFieldValue('favicon_url', data.url);
+                          message.success('Đã upload ảnh favicon');
+                        } else {
+                          message.error(data.error || 'Upload thất bại');
+                        }
+                      } catch {
+                        message.error('Lỗi kết nối API upload');
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    e.target.value = '';
+                  }}
+                />
+                <Button type="default" size="small">Chọn ảnh / Tải lên</Button>
+              </label>
+            </div>
           </Form.Item>
           <Form.Item name="google_analytics_id" label="Google Analytics ID">
             <Input placeholder="G-XXXXXXXXXX" />
@@ -156,26 +219,7 @@ export default function SiteSettings() {
           <Form.Item name="tmdb_attribution" label="Hiển thị ghi nhận TMDB" valuePropName="checked">
             <Switch />
           </Form.Item>
-          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Grid &amp; Ảnh (trang lọc, tìm kiếm)</h3>
-          <p style={{ color: '#888', fontSize: 12, marginTop: -8, marginBottom: 12 }}>Cũng cấu hình tại <strong>Trang danh mục</strong>. Giá trị ở đây dùng làm mặc định khi Trang danh mục chưa đặt.</p>
-          <Form.Item name="default_grid_cols_xs" label="Số cột mặc định - Mobile nhỏ (&lt;480px)">
-            <Select options={COLUMN_OPTIONS} />
-          </Form.Item>
-          <Form.Item name="default_grid_cols_sm" label="Số cột mặc định - Mobile lớn (480–767px)">
-            <Select options={COLUMN_OPTIONS} />
-          </Form.Item>
-          <Form.Item name="default_grid_cols_md" label="Số cột mặc định - Tablet (768–1023px)">
-            <Select options={COLUMN_OPTIONS} />
-          </Form.Item>
-          <Form.Item name="default_grid_cols_lg" label="Số cột mặc định - Desktop (1024px+)">
-            <Select options={COLUMN_OPTIONS} />
-          </Form.Item>
-          <Form.Item name="grid_columns_extra" label="Lựa chọn cột thứ 4 trên toolbar (bên cạnh 2, 3, 4)">
-            <Select options={COLUMN_EXTRA_OPTIONS} />
-          </Form.Item>
-          <Form.Item name="default_use_poster" label="Loại ảnh mặc định">
-            <Select options={IMAGE_TYPE_OPTIONS} />
-          </Form.Item>
+          <p style={{ color: '#888', fontSize: 12 }}>Grid &amp; Ảnh cho trang lọc/tìm kiếm: cấu hình tại <strong>Trang danh mục</strong> trong menu.</p>
           <Form.Item>
             <Button type="primary" htmlType="submit">Lưu</Button>
           </Form.Item>

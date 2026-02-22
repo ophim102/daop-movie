@@ -161,7 +161,48 @@ export default function PrerollAds() {
             <Input placeholder="https://..." />
           </Form.Item>
           <Form.Item name="image_url" label="URL ảnh (poster/thumbnail)">
-            <Input placeholder="https://..." />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <Input placeholder="https://... hoặc chọn ảnh bên dưới" style={{ flex: 1, minWidth: 200 }} />
+              <label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || file.size > 4 * 1024 * 1024) {
+                      message.warning('Chọn ảnh ≤ 4MB');
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      const base64 = (reader.result as string)?.split(',')[1];
+                      if (!base64) return;
+                      try {
+                        const apiBase = (import.meta as any).env?.VITE_API_URL || '';
+                        const r = await fetch(apiBase + '/api/upload-image', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ image: base64, contentType: file.type || 'image/jpeg' }),
+                        });
+                        const data = await r.json();
+                        if (data.url) {
+                          form.setFieldValue('image_url', data.url);
+                          message.success('Đã upload ảnh');
+                        } else {
+                          message.error(data.error || 'Upload thất bại');
+                        }
+                      } catch {
+                        message.error('Lỗi kết nối API upload');
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    e.target.value = '';
+                  }}
+                />
+                <Button type="default" size="small">Chọn ảnh / Tải lên</Button>
+              </label>
+            </div>
           </Form.Item>
           <Form.Item name="duration" label="Thời lượng (giây)">
             <InputNumber min={1} style={{ width: '100%' }} />
