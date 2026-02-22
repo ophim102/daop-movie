@@ -119,7 +119,6 @@
         (metaLine ? '<p class="slider-slide-meta">' + metaLine + '</p>' : '') +
         (genreTags ? '<div class="slider-slide-genres">' + genreTags + '</div>' : '') +
         (desc ? '<p class="slider-slide-desc">' + desc + '</p>' : '') +
-        '<span class="slider-slide-cta">Xem ngay</span>' +
         '</div></a></div>';
     });
     html += '</div></div><button type="button" class="slider-btn slider-prev" aria-label="Trước">‹</button><button type="button" class="slider-btn slider-next" aria-label="Sau">›</button><div class="slider-dots"></div>';
