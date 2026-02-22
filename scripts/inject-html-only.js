@@ -13,7 +13,7 @@ const PUBLIC = path.join(ROOT, 'public');
 
 function injectFooter() {
   const newFooterInner = [
-    '<div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div>',
+    '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>',
     '<div class="footer-bottom">',
     '  <a href="/" class="footer-logo">GoTV</a>',
     '  <div class="footer-links-col">',
@@ -22,6 +22,7 @@ function injectFooter() {
     '    <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
     '  </div>',
     '</div>',
+    '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>',
   ].join('\n    ');
   let count = 0;
   function walk(dir) {
@@ -75,6 +76,27 @@ function injectNav() {
   console.log('Nav: updated', count, 'files');
 }
 
+function injectLoadingScreen() {
+  const html = '<div id="loading-screen" class="loading-screen" aria-hidden="false"><div class="loading-screen-inner"><div class="loading-screen-logo">GoTV</div><p class="loading-screen-text">Loading...</p></div></div>';
+  let count = 0;
+  function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && e.name.endsWith('.html')) {
+        let content = fs.readFileSync(full, 'utf8');
+        if (content.includes('id="loading-screen"')) continue;
+        content = content.replace(/<body(\s[^>]*)?>/i, '<body$1>\n  ' + html);
+        fs.writeFileSync(full, content, 'utf8');
+        count++;
+      }
+    }
+  }
+  walk(PUBLIC);
+  console.log('Loading screen: updated', count, 'files');
+}
+
 injectFooter();
 injectNav();
+injectLoadingScreen();
 console.log('Done.');

@@ -5,6 +5,38 @@
   window.DAOP = window.DAOP || {};
   const BASE = window.DAOP.basePath || '';
 
+  /** Ẩn màn hình Loading (bật/tắt theo site_settings.loading_screen_enabled) */
+  function initLoadingScreen() {
+    var el = document.getElementById('loading-screen');
+    if (!el) return;
+    function hide() {
+      el.classList.add('loading-screen-hidden');
+      el.setAttribute('aria-hidden', 'true');
+    }
+    window.DAOP.loadConfig('site-settings').then(function (s) {
+      if (s && s.loading_screen_enabled === 'false') {
+        hide();
+        return;
+      }
+      function onLoad() {
+        hide();
+        window.removeEventListener('load', onLoad);
+      }
+      if (document.readyState === 'complete') {
+        setTimeout(hide, 50);
+      } else {
+        window.addEventListener('load', onLoad);
+      }
+    }).catch(function () {
+      window.addEventListener('load', function () { hide(); });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLoadingScreen);
+  } else {
+    initLoadingScreen();
+  }
+
   /** Load JSON config from data/config/ */
   window.DAOP.loadConfig = async function (name) {
     const url = `${BASE}/data/config/${name}.json`;

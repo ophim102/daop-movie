@@ -565,11 +565,11 @@ function injectSiteNameIntoHtml() {
   console.log('   Injected site_name "' + siteName + '" into HTML files');
 }
 
-/** 5c. Cập nhật footer mọi trang: banner đỏ + cờ VN, logo trái + 3 link xanh phải */
+/** 5c. Cập nhật footer: hộp bo tròn 1 dòng, hàng 2 logo+links, hàng cuối copyright */
 function injectFooterIntoHtml() {
   const publicDir = path.join(ROOT, 'public');
   const newFooterInner = [
-    '<div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div>',
+    '<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>',
     '<div class="footer-bottom">',
     '  <a href="/" class="footer-logo">GoTV</a>',
     '  <div class="footer-links-col">',
@@ -578,6 +578,7 @@ function injectFooterIntoHtml() {
     '    <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
     '  </div>',
     '</div>',
+    '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>',
   ].join('\n    ');
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -631,6 +632,27 @@ function injectNavIntoHtml() {
   }
   walk(publicDir);
   console.log('   Injected nav (Tải app, Liên hệ) into HTML files');
+}
+
+/** 5e. Thêm màn hình Loading (logo + chữ Loading...) vào đầu body mọi trang */
+function injectLoadingScreenIntoHtml() {
+  const publicDir = path.join(ROOT, 'public');
+  const loadingHtml = '<div id="loading-screen" class="loading-screen" aria-hidden="false"><div class="loading-screen-inner"><div class="loading-screen-logo">GoTV</div><p class="loading-screen-text">Loading...</p></div></div>';
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && e.name.endsWith('.html')) {
+        let content = fs.readFileSync(full, 'utf8');
+        if (content.includes('id="loading-screen"')) continue;
+        content = content.replace(/<body(\s[^>]*)?>/i, '<body$1>\n  ' + loadingHtml);
+        fs.writeFileSync(full, content, 'utf8');
+      }
+    }
+  }
+  walk(publicDir);
+  console.log('   Injected loading screen into HTML files');
 }
 
 /** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
@@ -848,6 +870,7 @@ async function exportConfigFromSupabase() {
     social_youtube: '',
     footer_content: '',
     tmdb_attribution: 'true',
+    loading_screen_enabled: 'true',
     homepage_slider: '[]',
     ...Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
     movies_data_url: '',
@@ -1049,6 +1072,7 @@ async function writeDefaultConfig() {
       social_youtube: '',
       footer_content: '',
       tmdb_attribution: 'true',
+      loading_screen_enabled: 'true',
     },
     'static-pages.json': [],
     'donate.json': { target_amount: 0, target_currency: 'VND', current_amount: 0 },
@@ -1122,6 +1146,7 @@ async function main() {
     injectSiteNameIntoHtml();
     injectFooterIntoHtml();
     injectNavIntoHtml();
+    injectLoadingScreenIntoHtml();
     const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
     const filterOrderPath = path.join(PUBLIC_DATA, 'config', 'filter-order.json');
     if (await fs.pathExists(filtersPath)) {
@@ -1207,6 +1232,8 @@ async function main() {
   injectFooterIntoHtml();
   console.log('5d. Injecting nav into HTML files...');
   injectNavIntoHtml();
+  console.log('5e. Injecting loading screen into HTML files...');
+  injectLoadingScreenIntoHtml();
 
   console.log('6. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);

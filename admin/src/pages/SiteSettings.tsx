@@ -21,6 +21,7 @@ const SITE_SETTINGS_KEYS = [
   'social_youtube',
   'footer_content',
   'tmdb_attribution',
+  'loading_screen_enabled',
 ] as const;
 
 export default function SiteSettings() {
@@ -54,6 +55,7 @@ export default function SiteSettings() {
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
         tmdb_attribution: data.tmdb_attribution !== 'false',
+        loading_screen_enabled: data.loading_screen_enabled !== 'false',
       });
       setLoading(false);
     });
@@ -231,6 +233,10 @@ export default function SiteSettings() {
           <Form.Item name="tmdb_attribution" label="Hiển thị ghi nhận TMDB" valuePropName="checked">
             <Switch />
           </Form.Item>
+          <Form.Item name="loading_screen_enabled" label="Màn hình Loading khi mở trang" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Bật = hiện logo + chữ &quot;Loading...&quot; đến khi nội dung tải xong (tránh thấy header/footer trống).</p>
           <p style={{ color: '#888', fontSize: 12 }}>Grid &amp; Ảnh cho trang lọc/tìm kiếm: cấu hình tại <strong>Trang danh mục</strong> trong menu.</p>
           <Form.Item>
             <Button type="primary" htmlType="submit">Lưu</Button>
