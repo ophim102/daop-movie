@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chi tiết phim | DAOP Phim</title>
+  <title>Chi tiết phim | GoTV</title>
   <meta name="description" content="">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header class="site-header">
-    <a href="/" class="site-logo">DAOP Phim</a>
+    <a href="/" class="site-logo">GoTV</a>
     <nav class="site-nav">
       <div class="site-nav-main">
         <a href="/phim-bo.html">Phim bộ</a>
@@ -21,7 +21,7 @@
         <a href="/hoat-hinh.html">Hoạt hình</a>
         <a href="/shows.html">TV Shows</a>
         <a href="/gioi-thieu.html">Giới thiệu</a>
-        <a href="/donate.html">Donate</a>
+        <a href="/donate.html">Donate</a><a href="/huong-dan-app.html">Tải app</a><a href="/lien-he.html">Liên hệ</a>
       </div>
       <div class="site-nav-actions">
         <a href="/tim-kiem.html">Tìm kiếm</a>
@@ -33,9 +33,15 @@
     <div id="movie-detail"></div>
   </main>
   <footer class="site-footer">
-    <p><a href="/donate.html">Donate</a></p>
-    <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
-    <p class="footer-tmdb">Dữ liệu phim có thể từ TMDB. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a></p>
+    <div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div>
+    <div class="footer-bottom">
+      <a href="/" class="footer-logo">GoTV</a>
+      <div class="footer-links-col">
+        <a href="/hoi-dap.html">Hỏi - đáp</a>
+        <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>
+        <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>
+      </div>
+    </div>
   </footer>
   <script>
     window.DAOP = window.DAOP || {};
@@ -54,7 +60,7 @@
   <script src="/data/actors-index.js"></script>
   <script>
     fetch('/data/config/site-settings.json').then(function(r){ return r.json(); }).then(function(s){
-      window.DAOP.siteName = s.site_name || 'DAOP Phim';
+      window.DAOP.siteName = s.site_name || 'GoTV';
       window.DAOP.siteSettings = s;
       window.DAOP.twikooEnvId = s.twikoo_env_id || '';
       window.DAOP.supabaseUserUrl = s.supabase_user_url || '';

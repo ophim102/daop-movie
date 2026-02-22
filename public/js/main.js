@@ -211,7 +211,7 @@
         }
       } catch (e) {}
     }
-    for (var i = 1; i <= 10; i++) {
+    for (var i = 1; i <= 12; i++) {
       var menuBgUrl = settings['menu_bg_' + i];
       if (menuBgUrl) root.style.setProperty('--menu-bg-' + i, 'url(' + menuBgUrl + ')');
     }

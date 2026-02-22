@@ -264,8 +264,8 @@ a:hover {
   .site-header.menu-open .site-nav-main a[href*="shows"]::after       { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-8, url("/images/menu-8.png")); }
   .site-header.menu-open .site-nav-main a[href*="gioi-thieu"]::after  { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-9, url("/images/menu-9.png")); }
   .site-header.menu-open .site-nav-main a[href*="donate"]::after      { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-10, url("/images/menu-10.png")); }
-  .site-header.menu-open .site-nav-main a[href*="huong-dan-app"]::after { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-1, url("/images/menu-1.png")); }
-  .site-header.menu-open .site-nav-main a[href*="lien-he"]::after       { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-2, url("/images/menu-2.png")); }
+  .site-header.menu-open .site-nav-main a[href*="huong-dan-app"]::after { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-11, url("/images/menu-11.png")); }
+  .site-header.menu-open .site-nav-main a[href*="lien-he"]::after       { background-image: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 40%), var(--menu-bg-12, url("/images/menu-12.png")); }
   .site-header.menu-open .site-nav-main a:hover {
     border-color: var(--accent);
     box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
@@ -1267,20 +1267,74 @@ a:hover {
 /* Footer */
 .site-footer {
   margin-top: 3rem;
-  padding: 1.5rem 1rem;
+  padding: 0;
   border-top: 1px solid var(--border);
-  text-align: center;
   font-size: 0.85rem;
   color: var(--footer-text-color, var(--muted));
 }
 .site-footer p {
   margin: 0.35rem 0;
 }
+/* Khung nền đỏ, chữ trắng, cờ Việt Nam */
+.site-footer .footer-vietnam-banner {
+  background: #c41e3a;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.site-footer .footer-vietnam-banner .footer-flag {
+  font-size: 1.4em;
+  line-height: 1;
+}
+/* Logo trái, 3 link hàng xanh lá nhạt phải */
+.site-footer .footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: #d4edda;
+}
+.site-footer .footer-logo {
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+.site-footer .footer-logo:hover {
+  color: var(--accent);
+}
+.site-footer .footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+.site-footer .footer-links-col a {
+  display: block;
+  padding: 0.35rem 0.6rem;
+  background: rgba(40, 167, 69, 0.25);
+  color: #155724;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.site-footer .footer-links-col a:hover {
+  background: rgba(40, 167, 69, 0.4);
+  color: #0d3d1a;
+}
+/* Legacy: footer-vietnam, footer-links (nếu có) */
 .site-footer .footer-vietnam {
   font-size: 1rem;
   font-weight: 700;
   color: var(--accent);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 .site-footer .footer-links {
   font-size: 0.9rem;

@@ -565,12 +565,20 @@ function injectSiteNameIntoHtml() {
   console.log('   Injected site_name "' + siteName + '" into HTML files');
 }
 
-/** 5c. Cập nhật footer mọi trang: Trường Sa & Hoàng Sa, footer links, GoTV copyright */
+/** 5c. Cập nhật footer mọi trang: banner đỏ + cờ VN, logo trái + 3 link xanh phải */
 function injectFooterIntoHtml() {
   const publicDir = path.join(ROOT, 'public');
-  const footerVietnam = '<p class="footer-vietnam">Trường Sa &amp; Hoàng Sa là của Việt Nam!</p>';
-  const footerLinks = '<p class="footer-links"><a href="/hoi-dap.html">Hỏi-đáp</a> · <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a> · <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></p>';
-  const footerCopyright = '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>';
+  const newFooterInner = [
+    '<div class="footer-vietnam-banner"><span class="footer-flag">🇻🇳</span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div>',
+    '<div class="footer-bottom">',
+    '  <a href="/" class="footer-logo">GoTV</a>',
+    '  <div class="footer-links-col">',
+    '    <a href="/hoi-dap.html">Hỏi - đáp</a>',
+    '    <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>',
+    '    <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>',
+    '  </div>',
+    '</div>',
+  ].join('\n    ');
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const e of entries) {
@@ -583,17 +591,11 @@ function injectFooterIntoHtml() {
         content = content.replace(/<p>\s*<a[^>]*href="[^"]*donate[^"]*"[^>]*>Donate<\/a>\s*<\/p>\s*/gi, '');
         content = content.replace(/<p[^>]*class="footer-tmdb"[^>]*>[\s\S]*?<\/p>\s*/i, '');
         content = content.replace(/<p>[\s\S]*?Dữ liệu phim có thể từ TMDB[\s\S]*?<\/p>\s*/i, '');
-        if (content.includes('site-footer')) {
-          if (!content.includes('footer-vietnam')) {
-            content = content.replace(/(<footer[^>]*class="site-footer"[^>]*>)\s*<p(?![^>]*footer-vietnam)[^>]*>\s*Trường Sa[^<]*Hoàng Sa[^<]*Việt Nam[^<]*!?\s*<\/p>\s*/gi, '$1\n    ' + footerVietnam);
-            if (!content.includes('footer-vietnam')) content = content.replace(/(<footer[^>]*class="site-footer"[^>]*>)/i, '$1\n    ' + footerVietnam);
-          }
-          if (!content.includes('footer-links')) {
-            content = content.replace(/(<\/footer>)/, '\n    ' + footerLinks + '\n  $1');
-          }
-          if (!content.includes('footer-copyright')) {
-            content = content.replace(/(<\/footer>)/, '\n    ' + footerCopyright + '\n  $1');
-          }
+        if (content.includes('site-footer') && !content.includes('footer-vietnam-banner')) {
+          content = content.replace(
+            /<footer[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/i,
+            '<footer class="site-footer">\n    ' + newFooterInner + '\n  </footer>'
+          );
         }
         if (content !== orig) fs.writeFileSync(full, content, 'utf8');
       }
@@ -847,7 +849,7 @@ async function exportConfigFromSupabase() {
     footer_content: '',
     tmdb_attribution: 'true',
     homepage_slider: '[]',
-    ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
+    ...Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`menu_bg_${i + 1}`, ''])),
     movies_data_url: '',
     filter_row_order: JSON.stringify(['year', 'genre', 'country', 'videoType', 'lang']),
     filter_genre_order: '[]',

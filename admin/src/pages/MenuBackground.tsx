@@ -14,6 +14,8 @@ const MENU_ITEMS = [
   { key: 'menu_bg_8', label: '8. TV Shows' },
   { key: 'menu_bg_9', label: '9. Giới thiệu' },
   { key: 'menu_bg_10', label: '10. Donate' },
+  { key: 'menu_bg_11', label: '11. Tải app' },
+  { key: 'menu_bg_12', label: '12. Liên hệ' },
 ];
 
 export default function MenuBackground() {
@@ -62,7 +64,7 @@ export default function MenuBackground() {
           if (error) throw error;
         }
       }
-      message.success('Đã lưu 10 ảnh nền menu');
+      message.success('Đã lưu 12 ảnh nền menu');
     } catch (e: any) {
       message.error(e?.message || 'Lưu thất bại');
     } finally {
@@ -103,7 +105,7 @@ export default function MenuBackground() {
 
   return (
     <>
-      <h1>Ảnh nền menu mobile (10 mục)</h1>
+      <h1>Ảnh nền menu mobile (12 mục)</h1>
       <p style={{ color: '#666', marginBottom: 16 }}>
         Mỗi mục trong menu 3 gạch trên mobile có một ảnh nền riêng (độ trong suốt 20%). Upload ảnh hoặc nhập link.
         Để tối ưu cho background: dùng ảnh đã xóa nền (PNG) hoặc công cụ như{' '}
@@ -129,9 +131,9 @@ export default function MenuBackground() {
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                const idx = prompt('Gán vào ô số (1–10)?', '1');
+                const idx = prompt('Gán vào ô số (1–12)?', '1');
                 const n = idx ? parseInt(idx, 10) : NaN;
-                if (n >= 1 && n <= 10) {
+                if (n >= 1 && n <= 12) {
                   const key = `menu_bg_${n}`;
                   await handleUpload(key, file);
                 }
