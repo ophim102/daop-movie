@@ -7,7 +7,7 @@
     "source_value": "series",
     "filter_config": {
       "use_poster": false,
-      "grid_columns_lg": 8,
+      "grid_columns_lg": 6,
       "grid_columns_md": 4,
       "grid_columns_sm": 4,
       "grid_columns_xs": 3
@@ -18,9 +18,9 @@
     "sort_order": 0,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-22T10:25:49.281+00:00",
+    "updated_at": "2026-02-22T11:13:21.934+00:00",
     "use_poster": false,
-    "grid_columns_lg": 8,
+    "grid_columns_lg": 6,
     "grid_columns_md": 4,
     "grid_columns_sm": 4,
     "grid_columns_xs": 3
@@ -33,7 +33,7 @@
     "source_value": "single",
     "filter_config": {
       "use_poster": false,
-      "grid_columns_lg": 8,
+      "grid_columns_lg": 6,
       "grid_columns_md": 4,
       "grid_columns_sm": 4,
       "grid_columns_xs": 3
@@ -44,9 +44,9 @@
     "sort_order": 1,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-22T10:26:30.826+00:00",
+    "updated_at": "2026-02-22T11:13:29.654+00:00",
     "use_poster": false,
-    "grid_columns_lg": 8,
+    "grid_columns_lg": 6,
     "grid_columns_md": 4,
     "grid_columns_sm": 4,
     "grid_columns_xs": 3
