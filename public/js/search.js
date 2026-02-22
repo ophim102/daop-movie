@@ -7,7 +7,8 @@
   var index = null;
   var gridCols = 4;
   var usePoster = false;
-  var gridColumnsOptions = [2, 3, 4, 6, 8];
+  var gridColumnsOptions = [2, 3, 4, 8];
+  var gridColumnsExtra = 8;
   var currentList = [];
   var gridElRef = { el: null };
 
@@ -16,11 +17,18 @@
       .then(function (r) { return r.json(); })
       .catch(function () { return {}; })
       .then(function (s) {
-        var colType = (s.category_grid_column_type || 'A').toUpperCase();
-        gridColumnsOptions = colType === 'B' ? [3, 4, 6, 8] : [2, 3, 4, 6, 8];
-        gridCols = parseInt(s.default_grid_cols, 10) || 4;
-        if (gridColumnsOptions.indexOf(gridCols) < 0) gridCols = gridColumnsOptions.indexOf(4) >= 0 ? 4 : gridColumnsOptions[0];
-        usePoster = (s.category_use_poster || '').toLowerCase() === 'poster' || s.default_use_poster === 'true';
+        var extra = parseInt(s.category_grid_columns_extra || s.grid_columns_extra || '8', 10);
+        if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+        gridColumnsExtra = extra;
+        gridColumnsOptions = [2, 3, 4, extra];
+        var w = window.innerWidth || document.documentElement.clientWidth;
+        var xs = parseInt(s.category_grid_cols_xs || s.default_grid_cols_xs || '2', 10);
+        var sm = parseInt(s.category_grid_cols_sm || s.default_grid_cols_sm || '3', 10);
+        var md = parseInt(s.category_grid_cols_md || s.default_grid_cols_md || '4', 10);
+        var lg = parseInt(s.category_grid_cols_lg || s.default_grid_cols_lg || '6', 10);
+        gridCols = w >= 1024 ? lg : w >= 768 ? md : w >= 480 ? sm : xs;
+        if (gridColumnsOptions.indexOf(gridCols) < 0) gridCols = gridColumnsOptions[0];
+        usePoster = (s.category_use_poster || s.default_use_poster || 'thumb') === 'poster';
       });
   }
 
@@ -99,10 +107,11 @@
       toolbar.className = 'grid-toolbar';
       toolbar.setAttribute('aria-label', 'Tùy chọn hiển thị');
       var colPart = '<span class="filter-label">Cột:</span>';
-      gridColumnsOptions.forEach(function (n) {
-        colPart += '<button type="button" class="grid-cols-btn' + (n === gridCols ? ' active' : '') + '" data-cols="' + n + '">' + n + '</button>';
-      });
-      toolbar.innerHTML = colPart + '<label class="grid-poster-toggle"><input type="checkbox" name="use_poster" ' + (usePoster ? 'checked' : '') + '> Poster</label>';
+      colPart += '<button type="button" class="grid-cols-btn' + (2 === gridCols ? ' active' : '') + '" data-cols="2">2</button><button type="button" class="grid-cols-btn' + (3 === gridCols ? ' active' : '') + '" data-cols="3">3</button><button type="button" class="grid-cols-btn' + (4 === gridCols ? ' active' : '') + '" data-cols="4">4</button>';
+      colPart += '<select class="grid-cols-select" id="search-cols-extra"><option value="6"' + (gridColumnsExtra === 6 ? ' selected' : '') + '>6</option><option value="8"' + (gridColumnsExtra === 8 ? ' selected' : '') + '>8</option><option value="10"' + (gridColumnsExtra === 10 ? ' selected' : '') + '>10</option><option value="12"' + (gridColumnsExtra === 12 ? ' selected' : '') + '>12</option><option value="14"' + (gridColumnsExtra === 14 ? ' selected' : '') + '>14</option><option value="16"' + (gridColumnsExtra === 16 ? ' selected' : '') + '>16</option></select>';
+      colPart += '<button type="button" class="grid-cols-btn' + (gridColumnsExtra === gridCols ? ' active' : '') + '" data-cols="' + gridColumnsExtra + '" id="search-cols-extra-btn">' + gridColumnsExtra + '</button>';
+      colPart += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+      toolbar.innerHTML = colPart;
       toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           gridCols = parseInt(btn.getAttribute('data-cols'), 10);
@@ -110,8 +119,21 @@
           toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols); });
         });
       });
-      toolbar.querySelector('input[name="use_poster"]').addEventListener('change', function () {
-        usePoster = this.checked;
+      var exSel = toolbar.querySelector('#search-cols-extra');
+      var exBtn = toolbar.querySelector('#search-cols-extra-btn');
+      if (exSel && exBtn) {
+        exSel.addEventListener('change', function () {
+          var oldExtra = gridColumnsExtra;
+          gridColumnsExtra = parseInt(exSel.value, 10);
+          exBtn.textContent = gridColumnsExtra;
+          exBtn.setAttribute('data-cols', gridColumnsExtra);
+          if (gridCols === oldExtra) gridCols = gridColumnsExtra;
+          if (gridElRef.el) gridElRef.el.className = 'movies-grid movies-grid--cols-' + gridCols;
+          toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols); });
+        });
+      }
+      toolbar.querySelector('.grid-poster-select').addEventListener('change', function () {
+        usePoster = this.value === 'poster';
         if (gridElRef.el && currentList.length) {
           gridElRef.el.innerHTML = currentList.map(function (m) { return render(m, baseUrl, { usePoster: usePoster }); }).join('');
         }

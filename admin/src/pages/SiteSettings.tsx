@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, Switch, message } from 'antd';
+import { Card, Form, Input, Button, Switch, Select, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
 const SITE_SETTINGS_KEYS = [
@@ -21,10 +21,20 @@ const SITE_SETTINGS_KEYS = [
   'social_youtube',
   'footer_content',
   'tmdb_attribution',
-  'default_grid_cols',
-  'grid_columns_options',
+  'default_grid_cols_xs',
+  'default_grid_cols_sm',
+  'default_grid_cols_md',
+  'default_grid_cols_lg',
+  'grid_columns_extra',
   'default_use_poster',
 ] as const;
+
+const COLUMN_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: String(n), label: String(n) }));
+const COLUMN_EXTRA_OPTIONS = [6, 8, 10, 12, 14, 16].map((n) => ({ value: String(n), label: String(n) }));
+const IMAGE_TYPE_OPTIONS = [
+  { value: 'thumb', label: 'Thumb (ảnh ngang)' },
+  { value: 'poster', label: 'Poster (ảnh dọc)' },
+];
 
 export default function SiteSettings() {
   const [form] = Form.useForm();
@@ -55,9 +65,12 @@ export default function SiteSettings() {
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
         tmdb_attribution: data.tmdb_attribution !== 'false',
-        default_grid_cols: data.default_grid_cols ?? '4',
-        grid_columns_options: data.grid_columns_options ?? '2,3,4,6,8',
-        default_use_poster: data.default_use_poster === 'true',
+        default_grid_cols_xs: data.default_grid_cols_xs ?? '2',
+        default_grid_cols_sm: data.default_grid_cols_sm ?? '3',
+        default_grid_cols_md: data.default_grid_cols_md ?? '4',
+        default_grid_cols_lg: data.default_grid_cols_lg ?? '6',
+        grid_columns_extra: data.grid_columns_extra ?? '8',
+        default_use_poster: data.default_use_poster === 'true' || data.default_use_poster === 'poster' ? 'poster' : 'thumb',
       });
       setLoading(false);
     });
@@ -143,15 +156,24 @@ export default function SiteSettings() {
           <Form.Item name="tmdb_attribution" label="Hiển thị ghi nhận TMDB" valuePropName="checked">
             <Switch />
           </Form.Item>
-          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Grid &amp; Ảnh</h3>
-          <Form.Item name="default_grid_cols" label="Số cột mặc định (grid phim): 2, 3, 4, 6 hoặc 8">
-            <Input placeholder="4" />
+          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Grid &amp; Ảnh (trang lọc, tìm kiếm)</h3>
+          <Form.Item name="default_grid_cols_xs" label="Số cột mặc định - Mobile nhỏ (&lt;480px)">
+            <Select options={COLUMN_OPTIONS} />
           </Form.Item>
-          <Form.Item name="grid_columns_options" label="Các lựa chọn số cột (dùng trên trang lọc/tìm kiếm), cách nhau dấu phẩy">
-            <Input placeholder="2,3,4,6,8" />
+          <Form.Item name="default_grid_cols_sm" label="Số cột mặc định - Mobile lớn (480–767px)">
+            <Select options={COLUMN_OPTIONS} />
           </Form.Item>
-          <Form.Item name="default_use_poster" label="Mặc định dùng poster thay thumb (ảnh dọc)" valuePropName="checked">
-            <Switch />
+          <Form.Item name="default_grid_cols_md" label="Số cột mặc định - Tablet (768–1023px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="default_grid_cols_lg" label="Số cột mặc định - Desktop (1024px+)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="grid_columns_extra" label="Lựa chọn cột thứ 4 trên toolbar (bên cạnh 2, 3, 4)">
+            <Select options={COLUMN_EXTRA_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="default_use_poster" label="Loại ảnh mặc định">
+            <Select options={IMAGE_TYPE_OPTIONS} />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">Lưu</Button>

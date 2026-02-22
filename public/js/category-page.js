@@ -31,11 +31,18 @@
       .catch(function () { return {}; })
       .then(function (settings) {
         self.settings = settings;
-        var colType = (settings.category_grid_column_type || 'A').toUpperCase();
-        self.gridColumnsOptions = colType === 'B' ? [3, 4, 6, 8] : [2, 3, 4, 6, 8];
-        self.gridCols = parseInt(settings.default_grid_cols, 10) || 4;
-        if (self.gridColumnsOptions.indexOf(self.gridCols) < 0) self.gridCols = self.gridColumnsOptions.indexOf(4) >= 0 ? 4 : self.gridColumnsOptions[0];
-        self.usePoster = (settings.category_use_poster || '').toLowerCase() === 'poster' || settings.default_use_poster === 'true';
+        var extra = parseInt(settings.category_grid_columns_extra || settings.grid_columns_extra || '8', 10);
+        if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+        self.gridColumnsOptions = [2, 3, 4, extra];
+        var w = window.innerWidth || document.documentElement.clientWidth;
+        var xs = parseInt(settings.category_grid_cols_xs || settings.default_grid_cols_xs || '2', 10);
+        var sm = parseInt(settings.category_grid_cols_sm || settings.default_grid_cols_sm || '3', 10);
+        var md = parseInt(settings.category_grid_cols_md || settings.default_grid_cols_md || '4', 10);
+        var lg = parseInt(settings.category_grid_cols_lg || settings.default_grid_cols_lg || '6', 10);
+        self.gridCols = w >= 1024 ? lg : w >= 768 ? md : w >= 480 ? sm : xs;
+        if (self.gridColumnsOptions.indexOf(self.gridCols) < 0) self.gridCols = self.gridColumnsOptions[0];
+        self.gridColumnsExtra = extra;
+        self.usePoster = (settings.category_use_poster || settings.default_use_poster || 'thumb') === 'poster';
         self.buildFilterUI(baseSet, filtersData);
         self.buildGridToolbar();
         self.applyFilters(baseSet, filtersData);
@@ -49,14 +56,19 @@
     var self = this;
     var grid = document.getElementById(this.gridId);
     if (!grid) return;
+    var opts = self.gridColumnsOptions || [2, 3, 4, 8];
+    var extra = self.gridColumnsExtra || 8;
     var bar = document.createElement('div');
     bar.className = 'grid-toolbar';
     bar.setAttribute('aria-label', 'Tùy chọn hiển thị');
     var colPart = '<span class="filter-label">Cột:</span>';
-    (self.gridColumnsOptions || [2, 3, 4, 6, 8]).forEach(function (n) {
-      colPart += '<button type="button" class="grid-cols-btn' + (n === self.gridCols ? ' active' : '') + '" data-cols="' + n + '">' + n + '</button>';
-    });
-    bar.innerHTML = colPart + '<label class="grid-poster-toggle"><input type="checkbox" name="use_poster" ' + (self.usePoster ? 'checked' : '') + '> Poster</label>';
+    colPart += '<button type="button" class="grid-cols-btn' + (2 === self.gridCols ? ' active' : '') + '" data-cols="2">2</button>';
+    colPart += '<button type="button" class="grid-cols-btn' + (3 === self.gridCols ? ' active' : '') + '" data-cols="3">3</button>';
+    colPart += '<button type="button" class="grid-cols-btn' + (4 === self.gridCols ? ' active' : '') + '" data-cols="4">4</button>';
+    colPart += '<select class="grid-cols-select" id="grid-cols-extra" aria-label="Cột thêm"><option value="6"' + (extra === 6 ? ' selected' : '') + '>6</option><option value="8"' + (extra === 8 ? ' selected' : '') + '>8</option><option value="10"' + (extra === 10 ? ' selected' : '') + '>10</option><option value="12"' + (extra === 12 ? ' selected' : '') + '>12</option><option value="14"' + (extra === 14 ? ' selected' : '') + '>14</option><option value="16"' + (extra === 16 ? ' selected' : '') + '>16</option></select>';
+    colPart += '<button type="button" class="grid-cols-btn' + (extra === self.gridCols ? ' active' : '') + '" data-cols="' + extra + '" id="grid-cols-extra-btn">' + extra + '</button>';
+    colPart += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!self.usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (self.usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    bar.innerHTML = colPart;
     grid.parentNode.insertBefore(bar, grid);
     bar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -65,8 +77,22 @@
         bar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === self.gridCols); });
       });
     });
-    bar.querySelector('input[name="use_poster"]').addEventListener('change', function () {
-      self.usePoster = this.checked;
+    var extraSelect = bar.querySelector('#grid-cols-extra');
+    var extraBtn = bar.querySelector('#grid-cols-extra-btn');
+    if (extraSelect && extraBtn) {
+      extraSelect.addEventListener('change', function () {
+        var oldExtra = self.gridColumnsExtra;
+        var n = parseInt(extraSelect.value, 10);
+        self.gridColumnsExtra = n;
+        extraBtn.textContent = n;
+        extraBtn.setAttribute('data-cols', n);
+        if (self.gridCols === oldExtra) self.gridCols = n;
+        self.applyGridClass();
+        bar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === self.gridCols); });
+      });
+    }
+    bar.querySelector('.grid-poster-select').addEventListener('change', function () {
+      self.usePoster = this.value === 'poster';
       self.renderPage();
     });
   };
@@ -74,7 +100,7 @@
   CategoryPage.prototype.applyGridClass = function () {
     var grid = document.getElementById(this.gridId);
     if (!grid) return;
-    grid.classList.remove('movies-grid--cols-2', 'movies-grid--cols-3', 'movies-grid--cols-4', 'movies-grid--cols-6', 'movies-grid--cols-8');
+    [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { grid.classList.remove('movies-grid--cols-' + n); });
     grid.classList.add('movies-grid--cols-' + (this.gridCols || 4));
   };
 
@@ -151,6 +177,15 @@
       if (!seen[id] && rowHtml[id]) ordered.push(rowHtml[id]);
     });
     container.innerHTML = ordered.join('');
+    var unpinBtn = document.createElement('button');
+    unpinBtn.type = 'button';
+    unpinBtn.className = 'filter-bar-unpin';
+    unpinBtn.setAttribute('aria-label', 'Bỏ ghim');
+    unpinBtn.innerHTML = '&times;';
+    unpinBtn.addEventListener('click', function () {
+      container.classList.add('filter-bar-unpinned');
+    });
+    container.appendChild(unpinBtn);
   };
 
   CategoryPage.prototype.applyFilters = function (baseSet, fd) {

@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react';
 import { Card, Form, Select, Button, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
-const KEYS = ['category_grid_column_type', 'category_use_poster'] as const;
+const KEYS = [
+  'category_grid_cols_xs',
+  'category_grid_cols_sm',
+  'category_grid_cols_md',
+  'category_grid_cols_lg',
+  'category_grid_columns_extra',
+  'category_use_poster',
+] as const;
 
-const COLUMN_TYPE_OPTIONS = [
-  { value: 'A', label: 'Loại A (2, 3, 4, 6, 8 cột)' },
-  { value: 'B', label: 'Loại B (3, 4, 6, 8 cột - ít nhất 3 cột)' },
-];
-
+const COLUMN_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: String(n), label: String(n) }));
+const COLUMN_EXTRA_OPTIONS = [6, 8, 10, 12, 14, 16].map((n) => ({ value: String(n), label: String(n) }));
 const IMAGE_TYPE_OPTIONS = [
   { value: 'thumb', label: 'Thumb (ảnh ngang)' },
   { value: 'poster', label: 'Poster (ảnh dọc)' },
@@ -29,7 +33,11 @@ export default function CategoryPageSettings() {
           return acc;
         }, {});
         form.setFieldsValue({
-          category_grid_column_type: data.category_grid_column_type || 'A',
+          category_grid_cols_xs: data.category_grid_cols_xs || '2',
+          category_grid_cols_sm: data.category_grid_cols_sm || '3',
+          category_grid_cols_md: data.category_grid_cols_md || '4',
+          category_grid_cols_lg: data.category_grid_cols_lg || '6',
+          category_grid_columns_extra: data.category_grid_columns_extra || '8',
           category_use_poster: data.category_use_poster || 'thumb',
         });
         setLoading(false);
@@ -39,7 +47,7 @@ export default function CategoryPageSettings() {
   const onFinish = async (values: Record<string, string>) => {
     try {
       for (const key of KEYS) {
-        const value = values[key] ?? (key === 'category_grid_column_type' ? 'A' : 'thumb');
+        const value = values[key] ?? (key === 'category_use_poster' ? 'thumb' : '4');
         const { error } = await supabase
           .from('site_settings')
           .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
@@ -59,16 +67,22 @@ export default function CategoryPageSettings() {
       </p>
       <Card loading={loading}>
         <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Form.Item
-            name="category_grid_column_type"
-            label="Loại cột"
-          >
-            <Select options={COLUMN_TYPE_OPTIONS} />
+          <Form.Item name="category_grid_cols_xs" label="Số cột mặc định - Mobile nhỏ (&lt;480px)">
+            <Select options={COLUMN_OPTIONS} />
           </Form.Item>
-          <Form.Item
-            name="category_use_poster"
-            label="Loại ảnh"
-          >
+          <Form.Item name="category_grid_cols_sm" label="Số cột mặc định - Mobile lớn (480–767px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="category_grid_cols_md" label="Số cột mặc định - Tablet (768–1023px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="category_grid_cols_lg" label="Số cột mặc định - Desktop (1024px+)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="category_grid_columns_extra" label="Lựa chọn cột thứ 4 trên toolbar (2, 3, 4 và ô này: 6–16)">
+            <Select options={COLUMN_EXTRA_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="category_use_poster" label="Loại ảnh">
             <Select options={IMAGE_TYPE_OPTIONS} />
           </Form.Item>
           <Form.Item>

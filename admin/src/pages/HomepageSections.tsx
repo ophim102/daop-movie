@@ -27,8 +27,10 @@ type SectionRow = {
   display_type?: string;
   is_active: boolean;
   filter_config?: Record<string, unknown> | null;
-  grid_column_type?: 'A' | 'B' | null;
-  grid_columns?: number | null;
+  grid_columns_xs?: number | null;
+  grid_columns_sm?: number | null;
+  grid_columns_md?: number | null;
+  grid_columns_lg?: number | null;
   use_poster?: boolean | null;
 };
 
@@ -47,13 +49,7 @@ const DISPLAY_TYPE_OPTIONS = [
   { value: 'list', label: 'List' },
 ];
 
-const COLUMN_TYPE_OPTIONS = [
-  { value: 'A', label: 'Loại A (2, 3, 4, 6, 8 cột)' },
-  { value: 'B', label: 'Loại B (3, 4, 6, 8 cột - ít nhất 3 cột)' },
-];
-
-const COLUMN_COUNT_OPTIONS_A = [2, 3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
-const COLUMN_COUNT_OPTIONS_B = [3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
+const COLUMN_COUNT_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
 
 const IMAGE_TYPE_OPTIONS = [
   { value: 'thumb', label: 'Thumb (ảnh ngang)' },
@@ -88,8 +84,10 @@ export default function HomepageSections() {
       limit_count: 24,
       display_type: 'grid',
       is_active: true,
-      grid_column_type: 'A',
-      grid_columns: 4,
+      grid_columns_xs: 2,
+      grid_columns_sm: 3,
+      grid_columns_md: 4,
+      grid_columns_lg: 6,
       use_poster: 'thumb',
     } as any);
     setModalVisible(true);
@@ -101,8 +99,10 @@ export default function HomepageSections() {
     form.setFieldsValue({
       ...row,
       is_active: !!row.is_active,
-      grid_column_type: row.grid_column_type ?? fc.grid_column_type ?? 'A',
-      grid_columns: row.grid_columns ?? fc.grid_columns ?? 4,
+      grid_columns_xs: row.grid_columns_xs ?? fc.grid_columns_xs ?? 2,
+      grid_columns_sm: row.grid_columns_sm ?? fc.grid_columns_sm ?? 3,
+      grid_columns_md: row.grid_columns_md ?? fc.grid_columns_md ?? 4,
+      grid_columns_lg: row.grid_columns_lg ?? fc.grid_columns_lg ?? 6,
       use_poster: (row.use_poster ?? fc.use_poster) ? 'poster' : 'thumb',
     } as any);
     setModalVisible(true);
@@ -114,8 +114,10 @@ export default function HomepageSections() {
       const prevFc = (existing?.filter_config as Record<string, unknown>) || {};
       const filter_config = {
         ...prevFc,
-        grid_column_type: values.grid_column_type || 'A',
-        grid_columns: Number(values.grid_columns ?? 4),
+        grid_columns_xs: Number(values.grid_columns_xs ?? 2),
+        grid_columns_sm: Number(values.grid_columns_sm ?? 3),
+        grid_columns_md: Number(values.grid_columns_md ?? 4),
+        grid_columns_lg: Number(values.grid_columns_lg ?? 6),
         use_poster: values.use_poster === 'poster',
       };
       const payload: Record<string, any> = {
@@ -228,13 +230,16 @@ export default function HomepageSections() {
             render: (t: string) => (t ? <Tag>{t}</Tag> : <Tag>grid</Tag>),
           },
           {
-            title: 'Loại cột',
-            key: 'grid_column_type',
-            width: 90,
+            title: 'Cột (xs/sm/md/lg)',
+            key: 'grid_columns',
+            width: 120,
             render: (_: any, row: SectionRow) => {
               const fc = (row.filter_config as Record<string, unknown>) || {};
-              const t = row.grid_column_type ?? fc.grid_column_type ?? 'A';
-              return <Tag>{t === 'B' ? 'B (3-8)' : 'A (2-8)'}</Tag>;
+              const xs = row.grid_columns_xs ?? fc.grid_columns_xs ?? 2;
+              const sm = row.grid_columns_sm ?? fc.grid_columns_sm ?? 3;
+              const md = row.grid_columns_md ?? fc.grid_columns_md ?? 4;
+              const lg = row.grid_columns_lg ?? fc.grid_columns_lg ?? 6;
+              return <Tag>{xs}/{sm}/{md}/{lg}</Tag>;
             },
           },
           {
@@ -315,19 +320,17 @@ export default function HomepageSections() {
           <Form.Item name="display_type" label="Kiểu hiển thị">
             <Select allowClear options={DISPLAY_TYPE_OPTIONS} placeholder="Mặc định: grid" />
           </Form.Item>
-          <Form.Item name="grid_column_type" label="Loại cột (chỉ áp dụng khi hiển thị Grid)">
-            <Select options={COLUMN_TYPE_OPTIONS} />
+          <Form.Item name="grid_columns_xs" label="Số cột - Mobile nhỏ (&lt;480px)">
+            <Select options={COLUMN_COUNT_OPTIONS} />
           </Form.Item>
-          <Form.Item noStyle shouldUpdate={(prev, curr) => prev.grid_column_type !== curr.grid_column_type}>
-            {({ getFieldValue }) => {
-              const type = getFieldValue('grid_column_type') || 'A';
-              const opts = type === 'B' ? COLUMN_COUNT_OPTIONS_B : COLUMN_COUNT_OPTIONS_A;
-              return (
-                <Form.Item name="grid_columns" label="Số cột mặc định">
-                  <Select options={opts} />
-                </Form.Item>
-              );
-            }}
+          <Form.Item name="grid_columns_sm" label="Số cột - Mobile lớn (480–767px)">
+            <Select options={COLUMN_COUNT_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="grid_columns_md" label="Số cột - Tablet (768–1023px)">
+            <Select options={COLUMN_COUNT_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="grid_columns_lg" label="Số cột - Desktop (1024px+)">
+            <Select options={COLUMN_COUNT_OPTIONS} />
           </Form.Item>
           <Form.Item name="use_poster" label="Loại ảnh">
             <Select options={IMAGE_TYPE_OPTIONS} />

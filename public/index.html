@@ -111,14 +111,13 @@
           var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
           var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';
           var layout = (sec.display_type || 'grid').toLowerCase();
-          var colType = (sec.grid_column_type || 'A').toUpperCase();
-          var validColsA = [2,3,4,6,8];
-          var validColsB = [3,4,6,8];
-          var validCols = colType === 'B' ? validColsB : validColsA;
-          var gridCols = (sec.grid_columns != null && sec.grid_columns !== '') ? Number(sec.grid_columns) : (ss.default_grid_cols ? Number(ss.default_grid_cols) : 4);
-          if (validCols.indexOf(gridCols) < 0) gridCols = validCols[validCols.indexOf(4) >= 0 ? validCols.indexOf(4) : 0];
+          var xs = [2,3,4,6,8].indexOf(Number(sec.grid_columns_xs)) >= 0 ? Number(sec.grid_columns_xs) : 2;
+          var sm = [2,3,4,6,8].indexOf(Number(sec.grid_columns_sm)) >= 0 ? Number(sec.grid_columns_sm) : 3;
+          var md = [2,3,4,6,8].indexOf(Number(sec.grid_columns_md)) >= 0 ? Number(sec.grid_columns_md) : 4;
+          var lg = [2,3,4,6,8].indexOf(Number(sec.grid_columns_lg)) >= 0 ? Number(sec.grid_columns_lg) : 6;
+          var gridVars = '--grid-cols-xs:' + xs + ';--grid-cols-sm:' + sm + ';--grid-cols-md:' + md + ';--grid-cols-lg:' + lg + ';';
           var usePoster = sec.use_poster === true || sec.use_poster === 'true' || ss.default_use_poster === 'true';
-          var html = '<section class="home-section home-section-' + layout + '"><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
+          var html = '<section class="home-section home-section-' + layout + (layout === 'grid' ? ' home-section--grid-cols' : '') + '"' + (layout === 'grid' ? ' style="' + gridVars + '"' : '') + '><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
           if (layout === 'slider') {
             html += '<div class="section-slider-wrap"><div class="section-slider-track">';
             movies.forEach(function(m){ html += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base, { usePoster: usePoster }) + '</div>'; });
@@ -133,7 +132,7 @@
             });
             html += '</div>';
           } else {
-            html += '<div class="movies-grid movies-grid--cols-' + gridCols + '">';
+            html += '<div class="movies-grid">';
             movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base, { usePoster: usePoster }); });
             html += '</div>';
           }
