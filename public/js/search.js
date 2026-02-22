@@ -5,6 +5,25 @@
   var searchInput = document.getElementById('search-input');
   var resultsEl = document.getElementById('search-results');
   var index = null;
+  var gridCols = 4;
+  var usePoster = false;
+  var gridColumnsOptions = [2, 3, 4, 6, 8];
+  var currentList = [];
+  var gridElRef = { el: null };
+
+  function loadSettings() {
+    return fetch(((window.DAOP && window.DAOP.basePath) || '') + '/data/config/site-settings.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return {}; })
+      .then(function (s) {
+        gridCols = parseInt(s.default_grid_cols, 10) || 4;
+        if ([2, 3, 4, 6, 8].indexOf(gridCols) < 0) gridCols = 4;
+        usePoster = s.default_use_poster === 'true';
+        var opts = (s.grid_columns_options || '2,3,4,6,8').split(',');
+        gridColumnsOptions = opts.map(function (x) { var n = parseInt(x.trim(), 10); return [2, 3, 4, 6, 8].indexOf(n) >= 0 ? n : null; }).filter(Boolean);
+        if (!gridColumnsOptions.length) gridColumnsOptions = [2, 3, 4, 6, 8];
+      });
+  }
 
   function buildIndex() {
     var list = window.moviesLight || [];
@@ -59,8 +78,10 @@
 
   function renderResults(list) {
     if (!resultsEl) return;
+    currentList = list;
     if (!list.length) {
       resultsEl.innerHTML = '<p>Không tìm thấy kết quả.</p>';
+      gridElRef.el = null;
       return;
     }
     var render = (window.DAOP && window.DAOP.renderMovieCard);
@@ -68,26 +89,62 @@
       resultsEl.innerHTML = '<p>Lỗi: không thể hiển thị kết quả.</p>';
       return;
     }
-    resultsEl.innerHTML = '<div class="movies-grid">' + list.map(function (m) {
-      return render(m);
-    }).join('') + '</div>';
+    var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+    var grid = document.createElement('div');
+    grid.className = 'movies-grid movies-grid--cols-' + gridCols;
+    grid.innerHTML = list.map(function (m) { return render(m, baseUrl, { usePoster: usePoster }); }).join('');
+    gridElRef.el = grid;
+    var toolbar = resultsEl.querySelector('.grid-toolbar');
+    if (!toolbar) {
+      toolbar = document.createElement('div');
+      toolbar.className = 'grid-toolbar';
+      toolbar.setAttribute('aria-label', 'Tùy chọn hiển thị');
+      var colPart = '<span class="filter-label">Cột:</span>';
+      gridColumnsOptions.forEach(function (n) {
+        colPart += '<button type="button" class="grid-cols-btn' + (n === gridCols ? ' active' : '') + '" data-cols="' + n + '">' + n + '</button>';
+      });
+      toolbar.innerHTML = colPart + '<label class="grid-poster-toggle"><input type="checkbox" name="use_poster" ' + (usePoster ? 'checked' : '') + '> Poster</label>';
+      toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          gridCols = parseInt(btn.getAttribute('data-cols'), 10);
+          if (gridElRef.el) gridElRef.el.className = 'movies-grid movies-grid--cols-' + gridCols;
+          toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols); });
+        });
+      });
+      toolbar.querySelector('input[name="use_poster"]').addEventListener('change', function () {
+        usePoster = this.checked;
+        if (gridElRef.el && currentList.length) {
+          gridElRef.el.innerHTML = currentList.map(function (m) { return render(m, baseUrl, { usePoster: usePoster }); }).join('');
+        }
+      });
+      resultsEl.innerHTML = '';
+      resultsEl.appendChild(toolbar);
+    } else {
+      toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols); });
+      toolbar.querySelector('input[name="use_poster"]').checked = usePoster;
+      var oldGrid = resultsEl.querySelector('.movies-grid');
+      if (oldGrid) resultsEl.removeChild(oldGrid);
+    }
+    resultsEl.appendChild(grid);
   }
 
   function init() {
-    if (searchInput) {
-      searchInput.addEventListener('input', function () {
-        doSearch(this.value);
-      });
-      searchInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') doSearch(this.value);
-      });
-    }
-    var params = new URLSearchParams(window.location.search);
-    var q = params.get('q');
-    if (q && searchInput) {
-      searchInput.value = q;
-      doSearch(q);
-    }
+    loadSettings().then(function () {
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          doSearch(this.value);
+        });
+        searchInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') doSearch(this.value);
+        });
+      }
+      var params = new URLSearchParams(window.location.search);
+      var q = params.get('q');
+      if (q && searchInput) {
+        searchInput.value = q;
+        doSearch(q);
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

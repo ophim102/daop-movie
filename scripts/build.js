@@ -735,6 +735,7 @@ async function exportConfigFromSupabase() {
     supabase_user_anon_key: '',
     player_warning_enabled: 'true',
     player_warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+    player_visible: 'true',
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',
@@ -760,6 +761,16 @@ async function exportConfigFromSupabase() {
     theme_slider_desc: 'rgba(255,255,255,0.7)',
     theme_movie_card_title: '#f85149',
     theme_movie_card_meta: '#8b949e',
+    theme_header_logo: '#e6edf3',
+    theme_header_link: '#e6edf3',
+    theme_footer_text: '#8b949e',
+    theme_section_title: '#e6edf3',
+    theme_filter_label: '#8b949e',
+    theme_pagination: '#e6edf3',
+    theme_link: '#58a6ff',
+    default_grid_cols: '4',
+    grid_columns_options: '2,3,4,6,8',
+    default_use_poster: 'false',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));

@@ -5,6 +5,9 @@ import { supabase } from '../lib/supabase';
 const THEME_KEYS = [
   'theme_primary', 'theme_bg', 'theme_card', 'theme_accent',
   'theme_text', 'theme_muted',
+  'theme_header_logo', 'theme_header_link',
+  'theme_footer_text', 'theme_section_title', 'theme_filter_label',
+  'theme_pagination', 'theme_link',
   'theme_slider_title', 'theme_slider_meta', 'theme_slider_desc',
   'theme_movie_card_title', 'theme_movie_card_meta',
 ] as const;
@@ -16,6 +19,13 @@ const DEFAULTS: Record<string, string> = {
   theme_accent: '#58a6ff',
   theme_text: '#e6edf3',
   theme_muted: '#8b949e',
+  theme_header_logo: '#e6edf3',
+  theme_header_link: '#e6edf3',
+  theme_footer_text: '#8b949e',
+  theme_section_title: '#e6edf3',
+  theme_filter_label: '#8b949e',
+  theme_pagination: '#e6edf3',
+  theme_link: '#58a6ff',
   theme_slider_title: '#ffffff',
   theme_slider_meta: 'rgba(255,255,255,0.75)',
   theme_slider_desc: 'rgba(255,255,255,0.7)',
@@ -24,17 +34,24 @@ const DEFAULTS: Record<string, string> = {
 };
 
 const LABELS: Record<string, string> = {
-  theme_primary: 'Màu chủ đạo (link, nút)',
+  theme_primary: 'Màu chủ đạo (nút)',
   theme_bg: 'Màu nền trang',
   theme_card: 'Màu thẻ / header',
   theme_accent: 'Màu nhấn (hover)',
   theme_text: 'Chữ chính (body)',
   theme_muted: 'Chữ phụ (mờ, nhạt)',
-  theme_slider_title: 'Tiêu đề slider trang chủ',
-  theme_slider_meta: 'Dòng 2 slider (năm | quốc gia)',
-  theme_slider_desc: 'Mô tả slider',
-  theme_movie_card_title: 'Tên phim (thẻ phim)',
-  theme_movie_card_meta: 'Dòng phụ thẻ phim (tên gốc, năm, tập)',
+  theme_header_logo: 'Header: màu logo/tên site',
+  theme_header_link: 'Header: màu link menu',
+  theme_footer_text: 'Footer: màu chữ',
+  theme_section_title: 'Section: màu tiêu đề block (VD Phim bộ, Phim lẻ)',
+  theme_filter_label: 'Bộ lọc: màu nhãn (năm, thể loại...)',
+  theme_pagination: 'Phân trang: màu chữ',
+  theme_link: 'Link (trong nội dung)',
+  theme_slider_title: 'Slider trang chủ: tiêu đề',
+  theme_slider_meta: 'Slider: dòng 2 (năm | quốc gia)',
+  theme_slider_desc: 'Slider: mô tả',
+  theme_movie_card_title: 'Thẻ phim: tên phim',
+  theme_movie_card_meta: 'Thẻ phim: dòng phụ (năm, tập)',
 };
 
 export default function ThemeSettings() {
@@ -109,6 +126,30 @@ export default function ThemeSettings() {
             <Input type="color" style={{ width: 80, height: 32 }} />
           </Form.Item>
           <Form.Item name="theme_muted" label={LABELS.theme_muted}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <Form.Item name="theme_link" label={LABELS.theme_link}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Header (menu)</h3>
+          <Form.Item name="theme_header_logo" label={LABELS.theme_header_logo}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <Form.Item name="theme_header_link" label={LABELS.theme_header_link}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Footer</h3>
+          <Form.Item name="theme_footer_text" label={LABELS.theme_footer_text}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Section &amp; Bộ lọc &amp; Phân trang</h3>
+          <Form.Item name="theme_section_title" label={LABELS.theme_section_title}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <Form.Item name="theme_filter_label" label={LABELS.theme_filter_label}>
+            <Input type="color" style={{ width: 80, height: 32 }} />
+          </Form.Item>
+          <Form.Item name="theme_pagination" label={LABELS.theme_pagination}>
             <Input type="color" style={{ width: 80, height: 32 }} />
           </Form.Item>
           <h3 style={{ marginTop: 24, marginBottom: 12 }}>Slider trang chủ</h3>

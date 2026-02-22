@@ -13,6 +13,7 @@ const SITE_SETTINGS_KEYS = [
   'supabase_user_anon_key',
   'player_warning_enabled',
   'player_warning_text',
+  'player_visible',
   'movies_data_url',
   'social_facebook',
   'social_twitter',
@@ -20,6 +21,9 @@ const SITE_SETTINGS_KEYS = [
   'social_youtube',
   'footer_content',
   'tmdb_attribution',
+  'default_grid_cols',
+  'grid_columns_options',
+  'default_use_poster',
 ] as const;
 
 export default function SiteSettings() {
@@ -43,6 +47,7 @@ export default function SiteSettings() {
         supabase_user_anon_key: data.supabase_user_anon_key ?? '',
         player_warning_enabled: data.player_warning_enabled !== 'false',
         player_warning_text: data.player_warning_text ?? 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+        player_visible: data.player_visible !== 'false',
         movies_data_url: data.movies_data_url ?? '',
         social_facebook: data.social_facebook ?? '',
         social_twitter: data.social_twitter ?? '',
@@ -50,6 +55,9 @@ export default function SiteSettings() {
         social_youtube: data.social_youtube ?? '',
         footer_content: data.footer_content ?? '',
         tmdb_attribution: data.tmdb_attribution !== 'false',
+        default_grid_cols: data.default_grid_cols ?? '4',
+        grid_columns_options: data.grid_columns_options ?? '2,3,4,6,8',
+        default_use_poster: data.default_use_poster === 'true',
       });
       setLoading(false);
     });
@@ -103,6 +111,10 @@ export default function SiteSettings() {
           <Form.Item name="supabase_user_anon_key" label="Supabase User Anon Key">
             <Input.Password placeholder="eyJ..." />
           </Form.Item>
+          <Form.Item name="player_visible" label="Hiển thị player trên trang xem phim" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Tắt = không hiển thị nút Xem / danh sách tập phát trên trang chi tiết phim.</p>
           <Form.Item name="player_warning_enabled" label="Hiển thị cảnh báo dưới player" valuePropName="checked">
             <Switch />
           </Form.Item>
@@ -129,6 +141,16 @@ export default function SiteSettings() {
             <Input.TextArea rows={4} placeholder="<p>Donate</p><p>Trường Sa, Hoàng Sa...</p>" />
           </Form.Item>
           <Form.Item name="tmdb_attribution" label="Hiển thị ghi nhận TMDB" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <h3 style={{ marginTop: 24, marginBottom: 12 }}>Grid &amp; Ảnh</h3>
+          <Form.Item name="default_grid_cols" label="Số cột mặc định (grid phim): 2, 3, 4, 6 hoặc 8">
+            <Input placeholder="4" />
+          </Form.Item>
+          <Form.Item name="grid_columns_options" label="Các lựa chọn số cột (dùng trên trang lọc/tìm kiếm), cách nhau dấu phẩy">
+            <Input placeholder="2,3,4,6,8" />
+          </Form.Item>
+          <Form.Item name="default_use_poster" label="Mặc định dùng poster thay thumb (ảnh dọc)" valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item>

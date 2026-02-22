@@ -60,17 +60,20 @@
     document.head.appendChild(script);
   };
 
-  /** Render movie card HTML (title + origin_name) */
-  window.DAOP.renderMovieCard = function (m, baseUrl) {
+  /** Render movie card HTML (title + origin_name). opts: { usePoster: boolean } dùng poster thay thumb */
+  window.DAOP.renderMovieCard = function (m, baseUrl, opts) {
     baseUrl = baseUrl || BASE;
+    opts = opts || {};
     const href = baseUrl + '/phim/' + (m.slug || m.id) + '.html';
-    const thumb = (m.thumb || m.poster || '').replace(/^\/\//, 'https://');
+    const imgUrl = opts.usePoster
+      ? ((m.poster || m.thumb || '').replace(/^\/\//, 'https://'))
+      : ((m.thumb || m.poster || '').replace(/^\/\//, 'https://'));
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
     return (
       '<div class="movie-card">' +
       '<a href="' + href + '">' +
-      '<div class="thumb-wrap"><img loading="lazy" src="' + thumb + '" alt="' + title + '"></div>' +
+      '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '" alt="' + title + '"></div>' +
       '<div class="movie-info">' +
       '<h3 class="title">' + title + '</h3>' +
       (origin ? '<p class="origin-title">' + origin + '</p>' : '') +
@@ -161,6 +164,13 @@
     if (settings.theme_card) root.style.setProperty('--card', settings.theme_card);
     if (settings.theme_text) root.style.setProperty('--text', settings.theme_text);
     if (settings.theme_muted) root.style.setProperty('--muted', settings.theme_muted);
+    if (settings.theme_link) root.style.setProperty('--link-color', settings.theme_link);
+    if (settings.theme_header_logo) root.style.setProperty('--header-logo-color', settings.theme_header_logo);
+    if (settings.theme_header_link) root.style.setProperty('--header-link-color', settings.theme_header_link);
+    if (settings.theme_footer_text) root.style.setProperty('--footer-text-color', settings.theme_footer_text);
+    if (settings.theme_section_title) root.style.setProperty('--section-title-color', settings.theme_section_title);
+    if (settings.theme_filter_label) root.style.setProperty('--filter-label-color', settings.theme_filter_label);
+    if (settings.theme_pagination) root.style.setProperty('--pagination-color', settings.theme_pagination);
     if (settings.theme_slider_title) root.style.setProperty('--slider-title-color', settings.theme_slider_title);
     if (settings.theme_slider_meta) root.style.setProperty('--slider-meta-color', settings.theme_slider_meta);
     if (settings.theme_slider_desc) root.style.setProperty('--slider-desc-color', settings.theme_slider_desc);
@@ -192,6 +202,7 @@
         var raw = settings.homepage_slider;
         var arr = typeof raw === 'string' ? (raw ? JSON.parse(raw) : []) : (Array.isArray(raw) ? raw : []);
         if (Array.isArray(arr) && arr.length > 0) {
+          arr = arr.filter(function (s) { return s.enabled !== false; });
           arr.sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
           window.DAOP.renderSlider(sliderWrap, arr);
           var bannerWrap = document.getElementById('banner-wrap');

@@ -20,7 +20,7 @@ body {
   min-height: 100vh;
 }
 a {
-  color: var(--accent);
+  color: var(--link-color, var(--accent));
   text-decoration: none;
 }
 a:hover {
@@ -47,7 +47,7 @@ a:hover {
   font-weight: 800;
   font-size: 1.6rem;
   letter-spacing: -0.03em;
-  color: var(--text);
+  color: var(--header-logo-color, var(--text));
   text-decoration: none;
   padding: 0.35rem 0;
   transition: color 0.2s ease;
@@ -76,7 +76,7 @@ a:hover {
   margin-left: auto;
 }
 .site-nav a {
-  color: var(--muted);
+  color: var(--header-link-color, var(--muted));
   font-size: 0.9rem;
   font-weight: 500;
   padding: 0.5rem 0.75rem;
@@ -293,6 +293,24 @@ a:hover {
   .movies-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Lựa chọn số cột cố định (2,3,4,6,8) - dùng class movies-grid--cols-N */
+.movies-grid--cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+.movies-grid--cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+.movies-grid--cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+.movies-grid--cols-6 { grid-template-columns: repeat(6, 1fr) !important; }
+.movies-grid--cols-8 { grid-template-columns: repeat(8, 1fr) !important; }
+@media (max-width: 767px) {
+  .movies-grid--cols-6,
+  .movies-grid--cols-8 { grid-template-columns: repeat(3, 1fr) !important; }
+  .movies-grid--cols-4 { grid-template-columns: repeat(3, 1fr) !important; }
+}
+@media (max-width: 479px) {
+  .movies-grid--cols-6,
+  .movies-grid--cols-8,
+  .movies-grid--cols-4,
+  .movies-grid--cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
 /* Grid ô chữ nhật Thể loại / Quốc gia - 2,3,4,6,8 cột theo màn hình */
 .genre-grid,
 .country-grid,
@@ -329,7 +347,7 @@ a:hover {
   .country-grid,
   .list-grid { grid-template-columns: repeat(2, 1fr); }
 }
-.list-section-title { margin-top: 2rem; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.list-section-title { margin-top: 2rem; margin-bottom: 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--section-title-color, var(--text)); }
 .genre-card,
 .country-card {
   aspect-ratio: 3/2;
@@ -732,9 +750,17 @@ a:hover {
   align-items: flex-start;
   margin-bottom: 1rem;
   padding: 0.75rem;
+  position: sticky;
+  top: 56px;
+  z-index: 40;
   background: var(--card);
   border-radius: 8px;
   border: 1px solid var(--border);
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .filter-bar .filter-item {
   display: flex;
@@ -747,11 +773,12 @@ a:hover {
   flex: 1 1 100%;
 }
 .filter-bar label {
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 0.75rem;
+  color: var(--filter-label-color, var(--muted));
   margin-right: 0.25rem;
 }
 .filter-bar select {
+  font-size: 0.75rem;
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
@@ -768,8 +795,8 @@ a:hover {
 }
 .filter-bar .filter-label {
   flex-shrink: 0;
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 0.75rem;
+  color: var(--filter-label-color, var(--muted));
 }
 .filter-bar .filter-scroll {
   flex: 1;
@@ -834,6 +861,35 @@ a:hover {
   margin-right: 0.25rem;
 }
 
+/* Toolbar chọn số cột + thumb/poster (trang lọc, tìm kiếm) */
+.grid-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  color: var(--filter-label-color, var(--muted));
+}
+.grid-toolbar .grid-cols-btn {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.grid-toolbar .grid-cols-btn:hover,
+.grid-toolbar .grid-cols-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.grid-toolbar .grid-poster-toggle {
+  margin: 0;
+  margin-left: 0.5rem;
+}
+
 /* Pagination: 5 trang, trang hiện tại ở giữa, nút đầu/cuối/trước/sau, ô nhảy trang */
 .pagination {
   display: flex;
@@ -848,7 +904,7 @@ a:hover {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--text);
+  color: var(--pagination-color, var(--text));
   font-size: 0.9rem;
   text-decoration: none;
 }
@@ -1009,7 +1065,7 @@ a:hover {
   border-top: 1px solid var(--border);
   text-align: center;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--footer-text-color, var(--muted));
 }
 .site-footer p {
   margin: 0.25rem 0;
@@ -1180,7 +1236,7 @@ a:hover {
     gap: 0.5rem;
   }
   .filter-bar select {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     padding: 0.3rem 0.4rem;
   }
   .movie-detail-header {

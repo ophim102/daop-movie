@@ -71,16 +71,17 @@ export default function PlayerSettings() {
     <>
       <h1>Cài đặt Player</h1>
       <p style={{ color: '#666', marginBottom: 16 }}>
-        Player mặc định, danh sách engine, và cảnh báo hiển thị dưới player. Build sẽ xuất ra player-settings.json.
+        Admin chọn player nào thì trang xem sẽ dùng đúng player đó để phát video. Player mặc định áp dụng cho mọi lượt xem (người dùng không đổi được). Build sẽ xuất ra player-settings.json.
       </p>
       <Card loading={loading}>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="available_players_json" label="Danh sách player (JSON: key -> tên hiển thị)">
             <Input.TextArea rows={5} placeholder='{"plyr":"Plyr","videojs":"Video.js","jwplayer":"JWPlayer"}' />
           </Form.Item>
-          <Form.Item name="default_player" label="Player mặc định (key trùng trong danh sách trên)">
+          <Form.Item name="default_player" label="Player dùng để phát video (key trùng trong danh sách trên: plyr, videojs, jwplayer hoặc tên tùy chỉnh)">
             <Input placeholder="plyr" />
           </Form.Item>
+          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Với link trực tiếp (m3u8/HLS): plyr hoặc videojs sẽ load thư viện tương ứng. Link iframe/embed thì luôn dùng iframe.</p>
           <Form.Item name="warning_enabled_global" label="Bật cảnh báo toàn cục" valuePropName="checked">
             <Switch />
           </Form.Item>

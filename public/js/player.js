@@ -1,10 +1,49 @@
 /**
- * Player: mở overlay, pre-roll (nếu có), chọn nguồn, cảnh báo (warning), lưu tiến trình
+ * Player: dùng đúng player do admin chọn (default_player). Mở overlay, pre-roll (nếu có), cảnh báo, lưu tiến trình.
  */
 (function () {
   window.DAOP = window.DAOP || {};
   var overlay = null;
   var defaultWarning = 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.';
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  function loadStylesheet(href) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
+  function attachProgressAndInitPlayer(opts, videoEl, chosenPlayer) {
+    if (!videoEl) return;
+    var reportTime = function () {
+      if (window.DAOP && window.DAOP.userSync && opts.slug && opts.episode && videoEl.currentTime != null) {
+        window.DAOP.userSync.updateWatchProgress(opts.slug, opts.episode, Math.floor(videoEl.currentTime));
+      }
+    };
+    videoEl.addEventListener('timeupdate', reportTime);
+    if (chosenPlayer === 'plyr' && typeof window.Plyr !== 'undefined') {
+      try {
+        var plyrInstance = new window.Plyr(videoEl, { controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'fullscreen'] });
+        plyrInstance.on('timeupdate', reportTime);
+      } catch (e) {}
+    } else if (chosenPlayer === 'videojs' && typeof window.videojs !== 'undefined') {
+      try {
+        window.videojs(videoEl).ready(function () {
+          this.on('timeupdate', reportTime);
+        });
+      } catch (e) {}
+    }
+  }
 
   function showMainContent(opts) {
     var link = opts.link;
@@ -13,33 +52,40 @@
     var warningText = movie.warning_text || window.DAOP?.siteSettings?.player_warning_text || defaultWarning;
     var playerSettings = window.DAOP?.playerSettings || {};
     var available = playerSettings.available_players && typeof playerSettings.available_players === 'object' ? playerSettings.available_players : {};
-    var defaultPlayer = playerSettings.default_player || 'plyr';
-    var keys = Object.keys(available);
-    var showPlayerSelect = keys.length > 1;
+    var chosenPlayer = (playerSettings.default_player || 'plyr').toLowerCase();
+    var chosenLabel = available[chosenPlayer] || chosenPlayer;
     var safeLink = (link || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
     var isDirectStream = link && (/\.m3u8($|\?)/i.test(link) || /\/stream\//i.test(link) || /\/hls\//i.test(link));
     var playerHtml = !link
       ? '<p>Chưa có link phát.</p>'
       : isDirectStream
-        ? '<video id="daop-video" controls src="' + safeLink + '"></video>'
+        ? '<video id="daop-video" class="video-js" controls playsinline preload="metadata" src="' + safeLink + '"></video>'
         : '<iframe id="daop-embed" src="' + safeLink + '" allowfullscreen allow="autoplay; fullscreen"></iframe>';
-    var playerSelectHtml = showPlayerSelect
-      ? '<div class="player-select-wrap" style="margin-bottom:8px;"><label for="daop-player-select">Player: </label><select id="daop-player-select"><option value="">' + (available[defaultPlayer] || defaultPlayer) + '</option>' +
-        keys.filter(function(k){ return k !== defaultPlayer; }).map(function(k){ return '<option value="' + k + '">' + (available[k] || k) + '</option>'; }).join('') +
-        '</select></div>'
-      : '';
+    var playerLabelHtml = '<p class="player-label" style="margin:0 0 8px;font-size:0.85rem;color:#8b949e;">Đang dùng: ' + (chosenLabel || chosenPlayer) + '</p>';
     overlay.innerHTML =
       '<button type="button" class="close-player" aria-label="Đóng">Đóng</button>' +
-      playerSelectHtml +
+      playerLabelHtml +
       playerHtml +
       (showWarning ? '<p class="player-warning">' + (warningText || defaultWarning).replace(/</g, '&lt;') + '</p>' : '');
     var video = document.getElementById('daop-video');
-    if (video) {
-      video.addEventListener('timeupdate', function () {
-        if (window.DAOP && window.DAOP.userSync && opts.slug && opts.episode) {
-          window.DAOP.userSync.updateWatchProgress(opts.slug, opts.episode, Math.floor(video.currentTime));
-        }
-      });
+    if (video && isDirectStream && (chosenPlayer === 'plyr' || chosenPlayer === 'videojs')) {
+      if (chosenPlayer === 'plyr') {
+        loadStylesheet('https://cdn.plyr.io/3.7.8/plyr.css');
+        loadScript('https://cdn.plyr.io/3.7.8/plyr.polyfilled.js').then(function () {
+          attachProgressAndInitPlayer(opts, document.getElementById('daop-video'), 'plyr');
+        }).catch(function () {
+          attachProgressAndInitPlayer(opts, document.getElementById('daop-video'), 'native');
+        });
+      } else if (chosenPlayer === 'videojs') {
+        loadStylesheet('https://vjs.zencdn.net/8.10.0/video-js.css');
+        loadScript('https://vjs.zencdn.net/8.10.0/video.min.js').then(function () {
+          attachProgressAndInitPlayer(opts, document.getElementById('daop-video'), 'videojs');
+        }).catch(function () {
+          attachProgressAndInitPlayer(opts, document.getElementById('daop-video'), 'native');
+        });
+      }
+    } else if (video) {
+      attachProgressAndInitPlayer(opts, video, 'native');
     }
     overlay.querySelector('.close-player').addEventListener('click', function () {
       if (overlay) overlay.remove();
@@ -54,6 +100,7 @@
   }
 
   window.DAOP.openPlayer = function (opts) {
+    if (window.DAOP?.siteSettings?.player_visible === 'false') return;
     var prerollList = window.DAOP?.prerollList || [];
     var preroll = prerollList.length > 0 ? prerollList[0] : null;
 

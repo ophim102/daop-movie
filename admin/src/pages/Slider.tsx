@@ -10,8 +10,9 @@ import {
   message,
   Image,
   Card,
+  Switch,
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, LinkOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
 type SlideItem = {
@@ -24,6 +25,7 @@ type SlideItem = {
   genres?: string[] | { name: string }[];
   description?: string;
   sort_order?: number;
+  enabled?: boolean;
 };
 
 type MovieLight = {
@@ -49,6 +51,8 @@ export default function Slider() {
   const [moviesDataUrl, setMoviesDataUrl] = useState<string>('');
   const [movieLinkInput, setMovieLinkInput] = useState('');
   const [addingFromMovie, setAddingFromMovie] = useState(false);
+  const [addingLatest, setAddingLatest] = useState(false);
+  const [latestCount, setLatestCount] = useState(5);
   const [form] = Form.useForm();
 
   const loadData = async () => {
@@ -59,7 +63,8 @@ export default function Slider() {
     ]);
     try {
       const parsed = sliderRes.data?.value ? JSON.parse(sliderRes.data.value) : [];
-      setList(Array.isArray(parsed) ? parsed : []);
+      const arr = Array.isArray(parsed) ? parsed : [];
+      setList(arr.map((s: SlideItem) => ({ ...s, enabled: s.enabled !== false })));
     } catch {
       setList([]);
     }
@@ -126,6 +131,7 @@ export default function Slider() {
         episode_current: movie.episode_current || undefined,
         genres: genreNames.length ? genreNames : undefined,
         sort_order: list.length,
+        enabled: true,
       };
       await saveList([...list, newSlide]);
       setMovieLinkInput('');
@@ -154,18 +160,72 @@ export default function Slider() {
   const openAdd = () => {
     setEditingIndex(null);
     form.resetFields();
-    form.setFieldsValue({ sort_order: list.length });
+    form.setFieldsValue({ sort_order: list.length, enabled: true });
     setModalVisible(true);
   };
 
   const openEdit = (idx: number) => {
     setEditingIndex(idx);
-    form.setFieldsValue(list[idx] || {});
+    form.setFieldsValue({ ...list[idx], enabled: list[idx]?.enabled !== false });
     setModalVisible(true);
   };
 
   const handleDelete = async (idx: number) => {
     const next = list.filter((_, i) => i !== idx);
+    await saveList(next);
+  };
+
+  const addLatestMovies = async () => {
+    if (!moviesDataUrl) {
+      message.warning('Cấu hình URL dữ liệu phim trong Cài đặt (movies_data_url).');
+      return;
+    }
+    const n = Math.max(1, Math.min(50, latestCount || 5));
+    setAddingLatest(true);
+    try {
+      const res = await fetch(moviesDataUrl);
+      if (!res.ok) throw new Error('Không tải được dữ liệu phim');
+      let text = await res.text();
+      text = text.replace(/^[\s\S]*?window\.moviesLight\s*=\s*/, '').replace(/;\s*$/, '');
+      const movies: MovieLight[] = JSON.parse(text);
+      const sorted = [...movies].sort((a, b) => {
+        const ya = Number(a.year) || 0;
+        const yb = Number(b.year) || 0;
+        if (yb !== ya) return yb - ya;
+        return 0;
+      });
+      const base = moviesDataUrl.replace(/\/data\/movies-light\.js.*$/, '') || new URL(moviesDataUrl).origin;
+      const newSlides: SlideItem[] = sorted.slice(0, n).map((movie, i) => {
+        const linkUrl = base + '/phim/' + (movie.slug || movie.id) + '.html';
+        const thumb = (movie.thumb || '').replace(/^\/\//, 'https://');
+        const title = movie.title || movie.origin_name || (movie as any).name || '';
+        const countryName = Array.isArray(movie.country) && movie.country[0] ? (movie.country[0].name || '') : '';
+        const genreNames = Array.isArray(movie.genre)
+          ? movie.genre.map((g: any) => (g && g.name) ? g.name : '').filter(Boolean)
+          : [];
+        return {
+          image_url: thumb,
+          link_url: linkUrl,
+          title,
+          year: movie.year != null ? String(movie.year) : undefined,
+          country: countryName || undefined,
+          episode_current: movie.episode_current || undefined,
+          genres: genreNames.length ? genreNames : undefined,
+          sort_order: list.length + i,
+          enabled: true,
+        };
+      });
+      await saveList([...list, ...newSlides]);
+      message.success('Đã thêm ' + newSlides.length + ' phim mới nhất vào slider.');
+    } catch (e: any) {
+      message.error(e?.message || 'Lỗi thêm phim mới nhất');
+    } finally {
+      setAddingLatest(false);
+    }
+  };
+
+  const toggleEnabled = async (idx: number, checked: boolean) => {
+    const next = list.map((s, i) => (i === idx ? { ...s, enabled: checked } : s));
     await saveList(next);
   };
 
@@ -184,6 +244,7 @@ export default function Slider() {
       genres: genres?.length ? genres : undefined,
       description: values.description || undefined,
       sort_order: typeof values.sort_order === 'number' ? values.sort_order : list.length,
+      enabled: values.enabled !== false,
     };
     let next: SlideItem[];
     if (editingIndex !== null) {
@@ -202,6 +263,17 @@ export default function Slider() {
       <p style={{ color: '#666', marginBottom: 16 }}>
         Các slide hiển thị dạng carousel trên trang chủ. Lưu trong Cài đặt chung (site_settings).
       </p>
+      <Card title="Thêm phim mới nhất" style={{ marginBottom: 16 }}>
+        <p style={{ color: '#666', marginBottom: 8 }}>
+          Thêm N phim mới nhất (sắp xếp theo năm) vào slider. Cần cấu hình URL dữ liệu phim trong Cài đặt.
+        </p>
+        <Space>
+          <InputNumber min={1} max={50} value={latestCount} onChange={(v) => setLatestCount(Number(v) || 5)} />
+          <Button type="primary" icon={<ThunderboltOutlined />} loading={addingLatest} onClick={addLatestMovies}>
+            Thêm phim mới nhất
+          </Button>
+        </Space>
+      </Card>
       <Card title="Thêm slide từ phim" style={{ marginBottom: 16 }}>
         <p style={{ color: '#666', marginBottom: 8 }}>
           Nhập link trang phim (ví dụ: https://your-site.com/phim/nam-em-la-ba-anh.html) hoặc slug phim. Cần cấu hình URL dữ liệu phim trong Cài đặt.
@@ -229,6 +301,17 @@ export default function Slider() {
         rowKey="_index"
         pagination={false}
         columns={[
+          {
+            title: 'Bật',
+            key: 'enabled',
+            width: 64,
+            render: (_: any, row: any) => (
+              <Switch
+                checked={row.enabled !== false}
+                onChange={(checked) => toggleEnabled(row._index, checked)}
+              />
+            ),
+          },
           {
             title: 'Ảnh',
             dataIndex: 'image_url',
@@ -328,6 +411,9 @@ export default function Slider() {
           </Form.Item>
           <Form.Item name="sort_order" label="Thứ tự">
             <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="enabled" label="Hiển thị slide" valuePropName="checked">
+            <Switch />
           </Form.Item>
         </Form>
       </Modal>

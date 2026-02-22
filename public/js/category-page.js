@@ -18,7 +18,6 @@
   CategoryPage.prototype.init = function () {
     var self = this;
     var filtersData = window.filtersData || {};
-    var moviesLight = window.moviesLight || [];
     var baseSet = this.baseFilter();
     if (typeof baseSet === 'array') baseSet = new Set(baseSet);
     if (!(baseSet instanceof Set)) baseSet = new Set(Array.isArray(baseSet) ? baseSet : []);
@@ -27,10 +26,57 @@
     var titleEl = document.getElementById('page-title');
     if (titleEl) titleEl.textContent = this.title;
 
-    this.buildFilterUI(baseSet, filtersData);
-    this.applyFilters(baseSet, filtersData);
-    this.renderPage();
-    this.attachEvents(baseSet, filtersData);
+    fetch(((window.DAOP && window.DAOP.basePath) || '') + '/data/config/site-settings.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return {}; })
+      .then(function (settings) {
+        self.settings = settings;
+        self.gridCols = parseInt(settings.default_grid_cols, 10) || 4;
+        if ([2, 3, 4, 6, 8].indexOf(self.gridCols) < 0) self.gridCols = 4;
+        self.usePoster = settings.default_use_poster === 'true';
+        var optsStr = (settings.grid_columns_options || '2,3,4,6,8').split(',');
+        self.gridColumnsOptions = optsStr.map(function (s) { var n = parseInt(s.trim(), 10); return [2, 3, 4, 6, 8].indexOf(n) >= 0 ? n : null; }).filter(Boolean);
+        if (!self.gridColumnsOptions.length) self.gridColumnsOptions = [2, 3, 4, 6, 8];
+        self.buildFilterUI(baseSet, filtersData);
+        self.buildGridToolbar();
+        self.applyFilters(baseSet, filtersData);
+        self.applyGridClass();
+        self.renderPage();
+        self.attachEvents(baseSet, filtersData);
+      });
+  };
+
+  CategoryPage.prototype.buildGridToolbar = function () {
+    var self = this;
+    var grid = document.getElementById(this.gridId);
+    if (!grid) return;
+    var bar = document.createElement('div');
+    bar.className = 'grid-toolbar';
+    bar.setAttribute('aria-label', 'Tùy chọn hiển thị');
+    var colPart = '<span class="filter-label">Cột:</span>';
+    (self.gridColumnsOptions || [2, 3, 4, 6, 8]).forEach(function (n) {
+      colPart += '<button type="button" class="grid-cols-btn' + (n === self.gridCols ? ' active' : '') + '" data-cols="' + n + '">' + n + '</button>';
+    });
+    bar.innerHTML = colPart + '<label class="grid-poster-toggle"><input type="checkbox" name="use_poster" ' + (self.usePoster ? 'checked' : '') + '> Poster</label>';
+    grid.parentNode.insertBefore(bar, grid);
+    bar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        self.gridCols = parseInt(btn.getAttribute('data-cols'), 10);
+        self.applyGridClass();
+        bar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === self.gridCols); });
+      });
+    });
+    bar.querySelector('input[name="use_poster"]').addEventListener('change', function () {
+      self.usePoster = this.checked;
+      self.renderPage();
+    });
+  };
+
+  CategoryPage.prototype.applyGridClass = function () {
+    var grid = document.getElementById(this.gridId);
+    if (!grid) return;
+    grid.classList.remove('movies-grid--cols-2', 'movies-grid--cols-3', 'movies-grid--cols-4', 'movies-grid--cols-6', 'movies-grid--cols-8');
+    grid.classList.add('movies-grid--cols-' + (this.gridCols || 4));
   };
 
   var ROW_IDS = ['year', 'genre', 'country', 'videoType', 'lang'];
@@ -172,9 +218,11 @@
     var start = (this.currentPage - 1) * perPage;
     var slice = this.filteredIds.slice(start, start + perPage);
     var list = window.moviesLight || [];
+    var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+    var usePoster = this.usePoster === true;
     var html = slice.map(function (id) {
       var m = list.find(function (x) { return x.id === id; });
-      return m ? window.DAOP.renderMovieCard(m) : '';
+      return m && window.DAOP.renderMovieCard ? window.DAOP.renderMovieCard(m, baseUrl, { usePoster: usePoster }) : '';
     }).join('');
     grid.innerHTML = html || '<p>Không có phim nào.</p>';
 

@@ -98,8 +98,9 @@
       '</div></div>';
 
     var episodesHtml = '';
+    var playerVisible = window.DAOP?.siteSettings?.player_visible !== 'false';
     var servers = window.DAOP?.serverSources || [];
-    if (movie.episodes && movie.episodes.length) {
+    if (playerVisible && movie.episodes && movie.episodes.length) {
       episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
       movie.episodes.forEach(function (ep) {
         var serverName = ep.server_name || ep.name || ep.slug || '';
@@ -115,6 +116,9 @@
         }
       });
       episodesHtml += '</div>';
+    }
+    if (!playerVisible && movie.episodes && movie.episodes.length) {
+      episodesHtml = '<p class="player-hidden-msg">Phát phim tạm thời không hiển thị (do cài đặt).</p>';
     }
     html += '<div class="episodes-wrap">' + episodesHtml + '</div>';
 
@@ -166,6 +170,7 @@
     };
   }
   function updateContinueButton(movie) {
+    if (window.DAOP?.siteSettings?.player_visible === 'false') return;
     var us = window.DAOP && window.DAOP.userSync;
     var wrap = document.querySelector('.btn-continue-wrap');
     if (!wrap || !us) return;
