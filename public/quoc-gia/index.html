@@ -40,7 +40,19 @@
         var fd = window.filtersData || {};
         var countryNames = fd.countryNames || {};
         var countryMap = fd.countryMap || {};
-        var countries = Object.keys(countryNames).length ? Object.keys(countryNames).sort() : Object.keys(countryMap).sort();
+        var countries = Object.keys(countryNames).length ? Object.keys(countryNames) : Object.keys(countryMap);
+        var countryOrder = (fd.filterOrder && fd.filterOrder.countryOrder) || [];
+        if (countryOrder.length) {
+          var orderSet = {};
+          countryOrder.forEach(function(k,i){ orderSet[k]=i; });
+          countries = countries.slice().sort(function(a,b){
+            var ia=orderSet[a], ib=orderSet[b];
+            if (ia!==undefined && ib!==undefined) return ia-ib;
+            if (ia!==undefined) return -1;
+            if (ib!==undefined) return 1;
+            return a<b?-1:a>b?1:0;
+          });
+        } else countries = countries.slice().sort();
         var name = function(s){ return countryNames[s] || s; };
         var countryFlags = { 'viet-nam':'vn','han-quoc':'kr','nhat-ban':'jp','thai-lan':'th','trung-quoc':'cn','au-my':'us','anh':'gb','phap':'fr','duc':'de','tay-ban-nha':'es','y':'it','nga':'ru','canada':'ca','uc':'au','brazil':'br','an-do':'in','indonesia':'id','malaysia':'my','philippines':'ph','singapore':'sg','dai-loan':'tw','hong-kong':'hk','ha-lan':'nl','thuy-dien':'se','phan-lan':'fi','na-uy':'no','dan-mach':'dk','ba-lan':'pl','ukraina':'ua','hy-lap':'gr','tho-nhi-ky':'tr','argentina':'ar','mexico':'mx','colombia':'co','chile':'cl','nam-phi':'za','nigeria':'ng','uae':'ae','quoc-gia-khac':'' };
         var flagCdn = 'https://flagcdn.com/w80';

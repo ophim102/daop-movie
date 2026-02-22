@@ -57,6 +57,13 @@ a:hover {
   color: var(--accent);
   text-decoration: none;
 }
+.site-logo img {
+  display: block;
+  height: 2rem;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
 .site-nav {
   display: flex;
   align-items: center;
@@ -507,7 +514,7 @@ a:hover {
 .home-section h2 {
   margin: 0 0 1rem;
   padding-bottom: 0.6rem;
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: -0.02em;
@@ -584,7 +591,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.75rem;
+  min-height: 176px;
   background: var(--card);
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -595,9 +603,9 @@ a:hover {
   border-color: var(--accent);
 }
 .list-thumb {
-  flex: 0 0 60px;
-  width: 60px;
-  height: 84px;
+  flex: 0 0 120px;
+  width: 120px;
+  height: 168px;
   border-radius: 4px;
   overflow: hidden;
   background: var(--border);
@@ -610,12 +618,26 @@ a:hover {
 .list-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 .list-info strong {
+  display: block;
+  font-size: 1rem;
+}
+.list-info .list-origin {
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--muted);
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.list-info .list-ep {
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 /* Banner */
@@ -643,7 +665,7 @@ a:hover {
 .slider-viewport {
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 4 / 2.5;
   max-height: 420px;
 }
 .slider-track {
@@ -969,46 +991,89 @@ a:hover {
   min-height: 0;
 }
 
-/* Toolbar chọn số cột + thumb/poster (trang lọc, tìm kiếm) */
+/* Toolbar chọn số cột + thumb/poster (trang lọc, tìm kiếm) - luôn 1 hàng trên mọi thiết bị */
 .grid-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 0.5rem 1rem;
+  gap: 0.25rem 0.5rem;
   margin-bottom: 0;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--filter-label-color, var(--muted));
+  min-width: 0;
+  flex-shrink: 0;
+}
+@media (max-width: 479px) {
+  .grid-toolbar {
+    font-size: 0.65rem;
+    gap: 0.2rem 0.35rem;
+  }
+}
+.grid-toolbar .filter-label {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .grid-toolbar .grid-cols-btn {
-  padding: 0.3rem 0.5rem;
+  padding: 0.25rem 0.4rem;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--card);
   color: var(--text);
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: inherit;
+  flex-shrink: 0;
+}
+@media (max-width: 479px) {
+  .grid-toolbar .grid-cols-btn {
+    padding: 0.2rem 0.3rem;
+  }
 }
 .grid-toolbar .grid-cols-btn:hover,
 .grid-toolbar .grid-cols-btn.active {
   border-color: var(--accent);
   color: var(--accent);
 }
-.grid-toolbar .grid-cols-select,
-.grid-toolbar .grid-poster-select {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.4rem;
+.grid-toolbar .grid-cols-select {
+  font-size: inherit;
+  padding: 0.2rem 0.3rem;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--card);
   color: var(--text);
-  min-width: 2.5rem;
+  min-width: 2rem;
+  max-width: 2.8rem;
+  flex-shrink: 1;
+}
+.grid-toolbar .grid-poster-select {
+  font-size: inherit;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--text);
+  min-width: 3rem;
+  max-width: 4rem;
+  flex-shrink: 1;
+}
+@media (max-width: 479px) {
+  .grid-toolbar .grid-cols-select {
+    min-width: 1.8rem;
+    max-width: 2.4rem;
+    padding: 0.15rem 0.25rem;
+  }
+  .grid-toolbar .grid-poster-select {
+    min-width: 2.5rem;
+    max-width: 3.2rem;
+    padding: 0.15rem 0.25rem;
+  }
 }
 .grid-toolbar .grid-poster-toggle {
   margin: 0;
-  margin-left: 0.5rem;
+  margin-left: 0.25rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
+  flex-shrink: 0;
 }
 
 /* Pagination: 5 trang, trang hiện tại ở giữa, nút đầu/cuối/trước/sau, ô nhảy trang */
@@ -1297,7 +1362,7 @@ a:hover {
   }
   .slider-viewport {
     max-height: 280px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 2.5;
   }
   .slider-slide-content {
     padding: 1.25rem 1rem 2.5rem;

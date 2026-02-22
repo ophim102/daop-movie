@@ -30,26 +30,44 @@
   </header>
   <main class="container">
     <h1>Danh sách</h1>
-    <div class="genre-grid list-grid">
-      <a class="genre-card list-card" href="/danh-sach/phim-4k.html"><span class="genre-icon">📺</span><span class="genre-name">Phim 4K</span></a>
-      <a class="genre-card list-card" href="/shows.html"><span class="genre-icon">📺</span><span class="genre-name">TV Shows</span></a>
-      <a class="genre-card list-card" href="/hoat-hinh.html"><span class="genre-icon">🎬</span><span class="genre-name">Hoạt hình</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-vietsub.html"><span class="genre-icon">🇻🇳</span><span class="genre-name">Phim Vietsub</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-thuyet-minh.html"><span class="genre-icon">🎙️</span><span class="genre-name">Phim Thuyết minh</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-long-tieng.html"><span class="genre-icon">🔊</span><span class="genre-name">Phim Lồng tiếng</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-doc-quyen.html"><span class="genre-icon">⭐</span><span class="genre-name">Phim Độc quyền</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-dang-chieu.html"><span class="genre-icon">🎞️</span><span class="genre-name">Phim đang chiếu</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-sap-chieu.html"><span class="genre-icon">📅</span><span class="genre-name">Phim sắp chiếu</span></a>
-      <a class="genre-card list-card" href="/danh-sach/phim-chieu-rap.html"><span class="genre-icon">🎭</span><span class="genre-name">Phim chiếu rạp</span></a>
-      <a class="genre-card list-card" href="/the-loai/"><span class="genre-icon">🎬</span><span class="genre-name">Thể loại</span></a>
-      <a class="genre-card list-card" href="/quoc-gia/"><span class="genre-icon">🌐</span><span class="genre-name">Quốc gia</span></a>
-      <a class="genre-card list-card" href="/nam-phat-hanh/"><span class="genre-icon">📅</span><span class="genre-name">Năm phát hành</span></a>
-      <a class="genre-card list-card" href="/dien-vien/"><span class="genre-icon">👤</span><span class="genre-name">Diễn viên</span></a>
-    </div>
+    <div id="list-grid" class="genre-grid list-grid"></div>
   </main>
   <footer class="site-footer">
     <p>Trường Sa, Hoàng Sa là của Việt Nam!</p>
   </footer>
   <script src="/js/main.js"></script>
+  <script>
+    (function(){
+      var defaultList = [
+        {id:'phim-4k',label:'Phim 4K',href:'/danh-sach/phim-4k.html',icon:'📺'},
+        {id:'shows',label:'TV Shows',href:'/shows.html',icon:'📺'},
+        {id:'hoat-hinh',label:'Hoạt hình',href:'/hoat-hinh.html',icon:'🎬'},
+        {id:'phim-vietsub',label:'Phim Vietsub',href:'/danh-sach/phim-vietsub.html',icon:'🇻🇳'},
+        {id:'phim-thuyet-minh',label:'Phim Thuyết minh',href:'/danh-sach/phim-thuyet-minh.html',icon:'🎙️'},
+        {id:'phim-long-tieng',label:'Phim Lồng tiếng',href:'/danh-sach/phim-long-tieng.html',icon:'🔊'},
+        {id:'phim-doc-quyen',label:'Phim Độc quyền',href:'/danh-sach/phim-doc-quyen.html',icon:'⭐'},
+        {id:'phim-dang-chieu',label:'Phim đang chiếu',href:'/danh-sach/phim-dang-chieu.html',icon:'🎞️'},
+        {id:'phim-sap-chieu',label:'Phim sắp chiếu',href:'/danh-sach/phim-sap-chieu.html',icon:'📅'},
+        {id:'phim-chieu-rap',label:'Phim chiếu rạp',href:'/danh-sach/phim-chieu-rap.html',icon:'🎭'},
+        {id:'the-loai',label:'Thể loại',href:'/the-loai/',icon:'🎬'},
+        {id:'quoc-gia',label:'Quốc gia',href:'/quoc-gia/',icon:'🌐'},
+        {id:'nam-phat-hanh',label:'Năm phát hành',href:'/nam-phat-hanh/',icon:'📅'},
+        {id:'dien-vien',label:'Diễn viên',href:'/dien-vien/',icon:'👤'}
+      ];
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      var grid = document.getElementById('list-grid');
+      if (!grid) return;
+      function render(items){
+        grid.innerHTML = items.map(function(it){
+          var label = (it.label || '').replace(/</g,'&lt;');
+          return '<a class="genre-card list-card" href="' + (base + it.href).replace(/\/\//g,'/') + '"><span class="genre-icon">' + (it.icon||'🎬') + '</span><span class="genre-name">' + label + '</span></a>';
+        }).join('');
+      }
+      fetch(base + '/data/config/list-order.json').then(function(r){ return r.json(); }).then(function(arr){
+        if (Array.isArray(arr) && arr.length) render(arr);
+        else render(defaultList);
+      }).catch(function(){ render(defaultList); });
+    })();
+  </script>
 </body>
 </html>

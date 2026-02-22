@@ -35,6 +35,7 @@ type MovieLight = {
   origin_name?: string;
   name?: string;
   thumb?: string;
+  poster?: string;
   year?: string | number;
   country?: { name?: string }[];
   genre?: { name?: string }[];
@@ -117,14 +118,14 @@ export default function Slider() {
       }
       const base = moviesDataUrl.replace(/\/data\/movies-light\.js.*$/, '') || new URL(moviesDataUrl).origin;
       const linkUrl = base + '/phim/' + (movie.slug || slug) + '.html';
-      const thumb = (movie.thumb || '').replace(/^\/\//, 'https://');
+      const img = ((movie as any).poster || movie.thumb || '').replace(/^\/\//, 'https://');
       const title = movie.title || movie.origin_name || (movie as any).name || '';
       const countryName = Array.isArray(movie.country) && movie.country[0] ? (movie.country[0].name || '') : '';
       const genreNames = Array.isArray(movie.genre)
         ? movie.genre.map((g: any) => (g && g.name) ? g.name : '').filter(Boolean)
         : [];
       const newSlide: SlideItem = {
-        image_url: thumb,
+        image_url: img,
         link_url: linkUrl,
         title,
         year: movie.year != null ? String(movie.year) : undefined,
@@ -198,14 +199,14 @@ export default function Slider() {
       const base = moviesDataUrl.replace(/\/data\/movies-light\.js.*$/, '') || new URL(moviesDataUrl).origin;
       const newSlides: SlideItem[] = sorted.slice(0, n).map((movie, i) => {
         const linkUrl = base + '/phim/' + (movie.slug || movie.id) + '.html';
-        const thumb = (movie.thumb || '').replace(/^\/\//, 'https://');
+        const img = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
         const title = movie.title || movie.origin_name || (movie as any).name || '';
         const countryName = Array.isArray(movie.country) && movie.country[0] ? (movie.country[0].name || '') : '';
         const genreNames = Array.isArray(movie.genre)
           ? movie.genre.map((g: any) => (g && g.name) ? g.name : '').filter(Boolean)
           : [];
         return {
-          image_url: thumb,
+          image_url: img,
           link_url: linkUrl,
           title,
           year: movie.year != null ? String(movie.year) : undefined,

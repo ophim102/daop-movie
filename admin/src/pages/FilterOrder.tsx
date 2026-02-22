@@ -50,6 +50,24 @@ const LANG_OPTIONS: Record<string, string> = {
   khac: 'Khác',
 };
 
+/** Mục trang Danh sách: id -> { label, href, icon } */
+const LIST_OPTIONS: Record<string, { label: string; href: string; icon: string }> = {
+  'phim-4k': { label: 'Phim 4K', href: '/danh-sach/phim-4k.html', icon: '📺' },
+  'shows': { label: 'TV Shows', href: '/shows.html', icon: '📺' },
+  'hoat-hinh': { label: 'Hoạt hình', href: '/hoat-hinh.html', icon: '🎬' },
+  'phim-vietsub': { label: 'Phim Vietsub', href: '/danh-sach/phim-vietsub.html', icon: '🇻🇳' },
+  'phim-thuyet-minh': { label: 'Phim Thuyết minh', href: '/danh-sach/phim-thuyet-minh.html', icon: '🎙️' },
+  'phim-long-tieng': { label: 'Phim Lồng tiếng', href: '/danh-sach/phim-long-tieng.html', icon: '🔊' },
+  'phim-doc-quyen': { label: 'Phim Độc quyền', href: '/danh-sach/phim-doc-quyen.html', icon: '⭐' },
+  'phim-dang-chieu': { label: 'Phim đang chiếu', href: '/danh-sach/phim-dang-chieu.html', icon: '🎞️' },
+  'phim-sap-chieu': { label: 'Phim sắp chiếu', href: '/danh-sach/phim-sap-chieu.html', icon: '📅' },
+  'phim-chieu-rap': { label: 'Phim chiếu rạp', href: '/danh-sach/phim-chieu-rap.html', icon: '🎭' },
+  'the-loai': { label: 'Thể loại', href: '/the-loai/', icon: '🎬' },
+  'quoc-gia': { label: 'Quốc gia', href: '/quoc-gia/', icon: '🌐' },
+  'nam-phat-hanh': { label: 'Năm phát hành', href: '/nam-phat-hanh/', icon: '📅' },
+  'dien-vien': { label: 'Diễn viên', href: '/dien-vien/', icon: '👤' },
+};
+
 const DEFAULT_VIDEO_TYPE_ORDER = Object.keys(VIDEO_TYPE_OPTIONS);
 const DEFAULT_LANG_ORDER = Object.keys(LANG_OPTIONS);
 
@@ -58,6 +76,7 @@ const FILTER_GENRE_ORDER_KEY = 'filter_genre_order';
 const FILTER_COUNTRY_ORDER_KEY = 'filter_country_order';
 const FILTER_VIDEO_TYPE_ORDER_KEY = 'filter_video_type_order';
 const FILTER_LANG_ORDER_KEY = 'filter_lang_order';
+const FILTER_LIST_ORDER_KEY = 'filter_list_order';
 
 const SETTING_KEYS = [
   FILTER_ROW_ORDER_KEY,
@@ -65,6 +84,7 @@ const SETTING_KEYS = [
   FILTER_COUNTRY_ORDER_KEY,
   FILTER_VIDEO_TYPE_ORDER_KEY,
   FILTER_LANG_ORDER_KEY,
+  FILTER_LIST_ORDER_KEY,
 ] as const;
 
 function parseJsonArray(value: string | null | undefined): string[] {
@@ -98,6 +118,7 @@ export default function FilterOrder() {
   const [countryOrder, setCountryOrder] = useState<string[]>([]);
   const [videoTypeOrder, setVideoTypeOrder] = useState<string[]>([]);
   const [langOrder, setLangOrder] = useState<string[]>([]);
+  const [listOrder, setListOrder] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -113,6 +134,7 @@ export default function FilterOrder() {
       setCountryOrder(parseJsonArray(map[FILTER_COUNTRY_ORDER_KEY]));
       setVideoTypeOrder(parseJsonArray(map[FILTER_VIDEO_TYPE_ORDER_KEY]).length ? parseJsonArray(map[FILTER_VIDEO_TYPE_ORDER_KEY]) : DEFAULT_VIDEO_TYPE_ORDER);
       setLangOrder(parseJsonArray(map[FILTER_LANG_ORDER_KEY]).length ? parseJsonArray(map[FILTER_LANG_ORDER_KEY]) : DEFAULT_LANG_ORDER);
+      setListOrder(parseJsonArray(map[FILTER_LIST_ORDER_KEY]));
       setLoading(false);
     })();
   }, []);
@@ -124,15 +146,18 @@ export default function FilterOrder() {
 
   const genreIds = Object.keys(GENRE_OPTIONS);
   const countryIds = Object.keys(COUNTRY_OPTIONS);
+  const listIds = Object.keys(LIST_OPTIONS);
   const displayGenreOrder = mergeDisplayOrder(genreOrder, genreIds);
   const displayCountryOrder = mergeDisplayOrder(countryOrder, countryIds);
   const displayVideoTypeOrder = mergeDisplayOrder(videoTypeOrder, DEFAULT_VIDEO_TYPE_ORDER);
   const displayLangOrder = mergeDisplayOrder(langOrder, DEFAULT_LANG_ORDER);
+  const displayListOrder = mergeDisplayOrder(listOrder, listIds);
 
   const moveGenre = (index: number, dir: number) => setGenreOrder(moveInList(displayGenreOrder, index, dir));
   const moveCountry = (index: number, dir: number) => setCountryOrder(moveInList(displayCountryOrder, index, dir));
   const moveVideoType = (index: number, dir: number) => setVideoTypeOrder(moveInList(displayVideoTypeOrder, index, dir));
   const moveLang = (index: number, dir: number) => setLangOrder(moveInList(displayLangOrder, index, dir));
+  const moveList = (index: number, dir: number) => setListOrder(moveInList(displayListOrder, index, dir));
 
   const currentRows = rowOrder.length ? rowOrder : [...ROW_IDS];
   const validRows = currentRows.filter((id) => ROW_IDS.includes(id as any));
@@ -149,6 +174,7 @@ export default function FilterOrder() {
           { key: FILTER_COUNTRY_ORDER_KEY, value: JSON.stringify(displayCountryOrder), updated_at: new Date().toISOString() },
           { key: FILTER_VIDEO_TYPE_ORDER_KEY, value: JSON.stringify(displayVideoTypeOrder), updated_at: new Date().toISOString() },
           { key: FILTER_LANG_ORDER_KEY, value: JSON.stringify(displayLangOrder), updated_at: new Date().toISOString() },
+          { key: FILTER_LIST_ORDER_KEY, value: JSON.stringify(displayListOrder), updated_at: new Date().toISOString() },
         ],
         { onConflict: 'key' }
       );
@@ -197,6 +223,8 @@ export default function FilterOrder() {
         {renderOrderList('Thứ tự Loại video', displayVideoTypeOrder, VIDEO_TYPE_OPTIONS, moveVideoType)}
 
         {renderOrderList('Thứ tự Kiểu ngôn ngữ', displayLangOrder, LANG_OPTIONS, moveLang)}
+
+        {renderOrderList('Thứ tự trang Danh sách', displayListOrder, Object.fromEntries(listIds.map(id => [id, LIST_OPTIONS[id].label])), moveList)}
 
         <Button type="primary" onClick={onSave} loading={saving}>
           Lưu

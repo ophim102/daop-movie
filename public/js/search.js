@@ -1,16 +1,37 @@
 /**
  * Tìm kiếm với FlexSearch (index title + origin_name)
+ * Hỗ trợ tiếng Việt có dấu và không dấu
  */
 (function () {
   var searchInput = document.getElementById('search-input');
   var resultsEl = document.getElementById('search-results');
   var index = null;
+  var indexUnsigned = null;
   var gridCols = 4;
   var usePoster = false;
   var gridColumnsOptions = [2, 3, 4, 8];
   var gridColumnsExtra = 8;
   var currentList = [];
   var gridElRef = { el: null };
+
+  function removeVietnameseTones(str) {
+    if (!str || typeof str !== 'string') return '';
+    var map = {
+      'à':'a','á':'a','ả':'a','ã':'a','ạ':'a','ă':'a','ằ':'a','ắ':'a','ẳ':'a','ẵ':'a','ặ':'a','â':'a','ầ':'a','ấ':'a','ẩ':'a','ẫ':'a','ậ':'a',
+      'è':'e','é':'e','ẻ':'e','ẽ':'e','ẹ':'e','ê':'e','ề':'e','ế':'e','ể':'e','ễ':'e','ệ':'e',
+      'ì':'i','í':'i','ỉ':'i','ĩ':'i','ị':'i',
+      'ò':'o','ó':'o','ỏ':'o','õ':'o','ọ':'o','ô':'o','ồ':'o','ố':'o','ổ':'o','ỗ':'o','ộ':'o','ơ':'o','ờ':'o','ớ':'o','ở':'o','ỡ':'o','ợ':'o',
+      'ù':'u','ú':'u','ủ':'u','ũ':'u','ụ':'u','ư':'u','ừ':'u','ứ':'u','ử':'u','ữ':'u','ự':'u',
+      'ỳ':'y','ý':'y','ỷ':'y','ỹ':'y','ỵ':'y','đ':'d',
+      'À':'A','Á':'A','Ả':'A','Ã':'A','Ạ':'A','Ă':'A','Ằ':'A','Ắ':'A','Ẳ':'A','Ẵ':'A','Ặ':'A','Â':'A','Ầ':'A','Ấ':'A','Ẩ':'A','Ẫ':'A','Ậ':'A',
+      'È':'E','É':'E','Ẻ':'E','Ẽ':'E','Ẹ':'E','Ê':'E','Ề':'E','Ế':'E','Ể':'E','Ễ':'E','Ệ':'E',
+      'Ì':'I','Í':'I','Ỉ':'I','Ĩ':'I','Ị':'I',
+      'Ò':'O','Ó':'O','Ỏ':'O','Õ':'O','Ọ':'O','Ô':'O','Ồ':'O','Ố':'O','Ổ':'O','Ỗ':'O','Ộ':'O','Ơ':'O','Ờ':'O','Ớ':'O','Ở':'O','Ỡ':'O','Ợ':'O',
+      'Ù':'U','Ú':'U','Ủ':'U','Ũ':'U','Ụ':'U','Ư':'U','Ừ':'U','Ứ':'U','Ử':'U','Ữ':'U','Ự':'U',
+      'Ỳ':'Y','Ý':'Y','Ỷ':'Y','Ỹ':'Y','Ỵ':'Y','Đ':'D'
+    };
+    return str.replace(/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]/g, function(c) { return map[c] || c; });
+  }
 
   function loadSettings() {
     return fetch(((window.DAOP && window.DAOP.basePath) || '') + '/data/config/site-settings.json')
@@ -38,25 +59,32 @@
     if (typeof FlexSearch !== 'undefined' && FlexSearch.Index) {
       try {
         var idx = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
+        var idxUnsigned = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
         list.forEach(function (m, i) {
           var text = (m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '');
           idx.add(i, text);
+          idxUnsigned.add(i, removeVietnameseTones(text));
         });
-        return { index: idx, list: list, useFlexSearch: true };
+        return { index: idx, indexUnsigned: idxUnsigned, list: list, useFlexSearch: true };
       } catch (e) {
         console.warn('FlexSearch index build failed:', e);
       }
     }
-    return { index: null, list: list, useFlexSearch: false };
+    return { index: null, indexUnsigned: null, list: list, useFlexSearch: false };
   }
 
   function searchFallback(list, q) {
-    q = q.toLowerCase();
+    var qLow = q.toLowerCase();
+    var qUnsigned = removeVietnameseTones(qLow);
     return list.filter(function (m) {
       var title = (m.title || '').toLowerCase();
       var origin = (m.origin_name || '').toLowerCase();
       var slug = (m.slug || '').toLowerCase();
-      return title.indexOf(q) >= 0 || origin.indexOf(q) >= 0 || slug.indexOf(q) >= 0;
+      var titleU = removeVietnameseTones(title);
+      var originU = removeVietnameseTones(origin);
+      var slugU = removeVietnameseTones(slug);
+      return title.indexOf(qLow) >= 0 || origin.indexOf(qLow) >= 0 || slug.indexOf(qLow) >= 0 ||
+             titleU.indexOf(qUnsigned) >= 0 || originU.indexOf(qUnsigned) >= 0 || slugU.indexOf(qUnsigned) >= 0;
     }).slice(0, 50);
   }
 
@@ -73,7 +101,16 @@
       try {
         var ids = index.index.search(q, 50);
         if (!Array.isArray(ids)) ids = [];
-        list = ids.map(function (i) { return index.list[i]; }).filter(Boolean);
+        var seen = {};
+        ids.forEach(function (i) { seen[i] = true; });
+        var qUnsigned = removeVietnameseTones(q);
+        if (qUnsigned !== q && index.indexUnsigned) {
+          var idsU = index.indexUnsigned.search(qUnsigned, 50);
+          if (Array.isArray(idsU)) idsU.forEach(function (i) { seen[i] = true; });
+        }
+        var allIds = Object.keys(seen).map(Number).filter(function (i) { return i >= 0 && i < index.list.length; });
+        list = allIds.map(function (i) { return index.list[i]; }).filter(Boolean);
+        if (list.length > 50) list = list.slice(0, 50);
       } catch (e) {
         list = searchFallback(index.list, q);
       }

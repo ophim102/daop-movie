@@ -196,9 +196,6 @@
     var footer = document.querySelector('.site-footer');
     if (footer && settings.footer_content) {
       footer.innerHTML = settings.footer_content;
-    } else if (footer && settings.tmdb_attribution === 'false') {
-      var tmdbEl = footer.querySelector('.footer-tmdb');
-      if (tmdbEl) tmdbEl.style.display = 'none';
     }
     var sliderWrap = document.getElementById('slider-wrap');
     if (sliderWrap) {

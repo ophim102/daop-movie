@@ -565,6 +565,32 @@ function injectSiteNameIntoHtml() {
   console.log('   Injected site_name "' + siteName + '" into HTML files');
 }
 
+/** 5c. Cập nhật footer mọi trang: xóa Donate, thay TMDB bằng GoTV copyright */
+function injectFooterIntoHtml() {
+  const publicDir = path.join(ROOT, 'public');
+  const footerCopyright = '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>';
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && e.name.endsWith('.html')) {
+        let content = fs.readFileSync(full, 'utf8');
+        const orig = content;
+        content = content.replace(/<p>\s*<a[^>]*href="[^"]*donate[^"]*"[^>]*>Donate<\/a>\s*<\/p>\s*/gi, '');
+        content = content.replace(/<p[^>]*class="footer-tmdb"[^>]*>[\s\S]*?<\/p>\s*/i, '');
+        content = content.replace(/<p>[\s\S]*?Dữ liệu phim có thể từ TMDB[\s\S]*?<\/p>\s*/i, '');
+        if (!content.includes('footer-copyright') && content.includes('site-footer')) {
+          content = content.replace(/(<\/footer>)/, footerCopyright + '\n  $1');
+        }
+        if (content !== orig) fs.writeFileSync(full, content, 'utf8');
+      }
+    }
+  }
+  walk(publicDir);
+  console.log('   Injected footer (GoTV copyright) into HTML files');
+}
+
 /** 6b. Tạo HTML cho từng thể loại, quốc gia, năm (để /the-loai/hanh-dong.html, /quoc-gia/trung-quoc.html... tồn tại) */
 function writeCategoryPages(filters) {
   const publicDir = path.join(ROOT, 'public');
@@ -875,6 +901,39 @@ async function exportConfigFromSupabase() {
       return defaultLangOrder;
     }
   })();
+  const defaultListOrder = ['phim-4k', 'shows', 'hoat-hinh', 'phim-vietsub', 'phim-thuyet-minh', 'phim-long-tieng', 'phim-doc-quyen', 'phim-dang-chieu', 'phim-sap-chieu', 'phim-chieu-rap', 'the-loai', 'quoc-gia', 'nam-phat-hanh', 'dien-vien'];
+  const filterListOrder = (() => {
+    try {
+      const v = mergedSettings.filter_list_order;
+      if (!v) return defaultListOrder;
+      const a = typeof v === 'string' ? JSON.parse(v) : v;
+      return Array.isArray(a) && a.length ? a : defaultListOrder;
+    } catch {
+      return defaultListOrder;
+    }
+  })();
+  const listOptionsMap = {
+    'phim-4k': { label: 'Phim 4K', href: '/danh-sach/phim-4k.html', icon: '📺' },
+    'shows': { label: 'TV Shows', href: '/shows.html', icon: '📺' },
+    'hoat-hinh': { label: 'Hoạt hình', href: '/hoat-hinh.html', icon: '🎬' },
+    'phim-vietsub': { label: 'Phim Vietsub', href: '/danh-sach/phim-vietsub.html', icon: '🇻🇳' },
+    'phim-thuyet-minh': { label: 'Phim Thuyết minh', href: '/danh-sach/phim-thuyet-minh.html', icon: '🎙️' },
+    'phim-long-tieng': { label: 'Phim Lồng tiếng', href: '/danh-sach/phim-long-tieng.html', icon: '🔊' },
+    'phim-doc-quyen': { label: 'Phim Độc quyền', href: '/danh-sach/phim-doc-quyen.html', icon: '⭐' },
+    'phim-dang-chieu': { label: 'Phim đang chiếu', href: '/danh-sach/phim-dang-chieu.html', icon: '🎞️' },
+    'phim-sap-chieu': { label: 'Phim sắp chiếu', href: '/danh-sach/phim-sap-chieu.html', icon: '📅' },
+    'phim-chieu-rap': { label: 'Phim chiếu rạp', href: '/danh-sach/phim-chieu-rap.html', icon: '🎭' },
+    'the-loai': { label: 'Thể loại', href: '/the-loai/', icon: '🎬' },
+    'quoc-gia': { label: 'Quốc gia', href: '/quoc-gia/', icon: '🌐' },
+    'nam-phat-hanh': { label: 'Năm phát hành', href: '/nam-phat-hanh/', icon: '📅' },
+    'dien-vien': { label: 'Diễn viên', href: '/dien-vien/', icon: '👤' },
+  };
+  const listOrderItems = filterListOrder
+    .filter(id => listOptionsMap[id])
+    .map(id => ({ id, ...listOptionsMap[id] }));
+  const missingListIds = Object.keys(listOptionsMap).filter(id => !filterListOrder.includes(id));
+  missingListIds.forEach(id => listOrderItems.push({ id, ...listOptionsMap[id] }));
+
   fs.writeFileSync(
     path.join(configDir, 'filter-order.json'),
     JSON.stringify({
@@ -883,8 +942,10 @@ async function exportConfigFromSupabase() {
       countryOrder: filterCountryOrder,
       videoTypeOrder: filterVideoTypeOrder,
       langOrder: filterLangOrder,
+      listOrder: filterListOrder,
     }, null, 2)
   );
+  fs.writeFileSync(path.join(configDir, 'list-order.json'), JSON.stringify(listOrderItems, null, 2));
 
   fs.writeFileSync(path.join(configDir, 'static-pages.json'), JSON.stringify(staticPages.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'donate.json'), JSON.stringify(donate.data || {}, null, 2));
@@ -962,7 +1023,24 @@ async function writeDefaultConfig() {
       countryOrder: [],
       videoTypeOrder: ['tvshows', 'hoathinh', '4k', 'exclusive'],
       langOrder: ['vietsub', 'thuyetminh', 'longtieng', 'khac'],
+      listOrder: ['phim-4k', 'shows', 'hoat-hinh', 'phim-vietsub', 'phim-thuyet-minh', 'phim-long-tieng', 'phim-doc-quyen', 'phim-dang-chieu', 'phim-sap-chieu', 'phim-chieu-rap', 'the-loai', 'quoc-gia', 'nam-phat-hanh', 'dien-vien'],
     },
+    'list-order.json': [
+      { id: 'phim-4k', label: 'Phim 4K', href: '/danh-sach/phim-4k.html', icon: '📺' },
+      { id: 'shows', label: 'TV Shows', href: '/shows.html', icon: '📺' },
+      { id: 'hoat-hinh', label: 'Hoạt hình', href: '/hoat-hinh.html', icon: '🎬' },
+      { id: 'phim-vietsub', label: 'Phim Vietsub', href: '/danh-sach/phim-vietsub.html', icon: '🇻🇳' },
+      { id: 'phim-thuyet-minh', label: 'Phim Thuyết minh', href: '/danh-sach/phim-thuyet-minh.html', icon: '🎙️' },
+      { id: 'phim-long-tieng', label: 'Phim Lồng tiếng', href: '/danh-sach/phim-long-tieng.html', icon: '🔊' },
+      { id: 'phim-doc-quyen', label: 'Phim Độc quyền', href: '/danh-sach/phim-doc-quyen.html', icon: '⭐' },
+      { id: 'phim-dang-chieu', label: 'Phim đang chiếu', href: '/danh-sach/phim-dang-chieu.html', icon: '🎞️' },
+      { id: 'phim-sap-chieu', label: 'Phim sắp chiếu', href: '/danh-sach/phim-sap-chieu.html', icon: '📅' },
+      { id: 'phim-chieu-rap', label: 'Phim chiếu rạp', href: '/danh-sach/phim-chieu-rap.html', icon: '🎭' },
+      { id: 'the-loai', label: 'Thể loại', href: '/the-loai/', icon: '🎬' },
+      { id: 'quoc-gia', label: 'Quốc gia', href: '/quoc-gia/', icon: '🌐' },
+      { id: 'nam-phat-hanh', label: 'Năm phát hành', href: '/nam-phat-hanh/', icon: '📅' },
+      { id: 'dien-vien', label: 'Diễn viên', href: '/dien-vien/', icon: '👤' },
+    ],
   };
   for (const [file, data] of Object.entries(defaults)) {
     fs.writeFileSync(path.join(configDir, file), JSON.stringify(data, null, 2));
@@ -999,6 +1077,8 @@ async function main() {
     await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
     console.log('Incremental: export config từ Supabase + tạo lại trang thể loại/quốc gia/năm.');
     await exportConfigFromSupabase();
+    injectSiteNameIntoHtml();
+    injectFooterIntoHtml();
     const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
     const filterOrderPath = path.join(PUBLIC_DATA, 'config', 'filter-order.json');
     if (await fs.pathExists(filtersPath)) {
@@ -1080,6 +1160,8 @@ async function main() {
 
   console.log('5b. Injecting site_name into HTML files...');
   injectSiteNameIntoHtml();
+  console.log('5c. Injecting footer into HTML files...');
+  injectFooterIntoHtml();
 
   console.log('6. Writing movies-light.js, filters.js, actors (index + shards), batches...');
   writeMoviesLight(allMovies);
