@@ -5,33 +5,40 @@
   window.DAOP = window.DAOP || {};
   const BASE = window.DAOP.basePath || '';
 
-  /** Ẩn màn hình Loading (bật/tắt + thời gian tối thiểu theo site_settings) */
+  /** Ẩn màn hình Loading (bật/tắt + thời gian tối đa theo site_settings) */
   function initLoadingScreen() {
     var el = document.getElementById('loading-screen');
     if (!el) return;
     var startTime = Date.now();
+    var maxMs = 0;
+    var loadComplete = false;
+    var hidden = false;
     function hide() {
+      if (hidden) return;
+      hidden = true;
       el.classList.add('loading-screen-hidden');
       el.setAttribute('aria-hidden', 'true');
-    }
-    function tryHide(minMs) {
-      var elapsed = Date.now() - startTime;
-      if (elapsed >= minMs) hide();
-      else setTimeout(function () { hide(); }, minMs - elapsed);
     }
     window.DAOP.loadConfig('site-settings').then(function (s) {
       if (s && s.loading_screen_enabled === 'false') {
         hide();
         return;
       }
-      var minSec = Math.max(0, parseInt(s && s.loading_screen_min_seconds, 10) || 0);
-      var minMs = minSec * 1000;
+      var maxSec = Math.max(0, parseInt(s && s.loading_screen_min_seconds, 10) || 0);
+      maxMs = maxSec * 1000;
+      if (maxMs > 0) {
+        setTimeout(function () {
+          hide();
+        }, maxMs);
+      }
       function onLoad() {
+        loadComplete = true;
         window.removeEventListener('load', onLoad);
-        tryHide(minMs);
+        hide();
       }
       if (document.readyState === 'complete') {
-        tryHide(minMs);
+        loadComplete = true;
+        hide();
       } else {
         window.addEventListener('load', onLoad);
       }
@@ -238,12 +245,18 @@
       footer.innerHTML = settings.footer_content;
     }
     var footerLogo = document.querySelector('.site-footer .footer-logo');
-    if (footerLogo && settings.logo_url) {
-      var alt = (settings.site_name || 'GoTV').replace(/"/g, '&quot;');
-      footerLogo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + alt + '">';
-      if (!footerLogo.getAttribute('href')) footerLogo.setAttribute('href', BASE || '/');
-    } else if (footerLogo && settings.site_name && !footerLogo.querySelector('img')) {
-      footerLogo.textContent = settings.site_name;
+    if (footerLogo) {
+      var logoText = 'GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao';
+      if (settings.logo_url) {
+        var alt = (settings.site_name || 'GoTV').replace(/"/g, '&quot;');
+        footerLogo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + alt + '"><span class="footer-logo-text">' + logoText.replace(/"/g, '&quot;') + '</span>';
+        if (!footerLogo.getAttribute('href')) footerLogo.setAttribute('href', BASE || '/');
+      } else if (settings.site_name && !footerLogo.querySelector('img')) {
+        footerLogo.innerHTML = '<span>' + (settings.site_name || 'GoTV').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span><span class="footer-logo-text">' + logoText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
+      } else if (!footerLogo.querySelector('.footer-logo-text')) {
+        var existing = footerLogo.innerHTML;
+        footerLogo.innerHTML = existing + '<span class="footer-logo-text">' + logoText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
+      }
     }
     var sliderWrap = document.getElementById('slider-wrap');
     if (sliderWrap) {

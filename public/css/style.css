@@ -43,6 +43,38 @@ a:hover {
   gap: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+@media (min-width: 769px) {
+  .site-header {
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+  .site-header > .site-logo {
+    flex-shrink: 0;
+  }
+  .site-header > .site-nav {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+  .site-header .site-nav-main {
+    flex-wrap: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .site-header .site-nav-main a {
+    white-space: nowrap;
+  }
+  .site-header .site-nav-actions {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+  }
+}
 .site-logo {
   font-weight: 800;
   font-size: 1.6rem;
@@ -1341,6 +1373,7 @@ a:hover {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   display: inline-flex;
   align-items: center;
+  gap: 0.75rem;
   transition: opacity 0.2s;
 }
 .site-footer .footer-logo:hover {
@@ -1354,11 +1387,23 @@ a:hover {
   max-width: 140px;
   object-fit: contain;
   vertical-align: middle;
+  flex-shrink: 0;
+}
+.site-footer .footer-logo-text {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 400;
+  color: var(--muted, rgba(255, 255, 255, 0.7));
+  white-space: nowrap;
 }
 @media (min-width: 480px) {
   .site-footer .footer-logo img {
     height: 2.25rem;
     max-width: 160px;
+  }
+}
+@media (max-width: 768px) {
+  .site-footer .footer-logo-text {
+    display: none;
   }
 }
 .site-footer .footer-divider {
@@ -1376,27 +1421,25 @@ a:hover {
 .site-footer .footer-links-col {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
+  white-space: nowrap;
 }
 .site-footer .footer-links-col a {
   display: inline-block;
-  padding: 0.4rem 0.75rem;
-  background: rgba(255, 255, 255, 0.8);
-  color: #1b5e20;
+  padding: 0;
+  color: var(--text);
   text-decoration: none;
-  border-radius: 8px;
   font-size: clamp(0.8rem, 2vw, 0.95rem);
-  font-weight: 500;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  font-weight: 400;
+  transition: color 0.2s, opacity 0.2s;
+  white-space: nowrap;
 }
 .site-footer .footer-links-col a:hover {
-  background: #fff;
-  color: #0d3d1a;
-  border-color: var(--accent);
+  color: var(--accent);
+  opacity: 0.9;
 }
 @media (max-width: 479px) {
   .site-footer .footer-bottom-inner {

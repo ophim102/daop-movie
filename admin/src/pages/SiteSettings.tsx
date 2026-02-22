@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 
 /** Footer HTML mặc định (banner + logo + 3 link + copyright). Logo dùng ảnh từ Logo URL ở trên. */
 const DEFAULT_FOOTER_HTML = `<div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid meet"><rect width="30" height="20" fill="#DA251D"/><path fill="#FFFF00" d="M15 4l2.47 7.6H25l-6.23 4.5 2.36 7.3L15 16.2l-6.13 4.2 2.36-7.3L5 11.6h7.53z"/></svg></span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>
-<div class="footer-bottom"><div class="footer-bottom-inner"><a href="/" class="footer-logo">GoTV</a><span class="footer-divider" aria-hidden="true"></span><div class="footer-links-col"><a href="/hoi-dap.html">Hỏi - đáp</a><a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a><a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></div></div></div>
+<div class="footer-bottom"><div class="footer-bottom-inner"><a href="/" class="footer-logo">GoTV<span class="footer-logo-text">GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao</span></a><span class="footer-divider" aria-hidden="true"></span><div class="footer-links-col"><a href="/hoi-dap.html">Hỏi - đáp</a><a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a><a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a></div></div></div>
 <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>`;
 
 const SITE_SETTINGS_KEYS = [
@@ -262,10 +262,10 @@ export default function SiteSettings() {
           <Form.Item name="loading_screen_enabled" label="Màn hình Loading khi mở trang" valuePropName="checked">
             <Switch />
           </Form.Item>
-          <Form.Item name="loading_screen_min_seconds" label="Thời gian tối thiểu hiển thị Loading (giây)">
+          <Form.Item name="loading_screen_min_seconds" label="Thời gian tối đa hiển thị Loading (giây)">
             <Input type="number" min={0} max={30} placeholder="0" />
           </Form.Item>
-          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Bật = hiện logo + chữ &quot;Loading...&quot;. Thời gian tối thiểu = màn Loading luôn hiện ít nhất X giây trước khi ẩn (0 = ẩn ngay khi tải xong).</p>
+          <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Bật = hiện logo + chữ &quot;Loading...&quot;. Thời gian tối đa = màn Loading sẽ tắt sau tối đa X giây (ví dụ: 2 = tối đa 2 giây thì phải tắt; 0 = tắt ngay khi tải xong).</p>
           <p style={{ color: '#888', fontSize: 12 }}>Grid &amp; Ảnh cho trang lọc/tìm kiếm: cấu hình tại <strong>Trang danh mục</strong> trong menu.</p>
           <Form.Item>
             <Button type="primary" htmlType="submit">Lưu</Button>
