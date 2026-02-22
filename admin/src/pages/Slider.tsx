@@ -29,6 +29,7 @@ type SlideItem = {
 };
 
 type MovieLight = {
+  id?: string | number;
   slug?: string;
   title?: string;
   origin_name?: string;
