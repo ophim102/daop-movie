@@ -111,8 +111,12 @@
           var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
           var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';
           var layout = (sec.display_type || 'grid').toLowerCase();
+          var colType = (sec.grid_column_type || 'A').toUpperCase();
+          var validColsA = [2,3,4,6,8];
+          var validColsB = [3,4,6,8];
+          var validCols = colType === 'B' ? validColsB : validColsA;
           var gridCols = (sec.grid_columns != null && sec.grid_columns !== '') ? Number(sec.grid_columns) : (ss.default_grid_cols ? Number(ss.default_grid_cols) : 4);
-          if ([2,3,4,6,8].indexOf(gridCols) < 0) gridCols = 4;
+          if (validCols.indexOf(gridCols) < 0) gridCols = validCols[validCols.indexOf(4) >= 0 ? validCols.indexOf(4) : 0];
           var usePoster = sec.use_poster === true || sec.use_poster === 'true' || ss.default_use_poster === 'true';
           var html = '<section class="home-section home-section-' + layout + '"><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
           if (layout === 'slider') {

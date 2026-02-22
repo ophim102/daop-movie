@@ -190,7 +190,7 @@ a:hover {
     gap: 0.75rem;
     align-content: start;
   }
-  /* Mỗi mục menu mobile: ảnh nền rõ 100%, không mờ không chèn nền */
+  /* Mỗi mục menu mobile: ảnh nền, tỉ lệ 1:2 (cao:rộng), icon+chữ sát mép dưới, lớp phủ đen mờ từ dưới lên */
   .site-header.menu-open .site-nav-main a::after,
   .site-header.menu-open .site-nav a::after {
     content: "";
@@ -198,7 +198,7 @@ a:hover {
     inset: 0;
     z-index: -1;
     border-radius: 12px;
-    background-size: 100% 100%;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     opacity: 1;
@@ -219,22 +219,26 @@ a:hover {
     z-index: 1;
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-end;
+    justify-content: flex-start;
     gap: 0.4rem;
-    min-height: 80px;
-    padding: 0.75rem 0.5rem;
+    aspect-ratio: 2 / 1;
+    min-height: 0;
+    padding: 0.5rem 0.6rem 0.5rem 0.6rem;
     border-radius: 12px;
-    background: transparent;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 20%, transparent 33.33%);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
     border: 1px solid var(--border);
     color: var(--text);
     font-size: 0.85rem;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
     text-decoration: none;
     transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
   }
   .site-header.menu-open .site-nav-main a:hover {
     border-color: var(--accent);

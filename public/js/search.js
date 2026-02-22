@@ -16,12 +16,11 @@
       .then(function (r) { return r.json(); })
       .catch(function () { return {}; })
       .then(function (s) {
+        var colType = (s.category_grid_column_type || 'A').toUpperCase();
+        gridColumnsOptions = colType === 'B' ? [3, 4, 6, 8] : [2, 3, 4, 6, 8];
         gridCols = parseInt(s.default_grid_cols, 10) || 4;
-        if ([2, 3, 4, 6, 8].indexOf(gridCols) < 0) gridCols = 4;
-        usePoster = s.default_use_poster === 'true';
-        var opts = (s.grid_columns_options || '2,3,4,6,8').split(',');
-        gridColumnsOptions = opts.map(function (x) { var n = parseInt(x.trim(), 10); return [2, 3, 4, 6, 8].indexOf(n) >= 0 ? n : null; }).filter(Boolean);
-        if (!gridColumnsOptions.length) gridColumnsOptions = [2, 3, 4, 6, 8];
+        if (gridColumnsOptions.indexOf(gridCols) < 0) gridCols = gridColumnsOptions.indexOf(4) >= 0 ? 4 : gridColumnsOptions[0];
+        usePoster = (s.category_use_poster || '').toLowerCase() === 'poster' || s.default_use_poster === 'true';
       });
   }
 

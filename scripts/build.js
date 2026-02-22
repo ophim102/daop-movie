@@ -722,7 +722,13 @@ async function exportConfigFromSupabase() {
   );
   fs.writeFileSync(path.join(configDir, 'server-sources.json'), JSON.stringify(sources.data || [], null, 2));
   fs.writeFileSync(path.join(configDir, 'banners.json'), JSON.stringify(banners, null, 2));
-  fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify((sections.data && sections.data.length) ? sections.data : defaultSections, null, 2));
+  const sectionsOut = (sections.data && sections.data.length)
+    ? sections.data.map((s) => {
+        const fc = s.filter_config && typeof s.filter_config === 'object' ? s.filter_config : {};
+        return { ...s, ...fc };
+      })
+    : defaultSections;
+  fs.writeFileSync(path.join(configDir, 'homepage-sections.json'), JSON.stringify(sectionsOut, null, 2));
   const settingsObj = Object.fromEntries((settings.data || []).map((r) => [r.key, r.value]));
   const defaultSettings = {
     site_name: 'DAOP Phim',
@@ -771,6 +777,8 @@ async function exportConfigFromSupabase() {
     default_grid_cols: '4',
     grid_columns_options: '2,3,4,6,8',
     default_use_poster: 'false',
+    category_grid_column_type: 'A',
+    category_use_poster: 'thumb',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));

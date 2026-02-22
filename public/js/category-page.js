@@ -31,12 +31,11 @@
       .catch(function () { return {}; })
       .then(function (settings) {
         self.settings = settings;
+        var colType = (settings.category_grid_column_type || 'A').toUpperCase();
+        self.gridColumnsOptions = colType === 'B' ? [3, 4, 6, 8] : [2, 3, 4, 6, 8];
         self.gridCols = parseInt(settings.default_grid_cols, 10) || 4;
-        if ([2, 3, 4, 6, 8].indexOf(self.gridCols) < 0) self.gridCols = 4;
-        self.usePoster = settings.default_use_poster === 'true';
-        var optsStr = (settings.grid_columns_options || '2,3,4,6,8').split(',');
-        self.gridColumnsOptions = optsStr.map(function (s) { var n = parseInt(s.trim(), 10); return [2, 3, 4, 6, 8].indexOf(n) >= 0 ? n : null; }).filter(Boolean);
-        if (!self.gridColumnsOptions.length) self.gridColumnsOptions = [2, 3, 4, 6, 8];
+        if (self.gridColumnsOptions.indexOf(self.gridCols) < 0) self.gridCols = self.gridColumnsOptions.indexOf(4) >= 0 ? 4 : self.gridColumnsOptions[0];
+        self.usePoster = (settings.category_use_poster || '').toLowerCase() === 'poster' || settings.default_use_poster === 'true';
         self.buildFilterUI(baseSet, filtersData);
         self.buildGridToolbar();
         self.applyFilters(baseSet, filtersData);

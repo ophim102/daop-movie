@@ -26,6 +26,10 @@ type SectionRow = {
   more_link?: string;
   display_type?: string;
   is_active: boolean;
+  filter_config?: Record<string, unknown> | null;
+  grid_column_type?: 'A' | 'B' | null;
+  grid_columns?: number | null;
+  use_poster?: boolean | null;
 };
 
 const SOURCE_TYPE_OPTIONS = [
@@ -41,6 +45,19 @@ const DISPLAY_TYPE_OPTIONS = [
   { value: 'grid', label: 'Grid' },
   { value: 'slider', label: 'Slider' },
   { value: 'list', label: 'List' },
+];
+
+const COLUMN_TYPE_OPTIONS = [
+  { value: 'A', label: 'Loại A (2, 3, 4, 6, 8 cột)' },
+  { value: 'B', label: 'Loại B (3, 4, 6, 8 cột - ít nhất 3 cột)' },
+];
+
+const COLUMN_COUNT_OPTIONS_A = [2, 3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
+const COLUMN_COUNT_OPTIONS_B = [3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
+
+const IMAGE_TYPE_OPTIONS = [
+  { value: 'thumb', label: 'Thumb (ảnh ngang)' },
+  { value: 'poster', label: 'Poster (ảnh dọc)' },
 ];
 
 const DEFAULT_SECTIONS = defaultSectionsJson as Array<Omit<SectionRow, 'id'>>;
@@ -71,21 +88,36 @@ export default function HomepageSections() {
       limit_count: 24,
       display_type: 'grid',
       is_active: true,
+      grid_column_type: 'A',
+      grid_columns: 4,
+      use_poster: 'thumb',
     } as any);
     setModalVisible(true);
   };
 
   const openEdit = (row: SectionRow) => {
     setEditingId(row.id);
+    const fc = (row.filter_config as Record<string, unknown>) || {};
     form.setFieldsValue({
       ...row,
       is_active: !!row.is_active,
+      grid_column_type: row.grid_column_type ?? fc.grid_column_type ?? 'A',
+      grid_columns: row.grid_columns ?? fc.grid_columns ?? 4,
+      use_poster: (row.use_poster ?? fc.use_poster) ? 'poster' : 'thumb',
     } as any);
     setModalVisible(true);
   };
 
   const handleSubmit = async (values: any) => {
     try {
+      const existing = editingId ? data.find((d) => d.id === editingId) : null;
+      const prevFc = (existing?.filter_config as Record<string, unknown>) || {};
+      const filter_config = {
+        ...prevFc,
+        grid_column_type: values.grid_column_type || 'A',
+        grid_columns: Number(values.grid_columns ?? 4),
+        use_poster: values.use_poster === 'poster',
+      };
       const payload: Record<string, any> = {
         title: values.title,
         source_type: values.source_type,
@@ -95,6 +127,7 @@ export default function HomepageSections() {
         is_active: !!values.is_active,
         sort_order: Number(values.sort_order ?? 0),
         limit_count: Number(values.limit_count ?? 24),
+        filter_config,
       };
       if (editingId) {
         payload.updated_at = new Date().toISOString();
@@ -195,6 +228,26 @@ export default function HomepageSections() {
             render: (t: string) => (t ? <Tag>{t}</Tag> : <Tag>grid</Tag>),
           },
           {
+            title: 'Loại cột',
+            key: 'grid_column_type',
+            width: 90,
+            render: (_: any, row: SectionRow) => {
+              const fc = (row.filter_config as Record<string, unknown>) || {};
+              const t = row.grid_column_type ?? fc.grid_column_type ?? 'A';
+              return <Tag>{t === 'B' ? 'B (3-8)' : 'A (2-8)'}</Tag>;
+            },
+          },
+          {
+            title: 'Ảnh',
+            key: 'use_poster',
+            width: 70,
+            render: (_: any, row: SectionRow) => {
+              const fc = (row.filter_config as Record<string, unknown>) || {};
+              const v = row.use_poster ?? fc.use_poster;
+              return <Tag>{v ? 'Poster' : 'Thumb'}</Tag>;
+            },
+          },
+          {
             title: 'Trạng thái',
             dataIndex: 'is_active',
             key: 'is_active',
@@ -261,6 +314,23 @@ export default function HomepageSections() {
           </Form.Item>
           <Form.Item name="display_type" label="Kiểu hiển thị">
             <Select allowClear options={DISPLAY_TYPE_OPTIONS} placeholder="Mặc định: grid" />
+          </Form.Item>
+          <Form.Item name="grid_column_type" label="Loại cột (chỉ áp dụng khi hiển thị Grid)">
+            <Select options={COLUMN_TYPE_OPTIONS} />
+          </Form.Item>
+          <Form.Item noStyle shouldUpdate={(prev, curr) => prev.grid_column_type !== curr.grid_column_type}>
+            {({ getFieldValue }) => {
+              const type = getFieldValue('grid_column_type') || 'A';
+              const opts = type === 'B' ? COLUMN_COUNT_OPTIONS_B : COLUMN_COUNT_OPTIONS_A;
+              return (
+                <Form.Item name="grid_columns" label="Số cột mặc định">
+                  <Select options={opts} />
+                </Form.Item>
+              );
+            }}
+          </Form.Item>
+          <Form.Item name="use_poster" label="Loại ảnh">
+            <Select options={IMAGE_TYPE_OPTIONS} />
           </Form.Item>
           <Form.Item name="more_link" label='Link "Xem thêm"'>
             <Input placeholder="Ví dụ: /phim-bo.html" />

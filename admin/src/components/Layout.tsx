@@ -27,6 +27,7 @@ const items = [
   { key: '/filter-order', icon: <AppstoreOutlined />, label: <Link to="/filter-order">Sắp xếp bộ lọc</Link> },
   { key: '/preroll', icon: <PlaySquareOutlined />, label: <Link to="/preroll">Pre-roll</Link> },
   { key: '/homepage-sections', icon: <AppstoreOutlined />, label: <Link to="/homepage-sections">Sections</Link> },
+  { key: '/category-page-settings', icon: <AppstoreOutlined />, label: <Link to="/category-page-settings">Trang danh mục</Link> },
   { key: '/server-sources', icon: <CloudServerOutlined />, label: <Link to="/server-sources">Server</Link> },
   { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">Cài đặt</Link> },
   { key: '/theme', icon: <SettingOutlined />, label: <Link to="/theme">Theme</Link> },

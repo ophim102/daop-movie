@@ -13,6 +13,7 @@ import PrerollAds from './pages/PrerollAds';
 import Slider from './pages/Slider';
 import MenuBackground from './pages/MenuBackground';
 import FilterOrder from './pages/FilterOrder';
+import CategoryPageSettings from './pages/CategoryPageSettings';
 import ThemeSettings from './pages/ThemeSettings';
 import PlayerSettings from './pages/PlayerSettings';
 import AuditLogs from './pages/AuditLogs';
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="menu-background" element={<MenuBackground />} />
           <Route path="filter-order" element={<FilterOrder />} />
           <Route path="homepage-sections" element={<HomepageSections />} />
+          <Route path="category-page-settings" element={<CategoryPageSettings />} />
           <Route path="server-sources" element={<ServerSources />} />
           <Route path="settings" element={<SiteSettings />} />
           <Route path="theme" element={<ThemeSettings />} />
