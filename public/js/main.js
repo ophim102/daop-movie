@@ -157,6 +157,10 @@
   /** Áp dụng site-settings lên trang: theme, logo, favicon, footer, TMDB, slider */
   window.DAOP.applySiteSettings = function (settings) {
     if (!settings) return;
+    window.DAOP.siteName = settings.site_name || 'DAOP Phim';
+    if (document.title && settings.site_name && document.title.includes(' | DAOP Phim')) {
+      document.title = document.title.replace(' | DAOP Phim', ' | ' + settings.site_name);
+    }
     var root = document.documentElement;
     if (settings.theme_primary) root.style.setProperty('--accent', settings.theme_primary);
     if (settings.theme_accent) root.style.setProperty('--accent-hover', settings.theme_accent);

@@ -142,7 +142,8 @@
       resultsEl.appendChild(toolbar);
     } else {
       toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) { b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols); });
-      toolbar.querySelector('input[name="use_poster"]').checked = usePoster;
+      var posterSel = toolbar.querySelector('.grid-poster-select');
+      if (posterSel) posterSel.value = usePoster ? 'poster' : 'thumb';
       var oldGrid = resultsEl.querySelector('.movies-grid');
       if (oldGrid) resultsEl.removeChild(oldGrid);
     }

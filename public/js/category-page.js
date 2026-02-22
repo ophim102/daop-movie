@@ -22,7 +22,6 @@
     if (typeof baseSet === 'array') baseSet = new Set(baseSet);
     if (!(baseSet instanceof Set)) baseSet = new Set(Array.isArray(baseSet) ? baseSet : []);
 
-    document.title = this.title + ' | ' + (window.DAOP?.siteName || 'DAOP Phim');
     var titleEl = document.getElementById('page-title');
     if (titleEl) titleEl.textContent = this.title;
 
@@ -43,6 +42,9 @@
         if (self.gridColumnsOptions.indexOf(self.gridCols) < 0) self.gridCols = self.gridColumnsOptions[0];
         self.gridColumnsExtra = extra;
         self.usePoster = (settings.category_use_poster || settings.default_use_poster || 'thumb') === 'poster';
+        window.DAOP = window.DAOP || {};
+        window.DAOP.siteName = settings.site_name || 'DAOP Phim';
+        document.title = self.title + ' | ' + window.DAOP.siteName;
         self.buildFilterUI(baseSet, filtersData);
         self.buildGridToolbar();
         self.applyFilters(baseSet, filtersData);
@@ -177,15 +179,18 @@
       if (!seen[id] && rowHtml[id]) ordered.push(rowHtml[id]);
     });
     container.innerHTML = ordered.join('');
-    var unpinBtn = document.createElement('button');
-    unpinBtn.type = 'button';
-    unpinBtn.className = 'filter-bar-unpin';
-    unpinBtn.setAttribute('aria-label', 'Bỏ ghim');
-    unpinBtn.innerHTML = '&times;';
-    unpinBtn.addEventListener('click', function () {
-      container.classList.add('filter-bar-unpinned');
+    var pinBtn = document.createElement('button');
+    pinBtn.type = 'button';
+    pinBtn.className = 'filter-bar-pin-toggle';
+    pinBtn.setAttribute('aria-label', 'Bật/Tắt ghim');
+    pinBtn.innerHTML = '✕';
+    pinBtn.title = 'Bỏ ghim (khi ghim) / Ghim lại (khi đã bỏ ghim)';
+    pinBtn.addEventListener('click', function () {
+      var unpinned = container.classList.toggle('filter-bar-unpinned');
+      pinBtn.innerHTML = unpinned ? '📌' : '✕';
+      pinBtn.setAttribute('aria-label', unpinned ? 'Ghim thanh lọc' : 'Bỏ ghim');
     });
-    container.appendChild(unpinBtn);
+    container.appendChild(pinBtn);
   };
 
   CategoryPage.prototype.applyFilters = function (baseSet, fd) {

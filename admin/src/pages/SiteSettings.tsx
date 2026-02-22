@@ -157,6 +157,7 @@ export default function SiteSettings() {
             <Switch />
           </Form.Item>
           <h3 style={{ marginTop: 24, marginBottom: 12 }}>Grid &amp; Ảnh (trang lọc, tìm kiếm)</h3>
+          <p style={{ color: '#888', fontSize: 12, marginTop: -8, marginBottom: 12 }}>Cũng cấu hình tại <strong>Trang danh mục</strong>. Giá trị ở đây dùng làm mặc định khi Trang danh mục chưa đặt.</p>
           <Form.Item name="default_grid_cols_xs" label="Số cột mặc định - Mobile nhỏ (&lt;480px)">
             <Select options={COLUMN_OPTIONS} />
           </Form.Item>
