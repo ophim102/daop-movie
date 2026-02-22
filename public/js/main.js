@@ -246,7 +246,7 @@
     }
     var footerLogo = document.querySelector('.site-footer .footer-logo');
     if (footerLogo) {
-      var logoText = 'GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao';
+      var logoText = 'GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao.';
       if (settings.logo_url) {
         var alt = (settings.site_name || 'GoTV').replace(/"/g, '&quot;');
         footerLogo.innerHTML = '<img src="' + (settings.logo_url || '').replace(/"/g, '&quot;') + '" alt="' + alt + '"><span class="footer-logo-text">' + logoText.replace(/"/g, '&quot;') + '</span>';
