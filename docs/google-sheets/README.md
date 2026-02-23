@@ -46,13 +46,23 @@ Hàng đầu tiên mỗi sheet = **header** (không phân biệt hoa thường; 
 | is_exclusive | ✓ | 0/1 hoặc true/false |
 | tmdb_id | ✓ | Số |
 
-### Sheet `episodes` – cột build đọc
+### Sheet `episodes` – cột build đọc (kiểu MỚI, tối ưu cho phim dài)
 
-| Cột (header) | Build dùng | Ghi chú |
-|--------------|------------|--------|
-| movie_id | Bắt buộc | **Đồng bộ với movies**: điền **đúng số id** của phim (vd. 1, 2, 3). Có thể dùng **title** hoặc **slug** nếu movies không có cột id. |
-| name | ✓ | Tên tập (vd. Tập 1) |
-| sources hoặc source | ✓ | Chuỗi JSON mảng (link_embed, link_m3u8, name, slug...) |
+**Mỗi dòng = 1 tập trên 1 server. Không còn cột JSON `sources` dài dễ vượt giới hạn 50.000 ký tự của Google Sheets.**
+
+| Cột (header)      | Bắt buộc | Ghi chú |
+|-------------------|----------|--------|
+| movie_id          | ✓        | **Đồng bộ với movies**: điền **đúng số id** của phim (vd. 1, 2, 3). Có thể dùng **title** hoặc **slug** nếu movies không có cột id. |
+| episode_code      | ✓        | Mã tập nội bộ (vd. `1`, `2`, `S01E01`). Dùng để tạo slug tập ổn định. |
+| episode_name      |          | Tên hiển thị (vd. `Tập 1`). Nếu trống sẽ dùng `Tập {episode_code}`. |
+| server_slug       | ✓        | Slug server, khớp với `server_sources.slug` trong Supabase Admin (vd. `vietsub-1`). |
+| server_name       |          | Tên hiển thị server (vd. `Vietsub #1`). Nếu trống build dùng `server_slug`. |
+| link_m3u8         |          | Link HLS (m3u8) nếu có. |
+| link_embed        |          | Link iframe nếu có. |
+| link_backup       |          | (Tùy chọn) Link dự phòng khác (build map vào `link`). |
+| note              |          | (Tùy chọn) Ghi chú nội bộ, không dùng trong build. |
+
+> Build vẫn hỗ trợ **kiểu cũ** với cột `sources/source` là JSON, nhưng **khuyến nghị dùng kiểu mới** ở trên để tránh giới hạn độ dài mỗi ô của Google Sheets và dễ chỉnh sửa phim nhiều tập / nhiều server.
 
 ---
 

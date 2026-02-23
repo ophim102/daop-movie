@@ -133,6 +133,15 @@ function buildMovieRow(movie, headers, nextId) {
     setIfExists('is_exclusive', '1');
   }
 
+  // Tránh lỗi Google Sheets: mỗi ô tối đa ~50000 ký tự
+  const MAX_CELL_LEN = 49000;
+  for (let i = 0; i < row.length; i++) {
+    const v = row[i];
+    if (typeof v === 'string' && v.length > MAX_CELL_LEN) {
+      row[i] = v.slice(0, MAX_CELL_LEN - 20) + '...(truncated)';
+    }
+  }
+
   return row;
 }
 
@@ -159,7 +168,12 @@ function buildEpisodeRows(movieIdInSheet, movie, epHeaders) {
     row[idxName] = ep.name || ep.slug || '';
     if (idxSources >= 0) {
       const src = Array.isArray(ep.server_data) ? ep.server_data : [];
-      row[idxSources] = JSON.stringify(src);
+      let json = JSON.stringify(src);
+      const MAX_CELL_LEN = 49000;
+      if (json.length > MAX_CELL_LEN) {
+        json = json.slice(0, MAX_CELL_LEN - 20) + '...(truncated)';
+      }
+      row[idxSources] = json;
     }
     rows.push(row);
   }

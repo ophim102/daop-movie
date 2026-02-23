@@ -1,2 +1,2 @@
-movie_id,name,sources
-1,Tập 1,"[{""name"":""1"",""slug"":""1"",""link_embed"":""https://..."",""link_m3u8"":""https://...""}]"
+movie_id,episode_code,episode_name,server_slug,server_name,link_m3u8,link_embed,link_backup,note
+1,1,Tập 1,vietsub-1,Vietsub #1,https://example.com/hls.m3u8,,

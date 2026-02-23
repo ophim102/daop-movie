@@ -371,21 +371,84 @@ function parseSheetMovies(moviesRows, episodesRows) {
   const movieIdCol = epIdx('movie_id') >= 0 ? 'movie_id' : epHeaders.find((h) => h.includes('movie'));
   const movieBySlug = Object.fromEntries(movies.map((m) => [m.slug, m]));
   const movieByTitle = Object.fromEntries(movies.map((m) => [(m.title || '').toString().trim(), m]));
-  for (let i = 1; i < episodesRows.length; i++) {
-    const row = episodesRows[i];
-    const mid = (row[epHeaders.indexOf(movieIdCol)] ?? row[0])?.toString()?.trim() || '';
-    const movie = movies.find((m) => String(m.id) === String(mid) || m.slug === mid) || movieByTitle[mid] || (mid && movieBySlug[slugify(mid, { lower: true })]);
-    const slug = movie?.slug;
-    if (!movie) continue;
-    const name = (epIdx('name') >= 0 ? row[epIdx('name')] : row[1]) || `Tap ${i}`;
-    let sources = [];
-    const srcStr = row[epIdx('sources')] ?? row[epIdx('source')];
-    if (srcStr) {
-      try {
-        sources = typeof srcStr === 'string' ? JSON.parse(srcStr) : srcStr;
-      } catch {}
+
+  const hasSourcesJson = epIdx('sources') >= 0 || epIdx('source') >= 0;
+
+  if (hasSourcesJson) {
+    // Kiểu cũ: 1 dòng = 1 tập, cột sources là JSON mảng server_data
+    for (let i = 1; i < episodesRows.length; i++) {
+      const row = episodesRows[i];
+      const mid = (row[epHeaders.indexOf(movieIdCol)] ?? row[0])?.toString()?.trim() || '';
+      const movie = movies.find((m) => String(m.id) === String(mid) || m.slug === mid) || movieByTitle[mid] || (mid && movieBySlug[slugify(mid, { lower: true })]);
+      const slug = movie?.slug;
+      if (!movie) continue;
+      const name = (epIdx('name') >= 0 ? row[epIdx('name')] : row[1]) || `Tap ${i}`;
+      let sources = [];
+      const srcStr = row[epIdx('sources')] ?? row[epIdx('source')];
+      if (srcStr) {
+        try {
+          sources = typeof srcStr === 'string' ? JSON.parse(srcStr) : srcStr;
+        } catch {}
+      }
+      movie.episodes.push({ name, slug: slugify(name, { lower: true }), server_data: sources });
     }
-    movie.episodes.push({ name, slug: slugify(name, { lower: true }), server_data: sources });
+  } else {
+    // Kiểu mới: mỗi dòng = 1 tập trên 1 server (không dùng JSON dài)
+    const idxMovieIdCol = epHeaders.indexOf(movieIdCol);
+    const idxEpCode = epIdx('episode_code') >= 0 ? epIdx('episode_code') : epIdx('episode');
+    const idxEpName = epIdx('episode_name') >= 0 ? epIdx('episode_name') : epIdx('name');
+    const idxServerSlug = epIdx('server_slug');
+    const idxServerName = epIdx('server_name');
+    const idxLinkM3U8 = epIdx('link_m3u8');
+    const idxLinkEmbed = epIdx('link_embed');
+    const idxLinkBackup = epIdx('link_backup');
+
+    const serverGroupsByMovie = new Map();
+
+    for (let i = 1; i < episodesRows.length; i++) {
+      const row = episodesRows[i];
+      const mid = (idxMovieIdCol >= 0 ? row[idxMovieIdCol] : row[0])?.toString()?.trim() || '';
+      const movie = movies.find((m) => String(m.id) === String(mid) || m.slug === mid) || movieByTitle[mid] || (mid && movieBySlug[slugify(mid, { lower: true })]);
+      if (!movie) continue;
+
+      const epCode = (idxEpCode >= 0 ? row[idxEpCode] : '')?.toString()?.trim() || String(i);
+      const epName = (idxEpName >= 0 ? row[idxEpName] : '')?.toString()?.trim() || `Tập ${epCode}`;
+      const serverSlugRaw = (idxServerSlug >= 0 ? row[idxServerSlug] : '')?.toString()?.trim();
+      const serverNameRaw = (idxServerName >= 0 ? row[idxServerName] : '')?.toString()?.trim();
+      const serverSlug = serverSlugRaw || slugify(serverNameRaw || 'default', { lower: true }) || 'default';
+      const serverName = serverNameRaw || serverSlug;
+
+      const linkM3U8 = (idxLinkM3U8 >= 0 ? row[idxLinkM3U8] : '')?.toString()?.trim() || '';
+      const linkEmbed = (idxLinkEmbed >= 0 ? row[idxLinkEmbed] : '')?.toString()?.trim() || '';
+      const linkBackup = (idxLinkBackup >= 0 ? row[idxLinkBackup] : '')?.toString()?.trim() || '';
+
+      const src = {
+        name: epName,
+        slug: slugify(epCode || epName, { lower: true }),
+      };
+      if (linkEmbed) src.link_embed = linkEmbed;
+      if (linkM3U8) src.link_m3u8 = linkM3U8;
+      if (linkBackup) src.link = linkBackup;
+
+      let groups = serverGroupsByMovie.get(movie);
+      if (!groups) {
+        groups = new Map();
+        serverGroupsByMovie.set(movie, groups);
+      }
+      let group = groups.get(serverSlug);
+      if (!group) {
+        group = { name: serverName, slug: serverSlug, server_name: serverName, server_data: [] };
+        groups.set(serverSlug, group);
+      }
+      group.server_data.push(src);
+    }
+
+    for (const [movie, groups] of serverGroupsByMovie.entries()) {
+      movie.episodes = movie.episodes || [];
+      for (const grp of groups.values()) {
+        movie.episodes.push(grp);
+      }
+    }
   }
   return movies;
 }
