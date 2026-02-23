@@ -157,25 +157,38 @@ function buildEpisodeRows(movieIdInSheet, movie, epHeaders) {
     return idx;
   };
 
-  const movieIdColName = headerIndex('movie_id') >= 0 ? 'movie_id' : epHeaders.find((h) => h.includes('movie')) || 'movie_id';
-  const idxMovieId = headerIndex(movieIdColName) >= 0 ? headerIndex(movieIdColName) : 0;
-  const idxName = headerIndex('name') >= 0 ? headerIndex('name') : 1;
-  const idxSources = headerIndex('sources') >= 0 ? headerIndex('sources') : headerIndex('source');
+  // Chỉ hỗ trợ định dạng MỚI: mỗi dòng = 1 tập trên 1 server
+  const idxMovieId = headerIndex('movie_id') >= 0 ? headerIndex('movie_id') : 0;
+  const idxEpCode = headerIndex('episode_code') >= 0 ? headerIndex('episode_code') : 1;
+  const idxEpName = headerIndex('episode_name') >= 0 ? headerIndex('episode_name') : 2;
+  const idxServerSlug = headerIndex('server_slug') >= 0 ? headerIndex('server_slug') : 3;
+  const idxServerName = headerIndex('server_name') >= 0 ? headerIndex('server_name') : 4;
+  const idxLinkM3U8 = headerIndex('link_m3u8') >= 0 ? headerIndex('link_m3u8') : 5;
+  const idxLinkEmbed = headerIndex('link_embed') >= 0 ? headerIndex('link_embed') : 6;
+  const idxLinkBackup = headerIndex('link_backup') >= 0 ? headerIndex('link_backup') : 7;
 
   for (const ep of movie.episodes) {
-    const row = new Array(epHeaders.length).fill('');
-    row[idxMovieId] = String(movieIdInSheet);
-    row[idxName] = ep.name || ep.slug || '';
-    if (idxSources >= 0) {
-      const src = Array.isArray(ep.server_data) ? ep.server_data : [];
-      let json = JSON.stringify(src);
-      const MAX_CELL_LEN = 49000;
-      if (json.length > MAX_CELL_LEN) {
-        json = json.slice(0, MAX_CELL_LEN - 20) + '...(truncated)';
-      }
-      row[idxSources] = json;
-    }
-    rows.push(row);
+    const serverName = ep.server_name || ep.name || ep.slug || '';
+    const serverSlug = ep.slug || (serverName ? slugify(serverName, { lower: true }) : 'default');
+    const list = Array.isArray(ep.server_data) ? ep.server_data : [];
+    if (!list.length) continue;
+    list.forEach((srv, idxEp) => {
+      const row = new Array(epHeaders.length).fill('');
+      row[idxMovieId] = String(movieIdInSheet);
+      const epCode = srv.slug || srv.name || String(idxEp + 1);
+      const epName = srv.name || srv.slug || `Tập ${epCode}`;
+      row[idxEpCode] = String(epCode);
+      row[idxEpName] = String(epName);
+      row[idxServerSlug] = serverSlug;
+      row[idxServerName] = serverName || serverSlug;
+      const linkM3U8 = (srv && srv.link_m3u8) || '';
+      const linkEmbed = (srv && srv.link_embed) || '';
+      const linkBackup = (srv && srv.link) || '';
+      if (idxLinkM3U8 >= 0) row[idxLinkM3U8] = linkM3U8;
+      if (idxLinkEmbed >= 0) row[idxLinkEmbed] = linkEmbed;
+      if (idxLinkBackup >= 0) row[idxLinkBackup] = linkBackup;
+      rows.push(row);
+    });
   }
 
   return rows;
