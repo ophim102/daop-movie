@@ -45,6 +45,7 @@ Hàng đầu tiên mỗi sheet = **header** (không phân biệt hoa thường; 
 | showtimes | ✓ | |
 | is_exclusive | ✓ | 0/1 hoặc true/false |
 | tmdb_id | ✓ | Số |
+| modified | ✓ (cho export) | ISO 8601 (vd. `2026-02-23T10:00:00.000Z`). **Bắt buộc** để export-to-sheets biết phim nào cần cập nhật. Nếu thiếu cột này, export chỉ append phim mới, không update phim đã có. |
 
 ### Sheet `episodes` – cột build đọc (kiểu MỚI, tối ưu cho phim dài)
 
@@ -98,6 +99,16 @@ Trong thư mục `docs/google-sheets/`:
    Chia sẻ spreadsheet (vd. "ophim data") cho email Service Account (dạng `xxx@yyy.iam.gserviceaccount.com`) với quyền **Editor**.
 
 Sau khi cấu hình, chạy `npm run build`; nếu đọc Sheet thành công, build sẽ merge phim từ Sheet với OPhim (và Excel fallback nếu không có Sheet).
+
+---
+
+## Export to Sheets (scripts/export-to-sheets.js)
+
+Script export **chỉ export phim mới hoặc phim có cập nhật**:
+- **Phim mới** (slug chưa có trong sheet): append vào movies và episodes.
+- **Phim có cập nhật** (slug đã có, `modified` local mới hơn trong sheet): ghi đè row movies, **xóa** hết episodes cũ của phim đó và **append** episodes mới.
+
+**Yêu cầu:** Sheet movies phải có cột **modified**. Nếu thiếu, export chỉ append phim mới, không update phim đã có.
 
 ---
 

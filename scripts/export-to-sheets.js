@@ -1,10 +1,11 @@
-// Sync phim hiện có (OPhim + custom đã build) sang Google Sheets (chỉ append phim chưa có trong sheet)
-// Sử dụng cấu trúc sheet movies/episodes hiện tại, không ghi đè dòng đã tồn tại.
+// Sync phim hiện có (OPhim + custom đã build) sang Google Sheets.
+// Chỉ export: phim mới chưa có (append) hoặc phim đã có nhưng modified mới hơn (update row + ghi đè episodes).
 
 import path from 'path';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
 import { google } from 'googleapis';
+import slugify from 'slugify';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -79,6 +80,17 @@ async function loadServiceAccountFromEnv() {
   throw new Error('Không tìm thấy service account key. Cấu hình GOOGLE_SHEETS_JSON hoặc GOOGLE_SERVICE_ACCOUNT_KEY.');
 }
 
+function colToLetter(n) {
+  let s = '';
+  n++;
+  while (n > 0) {
+    n--;
+    s = String.fromCharCode(65 + (n % 26)) + s;
+    n = Math.floor(n / 26);
+  }
+  return s || 'A';
+}
+
 function buildMovieRow(movie, headers, nextId) {
   const row = new Array(headers.length).fill('');
   const headerIndex = (name) => {
@@ -132,6 +144,7 @@ function buildMovieRow(movie, headers, nextId) {
   if (movie.is_exclusive) {
     setIfExists('is_exclusive', '1');
   }
+  setIfExists('modified', movie.modified || movie.updated_at || '');
 
   // Tránh lỗi Google Sheets: mỗi ô tối đa ~50000 ký tự
   const MAX_CELL_LEN = 49000;
@@ -230,58 +243,153 @@ async function main() {
 
   const idxMovieId = movieHeaders.indexOf('id');
   const idxSlug = movieHeaders.indexOf('slug');
-  const existingSlugs = new Set();
+  const idxModified = movieHeaders.indexOf('modified');
   let maxNumericId = 0;
 
-  for (const row of existingMovieRows) {
+  /** slug -> { rowIndex (1-based), id (numeric), modified } */
+  const slugToRow = new Map();
+  for (let i = 0; i < existingMovieRows.length; i++) {
+    const row = existingMovieRows[i];
     const idVal = idxMovieId >= 0 ? row[idxMovieId] : '';
     const slugVal = idxSlug >= 0 ? row[idxSlug] : '';
-    if (slugVal) existingSlugs.add(String(slugVal).trim());
+    const modifiedVal = idxModified >= 0 ? row[idxModified] : '';
     const n = Number(idVal);
     if (!Number.isNaN(n) && n > maxNumericId) maxNumericId = n;
+    const slug = String(slugVal || '').trim();
+    if (slug) {
+      slugToRow.set(slug, { rowIndex: i + 2, id: n, modified: String(modifiedVal || '').trim() });
+    }
   }
 
-  console.log('   Số dòng movies hiện có trong sheet:', existingMovieRows.length, ', max id =', maxNumericId);
+  /** movie_id (numeric) -> [sheet row indices 0-based] trong episodes */
+  const epIdxMovieId = epHeaders.indexOf('movie_id');
+  const movieIdToEpRows = new Map();
+  for (let i = 1; i < episodesRows.length; i++) {
+    const row = episodesRows[i];
+    const mid = epIdxMovieId >= 0 ? row?.[epIdxMovieId] : '';
+    const n = Number(mid);
+    if (!Number.isNaN(n) && n > 0) {
+      if (!movieIdToEpRows.has(n)) movieIdToEpRows.set(n, []);
+      movieIdToEpRows.get(n).push(i);
+    }
+  }
+
+  if (idxModified < 0) {
+    console.log('   Lưu ý: Sheet movies chưa có cột "modified". Chỉ append phim mới, không update phim đã có.');
+  }
+  console.log('   Số dòng movies:', existingMovieRows.length, ', max id =', maxNumericId);
 
   const moviesToAppend = [];
   const episodesToAppend = [];
-  const sheetIdByLocalId = new Map();
+  const moviesToUpdate = [];
 
   for (const m of movies) {
     const slug = (m.slug || '').toString().trim();
     if (!slug) continue;
-    if (existingSlugs.has(slug)) continue;
-    maxNumericId += 1;
-    const row = buildMovieRow(m, movieHeaders, maxNumericId);
-    moviesToAppend.push(row);
-    sheetIdByLocalId.set(String(m.id), maxNumericId);
-    const epRows = buildEpisodeRows(maxNumericId, m, epHeaders);
-    episodesToAppend.push(...epRows);
+    const localModified = String(m.modified || m.updated_at || '').trim();
+    const existing = slugToRow.get(slug);
+    if (!existing) {
+      maxNumericId += 1;
+      const row = buildMovieRow(m, movieHeaders, maxNumericId);
+      moviesToAppend.push(row);
+      const epRows = buildEpisodeRows(maxNumericId, m, epHeaders);
+      episodesToAppend.push(...epRows);
+      continue;
+    }
+    if (idxModified < 0) continue;
+    const sheetModified = existing.modified || '';
+    const shouldUpdate = !sheetModified || (localModified && localModified > sheetModified);
+    if (shouldUpdate) {
+      moviesToUpdate.push({
+        movie: m,
+        sheetId: existing.id,
+        rowIndex: existing.rowIndex,
+      });
+    }
   }
 
-  if (!moviesToAppend.length) {
-    console.log('3. Không có phim mới để append vào sheet (dựa trên slug). Kết thúc.');
+  const hasAppend = moviesToAppend.length > 0;
+  const hasUpdate = moviesToUpdate.length > 0;
+  if (!hasAppend && !hasUpdate) {
+    console.log('3. Không có phim mới hoặc phim có cập nhật. Kết thúc.');
     return;
   }
 
-  console.log('3. Append', moviesToAppend.length, 'phim mới vào sheet movies và', episodesToAppend.length, 'tập vào sheet episodes...');
-
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: sheetId,
-    range: 'movies!A1',
-    valueInputOption: 'RAW',
-    insertDataOption: 'INSERT_ROWS',
-    requestBody: { values: moviesToAppend },
-  });
-
-  if (episodesToAppend.length) {
+  if (hasAppend) {
+    console.log('3a. Append', moviesToAppend.length, 'phim mới và', episodesToAppend.length, 'tập...');
     await sheets.spreadsheets.values.append({
       spreadsheetId: sheetId,
-      range: 'episodes!A1',
+      range: 'movies!A1',
       valueInputOption: 'RAW',
       insertDataOption: 'INSERT_ROWS',
-      requestBody: { values: episodesToAppend },
+      requestBody: { values: moviesToAppend },
     });
+    if (episodesToAppend.length) {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: sheetId,
+        range: 'episodes!A1',
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: { values: episodesToAppend },
+      });
+    }
+  }
+
+  if (hasUpdate) {
+    console.log('3b. Update', moviesToUpdate.length, 'phim (ghi đè row + episodes)...');
+    const meta = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
+    const epSheet = meta.data.sheets?.find((s) => (s.properties?.title || '').toLowerCase() === 'episodes');
+    const epSheetId = epSheet?.properties?.sheetId ?? 1;
+
+    for (const { movie: m, sheetId: numericId, rowIndex } of moviesToUpdate) {
+      const movieRow = buildMovieRow(m, movieHeaders, numericId);
+      const lastCol = colToLetter(Math.max(0, movieHeaders.length - 1));
+      const range = `movies!A${rowIndex}:${lastCol}${rowIndex}`;
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: sheetId,
+        range,
+        valueInputOption: 'RAW',
+        requestBody: { values: [movieRow] },
+      });
+    }
+
+    const allRowsToDelete = [];
+    for (const { sheetId: numericId } of moviesToUpdate) {
+      const rows = movieIdToEpRows.get(numericId) || [];
+      allRowsToDelete.push(...rows);
+    }
+    const sortedToDelete = [...new Set(allRowsToDelete)].sort((a, b) => b - a);
+    if (sortedToDelete.length > 0) {
+      const requests = sortedToDelete.map((rowIdx) => ({
+        deleteDimension: {
+          range: {
+            sheetId: epSheetId,
+            dimension: 'ROWS',
+            startIndex: rowIdx,
+            endIndex: rowIdx + 1,
+          },
+        },
+      }));
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: sheetId,
+        requestBody: { requests },
+      });
+    }
+
+    const allNewEpisodes = [];
+    for (const { movie: m, sheetId: numericId } of moviesToUpdate) {
+      const epRows = buildEpisodeRows(numericId, m, epHeaders);
+      allNewEpisodes.push(...epRows);
+    }
+    if (allNewEpisodes.length > 0) {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: sheetId,
+        range: 'episodes!A1',
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: { values: allNewEpisodes },
+      });
+    }
   }
 
   console.log('   Hoàn tất export-to-sheets.');
