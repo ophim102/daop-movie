@@ -4,7 +4,7 @@ on:
     branches: [main]
   # Chạy deploy sau khi "Build on demand" xong (push từ workflow không kích hoạt push event)
   workflow_run:
-    workflows: ["Build on demand"]
+    workflows: ["Build on demand", "Update data daily"]
     types: [completed]
     branches: [main]
 jobs:
