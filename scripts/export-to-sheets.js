@@ -56,6 +56,29 @@ async function loadLocalMovies() {
   return fullMovies;
 }
 
+async function loadServiceAccountFromEnv() {
+  const jsonEnv = process.env.GOOGLE_SHEETS_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (jsonEnv) {
+    try {
+      return JSON.parse(jsonEnv);
+    } catch (e) {
+      console.warn('Không parse được GOOGLE_SHEETS_JSON/GOOGLE_SERVICE_ACCOUNT_JSON:', e.message || e);
+    }
+  }
+  const keyPathEnv = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (keyPathEnv) {
+    const keyPath = path.isAbsolute(keyPathEnv) ? keyPathEnv : path.join(ROOT, keyPathEnv);
+    if (await fs.pathExists(keyPath)) {
+      return fs.readJson(keyPath);
+    }
+  }
+  const defaultPath = path.join(ROOT, 'gotv-394615-89fa7961dcb3.json');
+  if (await fs.pathExists(defaultPath)) {
+    return fs.readJson(defaultPath);
+  }
+  throw new Error('Không tìm thấy service account key. Cấu hình GOOGLE_SHEETS_JSON hoặc GOOGLE_SERVICE_ACCOUNT_KEY.');
+}
+
 function buildMovieRow(movie, headers, nextId) {
   const row = new Array(headers.length).fill('');
   const headerIndex = (name) => {
@@ -146,12 +169,8 @@ function buildEpisodeRows(movieIdInSheet, movie, epHeaders) {
 
 async function main() {
   const sheetId = process.env.GOOGLE_SHEETS_ID;
-  const keyPath = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-  if (!sheetId || !keyPath) {
-    throw new Error('Cần GOOGLE_SHEETS_ID và GOOGLE_SERVICE_ACCOUNT_KEY trong env để ghi Google Sheets.');
-  }
-  if (!(await fs.pathExists(keyPath))) {
-    throw new Error(`Không tìm thấy file service account: ${keyPath}`);
+  if (!sheetId) {
+    throw new Error('Cần GOOGLE_SHEETS_ID trong env để ghi Google Sheets.');
   }
 
   console.log('1. Đọc dữ liệu phim hiện có từ build (movies-light + batches)...');
@@ -159,7 +178,7 @@ async function main() {
   console.log('   Tổng số phim local:', movies.length);
 
   console.log('2. Kết nối Google Sheets và đọc sheet movies/episodes hiện tại...');
-  const key = await fs.readJson(keyPath);
+  const key = await loadServiceAccountFromEnv();
   const auth = new google.auth.GoogleAuth({
     credentials: key,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],

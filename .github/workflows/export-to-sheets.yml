@@ -19,5 +19,5 @@ jobs:
         run: node scripts/export-to-sheets.js
         env:
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
-          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY || vars.GOOGLE_SERVICE_ACCOUNT_KEY || './gotv-394615-89fa7961dcb3.json' }}
+          GOOGLE_SHEETS_JSON: ${{ secrets.GOOGLE_SHEETS_JSON }}
 

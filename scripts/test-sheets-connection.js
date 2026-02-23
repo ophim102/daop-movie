@@ -2,6 +2,7 @@
 // Chạy: node scripts/test-sheets-connection.js
 // ENV:
 //   GOOGLE_SHEETS_ID (tùy chọn, nếu có sẽ gọi spreadsheets.get)
+//   GOOGLE_SHEETS_JSON hoặc GOOGLE_SERVICE_ACCOUNT_JSON (tùy chọn, nội dung JSON key)
 //   GOOGLE_SERVICE_ACCOUNT_KEY (tùy chọn, path tới file JSON; mặc định ./gotv-394615-89fa7961dcb3.json)
 
 import fs from 'fs-extra';
@@ -14,18 +15,29 @@ const ROOT = path.join(__dirname, '..');
 
 async function main() {
   const sheetId = process.env.GOOGLE_SHEETS_ID;
-  const keyPathEnv = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-  const keyPath = keyPathEnv
-    ? (path.isAbsolute(keyPathEnv) ? keyPathEnv : path.join(ROOT, keyPathEnv))
-    : path.join(ROOT, 'gotv-394615-89fa7961dcb3.json');
+  const jsonEnv = process.env.GOOGLE_SHEETS_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  let key;
+  if (jsonEnv) {
+    try {
+      key = JSON.parse(jsonEnv);
+      console.log('Đọc key từ GOOGLE_SHEETS_JSON / GOOGLE_SERVICE_ACCOUNT_JSON.');
+    } catch (e) {
+      console.error('Không parse được JSON từ env:', e.message || e);
+      process.exit(1);
+    }
+  } else {
+    const keyPathEnv = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    const keyPath = keyPathEnv
+      ? (path.isAbsolute(keyPathEnv) ? keyPathEnv : path.join(ROOT, keyPathEnv))
+      : path.join(ROOT, 'gotv-394615-89fa7961dcb3.json');
 
-  console.log('Sử dụng key file:', keyPath);
-  if (!(await fs.pathExists(keyPath))) {
-    console.error('KHÔNG tìm thấy file service account. Kiểm tra GOOGLE_SERVICE_ACCOUNT_KEY hoặc đường dẫn mặc định.');
-    process.exit(1);
+    console.log('Sử dụng key file:', keyPath);
+    if (!(await fs.pathExists(keyPath))) {
+      console.error('KHÔNG tìm thấy file service account. Kiểm tra GOOGLE_SERVICE_ACCOUNT_KEY hoặc đường dẫn mặc định.');
+      process.exit(1);
+    }
+    key = await fs.readJson(keyPath);
   }
-
-  const key = await fs.readJson(keyPath);
   console.log('client_email:', key.client_email);
   console.log('private_key length:', key.private_key ? key.private_key.length : 0);
 

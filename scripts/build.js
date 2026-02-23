@@ -232,14 +232,39 @@ function normalizeOPhimMovie(m, slug, cdnBase = 'https://img.ophim.live') {
   };
 }
 
+async function loadServiceAccountFromEnv(readWrite) {
+  // Ưu tiên JSON nguyên từ env (an toàn hơn, không cần commit file key)
+  const jsonEnv = process.env.GOOGLE_SHEETS_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (jsonEnv) {
+    try {
+      return JSON.parse(jsonEnv);
+    } catch (e) {
+      console.warn('Không parse được GOOGLE_SHEETS_JSON/GOOGLE_SERVICE_ACCOUNT_JSON:', e.message || e);
+    }
+  }
+  const keyPathEnv = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (keyPathEnv) {
+    const keyPath = path.isAbsolute(keyPathEnv) ? keyPathEnv : path.join(ROOT, keyPathEnv);
+    if (await fs.pathExists(keyPath)) {
+      return fs.readJson(keyPath);
+    }
+  }
+  if (!readWrite) return null;
+  // Fallback cũ: file JSON mặc định trong repo (không khuyến khích, chỉ dùng local)
+  const defaultPath = path.join(ROOT, 'gotv-394615-89fa7961dcb3.json');
+  if (await fs.pathExists(defaultPath)) {
+    return fs.readJson(defaultPath);
+  }
+  return null;
+}
+
 /** 2. Đọc Google Sheets (hoặc Excel fallback) */
 async function fetchCustomMovies() {
   const sheetId = process.env.GOOGLE_SHEETS_ID;
-  const keyPath = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-  if (sheetId && keyPath && (await fs.pathExists(keyPath))) {
+  const key = await loadServiceAccountFromEnv(false);
+  if (sheetId && key) {
     try {
       const { google } = await import('googleapis');
-      const key = await fs.readJson(keyPath);
       const auth = new google.auth.GoogleAuth({
         credentials: key,
         scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
