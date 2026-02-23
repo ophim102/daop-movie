@@ -120,18 +120,26 @@ async function processImage(url, slug, folder = 'thumbs') {
 /** Giới hạn OPhim: số trang tối đa (0 = không giới hạn), số phim tối đa (0 = không giới hạn). Đặt env để tránh build quá lâu (vd: OPHIM_MAX_PAGES=5, OPHIM_MAX_MOVIES=500). */
 const OPHIM_MAX_PAGES = Number(process.env.OPHIM_MAX_PAGES) || 0;
 const OPHIM_MAX_MOVIES = Number(process.env.OPHIM_MAX_MOVIES) || 0;
+/** Khoảng trang OPhim: cho phép chọn trang bắt đầu/kết thúc (0 = mặc định/không giới hạn). */
+const OPHIM_START_PAGE = Number(process.env.OPHIM_START_PAGE) || 1;
+const OPHIM_END_PAGE = Number(process.env.OPHIM_END_PAGE) || 0;
 
 /** 1. Thu thập phim từ OPhim */
 async function fetchOPhimMovies() {
   const list = [];
-  let page = 1;
+  let page = OPHIM_START_PAGE > 0 ? OPHIM_START_PAGE : 1;
+  let fetchedPages = 0;
   while (true) {
-    if (OPHIM_MAX_PAGES > 0 && page > OPHIM_MAX_PAGES) {
-      console.log('   OPhim: đạt giới hạn số trang:', OPHIM_MAX_PAGES);
+    if (OPHIM_MAX_PAGES > 0 && fetchedPages >= OPHIM_MAX_PAGES) {
+      console.log('   OPhim: đạt giới hạn số trang:', OPHIM_MAX_PAGES, '(từ trang', OPHIM_START_PAGE, ')');
       break;
     }
     if (OPHIM_MAX_MOVIES > 0 && list.length >= OPHIM_MAX_MOVIES) {
       console.log('   OPhim: đạt giới hạn số phim:', OPHIM_MAX_MOVIES);
+      break;
+    }
+    if (OPHIM_END_PAGE > 0 && page > OPHIM_END_PAGE) {
+      console.log('   OPhim: đạt giới hạn khoảng trang đến:', OPHIM_END_PAGE);
       break;
     }
     const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=100`;
@@ -161,6 +169,7 @@ async function fetchOPhimMovies() {
         console.warn('OPhim detail skip:', slug, e.message);
       }
     }
+    fetchedPages++;
     page++;
   }
   return list;
@@ -378,9 +387,13 @@ async function enrichTmdb(movies) {
 /** 4. Hợp nhất và xử lý ảnh (optional: upload R2) */
 function mergeMovies(ophim, custom) {
   const bySlug = new Map();
-  for (const m of ophim) bySlug.set(m.slug, m);
+  for (const m of ophim) {
+    if (m && m.slug) bySlug.set(m.slug, m);
+  }
+  // Custom (từ Google Sheets/Excel) được ưu tiên override nếu trùng slug,
+  // để có thể chỉnh sửa phim OPhim qua sheet bằng cách tạo bản ghi cùng slug.
   for (const m of custom) {
-    if (!bySlug.has(m.slug)) bySlug.set(m.slug, m);
+    if (m && m.slug) bySlug.set(m.slug, m);
   }
   const merged = Array.from(bySlug.values());
   for (const m of merged) {
@@ -832,17 +845,63 @@ function writeActorsShardsFromData(map = {}, names = {}, movieById = null) {
   console.log('   Actors (từ actors.js): index +', shardCount, 'shards', movieById ? '+ movies' : '');
 }
 
-/** 8. Tạo batch files */
-function writeBatches(movies) {
+/** 8. Tạo batch files (chỉ ghi lại batch có phim thay đổi dựa trên last_modified) */
+function writeBatches(movies, prevLastModified) {
   const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
   const batchDir = path.join(PUBLIC_DATA, 'batches');
   fs.ensureDirSync(batchDir);
-  for (let start = 0; start < sorted.length; start += BATCH_SIZE) {
-    const end = Math.min(start + BATCH_SIZE, sorted.length);
-    const batch = sorted.slice(start, end).map((m) => ({ ...m, id: String(m.id) }));
-    const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
-    fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
+
+  const total = sorted.length;
+  const changedBatchStarts = new Set();
+  const newLastModified = {};
+
+  for (let idx = 0; idx < sorted.length; idx++) {
+    const m = sorted[idx];
+    const idStr = String(m.id);
+    const modified = m.modified || m.updated_at || '';
+    newLastModified[idStr] = modified;
+    const old = prevLastModified ? prevLastModified[idStr] : undefined;
+    if (!prevLastModified || !old || old !== modified) {
+      const start = Math.floor(idx / BATCH_SIZE) * BATCH_SIZE;
+      changedBatchStarts.add(start);
+    }
   }
+
+  // Nếu có phim bị xóa (có trong map cũ nhưng không còn trong map mới) → ghi lại toàn bộ để tránh lệch dữ liệu.
+  if (prevLastModified) {
+    for (const idStr of Object.keys(prevLastModified)) {
+      if (!newLastModified[idStr]) {
+        console.log('   Detect removed movies, regenerate toàn bộ batch files.');
+        changedBatchStarts.clear();
+        for (let start = 0; start < total; start += BATCH_SIZE) {
+          changedBatchStarts.add(start);
+        }
+        break;
+      }
+    }
+  }
+
+  // Nếu không có map cũ hoặc không batch nào được đánh dấu thay đổi → build full.
+  if (!prevLastModified || changedBatchStarts.size === 0) {
+    for (let start = 0; start < total; start += BATCH_SIZE) {
+      const end = Math.min(start + BATCH_SIZE, total);
+      const batch = sorted.slice(start, end).map((m) => ({ ...m, id: String(m.id) }));
+      const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
+      fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
+    }
+    console.log('   Đã ghi lại toàn bộ batch files (lần đầu hoặc không có thông tin last_modified trước đó).');
+  } else {
+    const sortedStarts = Array.from(changedBatchStarts).sort((a, b) => a - b);
+    for (const start of sortedStarts) {
+      const end = Math.min(start + BATCH_SIZE, total);
+      const batch = sorted.slice(start, end).map((m) => ({ ...m, id: String(m.id) }));
+      const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
+      fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
+    }
+    console.log('   Đã ghi lại', sortedStarts.length, 'batch files có phim mới hoặc thay đổi.');
+  }
+
+  return newLastModified;
 }
 
 /** 9. Đọc Supabase Admin và xuất config JSON */
@@ -1259,6 +1318,17 @@ async function main() {
   await fs.ensureDir(path.join(PUBLIC_DATA, 'config'));
   await fs.ensureDir(path.join(PUBLIC_DATA, 'batches'));
 
+  // Đọc last_modified của lần build trước (nếu có) để chỉ ghi lại batch thay đổi
+  const lastModifiedPath = path.join(PUBLIC_DATA, 'last_modified.json');
+  let prevLastModified = null;
+  if (fs.existsSync(lastModifiedPath)) {
+    try {
+      prevLastModified = JSON.parse(fs.readFileSync(lastModifiedPath, 'utf8'));
+    } catch {
+      prevLastModified = null;
+    }
+  }
+
   console.log('1. Fetching OPhim...');
   const ophim = await fetchOPhimMovies();
   console.log('   OPhim count:', ophim.length);
@@ -1294,7 +1364,7 @@ async function main() {
   const filters = writeFilters(allMovies, genreNames, countryNames);
   writeCategoryPages(filters);
   writeActors(allMovies);
-  writeBatches(allMovies);
+  const newLastModified = writeBatches(allMovies, prevLastModified || undefined);
 
   const buildVersion = { builtAt: new Date().toISOString() };
   fs.writeFileSync(path.join(PUBLIC_DATA, 'build_version.json'), JSON.stringify(buildVersion, null, 2));
@@ -1305,9 +1375,8 @@ async function main() {
 
   const lastBuild = { builtAt: new Date().toISOString(), movieCount: allMovies.length };
   fs.writeFileSync(path.join(PUBLIC_DATA, 'last_build.json'), JSON.stringify(lastBuild, null, 2));
-  const lastModified = {};
-  for (const m of allMovies) lastModified[m.id] = m.modified || m.updated_at || '';
-  fs.writeFileSync(path.join(PUBLIC_DATA, 'last_modified.json'), JSON.stringify(lastModified, null, 2));
+  const lastModifiedOut = newLastModified || {};
+  fs.writeFileSync(lastModifiedPath, JSON.stringify(lastModifiedOut, null, 2));
   console.log('Build done.');
 }
 

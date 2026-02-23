@@ -100,15 +100,31 @@
     var episodesHtml = '';
     var playerVisible = window.DAOP?.siteSettings?.player_visible !== 'false';
     var servers = window.DAOP?.serverSources || [];
+    var serverOrder = {};
+    if (Array.isArray(servers)) {
+      servers.forEach(function (s, idx) {
+        if (s && s.slug) serverOrder[s.slug] = idx;
+      });
+    }
     if (playerVisible && movie.episodes && movie.episodes.length) {
       episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
       movie.episodes.forEach(function (ep) {
         var serverName = ep.server_name || ep.name || ep.slug || '';
-        (ep.server_data || []).forEach(function (srv) {
-          var epName = (typeof srv === 'object' && (srv.name || srv.slug)) ? (srv.name || srv.slug) : (srv && (srv.name || srv.slug)) || serverName || '';
-          var epSlug = (typeof srv === 'object' && srv.slug) ? srv.slug : (typeof srv === 'object' && srv.name) ? srv.name : (srv && (srv.slug || srv.name)) || epName;
-          var srvSlug = (typeof srv === 'object' && srv.slug) ? srv.slug : (servers[0] && servers[0].slug) || 'default';
-          var link = (typeof srv === 'object' && (srv.link_embed || srv.link_m3u8 || srv.link)) ? (srv.link_embed || srv.link_m3u8 || srv.link) : (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
+        var list = Array.isArray(ep.server_data) ? ep.server_data.slice() : [];
+        if (list.length) {
+          list.sort(function (a, b) {
+            var sa = (a && a.slug) || '';
+            var sb = (b && b.slug) || '';
+            var ia = sa && (serverOrder[sa] != null) ? serverOrder[sa] : 9999;
+            var ib = sb && (serverOrder[sb] != null) ? serverOrder[sb] : 9999;
+            return ia - ib;
+          });
+        }
+        (list.length ? list : ep.server_data || []).forEach(function (srv) {
+          var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : serverName || '';
+          var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
+          var srvSlug = (srv && srv.slug) ? srv.slug : (servers[0] && servers[0].slug) || 'default';
+          var link = (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
           episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (epSlug || '').replace(/"/g, '&quot;') + '" data-server="' + srvSlug + '" data-link="' + (link || '').replace(/"/g, '&quot;') + '">Tập ' + (epName || '').replace(/</g, '&lt;') + '</button>';
         });
         if (!(ep.server_data && ep.server_data.length)) {

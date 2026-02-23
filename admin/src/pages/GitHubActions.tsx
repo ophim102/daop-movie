@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space } from 'antd';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space, Input } from 'antd';
 import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
 const { Text } = Typography;
 
 const API_URL = ((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '');
-const OPHIM_KEYS = { max_pages: 'ophim_max_pages', max_movies: 'ophim_max_movies' };
+const OPHIM_KEYS = {
+  max_pages: 'ophim_max_pages',
+  max_movies: 'ophim_max_movies',
+  start_page: 'ophim_start_page',
+  end_page: 'ophim_end_page',
+  schedule: 'update_data_schedule',
+};
 
 type ActionItem = {
   id: string;
@@ -27,18 +33,30 @@ export default function GitHubActions() {
   const [actions, setActions] = useState<ActionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
-  const [updateSettings, setUpdateSettings] = useState<{ max_pages: number; max_movies: number }>({ max_pages: 5, max_movies: 500 });
+  const [updateSettings, setUpdateSettings] = useState<{ max_pages: number; max_movies: number; start_page: number; end_page: number; schedule?: string }>({
+    max_pages: 5,
+    max_movies: 500,
+    start_page: 1,
+    end_page: 0,
+    schedule: '',
+  });
   const [savingSettings, setSavingSettings] = useState(false);
   const [form] = Form.useForm();
 
   const loadUpdateSettings = async () => {
-    const { data } = await supabase.from('site_settings').select('key, value').in('key', [OPHIM_KEYS.max_pages, OPHIM_KEYS.max_movies]);
+    const { data } = await supabase
+      .from('site_settings')
+      .select('key, value')
+      .in('key', [OPHIM_KEYS.max_pages, OPHIM_KEYS.max_movies, OPHIM_KEYS.start_page, OPHIM_KEYS.end_page, OPHIM_KEYS.schedule]);
     const map: Record<string, string> = {};
     (data || []).forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
     const max_pages = map[OPHIM_KEYS.max_pages] != null ? Number(map[OPHIM_KEYS.max_pages]) : 5;
     const max_movies = map[OPHIM_KEYS.max_movies] != null ? Number(map[OPHIM_KEYS.max_movies]) : 500;
-    setUpdateSettings({ max_pages, max_movies });
-    form.setFieldsValue({ max_pages, max_movies });
+    const start_page = map[OPHIM_KEYS.start_page] != null ? Number(map[OPHIM_KEYS.start_page]) : 1;
+    const end_page = map[OPHIM_KEYS.end_page] != null ? Number(map[OPHIM_KEYS.end_page]) : 0;
+    const schedule = map[OPHIM_KEYS.schedule] ?? '';
+    setUpdateSettings({ max_pages, max_movies, start_page, end_page, schedule });
+    form.setFieldsValue({ max_pages, max_movies, start_page, end_page, schedule });
   };
 
   const fetchActions = async () => {
@@ -73,10 +91,14 @@ export default function GitHubActions() {
     const values = await form.validateFields();
     setSavingSettings(true);
     try {
+      const now = new Date().toISOString();
       const { error } = await supabase.from('site_settings').upsert(
         [
-          { key: OPHIM_KEYS.max_pages, value: String(values.max_pages ?? 5), updated_at: new Date().toISOString() },
-          { key: OPHIM_KEYS.max_movies, value: String(values.max_movies ?? 500), updated_at: new Date().toISOString() },
+          { key: OPHIM_KEYS.max_pages, value: String(values.max_pages ?? 5), updated_at: now },
+          { key: OPHIM_KEYS.max_movies, value: String(values.max_movies ?? 500), updated_at: now },
+          { key: OPHIM_KEYS.start_page, value: String(values.start_page ?? 1), updated_at: now },
+          { key: OPHIM_KEYS.end_page, value: String(values.end_page ?? 0), updated_at: now },
+          { key: OPHIM_KEYS.schedule, value: String(values.schedule ?? ''), updated_at: now },
         ],
         { onConflict: 'key' }
       );
@@ -93,11 +115,13 @@ export default function GitHubActions() {
   const handleTrigger = async (actionId: string) => {
     setTriggering(actionId);
     try {
-      const body: { action: string; max_pages?: number; max_movies?: number } = { action: actionId };
+      const body: { action: string; max_pages?: number; max_movies?: number; start_page?: number; end_page?: number } = { action: actionId };
       if (actionId === 'update-data') {
         const values = form.getFieldsValue();
         if (values.max_pages != null) body.max_pages = values.max_pages;
         if (values.max_movies != null) body.max_movies = values.max_movies;
+        if (values.start_page != null) body.start_page = values.start_page;
+        if (values.end_page != null) body.end_page = values.end_page;
       }
       const res = await fetch(`${API_URL}/api/trigger-action`, {
         method: 'POST',
@@ -137,6 +161,15 @@ export default function GitHubActions() {
           </Form.Item>
           <Form.Item name="max_movies" label="Số phim tối đa" rules={[{ required: true }]}>
             <InputNumber min={0} max={10000} placeholder="500" style={{ width: 120 }} />
+          </Form.Item>
+          <Form.Item name="start_page" label="Trang bắt đầu" rules={[{ required: true }]}>
+            <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />
+          </Form.Item>
+          <Form.Item name="end_page" label="Trang kết thúc">
+            <InputNumber min={0} max={100000} placeholder="0 (không giới hạn)" style={{ width: 160 }} />
+          </Form.Item>
+          <Form.Item name="schedule" label="Giờ chạy (ghi chú)">
+            <Input placeholder="Ví dụ: 02:00 hoặc cron" style={{ width: 200 }} />
           </Form.Item>
           <Form.Item>
             <Button icon={<SaveOutlined />} onClick={handleSaveUpdateSettings} loading={savingSettings}>

@@ -29,6 +29,7 @@ const items = [
   { key: '/homepage-sections', icon: <AppstoreOutlined />, label: <Link to="/homepage-sections">Sections</Link> },
   { key: '/category-page-settings', icon: <AppstoreOutlined />, label: <Link to="/category-page-settings">Trang danh mục</Link> },
   { key: '/server-sources', icon: <CloudServerOutlined />, label: <Link to="/server-sources">Server</Link> },
+  { key: '/google-sheets', icon: <FileTextOutlined />, label: <Link to="/google-sheets">Google Sheets</Link> },
   { key: '/settings', icon: <SettingOutlined />, label: <Link to="/settings">Cài đặt</Link> },
   { key: '/theme', icon: <SettingOutlined />, label: <Link to="/theme">Theme</Link> },
   { key: '/player-settings', icon: <PlaySquareOutlined />, label: <Link to="/player-settings">Player</Link> },

@@ -18,6 +18,7 @@ import ThemeSettings from './pages/ThemeSettings';
 import PlayerSettings from './pages/PlayerSettings';
 import AuditLogs from './pages/AuditLogs';
 import GitHubActions from './pages/GitHubActions';
+import GoogleSheetsPage from './pages/GoogleSheets';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="settings" element={<SiteSettings />} />
           <Route path="theme" element={<ThemeSettings />} />
           <Route path="player-settings" element={<PlayerSettings />} />
+          <Route path="google-sheets" element={<GoogleSheetsPage />} />
           <Route path="donate" element={<DonateSettings />} />
           <Route path="static-pages" element={<StaticPages />} />
           <Route path="preroll" element={<PrerollAds />} />
