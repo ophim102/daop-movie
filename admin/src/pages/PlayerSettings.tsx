@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, Form, Input, Switch, Button, message } from 'antd';
 import { supabase } from '../lib/supabase';
 
-const PLAYER_KEYS = ['available_players', 'default_player', 'warning_enabled_global', 'warning_text'] as const;
+const PLAYER_KEYS = ['available_players', 'default_player', 'warning_enabled_global', 'warning_text', 'link_type_labels'] as const;
 
 function parseJsonSafe<T>(raw: unknown, fallback: T): T {
   if (raw == null) return fallback;
@@ -29,11 +29,22 @@ export default function PlayerSettings() {
       }
       const available = parseJsonSafe(data.available_players, { plyr: 'Plyr', videojs: 'Video.js', jwplayer: 'JWPlayer' });
       const options = Object.entries(available).map(([k, v]) => ({ label: `${k}: ${v}`, value: k }));
+      const linkTypeLabels = parseJsonSafe<Record<string, string>>(data.link_type_labels, {
+        m3u8: 'M3U8',
+        embed: 'Embed',
+        backup: 'Backup',
+        vip1: 'VIP 1',
+        vip2: 'VIP 2',
+        vip3: 'VIP 3',
+        vip4: 'VIP 4',
+        vip5: 'VIP 5',
+      });
       form.setFieldsValue({
         default_player: data.default_player ?? 'plyr',
         warning_enabled_global: data.warning_enabled_global !== false,
         warning_text: typeof data.warning_text === 'string' ? data.warning_text : 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
         available_players_json: JSON.stringify(available, null, 2),
+        link_type_labels_json: JSON.stringify(linkTypeLabels, null, 2),
       });
       setLoading(false);
     });
@@ -41,10 +52,17 @@ export default function PlayerSettings() {
 
   const onFinish = async (values: Record<string, any>) => {
     let available: Record<string, string> = {};
+    let linkTypeLabels: Record<string, string> = {};
     try {
       available = JSON.parse(values.available_players_json || '{}');
     } catch {
       message.error('available_players phải là JSON hợp lệ');
+      return;
+    }
+    try {
+      linkTypeLabels = JSON.parse(values.link_type_labels_json || '{}');
+    } catch {
+      message.error('link_type_labels phải là JSON hợp lệ');
       return;
     }
     try {
@@ -53,6 +71,7 @@ export default function PlayerSettings() {
         { key: 'default_player', value: values.default_player ?? 'plyr' },
         { key: 'warning_enabled_global', value: !!values.warning_enabled_global },
         { key: 'warning_text', value: values.warning_text ?? '' },
+        { key: 'link_type_labels', value: linkTypeLabels },
       ];
       for (const row of rows) {
         const { error } = await supabase.from('player_settings').upsert(
@@ -87,6 +106,15 @@ export default function PlayerSettings() {
           </Form.Item>
           <Form.Item name="warning_text" label="Nội dung cảnh báo">
             <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item
+            name="link_type_labels_json"
+            label="Tên Máy chủ (JSON: key -> nhãn hiển thị cho loại link: m3u8, embed, backup, vip1..vip5)"
+          >
+            <Input.TextArea
+              rows={5}
+              placeholder='{"m3u8":"M3U8","embed":"Embed","backup":"Backup","vip1":"VIP 1","vip2":"VIP 2"}'
+            />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">Lưu</Button>

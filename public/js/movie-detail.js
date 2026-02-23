@@ -116,7 +116,7 @@
       return s || 'default';
     }
     if (playerVisible && movie.episodes && movie.episodes.length) {
-      // UI theo flow: chọn server → chọn loại link → chọn nhóm tập (<=50) → chọn tập
+      // UI theo flow: chọn server → chọn máy chủ (loại link) → chọn nhóm tập (<=50, trừ phim lẻ) → chọn tập
       episodesHtml =
         '<h3>Danh sách tập</h3>' +
         '<div class="episodes-ui" id="episodes-ui">' +
@@ -124,10 +124,10 @@
         '    <div class="server-tabs" id="episodes-server-tabs" role="tablist" aria-label="Chọn server"></div>' +
         '  </div>' +
         '  <div class="episodes-ui-row">' +
-        '    <label class="episodes-ui-label" for="episodes-link-type">Loại link</label>' +
+        '    <label class="episodes-ui-label" for="episodes-link-type">Máy chủ</label>' +
         '    <select id="episodes-link-type" class="episodes-ui-select"></select>' +
         '  </div>' +
-        '  <div class="episodes-ui-row">' +
+        '  <div class="episodes-ui-row" id="episodes-group-row">' +
         '    <label class="episodes-ui-label" for="episodes-group">Nhóm tập</label>' +
         '    <select id="episodes-group" class="episodes-ui-select"></select>' +
         '  </div>' +
@@ -180,6 +180,17 @@
     }
 
     var serverSources = Array.isArray(servers) ? servers : [];
+    var playerSettings = window.DAOP && window.DAOP.playerSettings ? window.DAOP.playerSettings : {};
+    var linkTypeLabels = playerSettings.link_type_labels || {
+      m3u8: 'M3U8',
+      embed: 'Embed',
+      backup: 'Backup',
+      vip1: 'VIP 1',
+      vip2: 'VIP 2',
+      vip3: 'VIP 3',
+      vip4: 'VIP 4',
+      vip5: 'VIP 5',
+    };
     function matchServerSlug(baseSlug, serverName) {
       var matched = serverSources.find(function (s) {
         return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug || (serverName && makeSlug(s.name) === makeSlug(serverName)));
@@ -191,7 +202,7 @@
       return (matched && matched.name) || serverName || srvSlug;
     }
 
-    // serversData: [{ slug, label, order, episodes: [{ code, name, links: { m3u8, embed, backup } }] }]
+    // serversData: [{ slug, label, order, episodes: [{ code, name, links: { m3u8, embed, backup, vip1..vip5 } }] }]
     var byServer = {};
     movie.episodes.forEach(function (ep) {
       var serverName = ep.server_name || ep.name || ep.slug || '';
@@ -217,7 +228,12 @@
           links: {
             m3u8: (srv && srv.link_m3u8) || '',
             embed: (srv && srv.link_embed) || '',
-            backup: (srv && srv.link) || ''
+            backup: (srv && (srv.link_backup || srv.link)) || '',
+            vip1: (srv && srv.link_vip1) || '',
+            vip2: (srv && srv.link_vip2) || '',
+            vip3: (srv && srv.link_vip3) || '',
+            vip4: (srv && srv.link_vip4) || '',
+            vip5: (srv && srv.link_vip5) || '',
           }
         });
       });
@@ -228,6 +244,7 @@
 
     var tabsEl = document.getElementById('episodes-server-tabs');
     var linkTypeEl = document.getElementById('episodes-link-type');
+    var groupRowEl = document.getElementById('episodes-group-row');
     var groupEl = document.getElementById('episodes-group');
     var listEl = document.getElementById('episodes-list');
     if (!tabsEl || !linkTypeEl || !groupEl || !listEl) return;
@@ -243,14 +260,15 @@
     }
 
     function getAvailableLinkTypes(info) {
-      var hasM3U8 = info.episodes.some(function (e) { return !!(e.links && e.links.m3u8); });
-      var hasEmbed = info.episodes.some(function (e) { return !!(e.links && e.links.embed); });
-      var hasBackup = info.episodes.some(function (e) { return !!(e.links && e.links.backup); });
+      var keys = ['m3u8', 'embed', 'backup', 'vip1', 'vip2', 'vip3', 'vip4', 'vip5'];
       var types = [];
-      if (hasM3U8) types.push({ id: 'm3u8', label: 'm3u8' });
-      if (hasEmbed) types.push({ id: 'embed', label: 'embed' });
-      if (hasBackup) types.push({ id: 'backup', label: 'backup' });
-      return types.length ? types : [{ id: 'm3u8', label: 'm3u8' }];
+      keys.forEach(function (k) {
+        var hasAny = info.episodes.some(function (e) { return !!(e.links && e.links[k]); });
+        if (hasAny) {
+          types.push({ id: k, label: linkTypeLabels[k] || k });
+        }
+      });
+      return types.length ? types : [{ id: 'm3u8', label: linkTypeLabels.m3u8 || 'm3u8' }];
     }
 
     function filterEpisodesByType(info, linkType) {
@@ -297,13 +315,22 @@
       var info = getServerInfo(state.server);
       var list = filterEpisodesByType(info, state.linkType);
       var GROUP_SIZE = 50;
+      var isSingle = (movie && (movie.type === 'single' || movie.type === 'movie')) || false;
+      var needGrouping = !isSingle && list.length > GROUP_SIZE;
+
+      if (!needGrouping) {
+        if (groupRowEl) groupRowEl.style.display = 'none';
+        state.groupIdx = 0;
+        return;
+      }
+      if (groupRowEl) groupRowEl.style.display = '';
+
       var groups = Math.max(1, Math.ceil(list.length / GROUP_SIZE));
-      var srvLabel = String(info.label || info.slug || '');
       groupEl.innerHTML = '';
       for (var i = 0; i < groups; i++) {
         var start = i * GROUP_SIZE + 1;
         var end = Math.min((i + 1) * GROUP_SIZE, list.length);
-        var label = 'Tập ' + start + ' ' + srvLabel + ' - ' + end + ' ' + srvLabel;
+        var label = 'Tập ' + start + ' - Tập ' + end;
         groupEl.innerHTML += '<option value="' + i + '">' + label.replace(/</g, '&lt;') + '</option>';
       }
       if (state.groupIdx >= groups) state.groupIdx = 0;
@@ -318,8 +345,10 @@
       var info = getServerInfo(state.server);
       var filtered = filterEpisodesByType(info, state.linkType);
       var GROUP_SIZE = 50;
-      var startIdx = state.groupIdx * GROUP_SIZE;
-      var endIdx = Math.min(startIdx + GROUP_SIZE, filtered.length);
+      var isSingle = (movie && (movie.type === 'single' || movie.type === 'movie')) || false;
+      var needGrouping = !isSingle && filtered.length > GROUP_SIZE;
+      var startIdx = needGrouping ? state.groupIdx * GROUP_SIZE : 0;
+      var endIdx = needGrouping ? Math.min(startIdx + GROUP_SIZE, filtered.length) : filtered.length;
       var slice = filtered.slice(startIdx, endIdx);
       listEl.innerHTML = slice.map(function (e) {
         var code = (e && e.code) ? e.code : '';
@@ -337,10 +366,10 @@
       renderEpisodes();
     }
 
-    // init: chọn loại link ưu tiên m3u8 → embed → backup
+    // init: chọn loại link/máy chủ ưu tiên m3u8 → embed → backup → vip1..vip5
     var initial = getServerInfo(state.server);
     var initialTypes = getAvailableLinkTypes(initial);
-    var prefer = ['m3u8', 'embed', 'backup'];
+    var prefer = ['m3u8', 'embed', 'backup', 'vip1', 'vip2', 'vip3', 'vip4', 'vip5'];
     for (var p = 0; p < prefer.length; p++) {
       if (initialTypes.some(function (t) { return t.id === prefer[p]; })) {
         state.linkType = prefer[p];

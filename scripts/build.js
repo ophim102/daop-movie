@@ -381,6 +381,11 @@ function parseSheetMovies(moviesRows, episodesRows) {
   const idxLinkM3U8 = epIdx('link_m3u8');
   const idxLinkEmbed = epIdx('link_embed');
   const idxLinkBackup = epIdx('link_backup');
+  const idxLinkVip1 = epIdx('link_vip1');
+  const idxLinkVip2 = epIdx('link_vip2');
+  const idxLinkVip3 = epIdx('link_vip3');
+  const idxLinkVip4 = epIdx('link_vip4');
+  const idxLinkVip5 = epIdx('link_vip5');
 
   const serverGroupsByMovie = new Map();
 
@@ -403,6 +408,11 @@ function parseSheetMovies(moviesRows, episodesRows) {
     const linkM3U8 = (idxLinkM3U8 >= 0 ? row[idxLinkM3U8] : '')?.toString()?.trim() || '';
     const linkEmbed = (idxLinkEmbed >= 0 ? row[idxLinkEmbed] : '')?.toString()?.trim() || '';
     const linkBackup = (idxLinkBackup >= 0 ? row[idxLinkBackup] : '')?.toString()?.trim() || '';
+    const linkVip1 = (idxLinkVip1 >= 0 ? row[idxLinkVip1] : '')?.toString()?.trim() || '';
+    const linkVip2 = (idxLinkVip2 >= 0 ? row[idxLinkVip2] : '')?.toString()?.trim() || '';
+    const linkVip3 = (idxLinkVip3 >= 0 ? row[idxLinkVip3] : '')?.toString()?.trim() || '';
+    const linkVip4 = (idxLinkVip4 >= 0 ? row[idxLinkVip4] : '')?.toString()?.trim() || '';
+    const linkVip5 = (idxLinkVip5 >= 0 ? row[idxLinkVip5] : '')?.toString()?.trim() || '';
 
     const src = {
       name: epName,
@@ -410,7 +420,12 @@ function parseSheetMovies(moviesRows, episodesRows) {
     };
     if (linkEmbed) src.link_embed = linkEmbed;
     if (linkM3U8) src.link_m3u8 = linkM3U8;
-    if (linkBackup) src.link = linkBackup;
+    if (linkBackup) src.link_backup = linkBackup;
+    if (linkVip1) src.link_vip1 = linkVip1;
+    if (linkVip2) src.link_vip2 = linkVip2;
+    if (linkVip3) src.link_vip3 = linkVip3;
+    if (linkVip4) src.link_vip4 = linkVip4;
+    if (linkVip5) src.link_vip5 = linkVip5;
 
     let groups = serverGroupsByMovie.get(movie);
     if (!groups) {
@@ -1217,10 +1232,20 @@ async function exportConfigFromSupabase() {
     }
   }
   const defaultPlayerSettings = {
-    available_players: { 'plyr': 'Plyr', 'videojs': 'Video.js', 'jwplayer': 'JWPlayer' },
+    available_players: { plyr: 'Plyr', videojs: 'Video.js', jwplayer: 'JWPlayer' },
     default_player: 'plyr',
     warning_enabled_global: true,
     warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
+    link_type_labels: {
+      m3u8: 'M3U8',
+      embed: 'Embed',
+      backup: 'Backup',
+      vip1: 'VIP 1',
+      vip2: 'VIP 2',
+      vip3: 'VIP 3',
+      vip4: 'VIP 4',
+      vip5: 'VIP 5',
+    },
   };
   const mergedPlayerSettings = { ...defaultPlayerSettings, ...playerSettingsObj };
   fs.writeFileSync(path.join(configDir, 'player-settings.json'), JSON.stringify(mergedPlayerSettings, null, 2));

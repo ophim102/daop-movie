@@ -179,6 +179,11 @@ function buildEpisodeRows(movieIdInSheet, movie, epHeaders) {
   const idxLinkM3U8 = headerIndex('link_m3u8') >= 0 ? headerIndex('link_m3u8') : 5;
   const idxLinkEmbed = headerIndex('link_embed') >= 0 ? headerIndex('link_embed') : 6;
   const idxLinkBackup = headerIndex('link_backup') >= 0 ? headerIndex('link_backup') : 7;
+  const idxLinkVip1 = headerIndex('link_vip1');
+  const idxLinkVip2 = headerIndex('link_vip2');
+  const idxLinkVip3 = headerIndex('link_vip3');
+  const idxLinkVip4 = headerIndex('link_vip4');
+  const idxLinkVip5 = headerIndex('link_vip5');
 
   for (const ep of movie.episodes) {
     const serverName = ep.server_name || ep.name || ep.slug || '';
@@ -196,10 +201,20 @@ function buildEpisodeRows(movieIdInSheet, movie, epHeaders) {
       row[idxServerName] = serverName || serverSlug;
       const linkM3U8 = (srv && srv.link_m3u8) || '';
       const linkEmbed = (srv && srv.link_embed) || '';
-      const linkBackup = (srv && srv.link) || '';
+      const linkBackup = (srv && (srv.link_backup || srv.link)) || '';
+      const linkVip1 = (srv && srv.link_vip1) || '';
+      const linkVip2 = (srv && srv.link_vip2) || '';
+      const linkVip3 = (srv && srv.link_vip3) || '';
+      const linkVip4 = (srv && srv.link_vip4) || '';
+      const linkVip5 = (srv && srv.link_vip5) || '';
       if (idxLinkM3U8 >= 0) row[idxLinkM3U8] = linkM3U8;
       if (idxLinkEmbed >= 0) row[idxLinkEmbed] = linkEmbed;
       if (idxLinkBackup >= 0) row[idxLinkBackup] = linkBackup;
+      if (idxLinkVip1 >= 0) row[idxLinkVip1] = linkVip1;
+      if (idxLinkVip2 >= 0) row[idxLinkVip2] = linkVip2;
+      if (idxLinkVip3 >= 0) row[idxLinkVip3] = linkVip3;
+      if (idxLinkVip4 >= 0) row[idxLinkVip4] = linkVip4;
+      if (idxLinkVip5 >= 0) row[idxLinkVip5] = linkVip5;
       rows.push(row);
     });
   }

@@ -60,7 +60,8 @@ Hàng đầu tiên mỗi sheet = **header** (không phân biệt hoa thường; 
 | server_name       |          | Tên hiển thị server (vd. `Vietsub #1`). Nếu trống build dùng `server_slug`. |
 | link_m3u8         |          | Link HLS (m3u8) nếu có. |
 | link_embed        |          | Link iframe nếu có. |
-| link_backup       |          | (Tùy chọn) Link dự phòng khác (build map vào `link`). |
+| link_backup       |          | Link dự phòng (máy chủ phụ). |
+| link_vip1..vip5   |          | Tối đa 5 **máy chủ VIP** (m3u8/embed/loại khác). Mỗi cột = 1 máy chủ, tên hiển thị cấu hình trong Admin (Player settings). |
 | note              |          | (Tùy chọn) Ghi chú nội bộ, không dùng trong build. |
 
 > Build vẫn hỗ trợ **kiểu cũ** với cột `sources/source` là JSON, nhưng **khuyến nghị dùng kiểu mới** ở trên để tránh giới hạn độ dài mỗi ô của Google Sheets và dễ chỉnh sửa phim nhiều tập / nhiều server.

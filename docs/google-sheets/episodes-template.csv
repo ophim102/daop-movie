@@ -1,2 +1,2 @@
-movie_id,episode_code,episode_name,server_slug,server_name,link_m3u8,link_embed,link_backup,note
-1,1,Tập 1,vietsub-1,Vietsub #1,https://example.com/hls.m3u8,,
+movie_id,episode_code,episode_name,server_slug,server_name,link_m3u8,link_embed,link_backup,link_vip1,link_vip2,link_vip3,link_vip4,link_vip5,note
+1,1,Tập 1,vietsub-1,Vietsub #1,https://example.com/hls.m3u8,https://example.com/embed.html,https://example.com/backup.m3u8,https://example.com/vip1.m3u8,,,,,Ghi chú tuỳ chọn
