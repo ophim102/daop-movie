@@ -26,12 +26,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+      - run: npm install
       - name: Load OPhim env from Supabase (auto settings)
         run: node scripts/load-ophim-env-from-supabase.js
         env:
           SUPABASE_ADMIN_URL: ${{ secrets.SUPABASE_ADMIN_URL }}
           SUPABASE_ADMIN_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_ADMIN_SERVICE_ROLE_KEY }}
-      - run: npm install
       - run: npm run build
         env:
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
