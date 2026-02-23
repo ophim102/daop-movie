@@ -262,6 +262,12 @@
         footerLogo.innerHTML = existing + '<span class="footer-logo-text">' + logoText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
       }
     }
+    if (footer && !footer.querySelector('.footer-copyright')) {
+      var p = document.createElement('p');
+      p.className = 'footer-copyright';
+      p.innerHTML = 'Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.';
+      footer.appendChild(p);
+    }
     var sliderWrap = document.getElementById('slider-wrap');
     if (sliderWrap) {
       try {

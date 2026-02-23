@@ -28,6 +28,7 @@ function injectFooter() {
     '</div>',
     '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>',
   ].join('\n    ');
+  const copyrightLine = '<p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>';
   let count = 0;
   function walk(dir) {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -40,6 +41,13 @@ function injectFooter() {
           content = content.replace(
             /<footer[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/i,
             '<footer class="site-footer">\n    ' + newFooterInner + '\n  </footer>'
+          );
+          fs.writeFileSync(full, content, 'utf8');
+          count++;
+        } else if (content.includes('site-footer') && !content.includes('footer-copyright')) {
+          content = content.replace(
+            /\s*<\/footer>/i,
+            '\n    ' + copyrightLine + '\n  </footer>'
           );
           fs.writeFileSync(full, content, 'utf8');
           count++;
