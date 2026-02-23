@@ -116,7 +116,8 @@
       return s || 'default';
     }
     if (playerVisible && movie.episodes && movie.episodes.length) {
-      episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
+      // Gom tập theo server (S1 = m3u8, S2 = embed, ...) và chia nhóm tối đa 50 tập
+      var byServer = {};
       movie.episodes.forEach(function (ep) {
         var serverName = ep.server_name || ep.name || ep.slug || '';
         var baseSlug = ep.slug || makeSlug(serverName);
@@ -125,18 +126,60 @@
         var srvLabel = (matched && matched.name) || serverName || srvSlug;
         var list = Array.isArray(ep.server_data) ? ep.server_data.slice() : [];
         var episodesForServer = (list.length ? list : ep.server_data || []);
+        if (!byServer[srvSlug]) {
+          byServer[srvSlug] = {
+            label: srvLabel,
+            order: typeof serverOrder[srvSlug] === 'number' ? serverOrder[srvSlug] : 9999,
+            episodes: []
+          };
+        }
         if (!episodesForServer.length) {
-          episodesHtml += '<div class="server-group"><div class="server-title">Server ' + (srvLabel || '').replace(/</g, '&lt;') + '</div>' +
-            '<button type="button" class="episode-btn" data-episode="' + (ep.slug || serverName || '').replace(/"/g, '&quot;') + '">' + (serverName || 'Xem').replace(/</g, '&lt;') + '</button></div>';
+          byServer[srvSlug].episodes.push({
+            name: serverName || 'Xem',
+            slug: ep.slug || serverName || '',
+            link: ''
+          });
+        } else {
+          episodesForServer.forEach(function (srv) {
+            var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : serverName || '';
+            var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
+            var link = (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
+            byServer[srvSlug].episodes.push({
+              name: epName,
+              slug: epSlug,
+              link: link
+            });
+          });
+        }
+      });
+
+      episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
+      var serverKeys = Object.keys(byServer).sort(function (a, b) {
+        return byServer[a].order - byServer[b].order;
+      });
+      var GROUP_SIZE = 50;
+      serverKeys.forEach(function (srvSlug) {
+        var info = byServer[srvSlug];
+        var srvLabel = (info.label || srvSlug || '').replace(/</g, '&lt;');
+        var list = info.episodes || [];
+        episodesHtml += '<div class="server-group"><div class="server-title">' + srvLabel + '</div>';
+        if (!list.length) {
+          episodesHtml += '</div>';
           return;
         }
-        episodesHtml += '<div class="server-group"><div class="server-title">Server ' + (srvLabel || '').replace(/</g, '&lt;') + '</div>';
-        episodesForServer.forEach(function (srv) {
-          var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : serverName || '';
-          var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
-          var link = (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
-          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (epSlug || '').replace(/"/g, '&quot;') + '" data-server="' + srvSlug + '" data-link="' + (link || '').replace(/"/g, '&quot;') + '">Tập ' + (epName || '').replace(/</g, '&lt;') + '</button>';
-        });
+        for (var start = 0; start < list.length; start += GROUP_SIZE) {
+          var end = Math.min(start + GROUP_SIZE, list.length);
+          var groupLabel = 'Tập ' + (start + 1) + ' ' + srvLabel + ' - ' + end + ' ' + srvLabel;
+          episodesHtml += '<div class="episode-group"><div class="episode-group-title">' + groupLabel + '</div><div class="episode-group-list">';
+          for (var i = start; i < end; i++) {
+            var item = list[i];
+            var epName = (item.name || '').replace(/</g, '&lt;');
+            var epSlug = (item.slug || '').replace(/"/g, '&quot;');
+            var link = (item.link || '').replace(/"/g, '&quot;');
+            episodesHtml += '<button type="button" class="episode-btn" data-episode="' + epSlug + '" data-server="' + srvSlug + '" data-link="' + link + '">Tập ' + epName + '</button>';
+          }
+          episodesHtml += '</div></div>';
+        }
         episodesHtml += '</div>';
       });
       episodesHtml += '</div>';
