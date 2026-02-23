@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "4805e235-6099-41fc-b6d6-c293baa0ef44",
+    "name": "S1",
+    "slug": "s1",
+    "is_active": true,
+    "sort_order": 0,
+    "created_at": "2026-02-23T11:03:54.694268+00:00"
+  }
+]
