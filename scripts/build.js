@@ -151,7 +151,8 @@ async function fetchOPhimMovies() {
         break;
       }
     }
-    const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=100`;
+    // API mặc định: 24 phim / trang (trang 1 = mới nhất)
+    const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=24`;
     let data;
     try {
       data = await fetchJsonWithTimeout(url);

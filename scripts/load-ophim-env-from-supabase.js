@@ -21,12 +21,8 @@ async function main() {
 
   const supabase = createClient(url, key);
   const wantedKeys = [
-    'ophim_auto_max_pages',
-    'ophim_auto_max_movies',
     'ophim_auto_start_page',
     'ophim_auto_end_page',
-    'ophim_max_pages',
-    'ophim_max_movies',
     'ophim_start_page',
     'ophim_end_page',
   ];
@@ -51,14 +47,10 @@ async function main() {
     return Number.isNaN(n) ? def : n;
   };
 
-  const maxPages = numOr(map.ophim_auto_max_pages ?? map.ophim_max_pages, 5);
-  const maxMovies = numOr(map.ophim_auto_max_movies ?? map.ophim_max_movies, 500);
   const startPage = numOr(map.ophim_auto_start_page ?? map.ophim_start_page, 1);
-  const endPage = numOr(map.ophim_auto_end_page ?? map.ophim_end_page, 0);
+  const endPage = numOr(map.ophim_auto_end_page ?? map.ophim_end_page, 1);
 
   const lines = [
-    `OPHIM_MAX_PAGES=${maxPages}`,
-    `OPHIM_MAX_MOVIES=${maxMovies}`,
     `OPHIM_START_PAGE=${startPage}`,
     `OPHIM_END_PAGE=${endPage}`,
   ];

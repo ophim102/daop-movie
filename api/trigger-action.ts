@@ -68,13 +68,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (action === 'update-data') {
-      const maxPages = req.body?.max_pages != null ? String(req.body.max_pages) : undefined;
-      const maxMovies = req.body?.max_movies != null ? String(req.body.max_movies) : undefined;
       const startPage = req.body?.start_page != null ? String(req.body.start_page) : undefined;
       const endPage = req.body?.end_page != null ? String(req.body.end_page) : undefined;
       const inputs: Record<string, string> = {};
-      if (maxPages !== undefined) inputs.max_pages = maxPages;
-      if (maxMovies !== undefined) inputs.max_movies = maxMovies;
       if (startPage !== undefined) inputs.start_page = startPage;
       if (endPage !== undefined) inputs.end_page = endPage;
       const r = await fetch(
