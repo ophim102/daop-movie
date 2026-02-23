@@ -154,7 +154,24 @@
     }
     updateFavoriteButton(movie.slug);
     updateContinueButton(movie);
-    initEpisodesUI(movie, servers, serverOrder);
+    var refreshEpisodesUI = function () {
+      var serversNow = window.DAOP?.serverSources || [];
+      var orderNow = {};
+      if (Array.isArray(serversNow)) {
+        serversNow.forEach(function (s, idx) {
+          if (s && s.slug) orderNow[s.slug] = idx;
+        });
+      }
+      initEpisodesUI(movie, serversNow, orderNow);
+    };
+    refreshEpisodesUI();
+    // Nếu config (player-settings) load sau khi render, refresh UI để cập nhật tên "Máy chủ"
+    var refreshed = false;
+    window.addEventListener('daop:playerSettingsLoaded', function () {
+      if (refreshed) return;
+      refreshed = true;
+      refreshEpisodesUI();
+    });
     if (window.twikoo) {
       twikoo.init({
         envId: window.DAOP?.twikooEnvId || '',

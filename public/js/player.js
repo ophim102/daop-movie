@@ -23,6 +23,19 @@
     document.head.appendChild(link);
   }
 
+  function isDirectVideoLink(url) {
+    if (!url) return false;
+    var u = String(url);
+    // Heuristic an toàn: xem đuôi file, bỏ query + hash
+    var clean = u.split('#')[0];
+    var qIndex = clean.indexOf('?');
+    if (qIndex >= 0) clean = clean.slice(0, qIndex);
+    if (/\.(m3u8|mp4|webm|mkv|flv|mov|ogg|ogv)$/i.test(clean)) return true;
+    // Giữ lại pattern HLS/stream cũ
+    if (/\/stream\//i.test(u) || /\/hls\//i.test(u)) return true;
+    return false;
+  }
+
   function attachProgressAndInitPlayer(opts, videoEl, chosenPlayer) {
     if (!videoEl) return;
     var reportTime = function () {
@@ -55,7 +68,7 @@
     var chosenPlayer = (playerSettings.default_player || 'plyr').toLowerCase();
     var chosenLabel = available[chosenPlayer] || chosenPlayer;
     var safeLink = (link || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-    var isDirectStream = link && (/\.m3u8($|\?)/i.test(link) || /\/stream\//i.test(link) || /\/hls\//i.test(link));
+    var isDirectStream = isDirectVideoLink(link);
     var playerHtml = !link
       ? '<p>Chưa có link phát.</p>'
       : isDirectStream
