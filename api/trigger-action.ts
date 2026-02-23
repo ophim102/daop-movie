@@ -5,11 +5,12 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_REF = process.env.GITHUB_REF || 'main';
 
-type ActionId = 'build-on-demand' | 'update-data';
+type ActionId = 'build-on-demand' | 'update-data' | 'export-to-sheets';
 
 const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'build-on-demand', name: 'Build on demand', description: 'Build incremental (config Supabase + category pages), commit & push.' },
   { id: 'update-data', name: 'Update data daily', description: 'Full build (OPhim, TMDB, Sheets…), commit & push.' },
+  { id: 'export-to-sheets', name: 'Export to Google Sheets', description: 'Đẩy phim từ dữ liệu build hiện tại xuống Google Sheets (chỉ append phim mới).' },
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -106,6 +107,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
       res.status(200).json({ ok: true, message: 'Update data (full build) triggered' });
+      return;
+    }
+
+    if (action === 'export-to-sheets') {
+      const r = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ event_type: 'export-to-sheets', client_payload: {} }),
+      });
+      if (!r.ok) {
+        const t = await r.text();
+        let errMsg = t;
+        if (r.status === 401) {
+          try {
+            const j = JSON.parse(t);
+            if (j.message === 'Bad credentials') {
+              errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn.';
+            }
+          } catch {
+            // keep raw t
+          }
+        }
+        res.status(r.status).json({ error: errMsg });
+        return;
+      }
+      res.status(200).json({ ok: true, message: 'Export to Google Sheets triggered' });
       return;
     }
 

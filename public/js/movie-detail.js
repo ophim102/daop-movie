@@ -106,30 +106,38 @@
         if (s && s.slug) serverOrder[s.slug] = idx;
       });
     }
+    function makeSlug(text) {
+      if (!text) return '';
+      var s = String(text).toLowerCase();
+      if (s.normalize) {
+        s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+      s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return s || 'default';
+    }
     if (playerVisible && movie.episodes && movie.episodes.length) {
       episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
       movie.episodes.forEach(function (ep) {
         var serverName = ep.server_name || ep.name || ep.slug || '';
+        var baseSlug = ep.slug || makeSlug(serverName);
+        var matched = servers.find(function (s) { return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug); });
+        var srvSlug = (matched && matched.slug) || baseSlug || 'default';
+        var srvLabel = (matched && matched.name) || serverName || srvSlug;
         var list = Array.isArray(ep.server_data) ? ep.server_data.slice() : [];
-        if (list.length) {
-          list.sort(function (a, b) {
-            var sa = (a && a.slug) || '';
-            var sb = (b && b.slug) || '';
-            var ia = sa && (serverOrder[sa] != null) ? serverOrder[sa] : 9999;
-            var ib = sb && (serverOrder[sb] != null) ? serverOrder[sb] : 9999;
-            return ia - ib;
-          });
+        var episodesForServer = (list.length ? list : ep.server_data || []);
+        if (!episodesForServer.length) {
+          episodesHtml += '<div class="server-group"><div class="server-title">Server ' + (srvLabel || '').replace(/</g, '&lt;') + '</div>' +
+            '<button type="button" class="episode-btn" data-episode="' + (ep.slug || serverName || '').replace(/"/g, '&quot;') + '">' + (serverName || 'Xem').replace(/</g, '&lt;') + '</button></div>';
+          return;
         }
-        (list.length ? list : ep.server_data || []).forEach(function (srv) {
+        episodesHtml += '<div class="server-group"><div class="server-title">Server ' + (srvLabel || '').replace(/</g, '&lt;') + '</div>';
+        episodesForServer.forEach(function (srv) {
           var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : serverName || '';
           var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
-          var srvSlug = (srv && srv.slug) ? srv.slug : (servers[0] && servers[0].slug) || 'default';
           var link = (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
           episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (epSlug || '').replace(/"/g, '&quot;') + '" data-server="' + srvSlug + '" data-link="' + (link || '').replace(/"/g, '&quot;') + '">Tập ' + (epName || '').replace(/</g, '&lt;') + '</button>';
         });
-        if (!(ep.server_data && ep.server_data.length)) {
-          episodesHtml += '<button type="button" class="episode-btn" data-episode="' + (ep.slug || serverName || '').replace(/"/g, '&quot;') + '">' + (serverName || 'Xem').replace(/</g, '&lt;') + '</button>';
-        }
+        episodesHtml += '</div>';
       });
       episodesHtml += '</div>';
     }

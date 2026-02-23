@@ -29,6 +29,12 @@ const EXTRA_ACTIONS = [
     description: 'Tự chạy khi push lên nhánh main. Không kích hoạt thủ công.',
     triggerable: false,
   },
+  {
+    id: 'export-to-sheets',
+    name: 'Export to Google Sheets',
+    description: 'Đẩy phim hiện có (build) xuống Google Sheets (chỉ append phim mới).',
+    triggerable: true,
+  },
 ];
 
 export default function GitHubActions() {
