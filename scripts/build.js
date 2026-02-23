@@ -129,6 +129,8 @@ async function fetchOPhimMovies() {
   const list = [];
   let page = OPHIM_START_PAGE > 0 ? OPHIM_START_PAGE : 1;
   let fetchedPages = 0;
+  const targetEnd = OPHIM_END_PAGE > 0 ? OPHIM_END_PAGE : 1;
+  const step = page >= targetEnd ? -1 : 1;
   while (true) {
     if (OPHIM_MAX_PAGES > 0 && fetchedPages >= OPHIM_MAX_PAGES) {
       console.log('   OPhim: đạt giới hạn số trang:', OPHIM_MAX_PAGES, '(từ trang', OPHIM_START_PAGE, ')');
@@ -138,9 +140,16 @@ async function fetchOPhimMovies() {
       console.log('   OPhim: đạt giới hạn số phim:', OPHIM_MAX_MOVIES);
       break;
     }
-    if (OPHIM_END_PAGE > 0 && page > OPHIM_END_PAGE) {
-      console.log('   OPhim: đạt giới hạn khoảng trang đến:', OPHIM_END_PAGE);
-      break;
+    if (step === 1) {
+      if (OPHIM_END_PAGE > 0 && page > OPHIM_END_PAGE) {
+        console.log('   OPhim: đạt giới hạn khoảng trang đến:', OPHIM_END_PAGE);
+        break;
+      }
+    } else {
+      if (page < targetEnd) {
+        console.log('   OPhim: đã lùi đến trang', targetEnd, 'dừng lại.');
+        break;
+      }
     }
     const url = `${OPHIM_BASE}/danh-sach/phim-moi?page=${page}&limit=100`;
     let data;
@@ -170,7 +179,7 @@ async function fetchOPhimMovies() {
       }
     }
     fetchedPages++;
-    page++;
+    page += step;
   }
   return list;
 }

@@ -1,7 +1,10 @@
 name: Update data daily
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 0 * * *'
+    - cron: '0 6 * * *'
+    - cron: '0 12 * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch:
     inputs:
       max_pages:
@@ -31,6 +34,11 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+      - name: Load OPhim env from Supabase (auto settings)
+        run: node scripts/load-ophim-env-from-supabase.js
+        env:
+          SUPABASE_ADMIN_URL: ${{ secrets.SUPABASE_ADMIN_URL }}
+          SUPABASE_ADMIN_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_ADMIN_SERVICE_ROLE_KEY }}
       - run: npm install
       - run: npm run build
         env:
