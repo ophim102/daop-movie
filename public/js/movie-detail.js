@@ -116,73 +116,23 @@
       return s || 'default';
     }
     if (playerVisible && movie.episodes && movie.episodes.length) {
-      // Gom tập theo server (S1 = m3u8, S2 = embed, ...) và chia nhóm tối đa 50 tập
-      var byServer = {};
-      movie.episodes.forEach(function (ep) {
-        var serverName = ep.server_name || ep.name || ep.slug || '';
-        var baseSlug = ep.slug || makeSlug(serverName);
-        var matched = servers.find(function (s) { return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug); });
-        var srvSlug = (matched && matched.slug) || baseSlug || 'default';
-        var srvLabel = (matched && matched.name) || serverName || srvSlug;
-        var list = Array.isArray(ep.server_data) ? ep.server_data.slice() : [];
-        var episodesForServer = (list.length ? list : ep.server_data || []);
-        if (!byServer[srvSlug]) {
-          byServer[srvSlug] = {
-            label: srvLabel,
-            order: typeof serverOrder[srvSlug] === 'number' ? serverOrder[srvSlug] : 9999,
-            episodes: []
-          };
-        }
-        if (!episodesForServer.length) {
-          byServer[srvSlug].episodes.push({
-            name: serverName || 'Xem',
-            slug: ep.slug || serverName || '',
-            link: ''
-          });
-        } else {
-          episodesForServer.forEach(function (srv) {
-            var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : serverName || '';
-            var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
-            var link = (srv && (srv.link_embed || srv.link_m3u8 || srv.link)) || '';
-            byServer[srvSlug].episodes.push({
-              name: epName,
-              slug: epSlug,
-              link: link
-            });
-          });
-        }
-      });
-
-      episodesHtml = '<h3>Danh sách tập</h3><div class="episodes-grid">';
-      var serverKeys = Object.keys(byServer).sort(function (a, b) {
-        return byServer[a].order - byServer[b].order;
-      });
-      var GROUP_SIZE = 50;
-      serverKeys.forEach(function (srvSlug) {
-        var info = byServer[srvSlug];
-        var srvLabel = (info.label || srvSlug || '').replace(/</g, '&lt;');
-        var list = info.episodes || [];
-        episodesHtml += '<div class="server-group"><div class="server-title">' + srvLabel + '</div>';
-        if (!list.length) {
-          episodesHtml += '</div>';
-          return;
-        }
-        for (var start = 0; start < list.length; start += GROUP_SIZE) {
-          var end = Math.min(start + GROUP_SIZE, list.length);
-          var groupLabel = 'Tập ' + (start + 1) + ' ' + srvLabel + ' - ' + end + ' ' + srvLabel;
-          episodesHtml += '<div class="episode-group"><div class="episode-group-title">' + groupLabel + '</div><div class="episode-group-list">';
-          for (var i = start; i < end; i++) {
-            var item = list[i];
-            var epName = (item.name || '').replace(/</g, '&lt;');
-            var epSlug = (item.slug || '').replace(/"/g, '&quot;');
-            var link = (item.link || '').replace(/"/g, '&quot;');
-            episodesHtml += '<button type="button" class="episode-btn" data-episode="' + epSlug + '" data-server="' + srvSlug + '" data-link="' + link + '">Tập ' + epName + '</button>';
-          }
-          episodesHtml += '</div></div>';
-        }
-        episodesHtml += '</div>';
-      });
-      episodesHtml += '</div>';
+      // UI theo flow: chọn server → chọn loại link → chọn nhóm tập (<=50) → chọn tập
+      episodesHtml =
+        '<h3>Danh sách tập</h3>' +
+        '<div class="episodes-ui" id="episodes-ui">' +
+        '  <div class="episodes-ui-row">' +
+        '    <div class="server-tabs" id="episodes-server-tabs" role="tablist" aria-label="Chọn server"></div>' +
+        '  </div>' +
+        '  <div class="episodes-ui-row">' +
+        '    <label class="episodes-ui-label" for="episodes-link-type">Loại link</label>' +
+        '    <select id="episodes-link-type" class="episodes-ui-select"></select>' +
+        '  </div>' +
+        '  <div class="episodes-ui-row">' +
+        '    <label class="episodes-ui-label" for="episodes-group">Nhóm tập</label>' +
+        '    <select id="episodes-group" class="episodes-ui-select"></select>' +
+        '  </div>' +
+        '  <div class="episodes-grid" id="episodes-list" aria-label="Danh sách tập"></div>' +
+        '</div>';
     }
     if (!playerVisible && movie.episodes && movie.episodes.length) {
       episodesHtml = '<p class="player-hidden-msg">Phát phim tạm thời không hiển thị (do cài đặt).</p>';
@@ -204,7 +154,7 @@
     }
     updateFavoriteButton(movie.slug);
     updateContinueButton(movie);
-    attachEpisodeButtons(movie);
+    initEpisodesUI(movie, servers, serverOrder);
     if (window.twikoo) {
       twikoo.init({
         envId: window.DAOP?.twikooEnvId || '',
@@ -212,6 +162,193 @@
         path: window.location.pathname,
       });
     }
+  }
+
+  function initEpisodesUI(movie, servers, serverOrder) {
+    if (!movie || !movie.episodes || !movie.episodes.length) return;
+    var root = document.getElementById('episodes-ui');
+    if (!root) return;
+
+    function makeSlug(text) {
+      if (!text) return '';
+      var s = String(text).toLowerCase();
+      if (s.normalize) {
+        s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+      s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return s || 'default';
+    }
+
+    var serverSources = Array.isArray(servers) ? servers : [];
+    function matchServerSlug(baseSlug, serverName) {
+      var matched = serverSources.find(function (s) {
+        return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug || (serverName && makeSlug(s.name) === makeSlug(serverName)));
+      });
+      return (matched && matched.slug) || baseSlug || 'default';
+    }
+    function matchServerLabel(srvSlug, serverName) {
+      var matched = serverSources.find(function (s) { return s && s.slug === srvSlug; });
+      return (matched && matched.name) || serverName || srvSlug;
+    }
+
+    // serversData: [{ slug, label, order, episodes: [{ code, name, links: { m3u8, embed, backup } }] }]
+    var byServer = {};
+    movie.episodes.forEach(function (ep) {
+      var serverName = ep.server_name || ep.name || ep.slug || '';
+      var baseSlug = ep.slug || makeSlug(serverName);
+      var srvSlug = matchServerSlug(baseSlug, serverName);
+      var srvLabel = matchServerLabel(srvSlug, serverName);
+      if (!byServer[srvSlug]) {
+        byServer[srvSlug] = {
+          slug: srvSlug,
+          label: srvLabel,
+          order: typeof serverOrder[srvSlug] === 'number' ? serverOrder[srvSlug] : 9999,
+          episodes: []
+        };
+      }
+      var list = Array.isArray(ep.server_data) ? ep.server_data : [];
+      if (!list.length) return;
+      list.forEach(function (srv, idxEp) {
+        var code = (srv && (srv.slug || srv.name)) ? (srv.slug || srv.name) : String(idxEp + 1);
+        var name = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : ('Tập ' + code);
+        byServer[srvSlug].episodes.push({
+          code: String(code),
+          name: String(name),
+          links: {
+            m3u8: (srv && srv.link_m3u8) || '',
+            embed: (srv && srv.link_embed) || '',
+            backup: (srv && srv.link) || ''
+          }
+        });
+      });
+    });
+
+    var serversData = Object.keys(byServer).map(function (k) { return byServer[k]; }).sort(function (a, b) { return a.order - b.order; });
+    if (!serversData.length) return;
+
+    var tabsEl = document.getElementById('episodes-server-tabs');
+    var linkTypeEl = document.getElementById('episodes-link-type');
+    var groupEl = document.getElementById('episodes-group');
+    var listEl = document.getElementById('episodes-list');
+    if (!tabsEl || !linkTypeEl || !groupEl || !listEl) return;
+
+    var state = {
+      server: serversData[0].slug,
+      linkType: 'm3u8',
+      groupIdx: 0
+    };
+
+    function getServerInfo(slug) {
+      return serversData.find(function (s) { return s.slug === slug; }) || serversData[0];
+    }
+
+    function getAvailableLinkTypes(info) {
+      var hasM3U8 = info.episodes.some(function (e) { return !!(e.links && e.links.m3u8); });
+      var hasEmbed = info.episodes.some(function (e) { return !!(e.links && e.links.embed); });
+      var hasBackup = info.episodes.some(function (e) { return !!(e.links && e.links.backup); });
+      var types = [];
+      if (hasM3U8) types.push({ id: 'm3u8', label: 'm3u8' });
+      if (hasEmbed) types.push({ id: 'embed', label: 'embed' });
+      if (hasBackup) types.push({ id: 'backup', label: 'backup' });
+      return types.length ? types : [{ id: 'm3u8', label: 'm3u8' }];
+    }
+
+    function filterEpisodesByType(info, linkType) {
+      return (info.episodes || []).filter(function (e) {
+        var links = e.links || {};
+        return !!links[linkType];
+      });
+    }
+
+    function renderTabs() {
+      tabsEl.innerHTML = serversData.map(function (s) {
+        var active = s.slug === state.server ? ' server-tab--active' : '';
+        return '<button type="button" class="server-tab' + active + '" data-server="' + String(s.slug).replace(/"/g, '&quot;') + '" role="tab">' +
+          String(s.label || s.slug).replace(/</g, '&lt;') + '</button>';
+      }).join('');
+      tabsEl.querySelectorAll('.server-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.server = btn.getAttribute('data-server') || serversData[0].slug;
+          state.groupIdx = 0;
+          renderAll();
+        });
+      });
+    }
+
+    function renderLinkTypes() {
+      var info = getServerInfo(state.server);
+      var types = getAvailableLinkTypes(info);
+      if (!types.some(function (t) { return t.id === state.linkType; })) {
+        state.linkType = types[0].id;
+      }
+      linkTypeEl.innerHTML = types.map(function (t) {
+        var selected = t.id === state.linkType ? ' selected' : '';
+        return '<option value="' + t.id + '"' + selected + '>' + t.label + '</option>';
+      }).join('');
+      linkTypeEl.onchange = function () {
+        state.linkType = linkTypeEl.value || 'm3u8';
+        state.groupIdx = 0;
+        renderGroups();
+        renderEpisodes();
+      };
+    }
+
+    function renderGroups() {
+      var info = getServerInfo(state.server);
+      var list = filterEpisodesByType(info, state.linkType);
+      var GROUP_SIZE = 50;
+      var groups = Math.max(1, Math.ceil(list.length / GROUP_SIZE));
+      var srvLabel = String(info.label || info.slug || '');
+      groupEl.innerHTML = '';
+      for (var i = 0; i < groups; i++) {
+        var start = i * GROUP_SIZE + 1;
+        var end = Math.min((i + 1) * GROUP_SIZE, list.length);
+        var label = 'Tập ' + start + ' ' + srvLabel + ' - ' + end + ' ' + srvLabel;
+        groupEl.innerHTML += '<option value="' + i + '">' + label.replace(/</g, '&lt;') + '</option>';
+      }
+      if (state.groupIdx >= groups) state.groupIdx = 0;
+      groupEl.value = String(state.groupIdx);
+      groupEl.onchange = function () {
+        state.groupIdx = parseInt(groupEl.value || '0', 10) || 0;
+        renderEpisodes();
+      };
+    }
+
+    function renderEpisodes() {
+      var info = getServerInfo(state.server);
+      var filtered = filterEpisodesByType(info, state.linkType);
+      var GROUP_SIZE = 50;
+      var startIdx = state.groupIdx * GROUP_SIZE;
+      var endIdx = Math.min(startIdx + GROUP_SIZE, filtered.length);
+      var slice = filtered.slice(startIdx, endIdx);
+      listEl.innerHTML = slice.map(function (e) {
+        var code = (e && e.code) ? e.code : '';
+        var link = (e && e.links && e.links[state.linkType]) ? e.links[state.linkType] : '';
+        return '<button type="button" class="episode-btn" data-episode="' + String(code).replace(/"/g, '&quot;') + '" data-server="' + String(info.slug).replace(/"/g, '&quot;') + '" data-link="' + String(link).replace(/"/g, '&quot;') + '">' +
+          String(code).replace(/</g, '&lt;') + '</button>';
+      }).join('');
+      attachEpisodeButtons(movie);
+    }
+
+    function renderAll() {
+      renderTabs();
+      renderLinkTypes();
+      renderGroups();
+      renderEpisodes();
+    }
+
+    // init: chọn loại link ưu tiên m3u8 → embed → backup
+    var initial = getServerInfo(state.server);
+    var initialTypes = getAvailableLinkTypes(initial);
+    var prefer = ['m3u8', 'embed', 'backup'];
+    for (var p = 0; p < prefer.length; p++) {
+      if (initialTypes.some(function (t) { return t.id === prefer[p]; })) {
+        state.linkType = prefer[p];
+        break;
+      }
+    }
+
+    renderAll();
   }
 
   function getSimilar(movie, limit) {

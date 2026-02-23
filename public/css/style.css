@@ -1298,6 +1298,65 @@ a:hover {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 0.5rem;
 }
+.episodes-ui {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(22, 27, 34, 0.6);
+}
+.episodes-ui-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.episodes-ui-row:last-child {
+  margin-bottom: 0;
+}
+.episodes-ui-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+.episodes-ui-select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  min-width: min(420px, 100%);
+}
+.episodes-ui-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.server-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.server-tab {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.server-tab:hover {
+  border-color: var(--accent);
+}
+.server-tab--active {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.12);
+  color: var(--accent-hover);
+}
 .episode-btn {
   padding: 0.5rem;
   background: var(--card);
