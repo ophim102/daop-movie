@@ -103,7 +103,14 @@ export default function GitHubActions() {
         { onConflict: 'key' }
       );
       if (error) throw error;
-      setUpdateSettings({ max_pages: values.max_pages ?? 5, max_movies: values.max_movies ?? 500 });
+      setUpdateSettings((prev) => ({
+        ...prev,
+        max_pages: values.max_pages ?? 5,
+        max_movies: values.max_movies ?? 500,
+        start_page: values.start_page ?? prev.start_page,
+        end_page: values.end_page ?? prev.end_page,
+        schedule: values.schedule ?? prev.schedule,
+      }));
       message.success('Đã lưu cài đặt.');
     } catch (e: any) {
       message.error(e?.message || 'Lưu thất bại.');
