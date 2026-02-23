@@ -68,5 +68,9 @@
   "category_grid_columns_extra": "8",
   "category_use_poster": "thumb",
   "ophim_max_pages": "10",
-  "ophim_max_movies": "1000"
+  "ophim_max_movies": "1000",
+  "ophim_start_page": "10",
+  "ophim_end_page": "1",
+  "ophim_auto_start_page": "10",
+  "ophim_auto_end_page": "1"
 }
