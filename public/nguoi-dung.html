@@ -35,43 +35,26 @@
   <main class="container user-container">
     <h1>Người dùng</h1>
 
-    <section class="user-section" id="user-info-section">
-      <h2>Thông tin</h2>
-      <p id="user-email" class="login-status"></p>
-      <div class="login-actions">
-        <button type="button" id="btn-user-logout" class="login-btn">Đăng xuất</button>
-      </div>
+    <p id="user-email" class="login-status"></p>
 
-      <div class="user-password">
-        <h3>Đổi mật khẩu</h3>
-        <label class="login-label" for="new-password">Mật khẩu mới</label>
-        <input type="password" id="new-password" class="login-input" placeholder="••••••••">
-        <div class="login-actions">
-          <button type="button" id="btn-change-password" class="login-btn login-btn--primary">Cập nhật mật khẩu</button>
-        </div>
-        <p id="password-status" class="login-status"></p>
-      </div>
-    </section>
-
-    <section class="user-section" id="vip-section">
-      <h2>Đăng ký VIP</h2>
-      <div class="vip-card">
-        <div class="vip-title">VIP ONE</div>
-        <div class="vip-sub">Thời hạn: 999 năm</div>
-      </div>
-    </section>
-
-    <section class="user-section" id="favorites-section">
-      <h2>Yêu thích</h2>
-      <div id="favorites-grid" class="movies-grid"></div>
-      <p id="favorites-empty" class="login-status" style="display:none;">Chưa có phim yêu thích.</p>
-    </section>
-
-    <section class="user-section" id="history-section">
-      <h2>Lịch sử</h2>
-      <div id="history-list" class="user-history-list"></div>
-      <p id="history-empty" class="login-status" style="display:none;">Chưa có lịch sử xem.</p>
-    </section>
+    <div class="user-menu-list">
+      <a class="user-menu-item" href="/thong-tin.html">
+        <span class="user-menu-title">Thông tin &amp; mật khẩu</span>
+        <span class="user-menu-desc">Xem tài khoản, đổi mật khẩu, đăng xuất</span>
+      </a>
+      <a class="user-menu-item" href="/yeu-thich.html">
+        <span class="user-menu-title">Yêu thích</span>
+        <span class="user-menu-desc">Danh sách phim đã lưu</span>
+      </a>
+      <a class="user-menu-item" href="/lich-su.html">
+        <span class="user-menu-title">Lịch sử</span>
+        <span class="user-menu-desc">Các phim đang xem, bấm để xem tiếp</span>
+      </a>
+      <a class="user-menu-item" href="/vip.html">
+        <span class="user-menu-title">Đăng ký VIP</span>
+        <span class="user-menu-desc">VIP ONE - thời hạn 999 năm</span>
+      </a>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -90,10 +73,8 @@
     <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>
   </footer>
 
-  <script src="/data/movies-light.js"></script>
   <script src="/js/main.js"></script>
   <script src="/js/user-sync.js"></script>
-  <script src="/js/player.js"></script>
-  <script src="/js/user-page.js"></script>
+  <script src="/js/user-dashboard.js"></script>
 </body>
 </html>

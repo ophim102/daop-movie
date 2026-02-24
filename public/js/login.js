@@ -6,6 +6,10 @@
   var btnLogin = document.getElementById('btn-login');
   var btnSignup = document.getElementById('btn-signup');
   var btnLogout = document.getElementById('btn-logout');
+  var agreeEl = document.getElementById('agree-terms');
+  var displayNameWrap = document.getElementById('signup-display-name-wrap');
+  var displayNameEl = document.getElementById('signup-display-name');
+  var _signupMode = false;
 
   function setStatus(msg, isError) {
     if (!statusEl) return;
@@ -110,8 +114,16 @@
       };
     }
 
+    function ensureAgreed() {
+      if (!agreeEl) return true;
+      if (agreeEl.checked) return true;
+      setStatus('Bạn cần đồng ý với Điều khoản sử dụng và Chính sách bảo mật.', true);
+      return false;
+    }
+
     if (btnLogin) {
       btnLogin.addEventListener('click', function () {
+        if (!ensureAgreed()) return;
         var c = getCreds();
         if (!c.email || !c.password) {
           setStatus('Nhập email và mật khẩu.', true);
@@ -134,9 +146,22 @@
 
     if (btnSignup) {
       btnSignup.addEventListener('click', function () {
+        if (!ensureAgreed()) return;
+        if (!_signupMode) {
+          _signupMode = true;
+          if (displayNameWrap) displayNameWrap.style.display = '';
+          if (displayNameEl) displayNameEl.focus();
+          setStatus('Nhập Tên hiển thị, Email và Mật khẩu để đăng ký.');
+          return;
+        }
         var c = getCreds();
         if (!c.email || !c.password) {
           setStatus('Nhập email và mật khẩu.', true);
+          return;
+        }
+        var fullName = (displayNameEl && displayNameEl.value || '').trim();
+        if (!fullName) {
+          setStatus('Nhập Tên hiển thị.', true);
           return;
         }
         setStatus('Đang tạo tài khoản...');
@@ -144,7 +169,7 @@
         client.auth.signUp({
           email: c.email,
           password: c.password,
-          options: { emailRedirectTo: redirectTo },
+          options: { emailRedirectTo: redirectTo, data: { full_name: fullName } },
         }).then(function (r) {
           if (r.error) {
             setStatus(r.error.message || 'Đăng ký thất bại', true);

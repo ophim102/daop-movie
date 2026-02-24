@@ -64,6 +64,72 @@
     return res.json();
   };
 
+  (function () {
+    var _authNavLoading = null;
+    function getCreateClient() {
+      if (typeof createClient !== 'undefined') return createClient;
+      if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') return window.supabase.createClient;
+      return null;
+    }
+    function loadSupabaseJsIfNeeded() {
+      if (getCreateClient()) return Promise.resolve();
+      if (_authNavLoading) return _authNavLoading;
+      _authNavLoading = new Promise(function (resolve) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+        s.onload = function () { resolve(); };
+        s.onerror = function () { resolve(); };
+        document.head.appendChild(s);
+      });
+      return _authNavLoading;
+    }
+    function findAuthLink() {
+      var links = Array.prototype.slice.call(document.querySelectorAll('a[href]'));
+      for (var i = 0; i < links.length; i++) {
+        var href = links[i].getAttribute('href') || '';
+        if (href === '/login.html' || href.endsWith('/login.html')) return links[i];
+      }
+      return null;
+    }
+    window.DAOP = window.DAOP || {};
+    window.DAOP.updateAuthNav = function () {
+      var a = findAuthLink();
+      if (!a) return Promise.resolve();
+
+      var url = window.DAOP && window.DAOP.supabaseUserUrl;
+      var key = window.DAOP && window.DAOP.supabaseUserAnonKey;
+      if (!url || !key) {
+        a.textContent = 'Đăng nhập';
+        a.setAttribute('href', '/login.html');
+        return Promise.resolve();
+      }
+
+      return loadSupabaseJsIfNeeded().then(function () {
+        var cc = getCreateClient();
+        if (!cc) return;
+        if (!window.DAOP._supabaseUser) window.DAOP._supabaseUser = cc(url, key);
+        return window.DAOP._supabaseUser.auth.getSession().then(function (res) {
+          var user = res && res.data && res.data.session && res.data.session.user;
+          if (user) {
+            a.textContent = 'Của tôi';
+            a.setAttribute('href', '/nguoi-dung.html');
+          } else {
+            a.textContent = 'Đăng nhập';
+            a.setAttribute('href', '/login.html');
+          }
+        }).catch(function () {});
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        window.DAOP.updateAuthNav();
+      });
+    } else {
+      window.DAOP.updateAuthNav();
+    }
+  })();
+
   /** Get movie by slug from moviesLight (so khớp chính xác, rồi không phân biệt hoa thường) */
   window.DAOP.getMovieBySlug = function (slug) {
     if (!slug) return undefined;
