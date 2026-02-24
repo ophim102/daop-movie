@@ -150,7 +150,7 @@
             setStatus(r.error.message || 'Đăng ký thất bại', true);
             return;
           }
-          setStatus('Đăng ký thành công. Kiểm tra email để xác nhận (nếu Supabase bật xác thực).');
+          setStatus('Đăng ký thành công. Kiểm tra email để xác nhận.');
         });
       });
     }
