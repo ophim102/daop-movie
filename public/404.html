@@ -18,6 +18,17 @@
         }
         return;
       }
+      var w = path.match(/^\/xem-phim\/([^/]+)(\.html)?$/);
+      if (w) {
+        var raw2 = decodeURIComponent(w[1]);
+        var slug2 = raw2.replace(/\.html$/i, '') || raw2;
+        if (slug2 && slug2 !== 'index') {
+          window.location.replace('/xem-phim/index.html#' + encodeURIComponent(slug2));
+        } else {
+          window.location.replace('/xem-phim/');
+        }
+        return;
+      }
       document.body = document.body || document.createElement('body');
       document.body.innerHTML = '<p>Trang không tồn tại. <a href="/">Về trang chủ</a>.</p>';
     })();

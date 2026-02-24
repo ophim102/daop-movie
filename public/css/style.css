@@ -1676,6 +1676,21 @@ a:hover {
   text-decoration: none;
   display: inline-block;
 }
+.movie-detail-info .btn-watch {
+  padding: 0.45rem 0.85rem;
+  background: var(--accent);
+  border: 1px solid rgba(0,0,0,0.0);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.movie-detail-info .btn-watch:hover {
+  background: var(--accent-hover);
+}
 .movie-detail-info .btn-favorite:hover,
 .movie-detail-info .btn-continue:hover {
   border-color: var(--accent);
@@ -1686,6 +1701,61 @@ a:hover {
   line-height: 1.6;
   font-size: 0.95rem;
   color: var(--muted);
+}
+
+.movie-detail-hero {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  margin-bottom: 1rem;
+}
+.movie-detail-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(18px);
+  transform: scale(1.05);
+  opacity: 0.35;
+}
+.movie-detail-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.7) 45%, rgba(13,17,23,0.15) 100%);
+}
+.movie-detail-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  padding: 1rem;
+  align-items: start;
+}
+.movie-detail-body {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 1rem;
+}
+.movie-detail-desc {
+  line-height: 1.65;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .movie-detail-hero-inner {
+    grid-template-columns: 120px 1fr;
+    gap: 0.85rem;
+    padding: 0.75rem;
+  }
+  .movie-detail-body {
+    padding: 0.85rem;
+  }
 }
 .episodes-grid {
   display: grid;
@@ -1768,6 +1838,159 @@ a:hover {
 .similar-section h3 {
   margin: 1rem 0 0.75rem;
   font-size: 1.1rem;
+}
+
+/* Trang xem phim (xem-phim) */
+.watch-hero {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  margin-bottom: 1rem;
+}
+.watch-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(18px);
+  transform: scale(1.05);
+  opacity: 0.35;
+}
+.watch-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.7) 45%, rgba(13,17,23,0.2) 100%);
+}
+.watch-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  align-items: center;
+}
+.watch-hero-poster {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  aspect-ratio: 2/3;
+}
+.watch-hero-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.watch-hero-title {
+  font-weight: 800;
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  margin: 0 0 0.35rem;
+}
+.watch-hero-origin {
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+}
+.watch-hero-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.watch-hero-actions {
+  margin-top: 0.65rem;
+}
+
+.watch-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+  align-items: start;
+}
+.watch-player-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  overflow: hidden;
+}
+.watch-player-top {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(22, 27, 34, 0.7);
+}
+.watch-player-title {
+  font-weight: 700;
+}
+.watch-player-sub {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.watch-player-wrap {
+  background: #000;
+}
+.watch-player-wrap video,
+.watch-player-wrap iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+  border: none;
+}
+.watch-player-empty {
+  padding: 1rem;
+  color: var(--muted);
+}
+
+.watch-episodes-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.75rem;
+}
+.watch-episodes-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.watch-episodes-title {
+  font-weight: 800;
+}
+.watch-episodes-card .episodes-ui-select {
+  min-width: auto;
+  padding: 0.35rem 0.45rem;
+}
+.watch-episodes-card .server-tabs {
+  margin-bottom: 0.6rem;
+}
+.watch-episodes-card .episodes-grid {
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+}
+.watch-episodes-card .episode-btn {
+  padding: 0.45rem 0.25rem;
+}
+.episode-btn--active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 1023px) {
+  .watch-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .watch-hero-inner {
+    grid-template-columns: 104px 1fr;
+    padding: 0.75rem;
+  }
+  .watch-episodes-card {
+    padding: 0.65rem;
+  }
 }
 
 /* Search */
