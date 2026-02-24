@@ -66,6 +66,8 @@
 
   (function () {
     var _authNavLoading = null;
+    var _authNavSettingsPromise = null;
+    var _authNavSubscribed = false;
     function getCreateClient() {
       if (typeof createClient !== 'undefined') return createClient;
       if (typeof window.supabase !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') return window.supabase.createClient;
@@ -91,33 +93,72 @@
       }
       return null;
     }
+    function ensureSupabaseUserConfig() {
+      var url = window.DAOP && window.DAOP.supabaseUserUrl;
+      var key = window.DAOP && window.DAOP.supabaseUserAnonKey;
+      if (url && key) return Promise.resolve({ url: url, key: key });
+      if (_authNavSettingsPromise) return _authNavSettingsPromise;
+      _authNavSettingsPromise = Promise.resolve()
+        .then(function () {
+          if (!window.DAOP || !window.DAOP.loadConfig) return null;
+          return window.DAOP.loadConfig('site-settings');
+        })
+        .then(function (s) {
+          window.DAOP = window.DAOP || {};
+          if (s) {
+            window.DAOP.siteSettings = window.DAOP.siteSettings || s;
+            if (window.DAOP.applySiteSettings) {
+              try { window.DAOP.applySiteSettings(s); } catch (e) {}
+            }
+            if (!window.DAOP.supabaseUserUrl) window.DAOP.supabaseUserUrl = s.supabase_user_url || '';
+            if (!window.DAOP.supabaseUserAnonKey) window.DAOP.supabaseUserAnonKey = s.supabase_user_anon_key || '';
+          }
+          return { url: window.DAOP.supabaseUserUrl, key: window.DAOP.supabaseUserAnonKey };
+        })
+        .catch(function () {
+          return { url: window.DAOP && window.DAOP.supabaseUserUrl, key: window.DAOP && window.DAOP.supabaseUserAnonKey };
+        });
+      return _authNavSettingsPromise;
+    }
     window.DAOP = window.DAOP || {};
     window.DAOP.updateAuthNav = function () {
       var a = findAuthLink();
       if (!a) return Promise.resolve();
 
-      var url = window.DAOP && window.DAOP.supabaseUserUrl;
-      var key = window.DAOP && window.DAOP.supabaseUserAnonKey;
-      if (!url || !key) {
-        a.textContent = 'Đăng nhập';
-        a.setAttribute('href', '/login.html');
-        return Promise.resolve();
-      }
+      return ensureSupabaseUserConfig().then(function (cfg) {
+        var url = cfg && cfg.url;
+        var key = cfg && cfg.key;
+        if (!url || !key) {
+          a.textContent = 'Đăng nhập';
+          a.setAttribute('href', '/login.html');
+          return;
+        }
 
-      return loadSupabaseJsIfNeeded().then(function () {
-        var cc = getCreateClient();
-        if (!cc) return;
-        if (!window.DAOP._supabaseUser) window.DAOP._supabaseUser = cc(url, key);
-        return window.DAOP._supabaseUser.auth.getSession().then(function (res) {
-          var user = res && res.data && res.data.session && res.data.session.user;
-          if (user) {
-            a.textContent = 'Của tôi';
-            a.setAttribute('href', '/nguoi-dung.html');
-          } else {
-            a.textContent = 'Đăng nhập';
-            a.setAttribute('href', '/login.html');
+        return loadSupabaseJsIfNeeded().then(function () {
+          var cc = getCreateClient();
+          if (!cc) return;
+          if (!window.DAOP._supabaseUser) window.DAOP._supabaseUser = cc(url, key);
+
+          if (!_authNavSubscribed && window.DAOP._supabaseUser && window.DAOP._supabaseUser.auth && window.DAOP._supabaseUser.auth.onAuthStateChange) {
+            _authNavSubscribed = true;
+            try {
+              window.DAOP._supabaseUser.auth.onAuthStateChange(function () {
+                window.DAOP.updateAuthNav();
+              });
+            } catch (e) {}
           }
-        }).catch(function () {});
+
+          return window.DAOP._supabaseUser.auth.getSession().then(function (res) {
+            var user = res && res.data && res.data.session && res.data.session.user;
+            if (user) {
+              a.textContent = 'Của tôi';
+              a.setAttribute('href', '/nguoi-dung.html');
+            } else {
+              a.textContent = 'Đăng nhập';
+              a.setAttribute('href', '/login.html');
+            }
+          }).catch(function () {});
+        });
       });
     };
 

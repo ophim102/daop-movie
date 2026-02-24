@@ -91,9 +91,12 @@
       var ep = safeText(h.episode || '');
       var href = '/phim/' + encodeURIComponent(m.slug || m.id || h.slug) + '.html';
       var last = h.lastWatched ? safeText(h.lastWatched) : '';
+      var poster = (m.poster || m.thumb || '').replace(/^\/\//, 'https://');
+      if (!poster) poster = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="64"%3E%3Crect fill="%2321262d" width="96" height="64"/%3E%3C/svg%3E';
 
       var html = '' +
         '<div class="user-history-item">' +
+        '  <a class="user-history-thumb" href="' + href + '"><img loading="lazy" src="' + poster + '" alt=""></a>' +
         '  <div class="user-history-main">' +
         '    <a class="user-history-title" href="' + href + '">' + title + '</a>' +
         '    <div class="user-history-meta">Tập: <strong>' + ep + '</strong>' + (last ? ' • ' + last : '') + '</div>' +

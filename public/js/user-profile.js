@@ -81,8 +81,16 @@
           return;
         }
 
-        if (emailEl) emailEl.textContent = 'Email: ' + (user.email || user.id);
+        var fallbackName = (user.user_metadata && user.user_metadata.full_name) || '';
+        if (emailEl) emailEl.textContent = 'Tên: ' + (fallbackName || '...') + ' • Email: ' + (user.email || user.id);
         if (window.DAOP && window.DAOP.updateAuthNav) window.DAOP.updateAuthNav();
+
+        client.from('profiles').select('full_name,email').eq('id', user.id).maybeSingle().then(function (r) {
+          if (!emailEl) return;
+          var name = (r && r.data && r.data.full_name) || fallbackName || '';
+          var mail = (r && r.data && r.data.email) || user.email || user.id;
+          emailEl.textContent = 'Tên: ' + (name || '-') + ' • Email: ' + (mail || '-');
+        }).catch(function () {});
 
         if (btnLogout) {
           btnLogout.addEventListener('click', function () {

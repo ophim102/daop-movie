@@ -514,6 +514,21 @@ a:hover {
   text-decoration: none;
   color: var(--text);
 }
+.user-menu-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: -3px;
+  margin-right: 0.5rem;
+}
+.user-menu-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.user-menu-item--profile .user-menu-title { color: #58a6ff; }
+.user-menu-item--favorites .user-menu-title { color: #f85149; }
+.user-menu-item--history .user-menu-title { color: #3fb950; }
+.user-menu-item--vip .user-menu-title { color: #d2a8ff; }
 .user-menu-item:hover {
   border-color: var(--accent);
 }
@@ -568,6 +583,20 @@ a:hover {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--bg);
+}
+.user-history-thumb {
+  width: 96px;
+  height: 64px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.user-history-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .user-history-title {
   font-weight: 700;
