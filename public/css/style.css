@@ -371,6 +371,25 @@ a:hover {
   padding: 1rem;
 }
 
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.search-btn {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+.search-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* Grid phim - responsive: 2,3,4,6,8 cột theo màn hình */
 .movies-grid {
   display: grid;

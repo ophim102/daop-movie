@@ -4,6 +4,7 @@
  */
 (function () {
   var searchInput = document.getElementById('search-input');
+  var searchBtn = document.getElementById('search-btn');
   var resultsEl = document.getElementById('search-results');
   var index = null;
   var indexUnsigned = null;
@@ -203,12 +204,18 @@
 
   function init() {
     loadSettings().then(function () {
+      function run() {
+        if (!searchInput) return;
+        doSearch(searchInput.value);
+      }
       if (searchInput) {
-        searchInput.addEventListener('input', function () {
-          doSearch(this.value);
-        });
         searchInput.addEventListener('keypress', function (e) {
-          if (e.key === 'Enter') doSearch(this.value);
+          if (e.key === 'Enter') run();
+        });
+      }
+      if (searchBtn) {
+        searchBtn.addEventListener('click', function () {
+          run();
         });
       }
       var params = new URLSearchParams(window.location.search);
