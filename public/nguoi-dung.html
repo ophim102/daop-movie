@@ -27,7 +27,7 @@
       </div>
       <div class="site-nav-actions">
         <a href="/tim-kiem.html">Tìm kiếm</a>
-        <a href="/login.html">Đăng nhập</a>
+        <a href="/login.html">Tài khoản</a>
       </div>
     </nav>
   </header>
@@ -55,6 +55,20 @@
         <span class="user-menu-desc">VIP ONE - thời hạn 999 năm</span>
       </a>
     </div>
+
+    <section class="user-section" style="margin-top:1rem;">
+      <h2 style="margin:0 0 0.75rem;">Đăng xuất</h2>
+      <div class="login-actions">
+        <button type="button" id="btn-dashboard-logout" class="login-btn" aria-haspopup="dialog" aria-controls="logout-confirm">Đăng xuất</button>
+      </div>
+      <div id="logout-confirm" class="login-form" style="display:none;margin-top:0.75rem;" role="dialog" aria-modal="true" aria-label="Xác nhận đăng xuất">
+        <p class="login-status" style="margin-top:0;">Bạn có chắc muốn đăng xuất không?</p>
+        <div class="login-actions">
+          <button type="button" id="btn-dashboard-logout-confirm" class="login-btn login-btn--primary">Xác nhận đăng xuất</button>
+          <button type="button" id="btn-dashboard-logout-cancel" class="login-btn">Hủy</button>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">

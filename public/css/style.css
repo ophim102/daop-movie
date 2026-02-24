@@ -1950,19 +1950,25 @@ a:hover {
   background: var(--card);
   padding: 0.75rem;
 }
-.watch-episodes-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.6rem;
-}
 .watch-episodes-controls {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+.watch-episodes-controls--single {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  margin-top: 0.6rem;
+}
+.watch-episodes-controls--single .episodes-ui-select {
+  height: 34px;
+}
+.watch-episodes-controls--single [data-role="group-row"] {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 .watch-episodes-linktype {
   display: inline-flex;
@@ -1972,10 +1978,6 @@ a:hover {
 .watch-episodes-linktype .episodes-ui-label {
   margin: 0;
 }
-.watch-episodes-title {
-  font-weight: 800;
-}
-
 .watch-episodes-group {
   margin-bottom: 0;
 }
@@ -1984,13 +1986,11 @@ a:hover {
 }
 
 @media (max-width: 480px) {
-  .watch-episodes-top {
-    align-items: flex-start;
-    flex-direction: column;
+  .watch-episodes-controls--single {
+    gap: 0.4rem;
   }
-  .watch-episodes-controls {
-    width: 100%;
-    justify-content: flex-start;
+  .watch-episodes-linktype .episodes-ui-label {
+    font-size: 0.8rem;
   }
 }
 .watch-episodes-card .episodes-ui-select {

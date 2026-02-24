@@ -125,6 +125,9 @@
       var a = findAuthLink();
       if (!a) return Promise.resolve();
 
+      // Tránh nháy chữ "Đăng nhập" do HTML hardcode: set text sớm ngay khi JS chạy.
+      a.textContent = 'Tài khoản';
+
       return ensureSupabaseUserConfig().then(function (cfg) {
         var url = cfg && cfg.url;
         var key = cfg && cfg.key;

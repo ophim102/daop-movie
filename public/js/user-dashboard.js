@@ -2,6 +2,10 @@
   function $(id) { return document.getElementById(id); }
 
   var emailEl = $('user-email');
+  var btnLogout = $('btn-dashboard-logout');
+  var logoutConfirm = $('logout-confirm');
+  var btnLogoutConfirm = $('btn-dashboard-logout-confirm');
+  var btnLogoutCancel = $('btn-dashboard-logout-cancel');
 
   function getCreateClient() {
     if (typeof createClient !== 'undefined') return createClient;
@@ -71,6 +75,25 @@
         }
         if (emailEl) emailEl.textContent = 'Email: ' + (user.email || user.id);
         if (window.DAOP && window.DAOP.updateAuthNav) window.DAOP.updateAuthNav();
+
+        if (btnLogout && logoutConfirm) {
+          btnLogout.addEventListener('click', function () {
+            logoutConfirm.style.display = logoutConfirm.style.display === 'none' ? '' : 'none';
+          });
+        }
+        if (btnLogoutCancel && logoutConfirm) {
+          btnLogoutCancel.addEventListener('click', function () {
+            logoutConfirm.style.display = 'none';
+          });
+        }
+        if (btnLogoutConfirm) {
+          btnLogoutConfirm.addEventListener('click', function () {
+            client.auth.signOut().then(function () {
+              if (window.DAOP && window.DAOP.updateAuthNav) window.DAOP.updateAuthNav();
+              window.location.href = '/login.html';
+            });
+          });
+        }
       }).catch(function () {
         window.location.href = '/login.html';
       });

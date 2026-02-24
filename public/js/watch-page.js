@@ -487,17 +487,13 @@
         '  <div class="watch-main" data-role="player"></div>' +
         '  <aside class="watch-sidebar">' +
         '    <div class="watch-episodes-card">' +
-        '      <div class="watch-episodes-top">' +
-        '        <div class="watch-episodes-title">Danh sách tập</div>' +
-        '        <div class="watch-episodes-controls">' +
-        '          <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
-        '          <div class="episodes-ui-row watch-episodes-group" data-role="group-row" style="display:none;">' +
-        '            <label class="episodes-ui-label" for="watch-episodes-group">Nhóm tập</label>' +
-        '            <select id="watch-episodes-group" class="episodes-ui-select" data-role="group"></select>' +
-        '          </div>' +
+        '      <div class="server-tabs" data-role="server-tabs"></div>' +
+        '      <div class="watch-episodes-controls watch-episodes-controls--single">' +
+        '        <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
+        '        <div class="episodes-ui-row watch-episodes-group" data-role="group-row" style="display:none;">' +
+        '          <select id="watch-episodes-group" class="episodes-ui-select" data-role="group" aria-label="Nhóm tập"></select>' +
         '        </div>' +
         '      </div>' +
-        '      <div class="server-tabs" data-role="server-tabs"></div>' +
         '      <div class="episodes-grid" data-role="episodes"></div>' +
         '    </div>' +
         '  </aside>' +
