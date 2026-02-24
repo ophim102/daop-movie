@@ -89,6 +89,17 @@
     }).slice(0, 50);
   }
 
+  function exactContains(m, qLower) {
+    if (!m) return false;
+    var q = (qLower || '').trim();
+    if (!q) return true;
+    var text = ((m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '')).toLowerCase();
+    if (text.indexOf(q) >= 0) return true;
+    var textU = removeVietnameseTones(text);
+    var qU = removeVietnameseTones(q);
+    return textU.indexOf(qU) >= 0;
+  }
+
   function doSearch(q) {
     q = (q || '').trim();
     if (!q.length) {
@@ -125,6 +136,7 @@
           .map(Number)
           .filter(function (i) { return i >= 0 && i < index.list.length; });
         list = ordered.map(function (i) { return index.list[i]; }).filter(Boolean);
+        list = list.filter(function (m) { return exactContains(m, qLower); });
         if (list.length > 50) list = list.slice(0, 50);
       } catch (e) {
         list = searchFallback(index.list, qLower);
@@ -204,11 +216,18 @@
 
   function init() {
     loadSettings().then(function () {
+      var liveTimer = null;
       function run() {
         if (!searchInput) return;
         doSearch(searchInput.value);
       }
       if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          if (liveTimer) clearTimeout(liveTimer);
+          liveTimer = setTimeout(function () {
+            run();
+          }, 150);
+        });
         searchInput.addEventListener('keypress', function (e) {
           if (e.key === 'Enter') run();
         });
