@@ -111,18 +111,21 @@
     document.head.appendChild(script);
   };
 
-  /** Render movie card HTML (title + origin_name). opts: { usePoster: boolean } dùng poster thay thumb */
+  /** Render movie card HTML (title + origin_name). opts: { cardOrientation?: 'vertical'|'horizontal', usePoster?: boolean } */
   window.DAOP.renderMovieCard = function (m, baseUrl, opts) {
     baseUrl = baseUrl || BASE;
     opts = opts || {};
     const href = baseUrl + '/phim/' + (m.slug || m.id) + '.html';
-    const imgUrl = opts.usePoster
+    const cardOrientation = (opts.cardOrientation === 'horizontal' || opts.cardOrientation === 'vertical')
+      ? opts.cardOrientation
+      : (opts.usePoster ? 'horizontal' : 'vertical');
+    const imgUrl = cardOrientation === 'horizontal'
       ? ((m.poster || m.thumb || '').replace(/^\/\//, 'https://'))
       : ((m.thumb || m.poster || '').replace(/^\/\//, 'https://'));
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
     return (
-      '<div class="movie-card">' +
+      '<div class="movie-card movie-card--' + cardOrientation + '">' +
       '<a href="' + href + '">' +
       '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '" alt="' + title + '"></div>' +
       '<div class="movie-info">' +

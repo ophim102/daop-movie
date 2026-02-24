@@ -52,8 +52,8 @@ const DISPLAY_TYPE_OPTIONS = [
 const COLUMN_COUNT_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: n, label: String(n) }));
 
 const IMAGE_TYPE_OPTIONS = [
-  { value: 'thumb', label: 'Thumb (ảnh ngang)' },
-  { value: 'poster', label: 'Poster (ảnh dọc)' },
+  { value: 'vertical', label: 'Dọc (Thumb)' },
+  { value: 'horizontal', label: 'Ngang (Poster)' },
 ];
 
 const DEFAULT_SECTIONS = defaultSectionsJson as Array<Omit<SectionRow, 'id'>>;
@@ -88,7 +88,7 @@ export default function HomepageSections() {
       grid_columns_sm: 3,
       grid_columns_md: 4,
       grid_columns_lg: 6,
-      use_poster: 'thumb',
+      use_poster: 'vertical',
     } as any);
     setModalVisible(true);
   };
@@ -103,7 +103,7 @@ export default function HomepageSections() {
       grid_columns_sm: row.grid_columns_sm ?? fc.grid_columns_sm ?? 3,
       grid_columns_md: row.grid_columns_md ?? fc.grid_columns_md ?? 4,
       grid_columns_lg: row.grid_columns_lg ?? fc.grid_columns_lg ?? 6,
-      use_poster: (row.use_poster ?? fc.use_poster) ? 'poster' : 'thumb',
+      use_poster: (row.use_poster ?? fc.use_poster) ? 'horizontal' : 'vertical',
     } as any);
     setModalVisible(true);
   };
@@ -118,7 +118,7 @@ export default function HomepageSections() {
         grid_columns_sm: Number(values.grid_columns_sm ?? 3),
         grid_columns_md: Number(values.grid_columns_md ?? 4),
         grid_columns_lg: Number(values.grid_columns_lg ?? 6),
-        use_poster: values.use_poster === 'poster',
+        use_poster: values.use_poster === 'horizontal',
       };
       const payload: Record<string, any> = {
         title: values.title,

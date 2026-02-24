@@ -129,17 +129,18 @@
           var md = [2,3,4,6,8].indexOf(Number(sec.grid_columns_md)) >= 0 ? Number(sec.grid_columns_md) : 4;
           var lg = [2,3,4,6,8].indexOf(Number(sec.grid_columns_lg)) >= 0 ? Number(sec.grid_columns_lg) : 6;
           var gridVars = '--grid-cols-xs:' + xs + ';--grid-cols-sm:' + sm + ';--grid-cols-md:' + md + ';--grid-cols-lg:' + lg + ';';
-          var usePoster = sec.use_poster === true || sec.use_poster === 'true' || ss.default_use_poster === 'true';
+          var defaultPoster = (ss.default_use_poster === true || ss.default_use_poster === 'true' || ss.default_use_poster === 'poster');
+          var cardOrientation = (sec.use_poster === true || sec.use_poster === 'true' || defaultPoster) ? 'horizontal' : 'vertical';
           var html = '<section class="home-section home-section-' + layout + (layout === 'grid' ? ' home-section--grid-cols' : '') + '"' + (layout === 'grid' ? ' style="' + gridVars + '"' : '') + '><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
           if (layout === 'slider') {
             html += '<div class="section-slider-wrap"><div class="section-slider-track">';
-            movies.forEach(function(m){ html += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base, { usePoster: usePoster }) + '</div>'; });
+            movies.forEach(function(m){ html += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }) + '</div>'; });
             html += '</div><button type="button" class="section-slider-prev" aria-label="Trước">‹</button><button type="button" class="section-slider-next" aria-label="Sau">›</button></div>';
           } else if (layout === 'list') {
-            html += '<div class="movies-list">';
+            html += '<div class="movies-list movies-list--' + cardOrientation + '">';
             movies.forEach(function(m){
               var href = base + '/phim/' + (m.slug || m.id) + '.html';
-              var posterUrl = (usePoster ? (m.poster || m.thumb) : (m.thumb || m.poster) || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="168"%3E%3Crect fill="%2321262d" width="120" height="168"/%3E%3C/svg%3E';
+              var posterUrl = (cardOrientation === 'horizontal' ? (m.poster || m.thumb) : (m.thumb || m.poster) || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="168"%3E%3Crect fill="%2321262d" width="120" height="168"/%3E%3C/svg%3E';
               var title = (m.title || '').replace(/</g, '&lt;');
               var origin = (m.origin_name || '').replace(/</g, '&lt;');
               html += '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + posterUrl + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (origin ? '<em class="list-origin">' + origin + '</em>' : '') + (m.episode_current ? ' <span class="list-ep">• ' + m.episode_current + ' tập</span>' : '') + '</span></a>';
@@ -147,7 +148,7 @@
             html += '</div>';
           } else {
             html += '<div class="movies-grid">';
-            movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base, { usePoster: usePoster }); });
+            movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }); });
             html += '</div>';
           }
           html += '</section>';
