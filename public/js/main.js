@@ -222,7 +222,8 @@
   window.DAOP.renderMovieCard = function (m, baseUrl, opts) {
     baseUrl = baseUrl || BASE;
     opts = opts || {};
-    const href = baseUrl + '/phim/' + (m.slug || m.id) + '.html';
+    const slug = (m && (m.slug || m.id)) ? String(m.slug || m.id) : '';
+    const href = baseUrl + '/phim/' + slug + '.html';
     const cardOrientation = (opts.cardOrientation === 'horizontal' || opts.cardOrientation === 'vertical')
       ? opts.cardOrientation
       : (opts.usePoster ? 'horizontal' : 'vertical');
@@ -231,8 +232,28 @@
       : ((m.thumb || m.poster || '').replace(/^\/\//, 'https://'));
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
+
+    var isFav = false;
+    try {
+      var us = window.DAOP && window.DAOP.userSync;
+      if (us && typeof us.getFavorites === 'function') {
+        isFav = us.getFavorites().has(slug);
+      } else {
+        var raw = localStorage.getItem('daop_user_data');
+        var data = raw ? JSON.parse(raw) : null;
+        var fav = data && Array.isArray(data.favorites) ? data.favorites : [];
+        isFav = fav.indexOf(slug) >= 0;
+      }
+    } catch (e) {}
+
+    var favBtn =
+      '<button type="button" class="movie-fav-btn' + (isFav ? ' is-fav' : '') + '"' +
+      ' data-movie-slug="' + slug.replace(/"/g, '&quot;') + '" aria-pressed="' + (isFav ? 'true' : 'false') + '"' +
+      ' aria-label="Yêu thích">' +
+      '♥</button>';
     return (
       '<div class="movie-card movie-card--' + cardOrientation + '">' +
+      favBtn +
       '<a href="' + href + '">' +
       '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '" alt="' + title + '"></div>' +
       '<div class="movie-info">' +
@@ -242,6 +263,54 @@
       '</div></a></div>'
     );
   };
+
+  function initQuickFavorites() {
+    function getLocal() {
+      try {
+        var raw = localStorage.getItem('daop_user_data');
+        if (!raw) return { version: 1, lastSync: null, favorites: [], watchHistory: [], pendingActions: [] };
+        var d = JSON.parse(raw);
+        d.favorites = d.favorites || [];
+        d.watchHistory = d.watchHistory || [];
+        d.pendingActions = d.pendingActions || [];
+        return d;
+      } catch (e) {
+        return { version: 1, lastSync: null, favorites: [], watchHistory: [], pendingActions: [] };
+      }
+    }
+    function setLocal(d) {
+      try { localStorage.setItem('daop_user_data', JSON.stringify(d)); } catch (e) {}
+    }
+    function setBtnState(btn, fav) {
+      btn.classList.toggle('is-fav', !!fav);
+      btn.setAttribute('aria-pressed', fav ? 'true' : 'false');
+    }
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.movie-fav-btn') : null;
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      var slug = btn.getAttribute('data-movie-slug') || '';
+      if (!slug) return;
+
+      var us = window.DAOP && window.DAOP.userSync;
+      if (us && typeof us.toggleFavorite === 'function') {
+        var fav = false;
+        try { fav = us.toggleFavorite(slug); } catch (err) {}
+        setBtnState(btn, fav);
+        return;
+      }
+
+      var d = getLocal();
+      var idx = d.favorites.indexOf(slug);
+      if (idx >= 0) d.favorites.splice(idx, 1);
+      else d.favorites.push(slug);
+      setLocal(d);
+      setBtnState(btn, idx < 0);
+    }, true);
+  }
 
   /** Escape HTML */
   function esc(s) {
@@ -477,6 +546,7 @@
     window.DAOP.injectTracking();
     initMobileNav();
     initScrollToTop();
+    initQuickFavorites();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', onReady);

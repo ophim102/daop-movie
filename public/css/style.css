@@ -835,6 +835,7 @@ a:hover {
   overflow: hidden;
   border: 1px solid var(--border);
   transition: transform 0.2s, border-color 0.2s;
+  position: relative;
 }
 .movie-card:hover {
   transform: translateY(-2px);
@@ -853,6 +854,7 @@ a:hover {
   aspect-ratio: 2/3;
   overflow: hidden;
   background: #21262d;
+  position: relative;
 }
 .movie-card.movie-card--horizontal .thumb-wrap {
   aspect-ratio: 3/2;
@@ -865,6 +867,40 @@ a:hover {
 }
 .movie-card .movie-info {
   padding: 0.5rem;
+}
+
+.movie-fav-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0,0,0,0.45);
+  color: rgba(255,255,255,0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 18px;
+  padding: 0;
+  transition: transform 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.movie-fav-btn:hover {
+  transform: scale(1.06);
+  background: rgba(0,0,0,0.6);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.movie-fav-btn.is-fav {
+  background: rgba(248, 81, 73, 0.92);
+  border-color: rgba(248, 81, 73, 0.95);
+  color: #fff;
+}
+.movie-fav-btn.is-fav:hover {
+  background: rgba(248, 81, 73, 1);
 }
 .movie-card .movie-info .title,
 .movie-card .title {
