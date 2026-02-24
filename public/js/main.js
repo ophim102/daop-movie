@@ -382,6 +382,106 @@
     });
     var t = setInterval(function () { goTo(idx + 1); }, 5000);
     el._sliderInterval = t;
+
+    // Swipe / drag support (touch + mouse)
+    var viewport = el.querySelector('.slider-viewport');
+    var startX = 0;
+    var startY = 0;
+    var dragging = false;
+    var moved = false;
+    var pointerId = null;
+    var hadSwipe = false;
+
+    function stopAuto() {
+      if (el._sliderInterval) {
+        clearInterval(el._sliderInterval);
+        el._sliderInterval = null;
+      }
+    }
+    function startAuto() {
+      if (el._sliderInterval) return;
+      el._sliderInterval = setInterval(function () { goTo(idx + 1); }, 5000);
+    }
+    function setTranslate(px) {
+      if (!track) return;
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(calc(-' + (idx * 100) + '% + ' + px + 'px))';
+    }
+    function resetTranslate() {
+      if (!track) return;
+      track.style.transition = 'transform 0.4s ease';
+      track.style.transform = 'translateX(-' + idx * 100 + '%)';
+    }
+
+    if (viewport && track) {
+      viewport.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        dragging = true;
+        moved = false;
+        hadSwipe = false;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        stopAuto();
+        try { viewport.setPointerCapture(pointerId); } catch (err) {}
+      });
+
+      viewport.addEventListener('pointermove', function (e) {
+        if (!dragging || (pointerId != null && e.pointerId !== pointerId)) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        if (!moved) {
+          // Only start horizontal drag when it is clearly horizontal
+          if (Math.abs(dx) < 6) return;
+          if (Math.abs(dy) > Math.abs(dx) * 1.2) {
+            // treat as vertical scroll
+            dragging = false;
+            pointerId = null;
+            startAuto();
+            return;
+          }
+          moved = true;
+        }
+        hadSwipe = true;
+        e.preventDefault();
+        setTranslate(dx);
+      }, { passive: false });
+
+      function endDrag(e) {
+        if (!dragging || (pointerId != null && e.pointerId !== pointerId)) return;
+        dragging = false;
+        var dx = e.clientX - startX;
+        var w = viewport.clientWidth || 1;
+        var threshold = Math.max(45, Math.min(120, w * 0.18));
+        if (moved && Math.abs(dx) > threshold) {
+          if (dx < 0) goTo(idx + 1);
+          else goTo(idx - 1);
+        } else {
+          resetTranslate();
+        }
+        moved = false;
+        pointerId = null;
+        startAuto();
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', function (e) {
+        if (!dragging) return;
+        dragging = false;
+        moved = false;
+        pointerId = null;
+        resetTranslate();
+        startAuto();
+      });
+
+      // Prevent click-through on swipe
+      viewport.addEventListener('click', function (e) {
+        if (!hadSwipe) return;
+        hadSwipe = false;
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
+    }
   };
 
   /** Áp dụng site-settings lên trang: theme, logo, favicon, footer, TMDB, slider */

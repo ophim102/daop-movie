@@ -895,12 +895,21 @@ a:hover {
   border-color: rgba(255, 255, 255, 0.35);
 }
 .movie-fav-btn.is-fav {
-  background: rgba(248, 81, 73, 0.92);
-  border-color: rgba(248, 81, 73, 0.95);
-  color: #fff;
+  color: #f85149;
+  border-color: rgba(255, 255, 255, 0.35);
 }
 .movie-fav-btn.is-fav:hover {
-  background: rgba(248, 81, 73, 1);
+  background: rgba(0,0,0,0.6);
+}
+
+@media (max-width: 640px) {
+  .movie-fav-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    top: 6px;
+    right: 6px;
+  }
 }
 .movie-card .movie-info .title,
 .movie-card .title {
