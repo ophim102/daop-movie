@@ -137,7 +137,12 @@
           return;
         }
         setStatus('Đang tạo tài khoản...');
-        client.auth.signUp(c).then(function (r) {
+        var redirectTo = window.location.origin + '/xac-thuc.html';
+        client.auth.signUp({
+          email: c.email,
+          password: c.password,
+          options: { emailRedirectTo: redirectTo },
+        }).then(function (r) {
           if (r.error) {
             setStatus(r.error.message || 'Đăng ký thất bại', true);
             return;
