@@ -125,6 +125,9 @@
           }
           setStatus('Đăng nhập thành công.');
           if (window.DAOP && window.DAOP.userSync) window.DAOP.userSync.sync();
+          setTimeout(function () {
+            window.location.href = '/nguoi-dung.html';
+          }, 300);
         });
       });
     }

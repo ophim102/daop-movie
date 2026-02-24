@@ -21,7 +21,9 @@
         <a href="/hoat-hinh.html">Hoạt hình</a>
         <a href="/shows.html">TV Shows</a>
         <a href="/gioi-thieu.html">Giới thiệu</a>
-        <a href="/donate.html">Donate</a><a href="/huong-dan-app.html">Tải app</a><a href="/lien-he.html">Liên hệ</a>
+        <a href="/donate.html">Donate</a>
+        <a href="/huong-dan-app.html">Tải app</a>
+        <a href="/lien-he.html">Liên hệ</a>
       </div>
       <div class="site-nav-actions">
         <a href="/tim-kiem.html">Tìm kiếm</a>
@@ -29,10 +31,10 @@
       </div>
     </nav>
   </header>
-  <main class="container">
-    <h1>Đăng nhập</h1>
-    <p>Kết nối Supabase User để đồng bộ danh sách yêu thích và lịch sử xem.</p>
-    <form id="login-form" class="login-form" autocomplete="on">
+  <main class="container auth-container">
+    <div class="auth-center">
+      <h1>Đăng nhập</h1>
+      <form id="login-form" class="login-form" autocomplete="on">
       <label class="login-label" for="login-email">Email</label>
       <input type="email" id="login-email" class="login-input" placeholder="email@domain.com" required>
       <label class="login-label" for="login-password">Mật khẩu</label>
@@ -43,16 +45,20 @@
         <button type="button" id="btn-logout" class="login-btn" style="display:none;">Đăng xuất</button>
       </div>
       <p id="login-status" class="login-status"></p>
-    </form>
+      </form>
+    </div>
   </main>
   <footer class="site-footer">
-    <div class="footer-vietnam-banner"><span class="footer-flag" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid meet"><rect width="30" height="20" fill="#DA251D"/><path fill="#FFFF00" d="M15 4l2.47 7.6H25l-6.23 4.5 2.36 7.3L15 16.2l-6.13 4.2 2.36-7.3L5 11.6h7.53z"/></svg></span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div>
+    <div class="footer-vietnam-wrap"><div class="footer-vietnam-banner"><span class="footer-flag" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid meet"><rect width="30" height="20" fill="#DA251D"/><path fill="#FFFF00" d="M15 4l2.47 7.6H25l-6.23 4.5 2.36 7.3L15 16.2l-6.13 4.2 2.36-7.3L5 11.6h7.53z"/></svg></span> Trường Sa &amp; Hoàng Sa là của Việt Nam!</div></div>
     <div class="footer-bottom">
-      <a href="/" class="footer-logo">GoTV</a>
-      <div class="footer-links-col">
-        <a href="/hoi-dap.html">Hỏi - đáp</a>
-        <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>
-        <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>
+      <div class="footer-bottom-inner">
+        <a href="/" class="footer-logo">GoTV<span class="footer-logo-text">GoTV - Trang tổng hợp phim, video, chương trình, tư liệu giải trí đỉnh cao.</span></a>
+        <span class="footer-divider" aria-hidden="true"></span>
+        <div class="footer-links-col">
+          <a href="/hoi-dap.html">Hỏi - đáp</a>
+          <a href="/chinh-sach-bao-mat.html">Chính sách bảo mật</a>
+          <a href="/dieu-khoan-su-dung.html">Điều khoản sử dụng</a>
+        </div>
       </div>
     </div>
     <p class="footer-copyright">Copyright 2018 <a href="https://gotv.top" target="_blank" rel="noopener">GoTV</a>. All rights reserved.</p>
