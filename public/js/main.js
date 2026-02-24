@@ -129,7 +129,7 @@
         var url = cfg && cfg.url;
         var key = cfg && cfg.key;
         if (!url || !key) {
-          a.textContent = 'Đăng nhập';
+          a.textContent = 'Tài khoản';
           a.setAttribute('href', '/login.html');
           return;
         }
@@ -151,10 +151,10 @@
           return window.DAOP._supabaseUser.auth.getSession().then(function (res) {
             var user = res && res.data && res.data.session && res.data.session.user;
             if (user) {
-              a.textContent = 'Của tôi';
+              a.textContent = 'Tài khoản';
               a.setAttribute('href', '/nguoi-dung.html');
             } else {
-              a.textContent = 'Đăng nhập';
+              a.textContent = 'Tài khoản';
               a.setAttribute('href', '/login.html');
             }
           }).catch(function () {});

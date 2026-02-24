@@ -142,10 +142,11 @@
     if (!favGrid) return null;
     var parent = favGrid.parentElement;
     if (!parent) return null;
-    var pager = parent.querySelector('.user-pager');
+    var pager = parent.querySelector('#pagination');
     if (!pager) {
       pager = document.createElement('div');
-      pager.className = 'user-pager';
+      pager.id = 'pagination';
+      pager.className = 'pagination';
       parent.appendChild(pager);
     }
     pagerRef.el = pager;
@@ -164,38 +165,59 @@
       return;
     }
 
+    var cur = currentPage;
     var html = '';
-    html += '<button type="button" class="login-btn user-pager-btn" data-page="prev"' + (currentPage <= 1 ? ' disabled' : '') + '>Trước</button>';
-
-    var start = Math.max(1, currentPage - 2);
-    var end = Math.min(totalPages, currentPage + 2);
-    if (start > 1) {
-      html += '<button type="button" class="login-btn user-pager-num" data-page="1">1</button>';
-      if (start > 2) html += '<span class="user-pager-ellipsis">…</span>';
+    html += '<a href="#" class="pagination-nav" data-page="1" aria-label="Về đầu">«</a>';
+    html += '<a href="#" class="pagination-nav" data-page="' + Math.max(1, cur - 1) + '" aria-label="Trước">‹</a>';
+    var win = 5;
+    var start = Math.max(1, Math.min(cur - 2, totalPages - win + 1));
+    var end = Math.min(totalPages, start + win - 1);
+    for (var i = start; i <= end; i++) {
+      if (i === cur) html += '<span class="current">' + i + '</span>';
+      else html += '<a href="#" data-page="' + i + '">' + i + '</a>';
     }
-    for (var p = start; p <= end; p++) {
-      html += '<button type="button" class="login-btn user-pager-num' + (p === currentPage ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>';
-    }
-    if (end < totalPages) {
-      if (end < totalPages - 1) html += '<span class="user-pager-ellipsis">…</span>';
-      html += '<button type="button" class="login-btn user-pager-num" data-page="' + totalPages + '">' + totalPages + '</button>';
-    }
-
-    html += '<button type="button" class="login-btn user-pager-btn" data-page="next"' + (currentPage >= totalPages ? ' disabled' : '') + '>Sau</button>';
+    html += '<a href="#" class="pagination-nav" data-page="' + Math.min(totalPages, cur + 1) + '" aria-label="Sau">›</a>';
+    html += '<a href="#" class="pagination-nav" data-page="' + totalPages + '" aria-label="Về cuối">»</a>';
+    html += '<span class="pagination-jump"><input type="number" min="1" max="' + totalPages + '" value="" placeholder="Trang" id="pagination-goto" aria-label="Trang"><button type="button" id="pagination-goto-btn">Đến</button></span>';
     pager.innerHTML = html;
 
     if (pager.getAttribute('data-bound') === '1') return;
     pager.setAttribute('data-bound', '1');
     pager.addEventListener('click', function (e) {
-      var btn = e.target && e.target.closest ? e.target.closest('button[data-page]') : null;
-      if (!btn) return;
-      if (btn.disabled) return;
-      var val = btn.getAttribute('data-page');
-      var totalPages2 = Math.max(1, Math.ceil((currentList.length || 0) / pageSize));
-      if (val === 'prev') currentPage = Math.max(1, currentPage - 1);
-      else if (val === 'next') currentPage = Math.min(totalPages2, currentPage + 1);
-      else currentPage = Math.max(1, Math.min(totalPages2, parseInt(val, 10) || 1));
-      renderFavorites();
+      var t = e.target;
+      var p = t && t.getAttribute ? t.getAttribute('data-page') : null;
+      if (p) {
+        e.preventDefault();
+        currentPage = Math.max(1, Math.min(totalPages, parseInt(p, 10) || 1));
+        renderFavorites();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (t && t.id === 'pagination-goto-btn') {
+        e.preventDefault();
+        var inp = document.getElementById('pagination-goto');
+        if (inp) {
+          var num = parseInt(inp.value, 10);
+          if (num >= 1 && num <= totalPages) {
+            currentPage = num;
+            renderFavorites();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }
+    });
+    pager.addEventListener('keydown', function (e) {
+      if (e.target && e.target.id === 'pagination-goto' && e.key === 'Enter') {
+        e.preventDefault();
+        var inp = document.getElementById('pagination-goto');
+        if (inp) {
+          var num = parseInt(inp.value, 10);
+          if (num >= 1 && num <= totalPages) {
+            currentPage = num;
+            renderFavorites();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }
     });
   }
 

@@ -3,9 +3,95 @@
 
   var histList = $('history-list');
   var histEmpty = $('history-empty');
+  var pageSize = 24;
+  var currentPage = 1;
+  var pagerRef = { el: null };
 
   function safeText(s) {
     return String(s || '').replace(/</g, '&lt;');
+  }
+
+  function ensurePager() {
+    if (!histList) return null;
+    var parent = histList.parentElement;
+    if (!parent) return null;
+    var pager = parent.querySelector('#pagination');
+    if (!pager) {
+      pager = document.createElement('div');
+      pager.id = 'pagination';
+      pager.className = 'pagination';
+      parent.appendChild(pager);
+    }
+    pagerRef.el = pager;
+    return pager;
+  }
+
+  function renderPager(totalItems) {
+    var pager = ensurePager();
+    if (!pager) return;
+    var totalPages = Math.max(1, Math.ceil((totalItems || 0) / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    if (totalItems <= pageSize) {
+      pager.innerHTML = '';
+      return;
+    }
+
+    var cur = currentPage;
+    var html = '';
+    html += '<a href="#" class="pagination-nav" data-page="1" aria-label="Về đầu">«</a>';
+    html += '<a href="#" class="pagination-nav" data-page="' + Math.max(1, cur - 1) + '" aria-label="Trước">‹</a>';
+    var win = 5;
+    var start = Math.max(1, Math.min(cur - 2, totalPages - win + 1));
+    var end = Math.min(totalPages, start + win - 1);
+    for (var i = start; i <= end; i++) {
+      if (i === cur) html += '<span class="current">' + i + '</span>';
+      else html += '<a href="#" data-page="' + i + '">' + i + '</a>';
+    }
+    html += '<a href="#" class="pagination-nav" data-page="' + Math.min(totalPages, cur + 1) + '" aria-label="Sau">›</a>';
+    html += '<a href="#" class="pagination-nav" data-page="' + totalPages + '" aria-label="Về cuối">»</a>';
+    html += '<span class="pagination-jump"><input type="number" min="1" max="' + totalPages + '" value="" placeholder="Trang" id="pagination-goto" aria-label="Trang"><button type="button" id="pagination-goto-btn">Đến</button></span>';
+    pager.innerHTML = html;
+
+    if (pager.getAttribute('data-bound') === '1') return;
+    pager.setAttribute('data-bound', '1');
+    pager.addEventListener('click', function (e) {
+      var t = e.target;
+      var p = t && t.getAttribute ? t.getAttribute('data-page') : null;
+      if (p) {
+        e.preventDefault();
+        currentPage = Math.max(1, Math.min(totalPages, parseInt(p, 10) || 1));
+        renderHistory();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (t && t.id === 'pagination-goto-btn') {
+        e.preventDefault();
+        var inp = document.getElementById('pagination-goto');
+        if (inp) {
+          var num = parseInt(inp.value, 10);
+          if (num >= 1 && num <= totalPages) {
+            currentPage = num;
+            renderHistory();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }
+    });
+    pager.addEventListener('keydown', function (e) {
+      if (e.target && e.target.id === 'pagination-goto' && e.key === 'Enter') {
+        e.preventDefault();
+        var inp = document.getElementById('pagination-goto');
+        if (inp) {
+          var num = parseInt(inp.value, 10);
+          if (num >= 1 && num <= totalPages) {
+            currentPage = num;
+            renderHistory();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }
+    });
   }
 
   function getCreateClient() {
@@ -78,11 +164,21 @@
 
     if (!list.length) {
       if (histEmpty) histEmpty.style.display = '';
+      var pg0 = ensurePager();
+      if (pg0) pg0.innerHTML = '';
       return;
     }
     if (histEmpty) histEmpty.style.display = 'none';
 
-    list.forEach(function (h) {
+    renderPager(list.length);
+
+    var totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    var start = (currentPage - 1) * pageSize;
+    var end = Math.min(list.length, start + pageSize);
+
+    list.slice(start, end).forEach(function (h) {
       if (!h || !h.slug) return;
       var m = window.DAOP && window.DAOP.getMovieBySlug ? window.DAOP.getMovieBySlug(h.slug) : null;
       if (!m) return;
