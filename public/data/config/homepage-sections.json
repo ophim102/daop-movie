@@ -9,8 +9,8 @@
       "use_poster": true,
       "grid_columns_lg": 6,
       "grid_columns_md": 4,
-      "grid_columns_sm": 4,
-      "grid_columns_xs": 3
+      "grid_columns_sm": 3,
+      "grid_columns_xs": 2
     },
     "manual_movies": null,
     "limit_count": 12,
@@ -18,12 +18,12 @@
     "sort_order": 0,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-24T14:38:04.865+00:00",
+    "updated_at": "2026-02-24T17:34:26.891+00:00",
     "use_poster": true,
     "grid_columns_lg": 6,
     "grid_columns_md": 4,
-    "grid_columns_sm": 4,
-    "grid_columns_xs": 3
+    "grid_columns_sm": 3,
+    "grid_columns_xs": 2
   },
   {
     "id": "2281e75b-ff45-4818-a4f9-aa0c6667823d",
@@ -66,11 +66,11 @@
     },
     "manual_movies": null,
     "limit_count": 16,
-    "more_link": "/the-loai/",
+    "more_link": "/the-loai/hanh-dong",
     "sort_order": 3,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-24T14:38:17.724+00:00",
+    "updated_at": "2026-02-24T17:35:15.813+00:00",
     "use_poster": true,
     "grid_columns_lg": 6,
     "grid_columns_md": 4,
@@ -83,14 +83,25 @@
     "display_type": "slider",
     "source_type": "country",
     "source_value": "au-my",
-    "filter_config": null,
+    "filter_config": {
+      "use_poster": false,
+      "grid_columns_lg": 6,
+      "grid_columns_md": 4,
+      "grid_columns_sm": 3,
+      "grid_columns_xs": 2
+    },
     "manual_movies": null,
     "limit_count": 16,
-    "more_link": "/quoc-gia/",
+    "more_link": "/quoc-gia/au-my",
     "sort_order": 4,
     "is_active": true,
     "created_at": "2026-02-21T10:42:17.223991+00:00",
-    "updated_at": "2026-02-21T10:42:17.223991+00:00"
+    "updated_at": "2026-02-24T17:35:54.508+00:00",
+    "use_poster": false,
+    "grid_columns_lg": 6,
+    "grid_columns_md": 4,
+    "grid_columns_sm": 3,
+    "grid_columns_xs": 2
   },
   {
     "id": "c17735a4-db3c-4cf8-ad78-90443d6aad37",
