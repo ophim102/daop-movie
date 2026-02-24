@@ -1957,6 +1957,13 @@ a:hover {
   gap: 0.5rem;
   margin-bottom: 0.6rem;
 }
+.watch-episodes-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 .watch-episodes-linktype {
   display: inline-flex;
   align-items: center;
@@ -1967,6 +1974,24 @@ a:hover {
 }
 .watch-episodes-title {
   font-weight: 800;
+}
+
+.watch-episodes-group {
+  margin-bottom: 0;
+}
+.watch-episodes-group .episodes-ui-label {
+  margin-right: 0;
+}
+
+@media (max-width: 480px) {
+  .watch-episodes-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .watch-episodes-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 .watch-episodes-card .episodes-ui-select {
   min-width: auto;

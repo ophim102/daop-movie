@@ -337,7 +337,6 @@
       }).join('');
       sel.onchange = function () {
         state.linkType = sel.value || 'm3u8';
-        state.groupIdx = 0;
         renderGroups();
         renderEpisodes();
         updatePlayer();
@@ -392,7 +391,10 @@
       var endIdx = needGrouping ? Math.min(startIdx + GROUP_SIZE, list.length) : list.length;
       var slice = list.slice(startIdx, endIdx);
 
-      if (!state.episode && slice.length) state.episode = slice[0].code;
+      if (slice.length) {
+        var stillExists = state.episode && slice.some(function (e) { return e && e.code === state.episode; });
+        if (!stillExists) state.episode = slice[0].code;
+      }
       listEl.innerHTML = slice.map(function (e) {
         var active = e.code === state.episode ? ' episode-btn--active' : '';
         return '<button type="button" class="episode-btn' + active + '" data-episode="' + esc(e.code) + '">' + esc(e.code) + '</button>';
@@ -487,13 +489,15 @@
         '    <div class="watch-episodes-card">' +
         '      <div class="watch-episodes-top">' +
         '        <div class="watch-episodes-title">Danh sách tập</div>' +
-        '        <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
+        '        <div class="watch-episodes-controls">' +
+        '          <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
+        '          <div class="episodes-ui-row watch-episodes-group" data-role="group-row" style="display:none;">' +
+        '            <label class="episodes-ui-label" for="watch-episodes-group">Nhóm tập</label>' +
+        '            <select id="watch-episodes-group" class="episodes-ui-select" data-role="group"></select>' +
+        '          </div>' +
+        '        </div>' +
         '      </div>' +
         '      <div class="server-tabs" data-role="server-tabs"></div>' +
-        '      <div class="episodes-ui-row" data-role="group-row" style="display:none;">' +
-        '        <label class="episodes-ui-label" for="watch-episodes-group">Nhóm tập</label>' +
-        '        <select id="watch-episodes-group" class="episodes-ui-select" data-role="group"></select>' +
-        '      </div>' +
         '      <div class="episodes-grid" data-role="episodes"></div>' +
         '    </div>' +
         '  </aside>' +
