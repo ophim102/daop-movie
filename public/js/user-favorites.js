@@ -9,6 +9,9 @@
   var gridColumnsOptions = [2, 3, 4, 8];
   var currentList = [];
   var toolbarRef = { el: null };
+  var pageSize = 24;
+  var currentPage = 1;
+  var pagerRef = { el: null };
 
   function getCreateClient() {
     if (typeof createClient !== 'undefined') return createClient;
@@ -135,6 +138,67 @@
     return toolbar;
   }
 
+  function ensurePager() {
+    if (!favGrid) return null;
+    var parent = favGrid.parentElement;
+    if (!parent) return null;
+    var pager = parent.querySelector('.user-pager');
+    if (!pager) {
+      pager = document.createElement('div');
+      pager.className = 'user-pager';
+      parent.appendChild(pager);
+    }
+    pagerRef.el = pager;
+    return pager;
+  }
+
+  function renderPager(totalItems) {
+    var pager = ensurePager();
+    if (!pager) return;
+    var totalPages = Math.max(1, Math.ceil((totalItems || 0) / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    if (totalItems <= pageSize) {
+      pager.innerHTML = '';
+      return;
+    }
+
+    var html = '';
+    html += '<button type="button" class="login-btn user-pager-btn" data-page="prev"' + (currentPage <= 1 ? ' disabled' : '') + '>Trước</button>';
+
+    var start = Math.max(1, currentPage - 2);
+    var end = Math.min(totalPages, currentPage + 2);
+    if (start > 1) {
+      html += '<button type="button" class="login-btn user-pager-num" data-page="1">1</button>';
+      if (start > 2) html += '<span class="user-pager-ellipsis">…</span>';
+    }
+    for (var p = start; p <= end; p++) {
+      html += '<button type="button" class="login-btn user-pager-num' + (p === currentPage ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>';
+    }
+    if (end < totalPages) {
+      if (end < totalPages - 1) html += '<span class="user-pager-ellipsis">…</span>';
+      html += '<button type="button" class="login-btn user-pager-num" data-page="' + totalPages + '">' + totalPages + '</button>';
+    }
+
+    html += '<button type="button" class="login-btn user-pager-btn" data-page="next"' + (currentPage >= totalPages ? ' disabled' : '') + '>Sau</button>';
+    pager.innerHTML = html;
+
+    if (pager.getAttribute('data-bound') === '1') return;
+    pager.setAttribute('data-bound', '1');
+    pager.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('button[data-page]') : null;
+      if (!btn) return;
+      if (btn.disabled) return;
+      var val = btn.getAttribute('data-page');
+      var totalPages2 = Math.max(1, Math.ceil((currentList.length || 0) / pageSize));
+      if (val === 'prev') currentPage = Math.max(1, currentPage - 1);
+      else if (val === 'next') currentPage = Math.min(totalPages2, currentPage + 1);
+      else currentPage = Math.max(1, Math.min(totalPages2, parseInt(val, 10) || 1));
+      renderFavorites();
+    });
+  }
+
   function renderFavorites() {
     if (!favGrid) return;
     favGrid.innerHTML = '';
@@ -154,16 +218,25 @@
 
     if (!slugs.length) {
       if (favEmpty) favEmpty.style.display = '';
+      var pg = ensurePager();
+      if (pg) pg.innerHTML = '';
       return;
     }
     if (favEmpty) favEmpty.style.display = 'none';
 
     ensureToolbar();
 
+    renderPager(currentList.length);
+
     var render = window.DAOP && window.DAOP.renderMovieCard;
     if (!render) return;
 
-    currentList.forEach(function (m) {
+    var totalPages = Math.max(1, Math.ceil(currentList.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    var start = (currentPage - 1) * pageSize;
+    var end = Math.min(currentList.length, start + pageSize);
+    currentList.slice(start, end).forEach(function (m) {
       favGrid.insertAdjacentHTML('beforeend', render(m, base, { usePoster: usePoster }));
     });
   }

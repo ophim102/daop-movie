@@ -549,6 +549,30 @@ a:hover {
 .user-section h2 {
   margin: 0 0 0.75rem;
 }
+
+.user-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+.user-pager .user-pager-ellipsis {
+  color: var(--muted);
+  padding: 0 0.15rem;
+}
+.user-pager .login-btn {
+  padding: 0.4rem 0.65rem;
+}
+.user-pager .user-pager-num.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.user-pager button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .user-password h3 {
   margin: 1rem 0 0.5rem;
 }
@@ -871,8 +895,8 @@ a:hover {
 
 .movie-fav-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 5px;
+  right: 5px;
   z-index: 3;
   width: 34px;
   height: 34px;
@@ -907,8 +931,8 @@ a:hover {
     width: 28px;
     height: 28px;
     font-size: 16px;
-    top: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
   }
 }
 .movie-card .movie-info .title,
@@ -1030,15 +1054,21 @@ a:hover {
   width: 160px;
   height: 90px;
 }
+.movies-list-item-wrap {
+  position: relative;
+}
+.movies-list-item-wrap .movie-fav-btn {
+  top: 5px;
+  right: 5px;
+}
 .movies-list-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
-  min-height: 176px;
-  background: var(--card);
-  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
   color: inherit;
   text-decoration: none;
 }
@@ -1110,6 +1140,8 @@ a:hover {
   width: 100%;
   aspect-ratio: 4 / 2.5;
   max-height: 420px;
+  touch-action: pan-y;
+  user-select: none;
 }
 .slider-track {
   display: flex;

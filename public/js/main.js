@@ -286,6 +286,25 @@
       btn.setAttribute('aria-pressed', fav ? 'true' : 'false');
     }
 
+    function getFavSet() {
+      try {
+        var us = window.DAOP && window.DAOP.userSync;
+        if (us && typeof us.getFavorites === 'function') return us.getFavorites();
+      } catch (e) {}
+      try {
+        var d = getLocal();
+        return new Set(d.favorites || []);
+      } catch (e2) { return new Set(); }
+    }
+
+    function refreshButtons() {
+      var favSet = getFavSet();
+      document.querySelectorAll('.movie-fav-btn[data-movie-slug]').forEach(function (b) {
+        var s = b.getAttribute('data-movie-slug') || '';
+        setBtnState(b, !!(s && favSet.has(s)));
+      });
+    }
+
     document.addEventListener('click', function (e) {
       var btn = e.target && e.target.closest ? e.target.closest('.movie-fav-btn') : null;
       if (!btn) return;
@@ -299,7 +318,9 @@
       if (us && typeof us.toggleFavorite === 'function') {
         var fav = false;
         try { fav = us.toggleFavorite(slug); } catch (err) {}
-        setBtnState(btn, fav);
+        document.querySelectorAll('.movie-fav-btn[data-movie-slug="' + slug.replace(/"/g, '\\"') + '"]').forEach(function (b) {
+          setBtnState(b, fav);
+        });
         return;
       }
 
@@ -308,8 +329,20 @@
       if (idx >= 0) d.favorites.splice(idx, 1);
       else d.favorites.push(slug);
       setLocal(d);
-      setBtnState(btn, idx < 0);
+      var fav2 = idx < 0;
+      document.querySelectorAll('.movie-fav-btn[data-movie-slug="' + slug.replace(/"/g, '\\"') + '"]').forEach(function (b) {
+        setBtnState(b, fav2);
+      });
     }, true);
+
+    window.addEventListener('storage', function (ev) {
+      if (ev && ev.key && ev.key !== 'daop_user_data') return;
+      refreshButtons();
+    });
+
+    refreshButtons();
+    setTimeout(refreshButtons, 600);
+    setTimeout(refreshButtons, 2000);
   }
 
   /** Escape HTML */
@@ -481,6 +514,65 @@
         e.preventDefault();
         e.stopPropagation();
       }, true);
+
+      // Touch fallback (iOS Safari / some WebViews)
+      var tStartX = 0;
+      var tStartY = 0;
+      var tDragging = false;
+      var tMoved = false;
+
+      viewport.addEventListener('touchstart', function (e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        tDragging = true;
+        tMoved = false;
+        hadSwipe = false;
+        tStartX = e.touches[0].clientX;
+        tStartY = e.touches[0].clientY;
+        stopAuto();
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', function (e) {
+        if (!tDragging || !e.touches || e.touches.length !== 1) return;
+        var dx = e.touches[0].clientX - tStartX;
+        var dy = e.touches[0].clientY - tStartY;
+        if (!tMoved) {
+          if (Math.abs(dx) < 6) return;
+          if (Math.abs(dy) > Math.abs(dx) * 1.2) {
+            tDragging = false;
+            startAuto();
+            return;
+          }
+          tMoved = true;
+        }
+        hadSwipe = true;
+        e.preventDefault();
+        setTranslate(dx);
+      }, { passive: false });
+
+      viewport.addEventListener('touchend', function (e) {
+        if (!tDragging) return;
+        tDragging = false;
+        var endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : tStartX;
+        var dx = endX - tStartX;
+        var w = viewport.clientWidth || 1;
+        var threshold = Math.max(45, Math.min(120, w * 0.18));
+        if (tMoved && Math.abs(dx) > threshold) {
+          if (dx < 0) goTo(idx + 1);
+          else goTo(idx - 1);
+        } else {
+          resetTranslate();
+        }
+        tMoved = false;
+        startAuto();
+      }, { passive: true });
+
+      viewport.addEventListener('touchcancel', function () {
+        if (!tDragging) return;
+        tDragging = false;
+        tMoved = false;
+        resetTranslate();
+        startAuto();
+      }, { passive: true });
     }
   };
 
