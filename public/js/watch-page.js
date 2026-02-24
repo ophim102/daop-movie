@@ -265,7 +265,8 @@
     var state = {
       server: (initial && initial.server) || serversData[0].slug,
       linkType: (initial && initial.linkType) || 'm3u8',
-      episode: (initial && initial.episode) || ''
+      episode: (initial && initial.episode) || '',
+      groupIdx: 0
     };
 
     function getServerInfo(slug) {
@@ -318,6 +319,7 @@
         btn.addEventListener('click', function () {
           state.server = btn.getAttribute('data-server') || serversData[0].slug;
           state.episode = '';
+          state.groupIdx = 0;
           renderAll();
         });
       });
@@ -335,8 +337,44 @@
       }).join('');
       sel.onchange = function () {
         state.linkType = sel.value || 'm3u8';
+        state.groupIdx = 0;
+        renderGroups();
         renderEpisodes();
         updatePlayer();
+      };
+    }
+
+    function renderGroups() {
+      var row = root.querySelector('[data-role="group-row"]');
+      var sel = root.querySelector('[data-role="group"]');
+      if (!row || !sel) return;
+
+      var info = getServerInfo(state.server);
+      var list = filterEpisodesByType(info, state.linkType);
+      var GROUP_SIZE = 50;
+      var isSingle = (movie && (movie.type === 'single' || movie.type === 'movie')) || false;
+      var needGrouping = !isSingle && list.length > GROUP_SIZE;
+
+      if (!needGrouping) {
+        row.style.display = 'none';
+        state.groupIdx = 0;
+        return;
+      }
+
+      row.style.display = '';
+      var groups = Math.max(1, Math.ceil(list.length / GROUP_SIZE));
+      if (state.groupIdx >= groups) state.groupIdx = 0;
+      var options = '';
+      for (var i = 0; i < groups; i++) {
+        var start = i * GROUP_SIZE + 1;
+        var end = Math.min((i + 1) * GROUP_SIZE, list.length);
+        var label = 'Tập ' + start + ' - Tập ' + end;
+        options += '<option value="' + i + '"' + (i === state.groupIdx ? ' selected' : '') + '>' + esc(label) + '</option>';
+      }
+      sel.innerHTML = options;
+      sel.onchange = function () {
+        state.groupIdx = parseInt(sel.value || '0', 10) || 0;
+        renderEpisodes();
       };
     }
 
@@ -346,8 +384,16 @@
       var info = getServerInfo(state.server);
       var list = filterEpisodesByType(info, state.linkType);
       if (!list.length) list = info.episodes || [];
-      if (!state.episode && list.length) state.episode = list[0].code;
-      listEl.innerHTML = list.map(function (e) {
+
+      var GROUP_SIZE = 50;
+      var isSingle = (movie && (movie.type === 'single' || movie.type === 'movie')) || false;
+      var needGrouping = !isSingle && list.length > GROUP_SIZE;
+      var startIdx = needGrouping ? state.groupIdx * GROUP_SIZE : 0;
+      var endIdx = needGrouping ? Math.min(startIdx + GROUP_SIZE, list.length) : list.length;
+      var slice = list.slice(startIdx, endIdx);
+
+      if (!state.episode && slice.length) state.episode = slice[0].code;
+      listEl.innerHTML = slice.map(function (e) {
         var active = e.code === state.episode ? ' episode-btn--active' : '';
         return '<button type="button" class="episode-btn' + active + '" data-episode="' + esc(e.code) + '">' + esc(e.code) + '</button>';
       }).join('');
@@ -376,6 +422,7 @@
     function renderAll() {
       renderTabs();
       renderLinkTypes();
+      renderGroups();
       renderEpisodes();
       updatePlayer();
     }
@@ -443,6 +490,10 @@
         '        <select class="episodes-ui-select" data-role="link-type"></select>' +
         '      </div>' +
         '      <div class="server-tabs" data-role="server-tabs"></div>' +
+        '      <div class="episodes-ui-row" data-role="group-row" style="display:none;">' +
+        '        <label class="episodes-ui-label" for="watch-episodes-group">Nhóm tập</label>' +
+        '        <select id="watch-episodes-group" class="episodes-ui-select" data-role="group"></select>' +
+        '      </div>' +
         '      <div class="episodes-grid" data-role="episodes"></div>' +
         '    </div>' +
         '  </aside>' +
