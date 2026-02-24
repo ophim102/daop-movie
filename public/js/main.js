@@ -212,6 +212,8 @@
   window.DAOP.applySiteSettings = function (settings) {
     if (!settings) return;
     window.DAOP.siteName = settings.site_name || 'DAOP Phim';
+    window.DAOP.supabaseUserUrl = settings.supabase_user_url || settings.supabaseUserUrl || window.DAOP.supabaseUserUrl || '';
+    window.DAOP.supabaseUserAnonKey = settings.supabase_user_anon_key || settings.supabaseUserAnonKey || window.DAOP.supabaseUserAnonKey || '';
     if (document.title && settings.site_name && document.title.includes(' | DAOP Phim')) {
       document.title = document.title.replace(' | DAOP Phim', ' | ' + settings.site_name);
     }
