@@ -196,6 +196,43 @@
       return s || 'default';
     }
 
+    function renderSimpleFallback() {
+      var wrap = document.querySelector('.episodes-wrap');
+      if (!wrap) return;
+      var html = '<h3>Danh sách tập</h3><div class="episodes-grid">';
+      (movie.episodes || []).forEach(function (ep) {
+        var serverName = ep.server_name || ep.name || ep.slug || '';
+        var baseSlug = ep.slug || makeSlug(serverName);
+        var matched = Array.isArray(servers)
+          ? servers.find(function (s) { return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug); })
+          : null;
+        var srvSlug = (matched && matched.slug) || baseSlug || 'default';
+        var srvLabel = (matched && matched.name) || serverName || srvSlug;
+        var list = Array.isArray(ep.server_data) ? ep.server_data : [];
+        if (!list.length) return;
+        list.forEach(function (srv, idxEp) {
+          var epName = (srv && (srv.name || srv.slug)) ? (srv.name || srv.slug) : ('Tập ' + (idxEp + 1));
+          var epSlug = (srv && srv.slug) ? srv.slug : (srv && srv.name) ? srv.name : epName;
+          var link =
+            (srv && (srv.link_embed || srv.link_m3u8 || srv.link_backup || srv.link)) ||
+            '';
+          html +=
+            '<button type="button" class="episode-btn" data-episode="' +
+            String(epSlug || '').replace(/"/g, '&quot;') +
+            '" data-server="' +
+            String(srvSlug || '').replace(/"/g, '&quot;') +
+            '" data-link="' +
+            String(link || '').replace(/"/g, '&quot;') +
+            '">Tập ' +
+            String(epName || '').replace(/</g, '&lt;') +
+            '</button>';
+        });
+      });
+      html += '</div>';
+      wrap.innerHTML = html;
+      attachEpisodeButtons(movie);
+    }
+
     var serverSources = Array.isArray(servers) ? servers : [];
     var playerSettings = window.DAOP && window.DAOP.playerSettings ? window.DAOP.playerSettings : {};
     var linkTypeLabels = playerSettings.link_type_labels || {
@@ -257,7 +294,10 @@
     });
 
     var serversData = Object.keys(byServer).map(function (k) { return byServer[k]; }).sort(function (a, b) { return a.order - b.order; });
-    if (!serversData.length) return;
+    if (!serversData.length) {
+      renderSimpleFallback();
+      return;
+    }
 
     var tabsEl = document.getElementById('episodes-server-tabs');
     var linkTypeEl = document.getElementById('episodes-link-type');
