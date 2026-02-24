@@ -61,7 +61,7 @@
         var idx = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
         var idxUnsigned = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
         list.forEach(function (m, i) {
-          var text = (m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '');
+          var text = ((m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '')).toLowerCase();
           idx.add(i, text);
           idxUnsigned.add(i, removeVietnameseTones(text));
         });
@@ -94,28 +94,42 @@
       if (resultsEl) resultsEl.innerHTML = '';
       return;
     }
+    var qLower = q.toLowerCase();
     if (!index) index = buildIndex();
     if (!index) return;
     var list;
     if (index.useFlexSearch && index.index) {
       try {
-        var ids = index.index.search(q, 50);
+        var ids = index.index.search(qLower, 50);
         if (!Array.isArray(ids)) ids = [];
+        var qUnsigned = removeVietnameseTones(qLower);
+        var idsU = index.indexUnsigned ? index.indexUnsigned.search(qUnsigned, 50) : [];
+        if (!Array.isArray(idsU)) idsU = [];
+
         var seen = {};
-        ids.forEach(function (i) { seen[i] = true; });
-        var qUnsigned = removeVietnameseTones(q);
-        if (qUnsigned !== q && index.indexUnsigned) {
-          var idsU = index.indexUnsigned.search(qUnsigned, 50);
-          if (Array.isArray(idsU)) idsU.forEach(function (i) { seen[i] = true; });
+        var ordered = [];
+        function pushUnique(arr) {
+          arr.forEach(function (i) {
+            if (i == null) return;
+            var k = String(i);
+            if (seen[k]) return;
+            seen[k] = true;
+            ordered.push(i);
+          });
         }
-        var allIds = Object.keys(seen).map(Number).filter(function (i) { return i >= 0 && i < index.list.length; });
-        list = allIds.map(function (i) { return index.list[i]; }).filter(Boolean);
+        pushUnique(ids);
+        pushUnique(idsU);
+
+        ordered = ordered
+          .map(Number)
+          .filter(function (i) { return i >= 0 && i < index.list.length; });
+        list = ordered.map(function (i) { return index.list[i]; }).filter(Boolean);
         if (list.length > 50) list = list.slice(0, 50);
       } catch (e) {
-        list = searchFallback(index.list, q);
+        list = searchFallback(index.list, qLower);
       }
     } else {
-      list = searchFallback(index.list, q);
+      list = searchFallback(index.list, qLower);
     }
     renderResults(list);
   }
