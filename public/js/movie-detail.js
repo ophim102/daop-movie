@@ -404,12 +404,34 @@
       var GROUP_SIZE = 50;
       var isSingle = (movie && (movie.type === 'single' || movie.type === 'movie')) || false;
       var needGrouping = !isSingle && filtered.length > GROUP_SIZE;
+      if (!filtered.length) {
+        // Nếu không lọc được tập nào cho kiểu link hiện tại, fallback về UI đơn giản để tránh mất danh sách tập.
+        renderSimpleFallback();
+        return;
+      }
       var startIdx = needGrouping ? state.groupIdx * GROUP_SIZE : 0;
       var endIdx = needGrouping ? Math.min(startIdx + GROUP_SIZE, filtered.length) : filtered.length;
       var slice = filtered.slice(startIdx, endIdx);
       listEl.innerHTML = slice.map(function (e) {
         var code = (e && e.code) ? e.code : '';
-        var link = (e && e.links && e.links[state.linkType]) ? e.links[state.linkType] : '';
+        var link = '';
+        if (e && e.links) {
+          if (state.linkType && e.links[state.linkType]) {
+            link = e.links[state.linkType];
+          } else {
+            // fallback: chọn link tốt nhất có thể nếu vì lý do nào đó type không khớp
+            link =
+              e.links.m3u8 ||
+              e.links.embed ||
+              e.links.backup ||
+              e.links.vip1 ||
+              e.links.vip2 ||
+              e.links.vip3 ||
+              e.links.vip4 ||
+              e.links.vip5 ||
+              '';
+          }
+        }
         return '<button type="button" class="episode-btn" data-episode="' + String(code).replace(/"/g, '&quot;') + '" data-server="' + String(info.slug).replace(/"/g, '&quot;') + '" data-link="' + String(link).replace(/"/g, '&quot;') + '">' +
           String(code).replace(/</g, '&lt;') + '</button>';
       }).join('');
