@@ -487,7 +487,7 @@
         '    <div class="watch-episodes-card">' +
         '      <div class="watch-episodes-top">' +
         '        <div class="watch-episodes-title">Danh sách tập</div>' +
-        '        <select class="episodes-ui-select" data-role="link-type"></select>' +
+        '        <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
         '      </div>' +
         '      <div class="server-tabs" data-role="server-tabs"></div>' +
         '      <div class="episodes-ui-row" data-role="group-row" style="display:none;">' +

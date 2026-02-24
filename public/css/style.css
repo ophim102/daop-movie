@@ -1957,6 +1957,14 @@ a:hover {
   gap: 0.5rem;
   margin-bottom: 0.6rem;
 }
+.watch-episodes-linktype {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.watch-episodes-linktype .episodes-ui-label {
+  margin: 0;
+}
 .watch-episodes-title {
   font-weight: 800;
 }
