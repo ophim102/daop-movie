@@ -205,8 +205,14 @@ export default function GitHubActions() {
     }
   };
 
-  const triggerableList = actions.map((a) => ({ ...a, triggerable: true }));
-  const allList = [...triggerableList, ...EXTRA_ACTIONS];
+  const extraMap = new Map(EXTRA_ACTIONS.map((a) => [a.id, a]));
+  const triggerableList = actions.map((a) => {
+    const extra = extraMap.get(a.id);
+    return { ...a, triggerable: true, ...(extra ? { danger: (extra as any).danger } : {}) };
+  });
+  const apiIds = new Set(actions.map((a) => a.id));
+  const extraFiltered = EXTRA_ACTIONS.filter((a) => !apiIds.has(a.id));
+  const allList = [...triggerableList, ...extraFiltered];
 
   return (
     <>
