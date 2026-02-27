@@ -724,6 +724,18 @@
       }
     }
 
+    var _savedSidebarWidth = 0;
+
+    function saveSidebarWidth() {
+      var layout = root.querySelector('.watch-layout');
+      if (!layout) return;
+      var sidebar = layout.querySelector('.watch-sidebar');
+      if (sidebar) {
+        var sw = Math.round(sidebar.offsetWidth || 0);
+        if (sw > 0) _savedSidebarWidth = sw;
+      }
+    }
+
     function updatePinnedOffset() {
       var layout = root.querySelector('.watch-layout');
       if (!layout) return;
@@ -756,24 +768,18 @@
 
       var w = window.innerWidth || document.documentElement.clientWidth || 0;
       if (w >= 1024) {
-        var sidebar = layout.querySelector('.watch-sidebar');
-        var mainEl = layout.querySelector('.watch-main');
-        if (sidebar) {
-          var lr = layout.getBoundingClientRect();
-          var sw = Math.max(0, Math.round(sidebar.offsetWidth || 0));
-          if (!sw) sw = 360;
+        var sw = _savedSidebarWidth || 360;
+        var lr = layout.getBoundingClientRect();
+        var computedLeft = Math.max(0, Math.round((lr.right || 0) - sw));
 
-          var computedLeft = Math.max(0, Math.round((lr.right || 0) - sw));
-
-          if (mainEl) {
-            var mrr = mainEl.getBoundingClientRect();
-            var minLeft = Math.round((mrr.right || 0) + 16);
-            if (computedLeft < minLeft) computedLeft = minLeft;
-          }
-
-          layout.style.setProperty('--watch-sidebar-left', computedLeft + 'px');
-          layout.style.setProperty('--watch-sidebar-width', sw + 'px');
+        if (main) {
+          var mrr = main.getBoundingClientRect();
+          var minLeft = Math.round((mrr.right || 0) + 16);
+          if (computedLeft < minLeft) computedLeft = minLeft;
         }
+
+        layout.style.setProperty('--watch-sidebar-left', computedLeft + 'px');
+        layout.style.setProperty('--watch-sidebar-width', sw + 'px');
       } else {
         layout.style.removeProperty('--watch-sidebar-left');
         layout.style.removeProperty('--watch-sidebar-width');
@@ -800,34 +806,7 @@
 
     var pinBtn = root.querySelector('#watch-btn-pin');
     if (pinBtn) {
-      var pinHideTimer = null;
-      function pinShouldAutoHide() {
-        var w2 = (window.innerWidth || document.documentElement.clientWidth || 0);
-        var layout2 = root.querySelector('.watch-layout');
-        return !!(layout2 && layout2.classList.contains('watch-layout--pinned') && w2 < 1024);
-      }
-      function showPinTemporarily() {
-        pinBtn.classList.remove('is-auto-hidden');
-        if (pinHideTimer) clearTimeout(pinHideTimer);
-        if (!pinShouldAutoHide()) {
-          pinBtn.classList.remove('is-auto-hidden');
-          return;
-        }
-        pinHideTimer = setTimeout(function () {
-          if (!pinShouldAutoHide()) return;
-          pinBtn.classList.add('is-auto-hidden');
-        }, 3000);
-      }
-      function onPinUserActivity() {
-        showPinTemporarily();
-      }
-
-      if (!window.__daopPinAutoHideListenersBound) {
-        window.__daopPinAutoHideListenersBound = true;
-        ['mousedown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
-          window.addEventListener(ev, onPinUserActivity, { passive: true, capture: true });
-        });
-      }
+      saveSidebarWidth();
 
       (function () {
         var w = (window.innerWidth || document.documentElement.clientWidth || 0);
@@ -839,21 +818,17 @@
         pinBtn.innerHTML = (nowPinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', nowPinned ? 'true' : 'false');
         updatePinnedOffset();
-        showPinTemporarily();
       })();
 
       pinBtn.addEventListener('click', function () {
         var layout = root.querySelector('.watch-layout');
         if (!layout) return;
+        var wasPinned = layout.classList.contains('watch-layout--pinned');
+        if (!wasPinned) saveSidebarWidth();
         var pinned = layout.classList.toggle('watch-layout--pinned');
         pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
         updatePinnedOffset();
-        if (pinHideTimer) {
-          clearTimeout(pinHideTimer);
-          pinHideTimer = null;
-        }
-        showPinTemporarily();
       });
     }
 

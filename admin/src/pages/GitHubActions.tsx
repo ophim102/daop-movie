@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space } from 'antd';
-import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined } from '@ant-design/icons';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space, Modal } from 'antd';
+import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
 const { Text } = Typography;
@@ -34,6 +34,13 @@ const EXTRA_ACTIONS = [
     name: 'Export to Google Sheets',
     description: 'Đẩy phim hiện có (build) xuống Google Sheets (chỉ append phim mới).',
     triggerable: true,
+  },
+  {
+    id: 'clean-rebuild',
+    name: 'Clean & Rebuild',
+    description: 'Xóa toàn bộ dữ liệu cũ (batches, movies-light, actors…) rồi full build lại từ đầu.',
+    triggerable: true,
+    danger: true,
   },
 ];
 
@@ -134,10 +141,25 @@ export default function GitHubActions() {
   };
 
   const handleTrigger = async (actionId: string) => {
+    if (actionId === 'clean-rebuild') {
+      Modal.confirm({
+        title: 'Xác nhận Clean & Rebuild',
+        content: 'Thao tác này sẽ xóa toàn bộ dữ liệu cũ (batches, movies-light, actors, filters…) rồi build lại từ đầu. Bạn chắc chắn muốn tiếp tục?',
+        okText: 'Xóa & Build lại',
+        okType: 'danger',
+        cancelText: 'Hủy',
+        onOk: () => doTrigger(actionId),
+      });
+      return;
+    }
+    doTrigger(actionId);
+  };
+
+  const doTrigger = async (actionId: string) => {
     setTriggering(actionId);
     try {
       const body: { action: string; start_page?: number; end_page?: number } = { action: actionId };
-      if (actionId === 'update-data') {
+      if (actionId === 'update-data' || actionId === 'clean-rebuild') {
         const values = form.getFieldsValue();
         if (values.start_page != null) body.start_page = values.start_page;
         if (values.end_page != null) body.end_page = values.end_page;
@@ -237,20 +259,21 @@ export default function GitHubActions() {
           <List
             grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 2 }}
             dataSource={allList}
-            renderItem={(item: ActionItem & { triggerable?: boolean }) => (
+            renderItem={(item: ActionItem & { triggerable?: boolean; danger?: boolean }) => (
               <List.Item>
                 <Card
                   title={item.name}
                   extra={
                     item.triggerable !== false ? (
                       <Button
-                        type="primary"
-                        icon={triggering === item.id ? <Spin size="small" /> : <PlayCircleOutlined />}
+                        type={item.danger ? 'default' : 'primary'}
+                        danger={!!item.danger}
+                        icon={triggering === item.id ? <Spin size="small" /> : item.danger ? <DeleteOutlined /> : <PlayCircleOutlined />}
                         onClick={() => handleTrigger(item.id)}
                         loading={triggering === item.id}
                         disabled={!!triggering}
                       >
-                        Kích hoạt
+                        {item.danger ? 'Clean & Build' : 'Kích hoạt'}
                       </Button>
                     ) : (
                       <Button type="text" icon={<InfoCircleOutlined />} disabled>

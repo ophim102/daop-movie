@@ -2367,11 +2367,7 @@ body.site-header--collapsed .site-header {
   font-weight: 800;
   line-height: 1;
 }
-.watch-pin-btn.is-auto-hidden {
-  opacity: 0;
-  transform: translateY(-8px);
-  pointer-events: none;
-}
+/* pin button always visible - no auto-hide */
 .watch-back-btn {
   width: 40px;
   height: 40px;

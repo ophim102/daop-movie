@@ -5,11 +5,12 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_REF = process.env.GITHUB_REF || 'main';
 
-type ActionId = 'build-on-demand' | 'update-data' | 'export-to-sheets';
+type ActionId = 'build-on-demand' | 'update-data' | 'clean-rebuild' | 'export-to-sheets';
 
 const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'build-on-demand', name: 'Build on demand', description: 'Build incremental (config Supabase + category pages), commit & push.' },
   { id: 'update-data', name: 'Update data daily', description: 'Full build (OPhim, TMDB, Sheets…), commit & push.' },
+  { id: 'clean-rebuild', name: 'Clean & Rebuild', description: 'Xóa toàn bộ dữ liệu cũ (batches, movies-light, actors…) rồi full build lại từ đầu.' },
   { id: 'export-to-sheets', name: 'Export to Google Sheets', description: 'Đẩy phim từ dữ liệu build hiện tại xuống Google Sheets (chỉ append phim mới).' },
 ];
 
@@ -107,6 +108,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
       res.status(200).json({ ok: true, message: 'Update data (full build) triggered' });
+      return;
+    }
+
+    if (action === 'clean-rebuild') {
+      const startPage = req.body?.start_page != null ? String(req.body.start_page) : undefined;
+      const endPage = req.body?.end_page != null ? String(req.body.end_page) : undefined;
+      const inputs: Record<string, string> = { clean: 'true' };
+      if (startPage !== undefined) inputs.start_page = startPage;
+      if (endPage !== undefined) inputs.end_page = endPage;
+      const r = await fetch(
+        `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ref: GITHUB_REF, inputs }),
+        }
+      );
+      if (!r.ok) {
+        const t = await r.text();
+        let errMsg = t;
+        if (r.status === 404) {
+          try {
+            const j = JSON.parse(t);
+            if (j.message?.includes('Not Found')) {
+              errMsg = 'Workflow update-data.yml không tìm thấy hoặc repo chưa có Actions.';
+            }
+          } catch {
+            // keep raw t
+          }
+        }
+        if (r.status === 401) {
+          try {
+            const j = JSON.parse(t);
+            if (j.message === 'Bad credentials') errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn.';
+          } catch {
+            // keep raw t
+          }
+        }
+        res.status(r.status).json({ error: errMsg });
+        return;
+      }
+      res.status(200).json({ ok: true, message: 'Clean & Rebuild triggered (xóa dữ liệu cũ + full build)' });
       return;
     }
 

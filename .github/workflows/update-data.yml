@@ -15,6 +15,10 @@ on:
         description: 'Trang kết thúc (OPhim), 0 = không giới hạn'
         required: false
         default: '1'
+      clean:
+        description: 'Xóa dữ liệu cũ trước khi build (true/false)'
+        required: false
+        default: 'false'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,6 +38,7 @@ jobs:
           SUPABASE_ADMIN_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_ADMIN_SERVICE_ROLE_KEY }}
       - run: npm run build
         env:
+          CLEAN_OLD_DATA: ${{ inputs.clean == 'true' && '1' || '0' }}
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
           OPHIM_START_PAGE: ${{ inputs.start_page || vars.OPHIM_START_PAGE || '1' }}
           OPHIM_END_PAGE: ${{ inputs.end_page || vars.OPHIM_END_PAGE || '1' }}
