@@ -55,16 +55,38 @@
     }
 
     function matchServerSlug(baseSlug, serverName) {
+      var b = baseSlug || '';
+      var sn = serverName || '';
+      var snSlug = makeSlug(sn);
+
+      function isPrefix(a, b2) {
+        if (!a || !b2) return false;
+        return String(a).indexOf(String(b2)) === 0;
+      }
+
       var matched = Array.isArray(servers) ? servers.find(function (s) {
-        return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug || (serverName && makeSlug(s.name) === makeSlug(serverName)));
+        if (!s) return false;
+        var sSlug = s.slug || '';
+        var sNameSlug = makeSlug(s.name || '');
+        return (
+          sSlug === b ||
+          sNameSlug === b ||
+          (sn && sNameSlug === snSlug) ||
+          isPrefix(sSlug, b) ||
+          isPrefix(b, sSlug) ||
+          isPrefix(sNameSlug, b) ||
+          isPrefix(b, sNameSlug) ||
+          (sn && (isPrefix(sNameSlug, snSlug) || isPrefix(snSlug, sNameSlug)))
+        );
       }) : null;
-      return (matched && matched.slug) || baseSlug || 'default';
+
+      return (matched && matched.slug) || b || snSlug || 'default';
     }
 
     var serverData = {};
     (movie.episodes || []).forEach(function (ep) {
       var serverName = ep.server_name || ep.name || ep.slug || '';
-      var baseSlug = ep.slug || makeSlug(serverName);
+      var baseSlug = makeSlug(serverName) || ep.slug || '';
       var srvSlug = matchServerSlug(baseSlug, serverName);
       var list = Array.isArray(ep.server_data) ? ep.server_data : [];
       if (!list.length) return;
@@ -124,9 +146,7 @@
   function renderPlayer(container, ctx) {
     if (!container) return;
     var playerSettings = window.DAOP && window.DAOP.playerSettings ? window.DAOP.playerSettings : {};
-    var available = playerSettings.available_players && typeof playerSettings.available_players === 'object' ? playerSettings.available_players : {};
     var chosenPlayer = (playerSettings.default_player || 'plyr').toLowerCase();
-    var chosenLabel = available[chosenPlayer] || chosenPlayer;
 
     var safeLink = esc(ctx.link || '');
     var isDirect = isDirectVideoLink(ctx.link);
@@ -139,10 +159,6 @@
 
     container.innerHTML =
       '<div class="watch-player-card">' +
-      '<div class="watch-player-top">' +
-      '<div class="watch-player-title">' + esc(ctx.title || '') + '</div>' +
-      '<div class="watch-player-sub">Đang dùng: ' + esc(chosenLabel || chosenPlayer) + '</div>' +
-      '</div>' +
       '<div class="watch-player-wrap">' + playerHtml + '</div>' +
       '</div>';
 
@@ -219,10 +235,32 @@
     }
 
     function matchServerSlug(baseSlug, serverName) {
+      var b = baseSlug || '';
+      var sn = serverName || '';
+      var snSlug = makeSlug(sn);
+
+      function isPrefix(a, b2) {
+        if (!a || !b2) return false;
+        return String(a).indexOf(String(b2)) === 0;
+      }
+
       var matched = Array.isArray(servers) ? servers.find(function (s) {
-        return s && (s.slug === baseSlug || makeSlug(s.name) === baseSlug || (serverName && makeSlug(s.name) === makeSlug(serverName)));
+        if (!s) return false;
+        var sSlug = s.slug || '';
+        var sNameSlug = makeSlug(s.name || '');
+        return (
+          sSlug === b ||
+          sNameSlug === b ||
+          (sn && sNameSlug === snSlug) ||
+          isPrefix(sSlug, b) ||
+          isPrefix(b, sSlug) ||
+          isPrefix(sNameSlug, b) ||
+          isPrefix(b, sNameSlug) ||
+          (sn && (isPrefix(sNameSlug, snSlug) || isPrefix(snSlug, sNameSlug)))
+        );
       }) : null;
-      return (matched && matched.slug) || baseSlug || 'default';
+
+      return (matched && matched.slug) || b || snSlug || 'default';
     }
 
     function matchServerLabel(srvSlug, serverName) {
@@ -233,7 +271,7 @@
     var byServer = {};
     movie.episodes.forEach(function (ep) {
       var serverName = ep.server_name || ep.name || ep.slug || '';
-      var baseSlug = ep.slug || makeSlug(serverName);
+      var baseSlug = makeSlug(serverName) || ep.slug || '';
       var srvSlug = matchServerSlug(baseSlug, serverName);
       var srvLabel = matchServerLabel(srvSlug, serverName);
       if (!byServer[srvSlug]) byServer[srvSlug] = { slug: srvSlug, label: srvLabel, episodes: [] };
@@ -411,11 +449,8 @@
     function updatePlayer() {
       var info = getServerInfo(state.server);
       var link = pickLink(info);
-      var titleEl = document.querySelector('[data-role="watch-title"]');
-      var title = titleEl ? titleEl.textContent : '';
       renderPlayer(root.querySelector('[data-role="player"]'), {
         link: link,
-        title: title,
         slug: movie.slug,
         episode: state.episode
       });
@@ -456,7 +491,6 @@
       movie = movie || light;
 
       var poster = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
-      var backdrop = (movie.thumb || movie.poster || '').replace(/^\/\//, 'https://');
       var title = (movie.title || '').replace(/</g, '&lt;');
       var origin = (movie.origin_name || '').replace(/</g, '&lt;');
       var year = esc(movie.year || '');
@@ -469,22 +503,18 @@
       if (epCur) metaParts.push(epCur);
 
       rootEl.innerHTML =
-        '<div class="watch-hero">' +
-        '  <div class="watch-hero-bg" style="background-image:url(' + esc(backdrop || poster) + ')"></div>' +
-        '  <div class="watch-hero-inner">' +
-        '    <div class="watch-hero-poster"><img src="' + esc(poster || backdrop) + '" alt=""></div>' +
-        '    <div class="watch-hero-info">' +
-        '      <div class="watch-hero-title" data-role="watch-title">' + title + '</div>' +
-        (origin ? '      <div class="watch-hero-origin">' + origin + '</div>' : '') +
-        (metaParts.length ? '      <div class="watch-hero-meta">' + esc(metaParts.join(' • ')) + '</div>' : '') +
-        '      <div class="watch-hero-actions">' +
-        '        <a class="login-btn" href="/phim/' + esc(movie.slug || slug) + '.html">Chi tiết</a>' +
+        '<div class="watch-layout">' +
+        '  <div class="watch-main">' +
+        '    <div data-role="player"></div>' +
+        '    <div class="watch-player-meta" style="margin-top:0.75rem;">' +
+        '      <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
+        (origin ? '      <div class="watch-player-meta-origin" style="color:var(--muted);margin-top:0.25rem;">' + origin + '</div>' : '') +
+        (metaParts.length ? '      <div class="watch-player-meta-sub" style="color:var(--muted);margin-top:0.25rem;">' + esc(metaParts.join(' • ')) + '</div>' : '') +
+        '      <div class="login-actions" style="margin-top:0.65rem;">' +
+        '        <a class="login-btn" href="/phim/' + esc(movie.slug || slug) + '.html">Về trang chi tiết</a>' +
         '      </div>' +
         '    </div>' +
         '  </div>' +
-        '</div>' +
-        '<div class="watch-layout">' +
-        '  <div class="watch-main" data-role="player"></div>' +
         '  <aside class="watch-sidebar">' +
         '    <div class="watch-episodes-card">' +
         '      <div class="server-tabs" data-role="server-tabs"></div>' +
