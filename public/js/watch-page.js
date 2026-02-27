@@ -724,6 +724,20 @@
       }
     }
 
+    function updatePinnedOffset() {
+      var layout = root.querySelector('.watch-layout');
+      if (!layout) return;
+      if (!layout.classList.contains('watch-layout--pinned')) {
+        layout.style.removeProperty('--watch-pinned-offset');
+        return;
+      }
+      var sticky = layout.querySelector('.watch-player-sticky');
+      if (!sticky) return;
+      var rect = sticky.getBoundingClientRect();
+      var h = Math.max(0, Math.round(rect.height || 0));
+      layout.style.setProperty('--watch-pinned-offset', h + 'px');
+    }
+
     function showCommentsPanel() {
       var sidebar = root.querySelector('.watch-sidebar');
       if (!sidebar) return;
@@ -753,6 +767,7 @@
         var nowPinned = !!(layout0 && layout0.classList.contains('watch-layout--pinned'));
         pinBtn.innerHTML = (nowPinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', nowPinned ? 'true' : 'false');
+        updatePinnedOffset();
       })();
 
       pinBtn.addEventListener('click', function () {
@@ -761,8 +776,13 @@
         var pinned = layout.classList.toggle('watch-layout--pinned');
         pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+        updatePinnedOffset();
       });
     }
+
+    window.addEventListener('resize', function () {
+      updatePinnedOffset();
+    });
 
     var btnCloseComments = root.querySelector('#watch-btn-close-comments');
     if (btnCloseComments) btnCloseComments.addEventListener('click', hideCommentsPanel);

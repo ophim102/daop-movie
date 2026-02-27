@@ -55,6 +55,7 @@ a:hover {
   color: var(--text);
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .site-header-toggle:hover {
   border-color: var(--accent);
@@ -70,6 +71,12 @@ body.site-header--collapsed .site-header {
   display: none;
 }
 
+.site-header-toggle.is-auto-hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .site-header-toggle {
     top: 0.55rem;
@@ -83,6 +90,8 @@ body.site-header--collapsed .site-header {
 
 @media (min-width: 769px) {
   .site-header-toggle {
+    left: 0.9rem;
+    right: auto;
     background: var(--accent);
     border-color: rgba(255, 255, 255, 0.15);
     color: #0d1117;
@@ -304,6 +313,21 @@ body.site-header--collapsed .site-header {
     display: flex;
     order: 0;
     margin-right: 0.25rem;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    gap: 6px;
+  }
+  .site-header .nav-toggle .nav-toggle-bar {
+    width: 26px;
+    height: 3px;
+    border-radius: 2px;
+  }
+  .site-header .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+  .site-header .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
   }
   .site-header .site-logo {
     order: 1;
@@ -2484,7 +2508,28 @@ body.site-header--collapsed .site-header {
   width: auto;
   height: 40px;
   padding: 0 0.75rem;
-  border-radius: 999px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(22, 27, 34, 0.65);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: normal;
+  transform: none;
+  transition: none;
+}
+
+.md-actions .movie-fav-btn:hover,
+.watch-actions .movie-fav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(22, 27, 34, 0.65);
+}
+
+.md-actions .movie-fav-btn.is-fav,
+.watch-actions .movie-fav-btn.is-fav {
+  color: #f85149;
+  border-color: var(--accent);
 }
 
 @media (min-width: 1024px) {
@@ -2520,6 +2565,16 @@ body.site-header--collapsed .site-header {
   bottom: -1px;
   height: 1px;
   background: var(--border);
+}
+
+.watch-layout--pinned .watch-main {
+  padding-top: calc(var(--watch-pinned-offset, 0px) + 0.75rem);
+}
+
+.watch-layout--pinned #watch-comments,
+.watch-layout--pinned #watch-recommend,
+.watch-layout--pinned .watch-episodes-card {
+  scroll-margin-top: calc(var(--watch-pinned-offset, 0px) + 1rem);
 }
 
 .watch-recommend-full {

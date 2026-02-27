@@ -378,6 +378,25 @@
       document.body.classList.add('site-header--collapsed');
     }
 
+    var hideTimer = null;
+    function showBtnTemporarily() {
+      btn.classList.remove('is-auto-hidden');
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(function () {
+        btn.classList.add('is-auto-hidden');
+      }, 3000);
+    }
+
+    function onUserActivity() {
+      showBtnTemporarily();
+    }
+
+    ['mousemove', 'mousedown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
+      window.addEventListener(ev, onUserActivity, { passive: true });
+    });
+
+    showBtnTemporarily();
+
     function updateAria() {
       var collapsed = document.body.classList.contains('site-header--collapsed');
       btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
@@ -387,6 +406,7 @@
     btn.addEventListener('click', function () {
       document.body.classList.toggle('site-header--collapsed');
       updateAria();
+      showBtnTemporarily();
     });
   }
 
