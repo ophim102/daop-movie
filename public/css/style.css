@@ -90,8 +90,8 @@ body.site-header--collapsed .site-header {
 
 @media (min-width: 769px) {
   .site-header-toggle {
-    left: 0.9rem;
-    right: auto;
+    left: auto;
+    right: 0.9rem;
     background: var(--accent);
     border-color: rgba(255, 255, 255, 0.15);
     color: #0d1117;
@@ -2506,8 +2506,8 @@ body.site-header--collapsed .site-header {
   top: auto;
   right: auto;
   width: auto;
-  height: 40px;
-  padding: 0 0.75rem;
+  height: auto;
+  padding: 0.55rem 0.5rem;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: rgba(22, 27, 34, 0.65);
@@ -2551,9 +2551,11 @@ body.site-header--collapsed .site-header {
 }
 
 .watch-layout--pinned .watch-player-sticky {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 60;
+  left: var(--watch-pinned-left, 0px);
+  width: var(--watch-pinned-width, 100%);
+  z-index: 999;
   background: var(--bg);
   padding-top: 0.5rem;
 }

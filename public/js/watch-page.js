@@ -729,6 +729,8 @@
       if (!layout) return;
       if (!layout.classList.contains('watch-layout--pinned')) {
         layout.style.removeProperty('--watch-pinned-offset');
+        layout.style.removeProperty('--watch-pinned-left');
+        layout.style.removeProperty('--watch-pinned-width');
         return;
       }
       var sticky = layout.querySelector('.watch-player-sticky');
@@ -736,6 +738,15 @@
       var rect = sticky.getBoundingClientRect();
       var h = Math.max(0, Math.round(rect.height || 0));
       layout.style.setProperty('--watch-pinned-offset', h + 'px');
+
+      var main = layout.querySelector('.watch-main');
+      if (main) {
+        var mr = main.getBoundingClientRect();
+        var left = Math.max(0, Math.round(mr.left || 0));
+        var width = Math.max(0, Math.round(mr.width || 0));
+        layout.style.setProperty('--watch-pinned-left', left + 'px');
+        layout.style.setProperty('--watch-pinned-width', width + 'px');
+      }
     }
 
     function showCommentsPanel() {
