@@ -250,7 +250,7 @@
     var posterUrl = (light.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
     var base = (window.DAOP && window.DAOP.basePath) || '';
     var slug = light.slug || '';
-    var watchHref = base + '/xem-phim/index.html#' + encodeURIComponent(slug);
+    var watchHref = base + '/xem-phim/' + encodeURIComponent(slug) + '.html';
     var posterBg = (light.poster || light.thumb || '').replace(/^\/\//, 'https://');
     var thumbMain = (light.thumb || light.poster || '').replace(/^\/\//, 'https://');
     var title = esc(light.title || '');
@@ -312,14 +312,14 @@
     var showtimes = movie.status === 'theater' && movie.showtimes ? '<p class="meta-line">Lịch chiếu: ' + (movie.showtimes || '').replace(/</g, '&lt;') + '</p>' : '';
 
     var base = (window.DAOP && window.DAOP.basePath) || '';
-    var watchHref = base + '/xem-phim/index.html#' + encodeURIComponent(movie.slug || '');
+    var watchHref = base + '/xem-phim/' + encodeURIComponent(movie.slug || '') + '.html';
     var watchLabel = 'Xem ngay';
     try {
       var us0 = window.DAOP && window.DAOP.userSync;
       if (us0 && typeof us0.getWatchHistory === 'function') {
         var hist0 = us0.getWatchHistory().find(function (x) { return x && x.slug === movie.slug; });
         if (hist0 && hist0.episode) {
-          watchHref = base + '/xem-phim/index.html#' + encodeURIComponent(movie.slug || '') + '?ep=' + encodeURIComponent(String(hist0.episode));
+          watchHref = base + '/xem-phim/' + encodeURIComponent(movie.slug || '') + '.html?ep=' + encodeURIComponent(String(hist0.episode));
           watchLabel = 'Tiếp tục xem';
         }
       }
@@ -348,7 +348,7 @@
       '        <div class="md-hero-cta">' +
       '          <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
       '          <div class="md-actions">' +
-      '            <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+      '            <button type="button" class="md-action-btn movie-fav-btn" data-movie-slug="' + esc(movie.slug || '') + '" aria-label="Yêu thích" aria-pressed="false">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
       '            <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
       '            <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
       '            <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
@@ -393,7 +393,9 @@
     if (grid) grid.className = 'movies-grid';
     setupRecommendToolbar(document.getElementById('md-rec-toolbar'), grid, baseUrl, listRef);
     setupActions(movie);
-    updateFavoriteButton(movie.slug);
+    try {
+      if (window.DAOP && typeof window.DAOP.refreshQuickFavorites === 'function') window.DAOP.refreshQuickFavorites();
+    } catch (e2) {}
 
     if (window.twikoo) {
       twikoo.init({
@@ -415,19 +417,6 @@
     return same.slice(0, limit);
   }
 
-  function updateFavoriteButton(slug) {
-    var us = window.DAOP && window.DAOP.userSync;
-    var btn = document.querySelector('.md-hero .btn-favorite[data-slug="' + String(slug || '').replace(/"/g, '') + '"]') || document.querySelector('.md-hero .btn-favorite') || document.querySelector('.btn-favorite');
-    if (!btn || !us) return;
-    var isFav = us.getFavorites().has(slug);
-    var labelEl = btn.querySelector('.md-action-label');
-    if (labelEl) labelEl.textContent = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
-    else btn.textContent = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
-    btn.onclick = function () {
-      us.toggleFavorite(slug);
-      updateFavoriteButton(slug);
-    };
-  }
   function updateContinueButton(movie) {
     var us = window.DAOP && window.DAOP.userSync;
     var wrap = document.querySelector('.btn-continue-wrap');
@@ -435,7 +424,7 @@
     var hist = us.getWatchHistory().find(function (x) { return x.slug === movie.slug; });
     if (!hist) return;
     var base = (window.DAOP && window.DAOP.basePath) || '';
-    var href = base + '/xem-phim/index.html#' + encodeURIComponent(movie.slug || '') + '?ep=' + encodeURIComponent(String(hist.episode || ''));
+    var href = base + '/xem-phim/' + encodeURIComponent(movie.slug || '') + '.html?ep=' + encodeURIComponent(String(hist.episode || ''));
     wrap.innerHTML = '<a class="btn-continue" href="' + href.replace(/"/g, '&quot;') + '">Tiếp tục xem (Tập ' + (hist.episode || '').replace(/</g, '&lt;') + ')</a>';
   }
   function attachEpisodeButtons(movie) {

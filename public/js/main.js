@@ -287,6 +287,12 @@
     function setBtnState(btn, fav) {
       btn.classList.toggle('is-fav', !!fav);
       btn.setAttribute('aria-pressed', fav ? 'true' : 'false');
+
+      // Nếu là nút dạng "action" có label, cập nhật luôn text.
+      try {
+        var label = btn.querySelector && btn.querySelector('.md-action-label');
+        if (label) label.textContent = fav ? 'Bỏ yêu thích' : 'Yêu thích';
+      } catch (e) {}
     }
 
     function getFavSet() {
@@ -346,6 +352,42 @@
     refreshButtons();
     setTimeout(refreshButtons, 600);
     setTimeout(refreshButtons, 2000);
+  }
+
+  function initHeaderVisibilityToggle() {
+    var header = document.querySelector('.site-header');
+    if (!header) return;
+
+    var btn = document.getElementById('site-header-toggle');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = 'site-header-toggle';
+      btn.className = 'site-header-toggle';
+      btn.setAttribute('aria-label', 'Ẩn/hiện menu');
+      btn.innerHTML = '<span class="site-header-toggle-ico" aria-hidden="true">≡</span>';
+      document.body.appendChild(btn);
+    }
+
+    function shouldDefaultHide() {
+      var p = window.location && window.location.pathname ? window.location.pathname : '';
+      return p.indexOf('/phim/') === 0 || p.indexOf('/xem-phim/') === 0;
+    }
+
+    if (shouldDefaultHide()) {
+      document.body.classList.add('site-header--collapsed');
+    }
+
+    function updateAria() {
+      var collapsed = document.body.classList.contains('site-header--collapsed');
+      btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+    }
+    updateAria();
+
+    btn.addEventListener('click', function () {
+      document.body.classList.toggle('site-header--collapsed');
+      updateAria();
+    });
   }
 
   /** Escape HTML */
@@ -742,6 +784,7 @@
     initMobileNav();
     initScrollToTop();
     initQuickFavorites();
+    initHeaderVisibilityToggle();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', onReady);

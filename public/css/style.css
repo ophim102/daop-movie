@@ -35,13 +35,54 @@ a:hover {
   padding: 0.6rem 1.25rem;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.site-header-toggle {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 120;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: rgba(22, 27, 34, 0.85);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+.site-header-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.site-header-toggle-ico {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+body.site-header--collapsed .site-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .site-header-toggle {
+    top: 0.55rem;
+    right: 0.55rem;
+  }
+}
+
+.site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 @media (min-width: 769px) {
   .site-header {
@@ -2258,12 +2299,6 @@ a:hover {
 .watch-player-sticky {
   position: relative;
 }
-.watch-player-tools {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
 .watch-pin-btn {
   height: 40px;
 }
@@ -2334,13 +2369,14 @@ a:hover {
   background: var(--card);
   padding: 0.75rem;
 }
+
 .watch-episodes-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
 }
-.watch-episodes-toggle {
+.watch-episodes-collapse {
   width: 40px;
   height: 40px;
   border-radius: 999px;
@@ -2353,28 +2389,18 @@ a:hover {
   cursor: pointer;
   flex: 0 0 auto;
 }
-.watch-episodes-toggle:hover {
+.watch-episodes-collapse:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
+.watch-episodes-card--collapsed .watch-episodes-controls,
+.watch-episodes-card--collapsed [data-role="group-row"],
 .watch-episodes-card--collapsed .episodes-grid {
-  max-height: 132px;
-  overflow: hidden;
+  display: none !important;
 }
-.watch-episodes-card--collapsed {
-  position: relative;
-}
-.watch-episodes-card--collapsed::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 46px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0), var(--card));
-  pointer-events: none;
-  border-radius: 12px;
+.watch-episodes-card--collapsed .server-tabs {
+  margin-bottom: 0;
 }
 
 .watch-actions {
@@ -2422,23 +2448,11 @@ a:hover {
   .watch-sidebar--show-comments .watch-episodes-card {
     display: none;
   }
-  .watch-sidebar--show-comments .watch-comments-card {
-    margin-top: 0;
-  }
   .watch-sidebar:not(.watch-sidebar--show-comments) .watch-comments-card {
     display: none;
   }
-  .watch-sidebar:not(.watch-sidebar--show-comments) .watch-recommend-card {
-    display: none;
-  }
-  .watch-sidebar--show-comments .watch-recommend-card {
-    display: block;
-  }
-  .watch-sidebar--show-comments #watch-btn-show-episodes {
-    display: inline-flex;
-  }
-  .watch-sidebar--show-comments #watch-btn-show-comments {
-    display: none;
+  .watch-sidebar--show-comments .watch-comments-card {
+    margin-top: 0;
   }
 }
 
@@ -2463,6 +2477,10 @@ a:hover {
   bottom: -1px;
   height: 1px;
   background: var(--border);
+}
+
+.watch-recommend-full {
+  margin-top: 1.5rem;
 }
 .watch-episodes-controls {
   display: flex;

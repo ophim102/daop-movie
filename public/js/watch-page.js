@@ -46,6 +46,92 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function getWatchRecSettings() {
+    var s = (window.DAOP && window.DAOP.siteSettings) || {};
+    var extra = parseInt(s.category_grid_columns_extra || s.grid_columns_extra || '8', 10);
+    if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+    var usePoster = (s.category_use_poster || s.default_use_poster || 'thumb') === 'poster';
+    var limit = parseInt(s.movie_detail_similar_limit || '16', 10);
+    if (!isFinite(limit) || limit < 4) limit = 16;
+    if (limit > 50) limit = 50;
+    return { extra: extra, usePoster: usePoster, limit: limit };
+  }
+
+  function setupRecommendToolbar(toolbarEl, gridEl, baseUrl, listRef) {
+    if (!toolbarEl || !gridEl) return;
+    var render = window.DAOP && window.DAOP.renderMovieCard;
+    if (!render) return;
+
+    var cfg = getWatchRecSettings();
+    var gridCols = 4;
+    var usePoster = cfg.usePoster;
+    var gridColumnsExtra = cfg.extra;
+
+    function applyGridClass() {
+      [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { gridEl.classList.remove('movies-grid--cols-' + n); });
+      gridEl.classList.add('movies-grid--cols-' + gridCols);
+      toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+        b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols);
+      });
+      var posterSel = toolbarEl.querySelector('.grid-poster-select');
+      if (posterSel) posterSel.value = usePoster ? 'poster' : 'thumb';
+    }
+
+    function rerenderCards() {
+      var list = (listRef && listRef.list) ? listRef.list : [];
+      gridEl.innerHTML = list.map(function (m) { return render(m, baseUrl, { usePoster: usePoster }); }).join('');
+    }
+
+    var extraOpts = '<option value="6"' + (gridColumnsExtra === 6 ? ' selected' : '') + '>6</option>' +
+      '<option value="8"' + (gridColumnsExtra === 8 ? ' selected' : '') + '>8</option>' +
+      '<option value="10"' + (gridColumnsExtra === 10 ? ' selected' : '') + '>10</option>' +
+      '<option value="12"' + (gridColumnsExtra === 12 ? ' selected' : '') + '>12</option>' +
+      '<option value="14"' + (gridColumnsExtra === 14 ? ' selected' : '') + '>14</option>' +
+      '<option value="16"' + (gridColumnsExtra === 16 ? ' selected' : '') + '>16</option>';
+
+    var html = '';
+    html += '<span class="filter-label">Cột:</span>';
+    html += '<button type="button" class="grid-cols-btn' + (2 === gridCols ? ' active' : '') + '" data-cols="2">2</button>';
+    html += '<button type="button" class="grid-cols-btn' + (3 === gridCols ? ' active' : '') + '" data-cols="3">3</button>';
+    html += '<button type="button" class="grid-cols-btn' + (4 === gridCols ? ' active' : '') + '" data-cols="4">4</button>';
+    html += '<select class="grid-cols-select" id="watch-rec-cols-extra" aria-label="Cột thêm">' + extraOpts + '</select>';
+    html += '<button type="button" class="grid-cols-btn' + (gridColumnsExtra === gridCols ? ' active' : '') + '" data-cols="' + gridColumnsExtra + '" id="watch-rec-cols-extra-btn">' + gridColumnsExtra + '</button>';
+    html += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    toolbarEl.innerHTML = html;
+
+    toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        gridCols = parseInt(btn.getAttribute('data-cols'), 10);
+        applyGridClass();
+      });
+    });
+
+    var exSel = toolbarEl.querySelector('#watch-rec-cols-extra');
+    var exBtn = toolbarEl.querySelector('#watch-rec-cols-extra-btn');
+    if (exSel && exBtn) {
+      exSel.addEventListener('change', function () {
+        var oldExtra = gridColumnsExtra;
+        gridColumnsExtra = parseInt(exSel.value, 10);
+        exBtn.textContent = gridColumnsExtra;
+        exBtn.setAttribute('data-cols', gridColumnsExtra);
+        if (gridCols === oldExtra) gridCols = gridColumnsExtra;
+        applyGridClass();
+      });
+    }
+
+    var posterSel = toolbarEl.querySelector('.grid-poster-select');
+    if (posterSel) {
+      posterSel.addEventListener('change', function () {
+        usePoster = this.value === 'poster';
+        rerenderCards();
+        applyGridClass();
+      });
+    }
+
+    rerenderCards();
+    applyGridClass();
+  }
+
   function isDirectVideoLink(url) {
     if (!url) return false;
     var u = String(url);
@@ -295,7 +381,21 @@
     }
 
     function matchServerLabel(srvSlug, serverName) {
-      var matched = Array.isArray(servers) ? servers.find(function (s) { return s && s.slug === srvSlug; }) : null;
+      function norm(t) {
+        if (!t) return '';
+        var s = String(t).toLowerCase();
+        if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        return s;
+      }
+      var targetSlug = srvSlug || '';
+      var targetName = norm(serverName || '');
+      var matched = Array.isArray(servers) ? servers.find(function (s) {
+        if (!s) return false;
+        var sSlug = s.slug || '';
+        var sName = norm(s.name || '');
+        return sSlug === targetSlug || (targetName && sName === targetName);
+      }) : null;
       return (matched && matched.name) || serverName || srvSlug;
     }
 
@@ -571,19 +671,6 @@
     renderAll();
   }
 
-  function updateFavButton(btn, slug) {
-    if (!btn) return;
-    var isFav = false;
-    try {
-      var us = window.DAOP && window.DAOP.userSync;
-      if (us && typeof us.getFavorites === 'function') {
-        isFav = us.getFavorites().has(slug);
-      }
-    } catch (e) {}
-    btn.classList.toggle('is-fav', !!isFav);
-    btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
-  }
-
   function setupActions(movie, root) {
     if (!movie || !root) return;
     var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
@@ -594,15 +681,9 @@
     var btnScrollComments = root.querySelector('#watch-btn-scroll-comments');
     var btnScrollRecommend = root.querySelector('#watch-btn-scroll-recommend');
 
-    if (btnFav) {
-      btnFav.addEventListener('click', function () {
-        var us = window.DAOP && window.DAOP.userSync;
-        if (!us || typeof us.toggleFavorite !== 'function') return;
-        us.toggleFavorite(slug);
-        updateFavButton(btnFav, slug);
-      });
-      updateFavButton(btnFav, slug);
-    }
+    try {
+      if (window.DAOP && typeof window.DAOP.refreshQuickFavorites === 'function') window.DAOP.refreshQuickFavorites();
+    } catch (e0) {}
 
     if (btnShare) {
       btnShare.addEventListener('click', function () {
@@ -640,15 +721,37 @@
       }
     }
 
-    if (btnScrollComments) btnScrollComments.addEventListener('click', function () {
+    function showCommentsPanel() {
+      var sidebar = root.querySelector('.watch-sidebar');
+      if (!sidebar) return;
+      sidebar.classList.add('watch-sidebar--show-comments');
       scrollToId('watch-comments');
-    });
+    }
+
+    function hideCommentsPanel() {
+      var sidebar = root.querySelector('.watch-sidebar');
+      if (!sidebar) return;
+      sidebar.classList.remove('watch-sidebar--show-comments');
+    }
+
+    if (btnScrollComments) btnScrollComments.addEventListener('click', showCommentsPanel);
     if (btnScrollRecommend) btnScrollRecommend.addEventListener('click', function () {
       scrollToId('watch-recommend');
     });
 
     var pinBtn = root.querySelector('#watch-btn-pin');
     if (pinBtn) {
+      (function () {
+        var w = (window.innerWidth || document.documentElement.clientWidth || 0);
+        var shouldPin = w < 1024;
+        var layout0 = root.querySelector('.watch-layout');
+        if (layout0 && shouldPin) layout0.classList.add('watch-layout--pinned');
+        if (layout0 && !shouldPin) layout0.classList.remove('watch-layout--pinned');
+        var nowPinned = !!(layout0 && layout0.classList.contains('watch-layout--pinned'));
+        pinBtn.innerHTML = (nowPinned ? iconSvg('unpin') : iconSvg('pin')) + '<span class="md-action-label">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.setAttribute('aria-pressed', nowPinned ? 'true' : 'false');
+      })();
+
       pinBtn.addEventListener('click', function () {
         var layout = root.querySelector('.watch-layout');
         if (!layout) return;
@@ -658,50 +761,15 @@
       });
     }
 
-    var toggleBtn = root.querySelector('[data-role="episodes-toggle"]');
-    if (toggleBtn) {
-      function updateToggleUi() {
-        var isDesktop = (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
-        if (isDesktop) {
-          toggleBtn.innerHTML = iconSvg('chat') + '<span class="md-action-label">Bình luận</span>';
-          toggleBtn.setAttribute('aria-label', 'Bình luận');
-          toggleBtn.setAttribute('aria-expanded', 'true');
-        } else {
-          toggleBtn.innerHTML = iconSvg('chevDown');
-          toggleBtn.setAttribute('aria-label', 'Ẩn/hiện tập');
-        }
-      }
-      updateToggleUi();
-      window.addEventListener('resize', updateToggleUi);
+    var btnCloseComments = root.querySelector('#watch-btn-close-comments');
+    if (btnCloseComments) btnCloseComments.addEventListener('click', hideCommentsPanel);
 
-      toggleBtn.addEventListener('click', function () {
-        var sidebar = root.querySelector('.watch-sidebar');
+    var btnCollapseEpisodes = root.querySelector('#watch-btn-collapse-episodes');
+    if (btnCollapseEpisodes) {
+      btnCollapseEpisodes.addEventListener('click', function () {
         var epCard = root.querySelector('.watch-episodes-card');
-        if (!sidebar || !epCard) return;
-        var isDesktop = (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
-        if (isDesktop) {
-          sidebar.classList.toggle('watch-sidebar--show-comments');
-        } else {
-          epCard.classList.toggle('watch-episodes-card--collapsed');
-          var expanded = !epCard.classList.contains('watch-episodes-card--collapsed');
-          toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        }
-      });
-    }
-
-    var btnShowEpisodes = root.querySelector('#watch-btn-show-episodes');
-    if (btnShowEpisodes) {
-      btnShowEpisodes.addEventListener('click', function () {
-        var sidebar = root.querySelector('.watch-sidebar');
-        if (sidebar) sidebar.classList.remove('watch-sidebar--show-comments');
-      });
-    }
-
-    var btnShowComments = root.querySelector('#watch-btn-show-comments');
-    if (btnShowComments) {
-      btnShowComments.addEventListener('click', function () {
-        var sidebar = root.querySelector('.watch-sidebar');
-        if (sidebar) sidebar.classList.add('watch-sidebar--show-comments');
+        if (!epCard) return;
+        epCard.classList.toggle('watch-episodes-card--collapsed');
       });
     }
 
@@ -709,19 +777,17 @@
     if (renderCard) {
       var grid = document.getElementById('watch-recommend-grid');
       if (grid) {
-        var limit = 16;
-        try {
-          var s = (window.DAOP && window.DAOP.siteSettings) || {};
-          var l = parseInt(s.movie_detail_similar_limit || '16', 10);
-          if (isFinite(l) && l >= 4) limit = Math.min(50, l);
-        } catch (e4) {}
+        var cfg = getWatchRecSettings();
         var list = (window.moviesLight || []).slice(0);
         var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); });
         var same = list.filter(function (m) {
           if (!m || m.id === movie.id) return false;
           return (m.genre || []).some(function (g) { return genres.indexOf(g && (g.slug || g.id)) !== -1; });
-        }).slice(0, limit);
-        grid.innerHTML = same.map(function (m) { return renderCard(m, baseUrl, {}); }).join('');
+        }).slice(0, cfg.limit);
+
+        var listRef = { list: same };
+        grid.className = 'movies-grid';
+        setupRecommendToolbar(document.getElementById('watch-rec-toolbar'), grid, baseUrl, listRef);
       }
     }
 
@@ -769,9 +835,6 @@
         '<div class="watch-layout">' +
         '  <div class="watch-main">' +
         '    <div class="watch-player-sticky">' +
-        '      <div class="watch-player-tools">' +
-        '        <button type="button" class="md-action-btn watch-pin-btn" id="watch-btn-pin" aria-pressed="false">' + iconSvg('pin') + '<span class="md-action-label">Ghim</span></button>' +
-        '      </div>' +
         '      <div data-role="player"></div>' +
         '    </div>' +
         '    <div class="watch-player-meta" style="margin-top:0.75rem;">' +
@@ -780,9 +843,10 @@
         '          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
         '        </a>' +
         '        <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
+        '        <button type="button" class="md-action-btn watch-pin-btn" id="watch-btn-pin" aria-pressed="false">' + iconSvg('pin') + '<span class="md-action-label">Ghim</span></button>' +
         '      </div>' +
         '      <div class="md-actions watch-actions" style="margin-top:0.6rem;">' +
-        '        <button type="button" class="md-action-btn" id="watch-btn-favorite" data-slug="' + slugSafe + '" aria-pressed="false">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+        '        <button type="button" class="md-action-btn movie-fav-btn" id="watch-btn-favorite" data-movie-slug="' + slugSafe + '" aria-label="Yêu thích" aria-pressed="false">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
         '        <button type="button" class="md-action-btn" id="watch-btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
         '        <button type="button" class="md-action-btn" id="watch-btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
         '        <button type="button" class="md-action-btn" id="watch-btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
@@ -793,7 +857,7 @@
         '    <div class="watch-episodes-card">' +
         '      <div class="watch-episodes-head">' +
         '        <div class="server-tabs" data-role="server-tabs"></div>' +
-        '        <button type="button" class="watch-episodes-toggle" data-role="episodes-toggle" aria-expanded="true" aria-label="Ẩn/hiện tập">' + iconSvg('chevDown') + '</button>' +
+        '        <button type="button" class="watch-episodes-collapse" id="watch-btn-collapse-episodes" aria-label="Thu gọn tập">' + iconSvg('chevDown') + '</button>' +
         '      </div>' +
         '      <div class="watch-episodes-controls watch-episodes-controls--single">' +
         '        <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
@@ -806,19 +870,19 @@
         '    <section id="watch-comments" class="watch-side-card watch-comments-card">' +
         '      <div class="watch-side-head">' +
         '        <div class="watch-side-title">' + iconSvg('chat') + '<span class="watch-side-title-text">Bình luận</span></div>' +
-        '        <button type="button" class="watch-side-back" id="watch-btn-show-episodes" aria-label="Quay lại tập">Tập</button>' +
+        '        <button type="button" class="watch-side-back" id="watch-btn-close-comments" aria-label="Đóng">Đóng</button>' +
         '      </div>' +
         '      <div id="twikoo-watch-comments"></div>' +
         '    </section>' +
-        '    <section id="watch-recommend" class="watch-side-card watch-recommend-card">' +
-        '      <div class="watch-side-head">' +
-        '        <div class="watch-side-title">' + iconSvg('spark') + '<span class="watch-side-title-text">Đề xuất</span></div>' +
-        '        <button type="button" class="watch-side-back" id="watch-btn-show-comments" aria-label="Xem bình luận">BL</button>' +
-        '      </div>' +
-        '      <div class="movies-grid" id="watch-recommend-grid"></div>' +
-        '    </section>' +
         '  </aside>' +
-        '</div>';
+        '</div>' +
+        '<section id="watch-recommend" class="md-section watch-recommend-full">' +
+        '  <div class="md-section-head">' +
+        '    <h3 class="md-section-title">' + iconSvg('spark') + '<span class="md-section-title-text">Đề xuất</span></h3>' +
+        '    <div class="grid-toolbar" id="watch-rec-toolbar" aria-label="Tùy chọn hiển thị"></div>' +
+        '  </div>' +
+        '  <div class="movies-grid" id="watch-recommend-grid"></div>' +
+        '</section>';
 
       var initial = pickInitialEpisode(movie, window.DAOP && window.DAOP.serverSources);
       initEpisodesUI(movie, rootEl, initial);
