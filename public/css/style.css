@@ -75,6 +75,24 @@ body.site-header--collapsed .site-header {
     top: 0.55rem;
     right: 0.55rem;
   }
+
+  body:not(.site-header--collapsed) .site-header-toggle {
+    top: 4.25rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .site-header-toggle {
+    background: var(--accent);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #0d1117;
+    box-shadow: 0 10px 26px rgba(88, 166, 255, 0.35);
+  }
+  .site-header-toggle:hover {
+    background: var(--accent-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #0d1117;
+  }
 }
 
 .site-header {
@@ -2312,6 +2330,13 @@ body.site-header--collapsed .site-header {
   align-items: center;
   gap: 0.5rem;
 }
+.watch-player-meta-title {
+  min-width: 0;
+}
+.watch-pin-btn {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
 .watch-back-btn {
   width: 40px;
   height: 40px;
@@ -2442,6 +2467,24 @@ body.site-header--collapsed .site-header {
 .watch-side-back:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+@media (max-width: 1023px) {
+  .watch-close-text {
+    display: none;
+  }
+}
+
+/* Favorite button in action rows should behave like a normal button, not card overlay */
+.md-actions .movie-fav-btn,
+.watch-actions .movie-fav-btn {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: auto;
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 999px;
 }
 
 @media (min-width: 1024px) {

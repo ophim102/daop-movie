@@ -18,6 +18,9 @@
     if (name === 'unpin') {
       return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 4.3L4.3 3 21 19.7 19.7 21l-4.9-4.9-.8.8-2-2-2 2v-4.2l-2.8-2.8-2 2-2-2 6.6-6.6-.8-.8L6 6.7 3 4.3z"/></svg>';
     }
+    if (name === 'close') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.3 5.7L12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3 1.4 1.4z"/></svg>';
+    }
     if (name === 'chevDown') {
       return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>';
     }
@@ -748,7 +751,7 @@
         if (layout0 && shouldPin) layout0.classList.add('watch-layout--pinned');
         if (layout0 && !shouldPin) layout0.classList.remove('watch-layout--pinned');
         var nowPinned = !!(layout0 && layout0.classList.contains('watch-layout--pinned'));
-        pinBtn.innerHTML = (nowPinned ? iconSvg('unpin') : iconSvg('pin')) + '<span class="md-action-label">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.innerHTML = (nowPinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', nowPinned ? 'true' : 'false');
       })();
 
@@ -756,7 +759,7 @@
         var layout = root.querySelector('.watch-layout');
         if (!layout) return;
         var pinned = layout.classList.toggle('watch-layout--pinned');
-        pinBtn.innerHTML = (pinned ? iconSvg('unpin') : iconSvg('pin')) + '<span class="md-action-label">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
       });
     }
@@ -870,7 +873,7 @@
         '    <section id="watch-comments" class="watch-side-card watch-comments-card">' +
         '      <div class="watch-side-head">' +
         '        <div class="watch-side-title">' + iconSvg('chat') + '<span class="watch-side-title-text">Bình luận</span></div>' +
-        '        <button type="button" class="watch-side-back" id="watch-btn-close-comments" aria-label="Đóng">Đóng</button>' +
+        '        <button type="button" class="watch-side-back" id="watch-btn-close-comments" aria-label="Đóng">' + iconSvg('close') + '<span class="watch-close-text">Đóng</span></button>' +
         '      </div>' +
         '      <div id="twikoo-watch-comments"></div>' +
         '    </section>' +
