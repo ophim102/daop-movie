@@ -11,6 +11,31 @@
       .replace(/"/g, '&quot;');
   }
 
+  function iconSvg(name) {
+    if (name === 'play') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+    }
+    if (name === 'heart') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.35-9.33-8.53C.73 9.1 2.2 6.22 5.09 5.27c1.62-.53 3.42-.05 4.91 1.2 1.48-1.25 3.29-1.73 4.91-1.2 2.89.95 4.36 3.83 2.42 7.2C19 16.65 12 21 12 21z"/></svg>';
+    }
+    if (name === 'share') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.2-3.1a3.1 3.1 0 0 0 0-1.8l6.2-3.1A3 3 0 1 0 14 7a3 3 0 0 0 .1.7L8 10.8a3 3 0 1 0 0 2.4l6.1 3.1a3 3 0 1 0 3.9-.3z"/></svg>';
+    }
+    if (name === 'chat') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 4h16v12H7l-3 3V4zm4 5h8v2H8V9zm0-3h12v2H8V6zm0 6h6v2H8v-2z"/></svg>';
+    }
+    if (name === 'spark') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2l1.2 4.2L17 7.4l-3.6 1.2L12 13l-1.4-4.4L7 7.4l3.8-1.2L12 2zm7 8l.9 3.1L23 14l-3.1.9L19 18l-1-3.1L15 14l3-1 .9-3zM5 12l.9 3.1L9 16l-3.1.9L5 20l-1-3.1L1 16l3-1 .9-3z"/></svg>';
+    }
+    if (name === 'info') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M11 10h2v7h-2v-7zm0-3h2v2h-2V7zm1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>';
+    }
+    if (name === 'chevDown') {
+      return '<svg class="md-ico md-ico-chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+    }
+    return '';
+  }
+
   function getSlug() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -82,6 +107,8 @@
       btnInfo.addEventListener('click', function () {
         infoEl.classList.toggle('md-info--open');
         btnInfo.classList.toggle('md-action-btn--active');
+        btnInfo.classList.toggle('md-info-toggle--open');
+        try { btnInfo.setAttribute('aria-expanded', infoEl.classList.contains('md-info--open') ? 'true' : 'false'); } catch (e) {}
       });
     }
     if (btnComments) {
@@ -141,7 +168,8 @@
     var base = (window.DAOP && window.DAOP.basePath) || '';
     var slug = light.slug || '';
     var watchHref = base + '/xem-phim/index.html#' + encodeURIComponent(slug);
-    var backdrop = (light.thumb || light.poster || '').replace(/^\/\//, 'https://');
+    var posterBg = (light.poster || light.thumb || '').replace(/^\/\//, 'https://');
+    var thumbMain = (light.thumb || light.poster || '').replace(/^\/\//, 'https://');
     var title = esc(light.title || '');
     var origin = esc(light.origin_name || '');
     var year = esc(light.year || '');
@@ -149,26 +177,36 @@
     var html = '' +
       '<div class="md-page">' +
       '  <div class="md-hero">' +
-      '    <div class="md-hero-bg" style="background-image:url(' + esc(backdrop || posterUrl) + ')"></div>' +
+      '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || posterUrl) + ')"></div>' +
       '    <div class="md-hero-inner">' +
-      '      <div class="md-thumb"><img src="' + esc(posterUrl) + '" alt=""></div>' +
+      '      <div class="md-thumb"><img src="' + esc(thumbMain || posterUrl) + '" alt=""></div>' +
       '      <div class="md-title">' + title + '</div>' +
       (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
       (metaLine.trim() ? '      <div class="md-meta">' + esc(metaLine) + '</div>' : '') +
-      '      <a class="md-watch" href="' + esc(watchHref) + '">Xem ngay</a>' +
+      '      <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">Xem ngay</span></a>' +
       '      <div class="md-actions">' +
-      '        <button type="button" class="md-action-btn" id="btn-share">Chia sẻ</button>' +
+      '        <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '      </div>' +
+      '      <div class="md-info-toggle-row">' +
+      '        <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '      </div>' +
       '    </div>' +
+      '  </div>' +
+      '  <div class="md-content">' +
+      '    <section id="movie-info" class="md-info">' +
+      '      <div class="md-desc"></div>' +
+      '    </section>' +
       '  </div>' +
       '</div>';
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
+    setupActions(light);
   }
 
   function renderFull(movie) {
     var poster = (movie.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
-    var backdrop = (movie.thumb || movie.poster || '').replace(/^\/\//, 'https://');
+    var posterBg = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
+    var thumbMain = (movie.thumb || movie.poster || '').replace(/^\/\//, 'https://');
     var title = (movie.title || '').replace(/</g, '&lt;');
     var origin = (movie.origin_name || '').replace(/</g, '&lt;');
     var genreStr = (movie.genre || []).map(function (g) { return g.name; }).join(', ');
@@ -213,19 +251,21 @@
     var html = '' +
       '<div class="md-page">' +
       '  <div class="md-hero">' +
-      '    <div class="md-hero-bg" style="background-image:url(' + esc(backdrop || poster) + ')"></div>' +
+      '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || poster) + ')"></div>' +
       '    <div class="md-hero-inner">' +
-      '      <div class="md-thumb"><img src="' + esc(poster) + '" alt=""></div>' +
+      '      <div class="md-thumb"><img src="' + esc(thumbMain || poster) + '" alt=""></div>' +
       '      <div class="md-title">' + title + '</div>' +
       (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
       '      <div class="md-meta">' + esc((movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '')) + '</div>' +
-      '      <a class="md-watch" href="' + esc(watchHref) + '">' + esc(watchLabel) + '</a>' +
+      '      <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
       '      <div class="md-actions">' +
-      '        <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">Yêu thích</button>' +
-      '        <button type="button" class="md-action-btn" id="btn-share">Chia sẻ</button>' +
-      '        <button type="button" class="md-action-btn" id="btn-scroll-comments">Bình luận</button>' +
-      '        <button type="button" class="md-action-btn" id="btn-scroll-recommend">Đề xuất</button>' +
-      '        <button type="button" class="md-action-btn" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">Thông tin</button>' +
+      '        <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+      '        <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '        <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
+      '        <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+      '      </div>' +
+      '      <div class="md-info-toggle-row">' +
+      '        <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
@@ -235,12 +275,12 @@
       (infoHtml ? '      <div class="md-info-grid">' + infoHtml + '</div>' : '') +
       '    </section>' +
       '    <section id="movie-comments" class="md-section">' +
-      '      <h3 class="md-section-title">Bình luận</h3>' +
+      '      <h3 class="md-section-title">' + iconSvg('chat') + '<span class="md-section-title-text">Bình luận</span></h3>' +
       '      <div id="twikoo-comments"></div>' +
       '    </section>' +
       '    <section id="movie-recommend" class="md-section">' +
       '      <div class="md-section-head">' +
-      '        <h3 class="md-section-title">Đề xuất</h3>' +
+      '        <h3 class="md-section-title">' + iconSvg('spark') + '<span class="md-section-title-text">Đề xuất</span></h3>' +
       '        <div class="md-col-picker" id="md-col-picker">' +
       '          <button type="button" class="md-col-btn" data-cols="2">2</button>' +
       '          <button type="button" class="md-col-btn" data-cols="3">3</button>' +
@@ -257,7 +297,7 @@
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
 
-    var similar = getSimilar(movie);
+    var similar = getSimilar(movie, 16);
     var grid = document.getElementById('similar-grid');
     if (grid && similar.length) grid.innerHTML = similar.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('');
 
@@ -275,7 +315,7 @@
   }
 
   function getSimilar(movie, limit) {
-    limit = limit || 8;
+    limit = limit || 16;
     var list = window.moviesLight || [];
     var genres = (movie.genre || []).map(function (g) { return g.slug || g.id; });
     var same = list.filter(function (m) {
@@ -290,7 +330,9 @@
     var btn = document.querySelector('.btn-favorite');
     if (!btn || !us) return;
     var isFav = us.getFavorites().has(slug);
-    btn.textContent = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
+    var labelEl = btn.querySelector('.md-action-label');
+    if (labelEl) labelEl.textContent = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
+    else btn.textContent = isFav ? 'Bỏ yêu thích' : 'Yêu thích';
     btn.onclick = function () {
       us.toggleFavorite(slug);
       updateFavoriteButton(slug);
