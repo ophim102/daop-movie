@@ -1961,6 +1961,7 @@ a:hover {
   justify-content: space-between;
   flex-wrap: nowrap;
   margin-top: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 .watch-episodes-controls--single .episodes-ui-select {
   height: 34px;
