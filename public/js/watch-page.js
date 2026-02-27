@@ -1,4 +1,29 @@
 (function () {
+  function iconSvg(name) {
+    if (name === 'heart') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-10-9c-2-3.3 0.2-8 5-8 2 0 3.4 1 5 3 1.6-2 3-3 5-3 4.8 0 7 4.7 5 8-3 4.4-10 9-10 9z"/></svg>';
+    }
+    if (name === 'share') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16.1c-.8 0-1.5.3-2 .8L8.9 12.7c.1-.2.1-.5.1-.7s0-.5-.1-.7l7-4.1c.5.5 1.2.8 2 .8 1.7 0 3-1.3 3-3S19.7 2 18 2s-3 1.3-3 3c0 .2 0 .5.1.7l-7 4.1C7.6 10.3 6.9 10 6 10c-1.7 0-3 1.3-3 3s1.3 3 3 3c.9 0 1.6-.3 2.1-.8l7.1 4.2c-.1.2-.1.4-.1.6 0 1.7 1.3 3 3 3s3-1.3 3-3-1.3-3-3-3z"/></svg>';
+    }
+    if (name === 'chat') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M4 4h16v12H7l-3 3V4zm3 5h10v2H7V9zm0-3h10v2H7V6zm0 6h7v2H7v-2z"/></svg>';
+    }
+    if (name === 'spark') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2l1.2 4.3L17.5 8l-4.3 1.2L12 13.5l-1.2-4.3L6.5 8l4.3-1.7L12 2zm7 9l.8 2.8L22 15l-2.2.7L19 18l-.8-2.3L16 15l2.2-.7L19 11zM4.5 13l.7 2.5L7.5 16l-2.3.7L4.5 19l-.7-2.3L1.5 16l2.3-.5L4.5 13z"/></svg>';
+    }
+    if (name === 'pin') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M14 3l7 7-2 2-2-2-3 3v7l-2-2-2 2v-7l-3-3-2 2-2-2 7-7h4z"/></svg>';
+    }
+    if (name === 'unpin') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 4.3L4.3 3 21 19.7 19.7 21l-4.9-4.9-.8.8-2-2-2 2v-4.2l-2.8-2.8-2 2-2-2 6.6-6.6-.8-.8L6 6.7 3 4.3z"/></svg>';
+    }
+    if (name === 'chevDown') {
+      return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>';
+    }
+    return '';
+  }
+
   function getSlug() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -546,6 +571,171 @@
     renderAll();
   }
 
+  function updateFavButton(btn, slug) {
+    if (!btn) return;
+    var isFav = false;
+    try {
+      var us = window.DAOP && window.DAOP.userSync;
+      if (us && typeof us.getFavorites === 'function') {
+        isFav = us.getFavorites().has(slug);
+      }
+    } catch (e) {}
+    btn.classList.toggle('is-fav', !!isFav);
+    btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+  }
+
+  function setupActions(movie, root) {
+    if (!movie || !root) return;
+    var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+    var slug = movie.slug || '';
+
+    var btnFav = root.querySelector('#watch-btn-favorite');
+    var btnShare = root.querySelector('#watch-btn-share');
+    var btnScrollComments = root.querySelector('#watch-btn-scroll-comments');
+    var btnScrollRecommend = root.querySelector('#watch-btn-scroll-recommend');
+
+    if (btnFav) {
+      btnFav.addEventListener('click', function () {
+        var us = window.DAOP && window.DAOP.userSync;
+        if (!us || typeof us.toggleFavorite !== 'function') return;
+        us.toggleFavorite(slug);
+        updateFavButton(btnFav, slug);
+      });
+      updateFavButton(btnFav, slug);
+    }
+
+    if (btnShare) {
+      btnShare.addEventListener('click', function () {
+        var url = window.location.href;
+        try {
+          if (navigator.share) {
+            navigator.share({ title: movie.title || '', url: url });
+            return;
+          }
+        } catch (e) {}
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url);
+            return;
+          }
+        } catch (e2) {}
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = url;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch (e3) {}
+      });
+    }
+
+    function scrollToId(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      try {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (e) {
+        window.location.hash = '#' + id;
+      }
+    }
+
+    if (btnScrollComments) btnScrollComments.addEventListener('click', function () {
+      scrollToId('watch-comments');
+    });
+    if (btnScrollRecommend) btnScrollRecommend.addEventListener('click', function () {
+      scrollToId('watch-recommend');
+    });
+
+    var pinBtn = root.querySelector('#watch-btn-pin');
+    if (pinBtn) {
+      pinBtn.addEventListener('click', function () {
+        var layout = root.querySelector('.watch-layout');
+        if (!layout) return;
+        var pinned = layout.classList.toggle('watch-layout--pinned');
+        pinBtn.innerHTML = (pinned ? iconSvg('unpin') : iconSvg('pin')) + '<span class="md-action-label">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+      });
+    }
+
+    var toggleBtn = root.querySelector('[data-role="episodes-toggle"]');
+    if (toggleBtn) {
+      function updateToggleUi() {
+        var isDesktop = (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+        if (isDesktop) {
+          toggleBtn.innerHTML = iconSvg('chat') + '<span class="md-action-label">Bình luận</span>';
+          toggleBtn.setAttribute('aria-label', 'Bình luận');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          toggleBtn.innerHTML = iconSvg('chevDown');
+          toggleBtn.setAttribute('aria-label', 'Ẩn/hiện tập');
+        }
+      }
+      updateToggleUi();
+      window.addEventListener('resize', updateToggleUi);
+
+      toggleBtn.addEventListener('click', function () {
+        var sidebar = root.querySelector('.watch-sidebar');
+        var epCard = root.querySelector('.watch-episodes-card');
+        if (!sidebar || !epCard) return;
+        var isDesktop = (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+        if (isDesktop) {
+          sidebar.classList.toggle('watch-sidebar--show-comments');
+        } else {
+          epCard.classList.toggle('watch-episodes-card--collapsed');
+          var expanded = !epCard.classList.contains('watch-episodes-card--collapsed');
+          toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        }
+      });
+    }
+
+    var btnShowEpisodes = root.querySelector('#watch-btn-show-episodes');
+    if (btnShowEpisodes) {
+      btnShowEpisodes.addEventListener('click', function () {
+        var sidebar = root.querySelector('.watch-sidebar');
+        if (sidebar) sidebar.classList.remove('watch-sidebar--show-comments');
+      });
+    }
+
+    var btnShowComments = root.querySelector('#watch-btn-show-comments');
+    if (btnShowComments) {
+      btnShowComments.addEventListener('click', function () {
+        var sidebar = root.querySelector('.watch-sidebar');
+        if (sidebar) sidebar.classList.add('watch-sidebar--show-comments');
+      });
+    }
+
+    var renderCard = window.DAOP && window.DAOP.renderMovieCard;
+    if (renderCard) {
+      var grid = document.getElementById('watch-recommend-grid');
+      if (grid) {
+        var limit = 16;
+        try {
+          var s = (window.DAOP && window.DAOP.siteSettings) || {};
+          var l = parseInt(s.movie_detail_similar_limit || '16', 10);
+          if (isFinite(l) && l >= 4) limit = Math.min(50, l);
+        } catch (e4) {}
+        var list = (window.moviesLight || []).slice(0);
+        var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); });
+        var same = list.filter(function (m) {
+          if (!m || m.id === movie.id) return false;
+          return (m.genre || []).some(function (g) { return genres.indexOf(g && (g.slug || g.id)) !== -1; });
+        }).slice(0, limit);
+        grid.innerHTML = same.map(function (m) { return renderCard(m, baseUrl, {}); }).join('');
+      }
+    }
+
+    if (window.twikoo) {
+      try {
+        twikoo.init({
+          envId: (window.DAOP && window.DAOP.twikooEnvId) || '',
+          el: '#twikoo-watch-comments',
+          path: window.location.pathname,
+        });
+      } catch (e5) {}
+    }
+  }
+
   function init() {
     var slug = getSlug();
     var rootEl = document.getElementById('watch-page');
@@ -571,20 +761,19 @@
 
       var poster = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
       var title = (movie.title || '').replace(/</g, '&lt;');
-      var origin = (movie.origin_name || '').replace(/</g, '&lt;');
-      var year = esc(movie.year || '');
-      var quality = esc(movie.quality || '');
-      var epCur = esc(movie.episode_current || '');
 
-      var metaParts = [];
-      if (year) metaParts.push(year);
-      if (quality) metaParts.push(quality);
-      if (epCur) metaParts.push(epCur);
+      var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+      var slugSafe = esc(movie.slug || slug);
 
       rootEl.innerHTML =
         '<div class="watch-layout">' +
         '  <div class="watch-main">' +
-        '    <div data-role="player"></div>' +
+        '    <div class="watch-player-sticky">' +
+        '      <div class="watch-player-tools">' +
+        '        <button type="button" class="md-action-btn watch-pin-btn" id="watch-btn-pin" aria-pressed="false">' + iconSvg('pin') + '<span class="md-action-label">Ghim</span></button>' +
+        '      </div>' +
+        '      <div data-role="player"></div>' +
+        '    </div>' +
         '    <div class="watch-player-meta" style="margin-top:0.75rem;">' +
         '      <div class="watch-player-meta-head">' +
         '        <a class="watch-back-btn" href="/phim/' + esc(movie.slug || slug) + '.html" aria-label="Về trang chi tiết">' +
@@ -592,13 +781,20 @@
         '        </a>' +
         '        <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
         '      </div>' +
-        (origin ? '      <div class="watch-player-meta-origin" style="color:var(--muted);margin-top:0.25rem;">' + origin + '</div>' : '') +
-        (metaParts.length ? '      <div class="watch-player-meta-sub" style="color:var(--muted);margin-top:0.25rem;">' + esc(metaParts.join(' • ')) + '</div>' : '') +
+        '      <div class="md-actions watch-actions" style="margin-top:0.6rem;">' +
+        '        <button type="button" class="md-action-btn" id="watch-btn-favorite" data-slug="' + slugSafe + '" aria-pressed="false">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+        '        <button type="button" class="md-action-btn" id="watch-btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+        '        <button type="button" class="md-action-btn" id="watch-btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
+        '        <button type="button" class="md-action-btn" id="watch-btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+        '      </div>' +
         '    </div>' +
         '  </div>' +
         '  <aside class="watch-sidebar">' +
         '    <div class="watch-episodes-card">' +
-        '      <div class="server-tabs" data-role="server-tabs"></div>' +
+        '      <div class="watch-episodes-head">' +
+        '        <div class="server-tabs" data-role="server-tabs"></div>' +
+        '        <button type="button" class="watch-episodes-toggle" data-role="episodes-toggle" aria-expanded="true" aria-label="Ẩn/hiện tập">' + iconSvg('chevDown') + '</button>' +
+        '      </div>' +
         '      <div class="watch-episodes-controls watch-episodes-controls--single">' +
         '        <label class="watch-episodes-linktype"><span class="episodes-ui-label">Máy chủ</span><select class="episodes-ui-select" data-role="link-type"></select></label>' +
         '        <div class="episodes-ui-row watch-episodes-group" data-role="group-row" style="display:none;">' +
@@ -607,11 +803,26 @@
         '      </div>' +
         '      <div class="episodes-grid" data-role="episodes"></div>' +
         '    </div>' +
+        '    <section id="watch-comments" class="watch-side-card watch-comments-card">' +
+        '      <div class="watch-side-head">' +
+        '        <div class="watch-side-title">' + iconSvg('chat') + '<span class="watch-side-title-text">Bình luận</span></div>' +
+        '        <button type="button" class="watch-side-back" id="watch-btn-show-episodes" aria-label="Quay lại tập">Tập</button>' +
+        '      </div>' +
+        '      <div id="twikoo-watch-comments"></div>' +
+        '    </section>' +
+        '    <section id="watch-recommend" class="watch-side-card watch-recommend-card">' +
+        '      <div class="watch-side-head">' +
+        '        <div class="watch-side-title">' + iconSvg('spark') + '<span class="watch-side-title-text">Đề xuất</span></div>' +
+        '        <button type="button" class="watch-side-back" id="watch-btn-show-comments" aria-label="Xem bình luận">BL</button>' +
+        '      </div>' +
+        '      <div class="movies-grid" id="watch-recommend-grid"></div>' +
+        '    </section>' +
         '  </aside>' +
         '</div>';
 
       var initial = pickInitialEpisode(movie, window.DAOP && window.DAOP.serverSources);
       initEpisodesUI(movie, rootEl, initial);
+      setupActions(movie, rootEl);
     });
   }
 

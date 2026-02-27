@@ -83,6 +83,7 @@
         return fetch('/data/config/site-settings.json' + q).then(function (r) { return r.json(); }).then(function (s) {
           window.DAOP.siteName = s.site_name || 'GoTV';
           window.DAOP.siteSettings = s;
+          window.DAOP.twikooEnvId = s.twikoo_env_id || '';
           window.DAOP.supabaseUserUrl = s.supabase_user_url || '';
           window.DAOP.supabaseUserAnonKey = s.supabase_user_anon_key || '';
           return fetch('/data/config/server-sources.json' + q);
@@ -101,6 +102,7 @@
   </script>
   <script src="/js/main.js"></script>
   <script src="/js/user-sync.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.16/dist/twikoo.all.min.js"></script>
   <script src="/js/watch-page.js"></script>
 </body>
 </html>

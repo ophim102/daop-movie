@@ -267,16 +267,18 @@
       '        <div class="md-title">' + title + '</div>' +
       (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
       (metaLine.trim() ? '        <div class="md-meta">' + esc(metaLine) + '</div>' : '') +
-      '        <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">Xem ngay</span></a>' +
-      '        <div class="md-actions">' +
-      '          <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '        <div class="md-hero-cta">' +
+      '          <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">Xem ngay</span></a>' +
+      '          <div class="md-actions">' +
+      '            <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '          </div>' +
       '        </div>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
       '    <section class="md-section md-info-toggle-section">' +
-      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
+      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-info-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
       '    </section>' +
       '    <section id="movie-info" class="md-info">' +
       '      <div class="md-desc"></div>' +
@@ -343,29 +345,35 @@
       '        <div class="md-title">' + title + '</div>' +
       (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
       '        <div class="md-meta">' + esc((movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '')) + '</div>' +
-      '        <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
-      '        <div class="md-actions">' +
-      '          <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
-      '          <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
-      '          <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
-      '          <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+      '        <div class="md-hero-cta">' +
+      '          <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
+      '          <div class="md-actions">' +
+      '            <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+      '            <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '            <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
+      '            <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+      '          </div>' +
       '        </div>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
-      '    <section class="md-section md-info-toggle-section">' +
-      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
-      '    </section>' +
-      '    <section id="movie-info" class="md-info">' +
-      '      <div class="md-desc">' + desc + '</div>' +
-      (infoHtml ? '      <div class="md-info-grid">' + infoHtml + '</div>' : '') +
-      '    </section>' +
-      '    <section id="movie-comments" class="md-section">' +
-      '      <h3 class="md-section-title">' + iconSvg('chat') + '<span class="md-section-title-text">Bình luận</span></h3>' +
-      '      <div id="twikoo-comments"></div>' +
-      '    </section>' +
-      '    <section id="movie-recommend" class="md-section">' +
+      '    <div class="md-left">' +
+      '      <section class="md-section md-info-toggle-section">' +
+      '        <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-info-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
+      '      </section>' +
+      '      <section id="movie-info" class="md-info">' +
+      '        <div class="md-desc">' + desc + '</div>' +
+      (infoHtml ? '        <div class="md-info-grid">' + infoHtml + '</div>' : '') +
+      '      </section>' +
+      '    </div>' +
+      '    <div class="md-right">' +
+      '      <section id="movie-comments" class="md-section">' +
+      '        <h3 class="md-section-title">' + iconSvg('chat') + '<span class="md-section-title-text">Bình luận</span></h3>' +
+      '        <div id="twikoo-comments"></div>' +
+      '      </section>' +
+      '    </div>' +
+      '    <section id="movie-recommend" class="md-section md-recommend">' +
       '      <div class="md-section-head">' +
       '        <h3 class="md-section-title">' + iconSvg('spark') + '<span class="md-section-title-text">Đề xuất</span></h3>' +
       '        <div class="grid-toolbar" id="md-rec-toolbar" aria-label="Tùy chọn hiển thị"></div>' +
@@ -374,7 +382,6 @@
       '    </section>' +
       '  </div>' +
       '</div>';
-
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
 
@@ -410,7 +417,7 @@
 
   function updateFavoriteButton(slug) {
     var us = window.DAOP && window.DAOP.userSync;
-    var btn = document.querySelector('.btn-favorite');
+    var btn = document.querySelector('.md-hero .btn-favorite[data-slug="' + String(slug || '').replace(/"/g, '') + '"]') || document.querySelector('.md-hero .btn-favorite') || document.querySelector('.btn-favorite');
     if (!btn || !us) return;
     var isFav = us.getFavorites().has(slug);
     var labelEl = btn.querySelector('.md-action-label');
