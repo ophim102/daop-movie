@@ -1930,6 +1930,7 @@ a:hover {
 }
 .watch-player-wrap {
   background: #000;
+  position: relative;
 }
 .watch-player-wrap video,
 .watch-player-wrap iframe {
@@ -1942,6 +1943,60 @@ a:hover {
 .watch-player-empty {
   padding: 1rem;
   color: var(--muted);
+}
+
+.watch-back-row {
+  display: flex;
+  justify-content: flex-start;
+}
+.watch-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+}
+.watch-back-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.watch-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.watch-next-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  z-index: 2;
+}
+.watch-next-btn {
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+.watch-next-btn:hover {
+  background: rgba(255,255,255,0.18);
+}
+.watch-next-count {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.9);
 }
 
 .watch-episodes-card {

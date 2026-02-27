@@ -159,7 +159,13 @@
 
     container.innerHTML =
       '<div class="watch-player-card">' +
-      '<div class="watch-player-wrap">' + playerHtml + '</div>' +
+      '<div class="watch-player-wrap">' +
+      playerHtml +
+      '<div class="watch-next-overlay" data-role="next-overlay" style="display:none;">' +
+      '  <button type="button" class="watch-next-btn" data-role="next-btn">Tập tiếp theo</button>' +
+      '  <div class="watch-next-count" data-role="next-count"></div>' +
+      '</div>' +
+      '</div>' +
       '</div>';
 
     var video = document.getElementById('watch-video');
@@ -306,6 +312,62 @@
       episode: (initial && initial.episode) || '',
       groupIdx: 0
     };
+
+    var nextTimer = null;
+    var nextRemain = 0;
+    var nextTargetEpisode = '';
+
+    function clearNextTimer() {
+      if (nextTimer) {
+        clearInterval(nextTimer);
+        nextTimer = null;
+      }
+      nextRemain = 0;
+      nextTargetEpisode = '';
+    }
+
+    function hideNextOverlay() {
+      var host = root.querySelector('[data-role="player"]');
+      if (!host) return;
+      var overlay = host.querySelector('[data-role="next-overlay"]');
+      if (overlay) overlay.style.display = 'none';
+      clearNextTimer();
+    }
+
+    function playEpisode(code) {
+      if (!code) return;
+      hideNextOverlay();
+      state.episode = String(code);
+      renderEpisodes();
+      updatePlayer();
+    }
+
+    function startNextCountdown(nextCode) {
+      var host = root.querySelector('[data-role="player"]');
+      if (!host) return;
+      var overlay = host.querySelector('[data-role="next-overlay"]');
+      var btn = host.querySelector('[data-role="next-btn"]');
+      var countEl = host.querySelector('[data-role="next-count"]');
+      if (!overlay || !btn || !countEl) return;
+
+      clearNextTimer();
+      nextTargetEpisode = String(nextCode);
+      nextRemain = 5;
+
+      overlay.style.display = '';
+      countEl.textContent = 'Tự phát sau ' + nextRemain + 's';
+      btn.onclick = function () { playEpisode(nextTargetEpisode); };
+
+      nextTimer = setInterval(function () {
+        nextRemain -= 1;
+        if (nextRemain <= 0) {
+          clearNextTimer();
+          playEpisode(nextTargetEpisode);
+          return;
+        }
+        countEl.textContent = 'Tự phát sau ' + nextRemain + 's';
+      }, 1000);
+    }
 
     function getServerInfo(slug) {
       return serversData.find(function (s) { return s.slug === slug; }) || serversData[0];
@@ -454,6 +516,23 @@
         slug: movie.slug,
         episode: state.episode
       });
+
+      var host = root.querySelector('[data-role="player"]');
+      if (!host) return;
+      var video = host.querySelector('#watch-video');
+      if (!video) return;
+
+      hideNextOverlay();
+      video.addEventListener('ended', function () {
+        var currentInfo = getServerInfo(state.server);
+        var list = filterEpisodesByType(currentInfo, state.linkType);
+        if (!list.length) list = currentInfo.episodes || [];
+        var idx = list.findIndex(function (e) { return e && e.code === state.episode; });
+        if (idx < 0) return;
+        var next = list[idx + 1];
+        if (!next || !next.code) return;
+        startNextCountdown(next.code);
+      }, { once: true });
     }
 
     function renderAll() {
@@ -510,8 +589,10 @@
         '      <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
         (origin ? '      <div class="watch-player-meta-origin" style="color:var(--muted);margin-top:0.25rem;">' + origin + '</div>' : '') +
         (metaParts.length ? '      <div class="watch-player-meta-sub" style="color:var(--muted);margin-top:0.25rem;">' + esc(metaParts.join(' • ')) + '</div>' : '') +
-        '      <div class="login-actions" style="margin-top:0.65rem;">' +
-        '        <a class="login-btn" href="/phim/' + esc(movie.slug || slug) + '.html">Về trang chi tiết</a>' +
+        '      <div class="watch-back-row" style="margin-top:0.65rem;">' +
+        '        <a class="watch-back-btn" href="/phim/' + esc(movie.slug || slug) + '.html" aria-label="Về trang chi tiết">' +
+        '          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '        </a>' +
         '      </div>' +
         '    </div>' +
         '  </div>' +
