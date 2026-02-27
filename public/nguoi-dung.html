@@ -54,21 +54,20 @@
         <span class="user-menu-title"><span class="user-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7l2 14h12l2-14-5 4-3-6-3 6-5-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>Đăng ký VIP</span>
         <span class="user-menu-desc">VIP ONE - thời hạn 999 năm</span>
       </a>
+
+      <a class="user-menu-item user-menu-item--logout" href="#" id="btn-dashboard-logout" role="button" aria-haspopup="dialog" aria-controls="logout-confirm">
+        <span class="user-menu-title"><span class="user-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 17l1.5 1.5L17 13l-5.5-5.5L10 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 13H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 3v18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>Đăng xuất</span>
+        <span class="user-menu-desc">Thoát tài khoản hiện tại</span>
+      </a>
     </div>
 
-    <section class="user-section" style="margin-top:1rem;">
-      <h2 style="margin:0 0 0.75rem;">Đăng xuất</h2>
+    <div id="logout-confirm" class="login-form" style="display:none;margin-top:0.75rem;" role="dialog" aria-modal="true" aria-label="Xác nhận đăng xuất">
+      <p class="login-status" style="margin-top:0;">Bạn có chắc muốn đăng xuất không?</p>
       <div class="login-actions">
-        <button type="button" id="btn-dashboard-logout" class="login-btn" aria-haspopup="dialog" aria-controls="logout-confirm">Đăng xuất</button>
+        <button type="button" id="btn-dashboard-logout-confirm" class="login-btn login-btn--primary">Xác nhận đăng xuất</button>
+        <button type="button" id="btn-dashboard-logout-cancel" class="login-btn">Hủy</button>
       </div>
-      <div id="logout-confirm" class="login-form" style="display:none;margin-top:0.75rem;" role="dialog" aria-modal="true" aria-label="Xác nhận đăng xuất">
-        <p class="login-status" style="margin-top:0;">Bạn có chắc muốn đăng xuất không?</p>
-        <div class="login-actions">
-          <button type="button" id="btn-dashboard-logout-confirm" class="login-btn login-btn--primary">Xác nhận đăng xuất</button>
-          <button type="button" id="btn-dashboard-logout-cancel" class="login-btn">Hủy</button>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">

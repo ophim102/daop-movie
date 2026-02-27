@@ -529,6 +529,7 @@ a:hover {
 .user-menu-item--favorites .user-menu-title { color: #f85149; }
 .user-menu-item--history .user-menu-title { color: #3fb950; }
 .user-menu-item--vip .user-menu-title { color: #d2a8ff; }
+.user-menu-item--logout .user-menu-title { color: #ff7b72; }
 .user-menu-item:hover {
   border-color: var(--accent);
 }

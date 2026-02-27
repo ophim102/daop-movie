@@ -77,7 +77,8 @@
         if (window.DAOP && window.DAOP.updateAuthNav) window.DAOP.updateAuthNav();
 
         if (btnLogout && logoutConfirm) {
-          btnLogout.addEventListener('click', function () {
+          btnLogout.addEventListener('click', function (e) {
+            if (e && e.preventDefault) e.preventDefault();
             logoutConfirm.style.display = logoutConfirm.style.display === 'none' ? '' : 'none';
           });
         }
