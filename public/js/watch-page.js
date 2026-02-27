@@ -757,12 +757,22 @@
       var w = window.innerWidth || document.documentElement.clientWidth || 0;
       if (w >= 1024) {
         var sidebar = layout.querySelector('.watch-sidebar');
+        var mainEl = layout.querySelector('.watch-main');
         if (sidebar) {
-          var sr = sidebar.getBoundingClientRect();
-          var sLeft = Math.max(0, Math.round(sr.left || 0));
-          var sWidth = Math.max(0, Math.round(sr.width || 0));
-          layout.style.setProperty('--watch-sidebar-left', sLeft + 'px');
-          layout.style.setProperty('--watch-sidebar-width', sWidth + 'px');
+          var lr = layout.getBoundingClientRect();
+          var sw = Math.max(0, Math.round(sidebar.offsetWidth || 0));
+          if (!sw) sw = 360;
+
+          var computedLeft = Math.max(0, Math.round((lr.right || 0) - sw));
+
+          if (mainEl) {
+            var mrr = mainEl.getBoundingClientRect();
+            var minLeft = Math.round((mrr.right || 0) + 16);
+            if (computedLeft < minLeft) computedLeft = minLeft;
+          }
+
+          layout.style.setProperty('--watch-sidebar-left', computedLeft + 'px');
+          layout.style.setProperty('--watch-sidebar-width', sw + 'px');
         }
       } else {
         layout.style.removeProperty('--watch-sidebar-left');
@@ -799,7 +809,10 @@
       function showPinTemporarily() {
         pinBtn.classList.remove('is-auto-hidden');
         if (pinHideTimer) clearTimeout(pinHideTimer);
-        if (!pinShouldAutoHide()) return;
+        if (!pinShouldAutoHide()) {
+          pinBtn.classList.remove('is-auto-hidden');
+          return;
+        }
         pinHideTimer = setTimeout(function () {
           if (!pinShouldAutoHide()) return;
           pinBtn.classList.add('is-auto-hidden');
@@ -809,9 +822,12 @@
         showPinTemporarily();
       }
 
-      ['mousemove', 'mousedown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
-        window.addEventListener(ev, onPinUserActivity, { passive: true });
-      });
+      if (!window.__daopPinAutoHideListenersBound) {
+        window.__daopPinAutoHideListenersBound = true;
+        ['mousedown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
+          window.addEventListener(ev, onPinUserActivity, { passive: true, capture: true });
+        });
+      }
 
       (function () {
         var w = (window.innerWidth || document.documentElement.clientWidth || 0);
@@ -833,6 +849,10 @@
         pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
         updatePinnedOffset();
+        if (pinHideTimer) {
+          clearTimeout(pinHideTimer);
+          pinHideTimer = null;
+        }
         showPinTemporarily();
       });
     }

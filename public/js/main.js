@@ -396,10 +396,11 @@
     var hideTimer = null;
     function showBtnTemporarily() {
       btn.classList.remove('is-auto-hidden');
-      if (hideTimer) clearTimeout(hideTimer);
-      if (document.body.classList.contains('watch-player--pinned')) {
-        return;
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
       }
+      if (document.body.classList.contains('watch-player--pinned')) return;
       hideTimer = setTimeout(function () {
         btn.classList.add('is-auto-hidden');
       }, 3000);

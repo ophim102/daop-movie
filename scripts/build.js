@@ -16,7 +16,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const PUBLIC_DATA = path.join(ROOT, 'public', 'data');
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 120;
 const OPHIM_DELAY_MS = 200;
 
 const OPHIM_BASE = process.env.OPHIM_BASE_URL || 'https://ophim1.com/v1/api';
@@ -1354,7 +1354,39 @@ Sitemap: ${base}/sitemap.xml
 /** Main */
 async function main() {
   const incremental = process.argv.includes('--incremental');
+  const cleanOldData = process.argv.includes('--clean') || process.env.CLEAN_OLD_DATA === '1';
   console.log('Build started (incremental:', incremental, ')');
+
+  if (!incremental && cleanOldData) {
+    console.log('Cleanup: removing old generated data in public/data (keep config).');
+    try {
+      const batchDir = path.join(PUBLIC_DATA, 'batches');
+      await fs.remove(batchDir);
+      const filesToRemove = [
+        'movies-light.js',
+        'filters.js',
+        'actors.js',
+        'actors-index.js',
+        'last_modified.json',
+        'last_build.json',
+        'build_version.json',
+      ];
+      for (const f of filesToRemove) {
+        await fs.remove(path.join(PUBLIC_DATA, f));
+      }
+      // remove actor shards actors-a.js ... actors-z.js, actors-other.js
+      try {
+        const entries = await fs.readdir(PUBLIC_DATA);
+        for (const name of entries) {
+          if (/^actors-[a-z]+\.js$/i.test(name) || name === 'actors-other.js') {
+            await fs.remove(path.join(PUBLIC_DATA, name));
+          }
+        }
+      } catch {}
+    } catch (e) {
+      console.warn('Cleanup failed (continue):', e && e.message ? e.message : e);
+    }
+  }
 
   if (incremental) {
     await fs.ensureDir(PUBLIC_DATA);

@@ -2360,6 +2360,7 @@ body.site-header--collapsed .site-header {
 .watch-pin-btn {
   margin-left: auto;
   flex: 0 0 auto;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .watch-pin-btn .watch-pin-text {
   font-size: 0.75rem;
