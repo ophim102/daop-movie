@@ -2361,6 +2361,16 @@ body.site-header--collapsed .site-header {
   margin-left: auto;
   flex: 0 0 auto;
 }
+.watch-pin-btn .watch-pin-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.watch-pin-btn.is-auto-hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
 .watch-back-btn {
   width: 40px;
   height: 40px;
@@ -2579,11 +2589,13 @@ body.site-header--collapsed .site-header {
     top: 0;
     left: var(--watch-sidebar-left, auto);
     width: var(--watch-sidebar-width, auto);
+    right: auto;
     max-height: 100vh;
     overflow: auto;
-    padding-top: 0.5rem;
+    padding-top: 0;
+    margin-top: 0;
     background: var(--bg);
-    z-index: 998;
+    z-index: 1000;
   }
 }
 

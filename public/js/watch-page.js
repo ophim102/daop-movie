@@ -790,6 +790,29 @@
 
     var pinBtn = root.querySelector('#watch-btn-pin');
     if (pinBtn) {
+      var pinHideTimer = null;
+      function pinShouldAutoHide() {
+        var w2 = (window.innerWidth || document.documentElement.clientWidth || 0);
+        var layout2 = root.querySelector('.watch-layout');
+        return !!(layout2 && layout2.classList.contains('watch-layout--pinned') && w2 < 1024);
+      }
+      function showPinTemporarily() {
+        pinBtn.classList.remove('is-auto-hidden');
+        if (pinHideTimer) clearTimeout(pinHideTimer);
+        if (!pinShouldAutoHide()) return;
+        pinHideTimer = setTimeout(function () {
+          if (!pinShouldAutoHide()) return;
+          pinBtn.classList.add('is-auto-hidden');
+        }, 3000);
+      }
+      function onPinUserActivity() {
+        showPinTemporarily();
+      }
+
+      ['mousemove', 'mousedown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
+        window.addEventListener(ev, onPinUserActivity, { passive: true });
+      });
+
       (function () {
         var w = (window.innerWidth || document.documentElement.clientWidth || 0);
         var shouldPin = w < 1024;
@@ -797,18 +820,20 @@
         if (layout0 && shouldPin) layout0.classList.add('watch-layout--pinned');
         if (layout0 && !shouldPin) layout0.classList.remove('watch-layout--pinned');
         var nowPinned = !!(layout0 && layout0.classList.contains('watch-layout--pinned'));
-        pinBtn.innerHTML = (nowPinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.innerHTML = (nowPinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (nowPinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', nowPinned ? 'true' : 'false');
         updatePinnedOffset();
+        showPinTemporarily();
       })();
 
       pinBtn.addEventListener('click', function () {
         var layout = root.querySelector('.watch-layout');
         if (!layout) return;
         var pinned = layout.classList.toggle('watch-layout--pinned');
-        pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="md-action-label">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
+        pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
         updatePinnedOffset();
+        showPinTemporarily();
       });
     }
 
