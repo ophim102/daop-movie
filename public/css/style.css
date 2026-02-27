@@ -1621,6 +1621,232 @@ a:hover {
 }
 
 /* Trang chi tiết phim */
+.md-page {
+  display: block;
+}
+.md-hero {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  margin-bottom: 1rem;
+}
+.md-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(18px);
+  transform: scale(1.08);
+  opacity: 0.45;
+}
+.md-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13,17,23,0.75) 0%, rgba(13,17,23,0.95) 70%);
+}
+.md-hero-inner {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.md-thumb {
+  width: min(220px, 56vw);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  margin-top: 0.85rem;
+}
+.md-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+.md-title {
+  margin-top: 0.85rem;
+  font-weight: 900;
+  font-size: 1.35rem;
+}
+.md-origin {
+  margin-top: 0.25rem;
+  color: var(--muted);
+}
+.md-meta {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.md-watch {
+  margin-top: 0.85rem;
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 0.85rem 0.95rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 1rem;
+}
+.md-watch:hover {
+  background: var(--accent-hover);
+}
+.md-actions {
+  margin-top: 0.75rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.md-action-btn {
+  padding: 0.55rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(22, 27, 34, 0.65);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.md-action-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.md-action-btn--active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.md-content {
+  display: block;
+}
+.md-section {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.9rem;
+}
+.md-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+.md-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.md-info {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.9rem;
+  display: none;
+}
+.md-info.md-info--open {
+  display: block;
+}
+.md-desc {
+  line-height: 1.7;
+  color: var(--muted);
+}
+.md-info-grid {
+  margin-top: 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+.md-info-line {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px dashed rgba(240,246,252,0.12);
+}
+.md-info-line:first-child {
+  border-top: none;
+}
+.md-info-key {
+  color: var(--muted);
+  font-weight: 700;
+}
+.md-info-val {
+  color: var(--text);
+}
+
+.md-col-picker {
+  display: inline-flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.md-col-btn {
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(22, 27, 34, 0.65);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+}
+.md-col-btn--active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (min-width: 1024px) {
+  .md-hero-inner {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    text-align: left;
+  }
+  .md-thumb {
+    width: 100%;
+    margin-top: 0;
+  }
+  .md-title {
+    margin-top: 0;
+    font-size: 1.6rem;
+  }
+  .md-watch {
+    width: auto;
+    display: inline-block;
+  }
+  .md-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    max-width: 520px;
+  }
+  .md-content {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 1rem;
+    align-items: start;
+  }
+  .md-info {
+    display: block;
+  }
+  .md-section {
+    margin-top: 0;
+  }
+  #movie-recommend.md-section {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+  }
+}
 .movie-detail-header {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -1945,9 +2171,10 @@ a:hover {
   color: var(--muted);
 }
 
-.watch-back-row {
+.watch-player-meta-head {
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
 }
 .watch-back-btn {
   width: 40px;
@@ -1960,6 +2187,7 @@ a:hover {
   border: 1px solid var(--border);
   color: var(--text);
   text-decoration: none;
+  flex: 0 0 auto;
 }
 .watch-back-btn:hover {
   border-color: var(--accent);

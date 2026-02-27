@@ -2,6 +2,15 @@
  * Trang chi tiết phim: load batch, render poster, meta, episodes, similar, Twikoo
  */
 (function () {
+  function esc(s) {
+    if (s == null || s === '') return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   function getSlug() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -17,6 +26,86 @@
     if (!m) return null;
     var raw = decodeURIComponent(m[1]);
     return raw.replace(/\.html$/i, '') || null;
+  }
+
+  function scrollToId(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    try {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      el.scrollIntoView();
+    }
+  }
+
+  function setupColumnPicker(container, gridId, storageKey) {
+    if (!container) return;
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+
+    function setCols(cols) {
+      var all = ['2', '3', '4', '6', '8'];
+      all.forEach(function (n) {
+        grid.classList.remove('movies-grid--cols-' + n);
+      });
+      if (cols) grid.classList.add('movies-grid--cols-' + cols);
+      container.querySelectorAll('[data-cols]').forEach(function (btn) {
+        var active = btn.getAttribute('data-cols') === String(cols);
+        btn.classList.toggle('md-col-btn--active', !!active);
+      });
+      try { localStorage.setItem(storageKey, String(cols)); } catch (e) {}
+    }
+
+    var initial = '4';
+    try {
+      var saved = localStorage.getItem(storageKey);
+      if (saved) initial = saved;
+    } catch (e) {}
+    setCols(initial);
+
+    container.querySelectorAll('[data-cols]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cols = btn.getAttribute('data-cols') || '';
+        setCols(cols);
+      });
+    });
+  }
+
+  function setupActions(movie) {
+    var btnInfo = document.getElementById('btn-toggle-info');
+    var infoEl = document.getElementById('movie-info');
+    var btnComments = document.getElementById('btn-scroll-comments');
+    var btnRecommend = document.getElementById('btn-scroll-recommend');
+    var btnShare = document.getElementById('btn-share');
+
+    if (btnInfo && infoEl) {
+      btnInfo.addEventListener('click', function () {
+        infoEl.classList.toggle('md-info--open');
+        btnInfo.classList.toggle('md-action-btn--active');
+      });
+    }
+    if (btnComments) {
+      btnComments.addEventListener('click', function () { scrollToId('movie-comments'); });
+    }
+    if (btnRecommend) {
+      btnRecommend.addEventListener('click', function () { scrollToId('movie-recommend'); });
+    }
+    if (btnShare) {
+      btnShare.addEventListener('click', function () {
+        var url = window.location.href;
+        var title = (movie && movie.title) ? movie.title : document.title;
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function () {
+            btnShare.textContent = 'Đã copy link';
+            setTimeout(function () { btnShare.textContent = 'Chia sẻ'; }, 1500);
+          }).catch(function () {});
+        }
+      });
+    }
   }
 
   function init() {
@@ -53,20 +142,22 @@
     var slug = light.slug || '';
     var watchHref = base + '/xem-phim/index.html#' + encodeURIComponent(slug);
     var backdrop = (light.thumb || light.poster || '').replace(/^\/\//, 'https://');
-    var title = (light.title || '').replace(/</g, '&lt;');
-    var origin = (light.origin_name || '').replace(/</g, '&lt;');
-    var metaLine = (light.year || '') + (light.episode_current ? ' • ' + light.episode_current + ' tập' : '');
+    var title = esc(light.title || '');
+    var origin = esc(light.origin_name || '');
+    var year = esc(light.year || '');
+    var metaLine = year + (light.episode_current ? ' • ' + esc(light.episode_current) + ' tập' : '');
     var html = '' +
-      '<div class="movie-detail-hero">' +
-      '  <div class="movie-detail-hero-bg" style="background-image:url(' + String(backdrop || posterUrl).replace(/"/g, '&quot;') + ')"></div>' +
-      '  <div class="movie-detail-hero-inner">' +
-      '    <div class="movie-detail-poster"><img src="' + posterUrl + '" alt=""></div>' +
-      '    <div class="movie-detail-info">' +
-      '      <h1>' + title + '</h1>' +
-      (origin ? '<p class="origin-name">' + origin + '</p>' : '') +
-      (metaLine.trim() ? '<p class="meta-line">' + metaLine.replace(/</g, '&lt;') + '</p>' : '') +
-      '      <div class="action-buttons">' +
-      '        <a class="btn-watch" href="' + watchHref.replace(/"/g, '&quot;') + '">Xem ngay</a> ' +
+      '<div class="md-page">' +
+      '  <div class="md-hero">' +
+      '    <div class="md-hero-bg" style="background-image:url(' + esc(backdrop || posterUrl) + ')"></div>' +
+      '    <div class="md-hero-inner">' +
+      '      <div class="md-thumb"><img src="' + esc(posterUrl) + '" alt=""></div>' +
+      '      <div class="md-title">' + title + '</div>' +
+      (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
+      (metaLine.trim() ? '      <div class="md-meta">' + esc(metaLine) + '</div>' : '') +
+      '      <a class="md-watch" href="' + esc(watchHref) + '">Xem ngay</a>' +
+      '      <div class="md-actions">' +
+      '        <button type="button" class="md-action-btn" id="btn-share">Chia sẻ</button>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
@@ -109,45 +200,71 @@
       }
     } catch (e) {}
 
+    var infoHtml = '' +
+      (genreStr ? '<div class="md-info-line"><span class="md-info-key">Thể loại</span><span class="md-info-val">' + esc(genreStr) + '</span></div>' : '') +
+      (countryStr ? '<div class="md-info-line"><span class="md-info-key">Quốc gia</span><span class="md-info-val">' + esc(countryStr) + '</span></div>' : '') +
+      (directorStr ? '<div class="md-info-line"><span class="md-info-key">Đạo diễn</span><span class="md-info-val">' + esc(directorStr) + '</span></div>' : '') +
+      (castStr ? '<div class="md-info-line"><span class="md-info-key">Diễn viên</span><span class="md-info-val">' + castStr + '</span></div>' : '') +
+      (movie.year ? '<div class="md-info-line"><span class="md-info-key">Năm</span><span class="md-info-val">' + esc(movie.year) + '</span></div>' : '') +
+      (movie.quality ? '<div class="md-info-line"><span class="md-info-key">Chất lượng</span><span class="md-info-val">' + esc(movie.quality) + '</span></div>' : '') +
+      (movie.episode_current ? '<div class="md-info-line"><span class="md-info-key">Tập</span><span class="md-info-val">' + esc(movie.episode_current) + '</span></div>' : '') +
+      (showtimes ? '<div class="md-info-line"><span class="md-info-key">Lịch chiếu</span><span class="md-info-val">' + esc(movie.showtimes || '') + '</span></div>' : '');
+
     var html = '' +
-      '<div class="movie-detail-hero">' +
-      '  <div class="movie-detail-hero-bg" style="background-image:url(' + String(backdrop || poster).replace(/"/g, '&quot;') + ')"></div>' +
-      '  <div class="movie-detail-hero-inner">' +
-      '    <div class="movie-detail-poster"><img src="' + poster + '" alt=""></div>' +
-      '    <div class="movie-detail-info">' +
-      '      <h1>' + title + '</h1>' +
-      (origin ? '<p class="origin-name">' + origin + '</p>' : '') +
-      '      <p class="meta-line">' + (movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '') + '</p>' +
-      (genreStr ? '<p class="meta-line">Thể loại: ' + genreStr + '</p>' : '') +
-      (countryStr ? '<p class="meta-line">Quốc gia: ' + countryStr + '</p>' : '') +
-      (directorStr ? '<p class="meta-line">Đạo diễn: ' + directorStr + '</p>' : '') +
-      (castStr ? '<p class="meta-line">Diễn viên: ' + castStr + '</p>' : '') +
-      showtimes +
-      '      <div class="action-buttons">' +
-      '        <a class="btn-watch" href="' + watchHref.replace(/"/g, '&quot;') + '">' + watchLabel + '</a> ' +
-      '        <button type="button" class="btn-favorite" data-slug="' + (movie.slug || '').replace(/"/g, '&quot;') + '">Yêu thích</button> ' +
+      '<div class="md-page">' +
+      '  <div class="md-hero">' +
+      '    <div class="md-hero-bg" style="background-image:url(' + esc(backdrop || poster) + ')"></div>' +
+      '    <div class="md-hero-inner">' +
+      '      <div class="md-thumb"><img src="' + esc(poster) + '" alt=""></div>' +
+      '      <div class="md-title">' + title + '</div>' +
+      (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
+      '      <div class="md-meta">' + esc((movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '')) + '</div>' +
+      '      <a class="md-watch" href="' + esc(watchHref) + '">' + esc(watchLabel) + '</a>' +
+      '      <div class="md-actions">' +
+      '        <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">Yêu thích</button>' +
+      '        <button type="button" class="md-action-btn" id="btn-share">Chia sẻ</button>' +
+      '        <button type="button" class="md-action-btn" id="btn-scroll-comments">Bình luận</button>' +
+      '        <button type="button" class="md-action-btn" id="btn-scroll-recommend">Đề xuất</button>' +
+      '        <button type="button" class="md-action-btn" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">Thông tin</button>' +
       '      </div>' +
       '    </div>' +
       '  </div>' +
-      '</div>' +
-      '<div class="movie-detail-body">' +
-      '  <div class="movie-detail-desc">' + desc + '</div>' +
+      '  <div class="md-content">' +
+      '    <section id="movie-info" class="md-info">' +
+      '      <div class="md-desc">' + desc + '</div>' +
+      (infoHtml ? '      <div class="md-info-grid">' + infoHtml + '</div>' : '') +
+      '    </section>' +
+      '    <section id="movie-comments" class="md-section">' +
+      '      <h3 class="md-section-title">Bình luận</h3>' +
+      '      <div id="twikoo-comments"></div>' +
+      '    </section>' +
+      '    <section id="movie-recommend" class="md-section">' +
+      '      <div class="md-section-head">' +
+      '        <h3 class="md-section-title">Đề xuất</h3>' +
+      '        <div class="md-col-picker" id="md-col-picker">' +
+      '          <button type="button" class="md-col-btn" data-cols="2">2</button>' +
+      '          <button type="button" class="md-col-btn" data-cols="3">3</button>' +
+      '          <button type="button" class="md-col-btn" data-cols="4">4</button>' +
+      '          <button type="button" class="md-col-btn" data-cols="6">6</button>' +
+      '          <button type="button" class="md-col-btn" data-cols="8">8</button>' +
+      '        </div>' +
+      '      </div>' +
+      '      <div class="movies-grid" id="similar-grid"></div>' +
+      '    </section>' +
+      '  </div>' +
       '</div>';
-
-    var similar = getSimilar(movie);
-    if (similar.length) {
-      html += '<div class="similar-section"><h3>Phim tương tự</h3><div class="movies-grid" id="similar-grid"></div></div>';
-    }
-    html += '<div id="twikoo-comments"></div>';
 
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
 
-    if (similar.length) {
-      var grid = document.getElementById('similar-grid');
-      if (grid) grid.innerHTML = similar.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('');
-    }
+    var similar = getSimilar(movie);
+    var grid = document.getElementById('similar-grid');
+    if (grid && similar.length) grid.innerHTML = similar.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('');
+
+    setupColumnPicker(document.getElementById('md-col-picker'), 'similar-grid', 'md_similar_cols');
+    setupActions(movie);
     updateFavoriteButton(movie.slug);
+
     if (window.twikoo) {
       twikoo.init({
         envId: window.DAOP?.twikooEnvId || '',

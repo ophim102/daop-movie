@@ -586,14 +586,14 @@
         '  <div class="watch-main">' +
         '    <div data-role="player"></div>' +
         '    <div class="watch-player-meta" style="margin-top:0.75rem;">' +
-        '      <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
-        (origin ? '      <div class="watch-player-meta-origin" style="color:var(--muted);margin-top:0.25rem;">' + origin + '</div>' : '') +
-        (metaParts.length ? '      <div class="watch-player-meta-sub" style="color:var(--muted);margin-top:0.25rem;">' + esc(metaParts.join(' • ')) + '</div>' : '') +
-        '      <div class="watch-back-row" style="margin-top:0.65rem;">' +
+        '      <div class="watch-player-meta-head">' +
         '        <a class="watch-back-btn" href="/phim/' + esc(movie.slug || slug) + '.html" aria-label="Về trang chi tiết">' +
         '          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
         '        </a>' +
+        '        <div class="watch-player-meta-title" style="font-weight:800;">' + title + '</div>' +
         '      </div>' +
+        (origin ? '      <div class="watch-player-meta-origin" style="color:var(--muted);margin-top:0.25rem;">' + origin + '</div>' : '') +
+        (metaParts.length ? '      <div class="watch-player-meta-sub" style="color:var(--muted);margin-top:0.25rem;">' + esc(metaParts.join(' • ')) + '</div>' : '') +
         '    </div>' +
         '  </div>' +
         '  <aside class="watch-sidebar">' +
