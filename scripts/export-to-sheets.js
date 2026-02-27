@@ -242,7 +242,7 @@ async function main() {
 
   const res = await sheets.spreadsheets.values.batchGet({
     spreadsheetId: sheetId,
-    ranges: ['movies!A1:Z1000', 'episodes!A1:Z2000'],
+    ranges: ['movies', 'episodes'],
   });
   const valueRanges = res.data.valueRanges || [];
   const moviesRows = valueRanges[0]?.values || [];
@@ -259,22 +259,40 @@ async function main() {
   const idxMovieId = movieHeaders.indexOf('id');
   const idxSlug = movieHeaders.indexOf('slug');
   const idxModified = movieHeaders.indexOf('modified');
+  const idxTitle = movieHeaders.indexOf('title') >= 0 ? movieHeaders.indexOf('title') : movieHeaders.indexOf('name');
+  const idxOrigin = movieHeaders.indexOf('origin_name');
   let maxNumericId = 0;
+
+  console.log('   Headers:', movieHeaders.join(', '));
+  console.log('   idxSlug:', idxSlug, ', idxModified:', idxModified, ', idxMovieId:', idxMovieId);
+  if (idxSlug < 0) {
+    console.warn('   ⚠ CẢNH BÁO: Sheet movies KHÔNG có cột "slug"! Sẽ dùng title+origin_name để check trùng.');
+  }
 
   /** slug -> { rowIndex (1-based), id (numeric), modified } */
   const slugToRow = new Map();
+  /** title|origin_name -> { rowIndex, id, modified } (fallback khi không có slug) */
+  const titleToRow = new Map();
   for (let i = 0; i < existingMovieRows.length; i++) {
     const row = existingMovieRows[i];
-    const idVal = idxMovieId >= 0 ? row[idxMovieId] : '';
-    const slugVal = idxSlug >= 0 ? row[idxSlug] : '';
-    const modifiedVal = idxModified >= 0 ? row[idxModified] : '';
+    const idVal = idxMovieId >= 0 ? (row[idxMovieId] || '') : '';
+    const slugVal = idxSlug >= 0 ? (row[idxSlug] || '') : '';
+    const modifiedVal = idxModified >= 0 ? (row[idxModified] || '') : '';
     const n = Number(idVal);
     if (!Number.isNaN(n) && n > maxNumericId) maxNumericId = n;
-    const slug = String(slugVal || '').trim();
+    const slug = String(slugVal).toLowerCase().trim();
+    const info = { rowIndex: i + 2, id: n, modified: String(modifiedVal).trim() };
     if (slug) {
-      slugToRow.set(slug, { rowIndex: i + 2, id: n, modified: String(modifiedVal || '').trim() });
+      slugToRow.set(slug, info);
+    }
+    // fallback key: title|origin_name
+    const titleVal = idxTitle >= 0 ? String(row[idxTitle] || '').trim() : '';
+    const originVal = idxOrigin >= 0 ? String(row[idxOrigin] || '').trim() : '';
+    if (titleVal) {
+      titleToRow.set((titleVal + '|' + originVal).toLowerCase(), info);
     }
   }
+  console.log('   slugToRow size:', slugToRow.size, ', titleToRow size:', titleToRow.size);
 
   /** movie_id (numeric) -> [sheet row indices 0-based] trong episodes */
   const epIdxMovieId = epHeaders.indexOf('movie_id');
@@ -298,11 +316,17 @@ async function main() {
   const episodesToAppend = [];
   const moviesToUpdate = [];
 
+  let skippedCount = 0;
   for (const m of movies) {
-    const slug = (m.slug || '').toString().trim();
+    const slug = (m.slug || '').toString().toLowerCase().trim();
     if (!slug) continue;
     const localModified = String(m.modified || m.updated_at || '').trim();
-    const existing = slugToRow.get(slug);
+    // check by slug first, then fallback to title|origin_name
+    let existing = slugToRow.get(slug);
+    if (!existing) {
+      const titleKey = ((m.title || '') + '|' + (m.origin_name || '')).toLowerCase().trim();
+      existing = titleToRow.get(titleKey) || null;
+    }
     if (!existing) {
       maxNumericId += 1;
       const row = buildMovieRow(m, movieHeaders, maxNumericId);
@@ -311,17 +335,20 @@ async function main() {
       episodesToAppend.push(...epRows);
       continue;
     }
-    if (idxModified < 0) continue;
+    if (idxModified < 0) { skippedCount++; continue; }
     const sheetModified = existing.modified || '';
-    const shouldUpdate = !sheetModified || (localModified && localModified > sheetModified);
+    const shouldUpdate = sheetModified ? (localModified && localModified > sheetModified) : false;
     if (shouldUpdate) {
       moviesToUpdate.push({
         movie: m,
         sheetId: existing.id,
         rowIndex: existing.rowIndex,
       });
+    } else {
+      skippedCount++;
     }
   }
+  console.log('   Kết quả check trùng: append =', moviesToAppend.length, ', update =', moviesToUpdate.length, ', skip =', skippedCount);
 
   const hasAppend = moviesToAppend.length > 0;
   const hasUpdate = moviesToUpdate.length > 0;
