@@ -263,19 +263,21 @@
       '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || posterUrl) + ')"></div>' +
       '    <div class="md-hero-inner">' +
       '      <div class="md-thumb"><img src="' + esc(thumbMain || posterUrl) + '" alt=""></div>' +
-      '      <div class="md-title">' + title + '</div>' +
-      (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
-      (metaLine.trim() ? '      <div class="md-meta">' + esc(metaLine) + '</div>' : '') +
-      '      <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">Xem ngay</span></a>' +
-      '      <div class="md-actions">' +
-      '        <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '      <div class="md-hero-meta">' +
+      '        <div class="md-title">' + title + '</div>' +
+      (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
+      (metaLine.trim() ? '        <div class="md-meta">' + esc(metaLine) + '</div>' : '') +
+      '        <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">Xem ngay</span></a>' +
+      '        <div class="md-actions">' +
+      '          <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '        </div>' +
       '      </div>' +
-      '    </div>' +
-      '    <div class="md-info-toggle-row">' +
-      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
+      '    <section class="md-section md-info-toggle-section">' +
+      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
+      '    </section>' +
       '    <section id="movie-info" class="md-info">' +
       '      <div class="md-desc"></div>' +
       '    </section>' +
@@ -337,22 +339,24 @@
       '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || poster) + ')"></div>' +
       '    <div class="md-hero-inner">' +
       '      <div class="md-thumb"><img src="' + esc(thumbMain || poster) + '" alt=""></div>' +
-      '      <div class="md-title">' + title + '</div>' +
-      (origin ? '      <div class="md-origin">' + origin + '</div>' : '') +
-      '      <div class="md-meta">' + esc((movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '')) + '</div>' +
-      '      <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
-      '      <div class="md-actions">' +
-      '        <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
-      '        <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
-      '        <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
-      '        <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+      '      <div class="md-hero-meta">' +
+      '        <div class="md-title">' + title + '</div>' +
+      (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
+      '        <div class="md-meta">' + esc((movie.year || '') + (movie.episode_current ? ' • ' + movie.episode_current + ' tập' : '') + (movie.quality ? ' • ' + movie.quality : '')) + '</div>' +
+      '        <a class="md-watch" href="' + esc(watchHref) + '">' + iconSvg('play') + '<span class="md-watch-label">' + esc(watchLabel) + '</span></a>' +
+      '        <div class="md-actions">' +
+      '          <button type="button" class="md-action-btn btn-favorite" data-slug="' + esc(movie.slug || '') + '">' + iconSvg('heart') + '<span class="md-action-label">Yêu thích</span></button>' +
+      '          <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
+      '          <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
+      '          <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
+      '        </div>' +
       '      </div>' +
-      '    </div>' +
-      '    <div class="md-info-toggle-row">' +
-      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
+      '    <section class="md-section md-info-toggle-section">' +
+      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin phim</span>' + iconSvg('chevDown') + '</button>' +
+      '    </section>' +
       '    <section id="movie-info" class="md-info">' +
       '      <div class="md-desc">' + desc + '</div>' +
       (infoHtml ? '      <div class="md-info-grid">' + infoHtml + '</div>' : '') +

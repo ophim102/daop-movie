@@ -1658,6 +1658,12 @@ a:hover {
   align-items: center;
   text-align: center;
 }
+.md-hero-meta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .md-thumb {
   width: min(180px, 48vw);
   aspect-ratio: 2 / 3;
@@ -1744,12 +1750,8 @@ a:hover {
   display: none;
 }
 
-.md-info-toggle-row {
-  width: 100%;
-  margin-top: 0.5rem;
-  position: relative;
-  z-index: 2;
-  padding: 0 1rem 1rem;
+.md-info-toggle-section {
+  display: block;
 }
 .md-info-toggle {
   width: 100%;
@@ -1863,17 +1865,17 @@ a:hover {
   }
   .md-hero-inner {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 240px 1fr;
     gap: 1.25rem;
     align-items: start;
     text-align: left;
   }
+  .md-hero-meta {
+    align-items: flex-start;
+  }
   .md-thumb {
     width: 240px;
     margin-top: 0;
-  }
-  .md-hero-inner {
-    grid-template-columns: 240px 1fr;
   }
   .md-title,
   .md-origin,
@@ -1894,9 +1896,6 @@ a:hover {
   }
   .md-action-label {
     display: inline;
-  }
-  .md-info-toggle-row {
-    max-width: 520px;
   }
   .md-content {
     display: grid;
