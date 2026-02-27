@@ -96,6 +96,89 @@
     });
   }
 
+  function getDetailRecSettings() {
+    var s = (window.DAOP && window.DAOP.siteSettings) || {};
+    var extra = parseInt(s.category_grid_columns_extra || s.grid_columns_extra || '8', 10);
+    if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+    var usePoster = (s.category_use_poster || s.default_use_poster || 'thumb') === 'poster';
+    var limit = parseInt(s.movie_detail_similar_limit || '16', 10);
+    if (!isFinite(limit) || limit < 4) limit = 16;
+    if (limit > 50) limit = 50;
+    return { extra: extra, usePoster: usePoster, limit: limit };
+  }
+
+  function setupRecommendToolbar(toolbarEl, gridEl, baseUrl, listRef) {
+    if (!toolbarEl || !gridEl) return;
+    var render = window.DAOP && window.DAOP.renderMovieCard;
+    if (!render) return;
+
+    var cfg = getDetailRecSettings();
+    var gridCols = 4;
+    var usePoster = cfg.usePoster;
+    var gridColumnsExtra = cfg.extra;
+
+    function applyGridClass() {
+      [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { gridEl.classList.remove('movies-grid--cols-' + n); });
+      gridEl.classList.add('movies-grid--cols-' + gridCols);
+      toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+        b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === gridCols);
+      });
+      var posterSel = toolbarEl.querySelector('.grid-poster-select');
+      if (posterSel) posterSel.value = usePoster ? 'poster' : 'thumb';
+    }
+
+    function rerenderCards() {
+      var list = (listRef && listRef.list) ? listRef.list : [];
+      gridEl.innerHTML = list.map(function (m) { return render(m, baseUrl, { usePoster: usePoster }); }).join('');
+    }
+
+    var extraOpts = '<option value="6"' + (gridColumnsExtra === 6 ? ' selected' : '') + '>6</option>' +
+      '<option value="8"' + (gridColumnsExtra === 8 ? ' selected' : '') + '>8</option>' +
+      '<option value="10"' + (gridColumnsExtra === 10 ? ' selected' : '') + '>10</option>' +
+      '<option value="12"' + (gridColumnsExtra === 12 ? ' selected' : '') + '>12</option>' +
+      '<option value="14"' + (gridColumnsExtra === 14 ? ' selected' : '') + '>14</option>' +
+      '<option value="16"' + (gridColumnsExtra === 16 ? ' selected' : '') + '>16</option>';
+    var html = '';
+    html += '<span class="filter-label">Cột:</span>';
+    html += '<button type="button" class="grid-cols-btn' + (2 === gridCols ? ' active' : '') + '" data-cols="2">2</button>';
+    html += '<button type="button" class="grid-cols-btn' + (3 === gridCols ? ' active' : '') + '" data-cols="3">3</button>';
+    html += '<button type="button" class="grid-cols-btn' + (4 === gridCols ? ' active' : '') + '" data-cols="4">4</button>';
+    html += '<select class="grid-cols-select" id="md-rec-cols-extra" aria-label="Cột thêm">' + extraOpts + '</select>';
+    html += '<button type="button" class="grid-cols-btn' + (gridColumnsExtra === gridCols ? ' active' : '') + '" data-cols="' + gridColumnsExtra + '" id="md-rec-cols-extra-btn">' + gridColumnsExtra + '</button>';
+    html += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    toolbarEl.innerHTML = html;
+
+    toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        gridCols = parseInt(btn.getAttribute('data-cols'), 10);
+        applyGridClass();
+      });
+    });
+    var exSel = toolbarEl.querySelector('#md-rec-cols-extra');
+    var exBtn = toolbarEl.querySelector('#md-rec-cols-extra-btn');
+    if (exSel && exBtn) {
+      exSel.addEventListener('change', function () {
+        var oldExtra = gridColumnsExtra;
+        gridColumnsExtra = parseInt(exSel.value, 10);
+        exBtn.textContent = gridColumnsExtra;
+        exBtn.setAttribute('data-cols', gridColumnsExtra);
+        if (gridCols === oldExtra) gridCols = gridColumnsExtra;
+        applyGridClass();
+      });
+    }
+    var posterSel = toolbarEl.querySelector('.grid-poster-select');
+    if (posterSel) {
+      posterSel.addEventListener('change', function () {
+        usePoster = this.value === 'poster';
+        rerenderCards();
+        applyGridClass();
+      });
+    }
+
+    rerenderCards();
+    applyGridClass();
+  }
+
   function setupActions(movie) {
     var btnInfo = document.getElementById('btn-toggle-info');
     var infoEl = document.getElementById('movie-info');
@@ -187,9 +270,9 @@
       '      <div class="md-actions">' +
       '        <button type="button" class="md-action-btn" id="btn-share">' + iconSvg('share') + '<span class="md-action-label">Chia sẻ</span></button>' +
       '      </div>' +
-      '      <div class="md-info-toggle-row">' +
-      '        <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
-      '      </div>' +
+      '    </div>' +
+      '    <div class="md-info-toggle-row">' +
+      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
@@ -264,9 +347,9 @@
       '        <button type="button" class="md-action-btn" id="btn-scroll-comments">' + iconSvg('chat') + '<span class="md-action-label">Bình luận</span></button>' +
       '        <button type="button" class="md-action-btn" id="btn-scroll-recommend">' + iconSvg('spark') + '<span class="md-action-label">Đề xuất</span></button>' +
       '      </div>' +
-      '      <div class="md-info-toggle-row">' +
-      '        <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
-      '      </div>' +
+      '    </div>' +
+      '    <div class="md-info-toggle-row">' +
+      '      <button type="button" class="md-action-btn md-info-toggle" id="btn-toggle-info" aria-controls="movie-info" aria-expanded="false">' + iconSvg('info') + '<span class="md-action-label">Thông tin</span>' + iconSvg('chevDown') + '</button>' +
       '    </div>' +
       '  </div>' +
       '  <div class="md-content">' +
@@ -281,13 +364,7 @@
       '    <section id="movie-recommend" class="md-section">' +
       '      <div class="md-section-head">' +
       '        <h3 class="md-section-title">' + iconSvg('spark') + '<span class="md-section-title-text">Đề xuất</span></h3>' +
-      '        <div class="md-col-picker" id="md-col-picker">' +
-      '          <button type="button" class="md-col-btn" data-cols="2">2</button>' +
-      '          <button type="button" class="md-col-btn" data-cols="3">3</button>' +
-      '          <button type="button" class="md-col-btn" data-cols="4">4</button>' +
-      '          <button type="button" class="md-col-btn" data-cols="6">6</button>' +
-      '          <button type="button" class="md-col-btn" data-cols="8">8</button>' +
-      '        </div>' +
+      '        <div class="grid-toolbar" id="md-rec-toolbar" aria-label="Tùy chọn hiển thị"></div>' +
       '      </div>' +
       '      <div class="movies-grid" id="similar-grid"></div>' +
       '    </section>' +
@@ -297,11 +374,13 @@
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
 
-    var similar = getSimilar(movie, 16);
+    var cfg = getDetailRecSettings();
+    var similar = getSimilar(movie, cfg.limit);
     var grid = document.getElementById('similar-grid');
-    if (grid && similar.length) grid.innerHTML = similar.map(function (m) { return window.DAOP.renderMovieCard(m); }).join('');
-
-    setupColumnPicker(document.getElementById('md-col-picker'), 'similar-grid', 'md_similar_cols');
+    var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+    var listRef = { list: similar };
+    if (grid) grid.className = 'movies-grid';
+    setupRecommendToolbar(document.getElementById('md-rec-toolbar'), grid, baseUrl, listRef);
     setupActions(movie);
     updateFavoriteButton(movie.slug);
 

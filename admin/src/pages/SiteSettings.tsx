@@ -33,6 +33,7 @@ const SITE_SETTINGS_KEYS = [
   'player_warning_enabled',
   'player_warning_text',
   'player_visible',
+  'movie_detail_similar_limit',
   'movies_data_url',
   'social_facebook',
   'social_twitter',
@@ -68,6 +69,7 @@ export default function SiteSettings() {
         player_warning_enabled: data.player_warning_enabled !== 'false',
         player_warning_text: data.player_warning_text ?? 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
         player_visible: data.player_visible !== 'false',
+        movie_detail_similar_limit: data.movie_detail_similar_limit ?? '16',
         movies_data_url: data.movies_data_url ?? '',
         social_facebook: data.social_facebook ?? '',
         social_twitter: data.social_twitter ?? '',
@@ -236,6 +238,10 @@ export default function SiteSettings() {
             <Input placeholder="https://your-site.com/data/movies-light.js" />
           </Form.Item>
           <p style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 16 }}>Dùng cho Slider: thêm slide từ link phim. Để trống = tắt.</p>
+
+          <Form.Item name="movie_detail_similar_limit" label="Số lượng phim đề xuất ở trang chi tiết (4–50)">
+            <Input type="number" min={4} max={50} placeholder="16" />
+          </Form.Item>
           <Form.Item name="social_facebook" label="Facebook (URL)">
             <Input placeholder="https://facebook.com/..." />
           </Form.Item>

@@ -1640,13 +1640,13 @@ a:hover {
   background-repeat: no-repeat;
   filter: none;
   transform: none;
-  opacity: 0.65;
+  opacity: 0.9;
 }
 .md-hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(13,17,23,0.75) 0%, rgba(13,17,23,0.95) 70%);
+  background: linear-gradient(180deg, rgba(13,17,23,0.45) 0%, rgba(13,17,23,0.88) 70%);
 }
 .md-hero-inner {
   position: relative;
@@ -1658,7 +1658,7 @@ a:hover {
   text-align: center;
 }
 .md-thumb {
-  width: min(220px, 56vw);
+  width: min(180px, 48vw);
   aspect-ratio: 2 / 3;
   border-radius: 12px;
   overflow: hidden;
@@ -1746,6 +1746,9 @@ a:hover {
 .md-info-toggle-row {
   width: 100%;
   margin-top: 0.5rem;
+  position: relative;
+  z-index: 2;
+  padding: 0 1rem 1rem;
 }
 .md-info-toggle {
   width: 100%;
@@ -1865,8 +1868,16 @@ a:hover {
     text-align: left;
   }
   .md-thumb {
-    width: 100%;
+    width: 240px;
     margin-top: 0;
+  }
+  .md-hero-inner {
+    grid-template-columns: 240px 1fr;
+  }
+  .md-title,
+  .md-origin,
+  .md-meta {
+    width: 100%;
   }
   .md-title {
     margin-top: 0;

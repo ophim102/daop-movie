@@ -1069,6 +1069,7 @@ async function exportConfigFromSupabase() {
     player_warning_enabled: 'true',
     player_warning_text: 'Cảnh báo: Phim chứa hình ảnh đường lưỡi bò phi pháp xâm phạm chủ quyền biển đảo Việt Nam.',
     player_visible: 'true',
+    movie_detail_similar_limit: '16',
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',
