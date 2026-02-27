@@ -43,7 +43,7 @@ a:hover {
   position: fixed;
   top: 0.75rem;
   right: 0.75rem;
-  z-index: 120;
+  z-index: 2000;
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -2571,6 +2571,20 @@ body.site-header--collapsed .site-header {
 
 .watch-layout--pinned .watch-main {
   padding-top: calc(var(--watch-pinned-offset, 0px) + 0.75rem);
+}
+
+@media (min-width: 1024px) {
+  .watch-layout--pinned .watch-sidebar {
+    position: fixed;
+    top: 0;
+    left: var(--watch-sidebar-left, auto);
+    width: var(--watch-sidebar-width, auto);
+    max-height: 100vh;
+    overflow: auto;
+    padding-top: 0.5rem;
+    background: var(--bg);
+    z-index: 998;
+  }
 }
 
 .watch-layout--pinned #watch-comments,

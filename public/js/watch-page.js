@@ -731,8 +731,14 @@
         layout.style.removeProperty('--watch-pinned-offset');
         layout.style.removeProperty('--watch-pinned-left');
         layout.style.removeProperty('--watch-pinned-width');
+        layout.style.removeProperty('--watch-sidebar-left');
+        layout.style.removeProperty('--watch-sidebar-width');
+        try { document.body.classList.remove('watch-player--pinned'); } catch (e0) {}
         return;
       }
+
+      try { document.body.classList.add('watch-player--pinned'); } catch (e1) {}
+
       var sticky = layout.querySelector('.watch-player-sticky');
       if (!sticky) return;
       var rect = sticky.getBoundingClientRect();
@@ -746,6 +752,21 @@
         var width = Math.max(0, Math.round(mr.width || 0));
         layout.style.setProperty('--watch-pinned-left', left + 'px');
         layout.style.setProperty('--watch-pinned-width', width + 'px');
+      }
+
+      var w = window.innerWidth || document.documentElement.clientWidth || 0;
+      if (w >= 1024) {
+        var sidebar = layout.querySelector('.watch-sidebar');
+        if (sidebar) {
+          var sr = sidebar.getBoundingClientRect();
+          var sLeft = Math.max(0, Math.round(sr.left || 0));
+          var sWidth = Math.max(0, Math.round(sr.width || 0));
+          layout.style.setProperty('--watch-sidebar-left', sLeft + 'px');
+          layout.style.setProperty('--watch-sidebar-width', sWidth + 'px');
+        }
+      } else {
+        layout.style.removeProperty('--watch-sidebar-left');
+        layout.style.removeProperty('--watch-sidebar-width');
       }
     }
 
