@@ -193,8 +193,9 @@
       return String(m.id) === idStr;
     });
     if (idx < 0) return null;
-    const start = Math.floor(idx / 100) * 100;
-    const end = Math.min(start + 100, list.length);
+    const BATCH = (window.DAOP && window.DAOP.batchSize) || 120;
+    const start = Math.floor(idx / BATCH) * BATCH;
+    const end = Math.min(start + BATCH, list.length);
     return `${BASE}/data/batches/batch_${start}_${end}.js`;
   };
 
