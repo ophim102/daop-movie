@@ -443,6 +443,10 @@
       showBtnTemporarily();
       syncDesktopTop();
       syncHeaderOffsetVar();
+      try {
+        var collapsedNow = document.body.classList.contains('site-header--collapsed');
+        window.dispatchEvent(new CustomEvent('daop:header-visibility-changed', { detail: { collapsed: collapsedNow } }));
+      } catch (e3) {}
     });
 
     window.addEventListener('resize', function () {

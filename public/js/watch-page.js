@@ -808,6 +808,8 @@
     if (pinBtn) {
       saveSidebarWidth();
 
+      var _manualHeaderOpenWhilePinned = false;
+
       function syncHeaderForPinnedScroll() {
         try {
           var w = (window.innerWidth || document.documentElement.clientWidth || 0);
@@ -819,17 +821,43 @@
           var header = document.querySelector('.site-header');
           if (!header) return;
 
-          if (y > 0) {
+          var collapsed = document.body.classList.contains('site-header--collapsed');
+
+          // If user manually opened header while pinned (even when scrolled), do not auto-collapse it.
+          if (y > 0 && !_manualHeaderOpenWhilePinned) {
             document.body.classList.add('site-header--collapsed');
+            collapsed = true;
+          }
+          if (y === 0) {
+            _manualHeaderOpenWhilePinned = false;
+          }
+
+          if (collapsed) {
             document.documentElement.style.setProperty('--site-header-offset', '0px');
           } else {
-            document.body.classList.remove('site-header--collapsed');
             var r = header.getBoundingClientRect();
             var h = Math.max(0, Math.round(r.height || 0));
             document.documentElement.style.setProperty('--site-header-offset', h + 'px');
           }
         } catch (e) {}
       }
+
+      window.addEventListener('daop:header-visibility-changed', function (ev) {
+        try {
+          var w = (window.innerWidth || document.documentElement.clientWidth || 0);
+          if (w > 768) return;
+          var layout = root.querySelector('.watch-layout');
+          if (!layout || !layout.classList.contains('watch-layout--pinned')) return;
+
+          var y = (window.scrollY != null) ? window.scrollY : (document.documentElement.scrollTop || 0);
+          var collapsed = !!(ev && ev.detail && ev.detail.collapsed);
+          if (!collapsed && y > 0) _manualHeaderOpenWhilePinned = true;
+          if (collapsed) _manualHeaderOpenWhilePinned = false;
+
+          syncHeaderForPinnedScroll();
+          updatePinnedOffset();
+        } catch (e0) {}
+      });
 
       (function () {
         var w = (window.innerWidth || document.documentElement.clientWidth || 0);
