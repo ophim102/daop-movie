@@ -306,7 +306,6 @@ body.site-header--collapsed .site-header {
 /* Mobile: tên website cạnh nút 3 gạch (trái), Tìm kiếm + Đăng nhập bên phải; menu 10 mục dropdown */
 @media (max-width: 768px) {
   .site-header {
-    position: relative;
     justify-content: space-between;
   }
   .site-header .nav-toggle {
