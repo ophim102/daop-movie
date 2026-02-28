@@ -1,4 +1,25 @@
 (function () {
+  function ensureSiteSettings(done) {
+    try {
+      window.DAOP = window.DAOP || {};
+      if (window.DAOP.siteSettings) return done && done();
+      if (typeof window.DAOP.loadConfig !== 'function') return done && done();
+      window.DAOP.loadConfig('site-settings')
+        .then(function (s) {
+          if (s) {
+            window.DAOP.siteSettings = window.DAOP.siteSettings || s;
+            if (window.DAOP.applySiteSettings) {
+              try { window.DAOP.applySiteSettings(s); } catch (e) {}
+            }
+          }
+        })
+        .catch(function () {})
+        .finally(function () { if (done) done(); });
+    } catch (e) {
+      if (done) done();
+    }
+  }
+
   function iconSvg(name) {
     if (name === 'heart') {
       return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-10-9c-2-3.3 0.2-8 5-8 2 0 3.4 1 5 3 1.6-2 3-3 5-3 4.8 0 7 4.7 5 8-3 4.4-10 9-10 9z"/></svg>';
@@ -1029,8 +1050,8 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function () { ensureSiteSettings(init); });
   } else {
-    init();
+    ensureSiteSettings(init);
   }
 })();

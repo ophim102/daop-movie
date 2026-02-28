@@ -2,6 +2,27 @@
  * Trang chi tiết phim: load batch, render poster, meta, episodes, similar, Twikoo
  */
 (function () {
+  function ensureSiteSettings(done) {
+    try {
+      window.DAOP = window.DAOP || {};
+      if (window.DAOP.siteSettings) return done && done();
+      if (typeof window.DAOP.loadConfig !== 'function') return done && done();
+      window.DAOP.loadConfig('site-settings')
+        .then(function (s) {
+          if (s) {
+            window.DAOP.siteSettings = window.DAOP.siteSettings || s;
+            if (window.DAOP.applySiteSettings) {
+              try { window.DAOP.applySiteSettings(s); } catch (e) {}
+            }
+          }
+        })
+        .catch(function () {})
+        .finally(function () { if (done) done(); });
+    } catch (e) {
+      if (done) done();
+    }
+  }
+
   function esc(s) {
     if (s == null || s === '') return '';
     return String(s)
@@ -450,8 +471,8 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function () { ensureSiteSettings(init); });
   } else {
-    init();
+    ensureSiteSettings(init);
   }
 })();
