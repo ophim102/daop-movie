@@ -48,8 +48,10 @@
     return u.replace(/\/t\/p\/w\d+\//, '/t/p/' + size + '/');
   }
 
-  function buildGridToolbar(toolbarEl, state, onChange) {
+  function buildGridToolbar(toolbarEl, state, onChange, opts) {
     if (!toolbarEl) return;
+    opts = opts || {};
+    var showPosterToggle = opts.showPosterToggle !== false;
     var extraOpts = '<option value="6"' + (state.extra === 6 ? ' selected' : '') + '>6</option>' +
       '<option value="8"' + (state.extra === 8 ? ' selected' : '') + '>8</option>' +
       '<option value="10"' + (state.extra === 10 ? ' selected' : '') + '>10</option>' +
@@ -64,7 +66,9 @@
     html += '<button type="button" class="grid-cols-btn' + (4 === state.cols ? ' active' : '') + '" data-cols="4">4</button>';
     html += '<select class="grid-cols-select" id="actor-cols-extra" aria-label="Cột thêm">' + extraOpts + '</select>';
     html += '<button type="button" class="grid-cols-btn' + (state.extra === state.cols ? ' active' : '') + '" data-cols="' + state.extra + '" id="actor-cols-extra-btn">' + state.extra + '</button>';
-    html += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!state.usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (state.usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    if (showPosterToggle) {
+      html += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!state.usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (state.usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    }
     toolbarEl.innerHTML = html;
 
     toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
@@ -93,12 +97,14 @@
       });
     }
 
-    var posterSel = toolbarEl.querySelector('.grid-poster-select');
-    if (posterSel) {
-      posterSel.addEventListener('change', function () {
-        state.usePoster = this.value === 'poster';
-        if (typeof onChange === 'function') onChange();
-      });
+    if (showPosterToggle) {
+      var posterSel = toolbarEl.querySelector('.grid-poster-select');
+      if (posterSel) {
+        posterSel.addEventListener('change', function () {
+          state.usePoster = this.value === 'poster';
+          if (typeof onChange === 'function') onChange();
+        });
+      }
     }
   }
 
@@ -305,7 +311,7 @@
       renderActors();
       buildGridToolbar(toolbar0, state0, function () {
         renderActors();
-      });
+      }, { showPosterToggle: false });
 
       var profileWrap0 = document.getElementById('actor-profile');
       if (profileWrap0) {
@@ -316,6 +322,7 @@
       var search = document.getElementById('actor-search');
       if (search) {
         search.value = q0.q || '';
+        search.placeholder = 'Tìm diễn viên';
         search.oninput = function () {
           setQuery({ q: search.value, page: 1 });
           init(0);
@@ -415,6 +422,7 @@
     var search = document.getElementById('actor-search');
     if (search) {
       search.value = q0.q || '';
+      search.placeholder = 'Tìm phim';
       search.oninput = function () {
         setQuery({ q: search.value, page: 1 });
         init(0);
