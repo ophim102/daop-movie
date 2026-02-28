@@ -581,7 +581,7 @@
         var dy = e.clientY - startY;
         if (!moved) {
           // Only start horizontal drag when it is clearly horizontal
-          if (Math.abs(dx) < 6) return;
+          if (Math.abs(dx) < 10) return;
           if (Math.abs(dy) > Math.abs(dx) * 1.2) {
             // treat as vertical scroll
             dragging = false;
@@ -591,7 +591,7 @@
           }
           moved = true;
         }
-        hadSwipe = true;
+        if (Math.abs(dx) >= 10) hadSwipe = true;
         e.preventDefault();
         setTranslate(dx);
       }, { passive: false });
@@ -607,6 +607,7 @@
           else goTo(idx - 1);
         } else {
           resetTranslate();
+          hadSwipe = false;
         }
         moved = false;
         pointerId = null;
@@ -652,7 +653,7 @@
         var dx = e.touches[0].clientX - tStartX;
         var dy = e.touches[0].clientY - tStartY;
         if (!tMoved) {
-          if (Math.abs(dx) < 6) return;
+          if (Math.abs(dx) < 10) return;
           if (Math.abs(dy) > Math.abs(dx) * 1.2) {
             tDragging = false;
             startAuto();
@@ -660,7 +661,7 @@
           }
           tMoved = true;
         }
-        hadSwipe = true;
+        if (Math.abs(dx) >= 10) hadSwipe = true;
         e.preventDefault();
         setTranslate(dx);
       }, { passive: false });
@@ -677,6 +678,7 @@
           else goTo(idx - 1);
         } else {
           resetTranslate();
+          hadSwipe = false;
         }
         tMoved = false;
         startAuto();
