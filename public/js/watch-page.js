@@ -57,7 +57,15 @@
     var limit = parseInt(s.movie_detail_similar_limit || '16', 10);
     if (!isFinite(limit) || limit < 4) limit = 16;
     if (limit > 50) limit = 50;
-    return { extra: extra, usePoster: usePoster, limit: limit };
+    var w = window.innerWidth || document.documentElement.clientWidth;
+    var xs = parseInt(s.category_grid_cols_xs || s.default_grid_cols_xs || '2', 10);
+    var sm = parseInt(s.category_grid_cols_sm || s.default_grid_cols_sm || '3', 10);
+    var md = parseInt(s.category_grid_cols_md || s.default_grid_cols_md || '4', 10);
+    var lg = parseInt(s.category_grid_cols_lg || s.default_grid_cols_lg || '6', 10);
+    var gridCols = w >= 1024 ? lg : w >= 768 ? md : w >= 480 ? sm : xs;
+    var allowed = [2, 3, 4, extra];
+    if (allowed.indexOf(gridCols) < 0) gridCols = 4;
+    return { extra: extra, usePoster: usePoster, limit: limit, gridCols: gridCols };
   }
 
   function setupRecommendToolbar(toolbarEl, gridEl, baseUrl, listRef) {
@@ -66,7 +74,7 @@
     if (!render) return;
 
     var cfg = getWatchRecSettings();
-    var gridCols = 4;
+    var gridCols = cfg.gridCols || 4;
     var usePoster = cfg.usePoster;
     var gridColumnsExtra = cfg.extra;
 
