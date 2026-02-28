@@ -5,6 +5,27 @@
   var PAGE_SIZE_ACTORS = 120;
   var PAGE_SIZE_MOVIES = 24;
 
+  function ensureSiteSettings(done) {
+    try {
+      window.DAOP = window.DAOP || {};
+      if (window.DAOP.siteSettings) return done && done();
+      if (typeof window.DAOP.loadConfig !== 'function') return done && done();
+      window.DAOP.loadConfig('site-settings')
+        .then(function (s) {
+          if (s) {
+            window.DAOP.siteSettings = window.DAOP.siteSettings || s;
+            if (window.DAOP.applySiteSettings) {
+              try { window.DAOP.applySiteSettings(s); } catch (e) {}
+            }
+          }
+        })
+        .catch(function () {})
+        .finally(function () { if (done) done(); });
+    } catch (e) {
+      if (done) done();
+    }
+  }
+
   function getGridSettings() {
     var s = (window.DAOP && window.DAOP.siteSettings) || {};
     var extra = parseInt(s.actor_grid_columns_extra || s.category_grid_columns_extra || s.grid_columns_extra || '8', 10);
@@ -443,34 +464,36 @@
   }
 
   function run() {
-    var slug = getSlug();
-    var base = (window.DAOP && window.DAOP.basePath) || '';
-    var url = getShardUrl(slug);
-    var script = document.createElement('script');
-    script.src = url;
-    script.onload = init;
-    script.onerror = function () {
-      var fallback = base + '/data/actors.js';
-      if (fallback === url) {
-        var grid = document.getElementById('movies-grid');
-        if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
-        return;
-      }
-      var s2 = document.createElement('script');
-      s2.src = fallback;
-      s2.onload = function () {
-        if (!slug && window.actorsData && window.actorsData.names) {
-          window.actorsIndex = { names: window.actorsData.names };
+    ensureSiteSettings(function () {
+      var slug = getSlug();
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      var url = getShardUrl(slug);
+      var script = document.createElement('script');
+      script.src = url;
+      script.onload = init;
+      script.onerror = function () {
+        var fallback = base + '/data/actors.js';
+        if (fallback === url) {
+          var grid = document.getElementById('movies-grid');
+          if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
+          return;
         }
-        init();
+        var s2 = document.createElement('script');
+        s2.src = fallback;
+        s2.onload = function () {
+          if (!slug && window.actorsData && window.actorsData.names) {
+            window.actorsIndex = { names: window.actorsData.names };
+          }
+          init();
+        };
+        s2.onerror = function () {
+          var grid = document.getElementById('movies-grid');
+          if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
+        };
+        document.head.appendChild(s2);
       };
-      s2.onerror = function () {
-        var grid = document.getElementById('movies-grid');
-        if (grid) grid.innerHTML = '<p>Không tải được dữ liệu diễn viên.</p>';
-      };
-      document.head.appendChild(s2);
-    };
-    document.head.appendChild(script);
+      document.head.appendChild(script);
+    });
   }
 
   if (document.readyState === 'loading') {
