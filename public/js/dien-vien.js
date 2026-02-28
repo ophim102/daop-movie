@@ -131,14 +131,17 @@
     var slug = getSlug();
     var names = {};
     var map = {};
+    var meta = {};
     if (!slug) {
       var idx = window.actorsIndex;
       if (idx && idx.names) names = idx.names;
+      if (idx && idx.meta) meta = idx.meta;
     } else {
       var data = window.actorsData;
       if (data) {
         names = data.names || {};
         map = data.map || {};
+        meta = data.meta || {};
       }
     }
     if (!slug) {
@@ -158,12 +161,17 @@
       setQuery({ page: paged.page });
 
       var listHtml = actorSlugs.length
-        ? '<div class="actors-grid">' + paged.slice.map(function (s) {
+        ? '<div class="actors-grid" id="actors-grid">' + paged.slice.map(function (s) {
             var n2 = names[s] || s;
             var cnt = (map && map[s] && map[s].length) ? map[s].length : null;
-            return '<a class="actor-chip" href="' + encodeURIComponent(s) + '.html">' +
-              '<span class="actor-chip-name">' + esc(n2) + '</span>' +
-              (cnt != null ? '<span class="actor-chip-count">' + cnt + ' phim</span>' : '') +
+            var m2 = meta && meta[s] ? meta[s] : null;
+            var img = m2 && m2.profile ? String(m2.profile) : '';
+            return '<a class="actor-card" href="' + encodeURIComponent(s) + '.html">' +
+              '<span class="actor-card-avatar">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(n2) + '">' : '') + '</span>' +
+              '<span class="actor-card-main">' +
+              '<span class="actor-card-name">' + esc(n2) + '</span>' +
+              (cnt != null ? '<span class="actor-card-sub">' + cnt + ' phim</span>' : '') +
+              '</span>' +
               '</a>';
           }).join('') + '</div>'
         : '<p>Chưa có dữ liệu diễn viên.</p>';
@@ -172,6 +180,12 @@
       if (titleEl) titleEl.textContent = 'Diễn viên';
       var grid = document.getElementById('movies-grid');
       if (grid) grid.innerHTML = listHtml;
+
+      var profileWrap0 = document.getElementById('actor-profile');
+      if (profileWrap0) {
+        profileWrap0.style.display = 'none';
+        profileWrap0.innerHTML = '';
+      }
 
       var search = document.getElementById('actor-search');
       if (search) {
@@ -192,6 +206,32 @@
         setQuery({ page: p });
         init(0);
       });
+
+      // Grid columns toggle (index)
+      (function () {
+        var toolbar = document.querySelector('.actors-grid-toolbar');
+        var gridEl = document.getElementById('actors-grid');
+        if (!toolbar || !gridEl) return;
+        var cols = 3;
+        try {
+          var w = window.innerWidth || document.documentElement.clientWidth || 0;
+          cols = w >= 1024 ? 4 : w >= 480 ? 3 : 2;
+        } catch (e) {}
+        function applyCols() {
+          [2, 3, 4].forEach(function (n) { gridEl.classList.remove('actors-grid--cols-' + n); });
+          gridEl.classList.add('actors-grid--cols-' + cols);
+          toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+            b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === cols);
+          });
+        }
+        applyCols();
+        toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            cols = parseInt(btn.getAttribute('data-cols'), 10) || cols;
+            applyCols();
+          });
+        });
+      })();
       return;
     }
     var ids = (map[slug] || []).map(function (x) { return String(x); });
@@ -207,19 +247,33 @@
         var s = document.createElement('script');
         s.src = base + '/data/movies-light.js';
         s.onload = function () { init(retryCount + 1); };
-        s.onerror = function () { renderActorMovies(slug, names, ids, []); };
+        s.onerror = function () { renderActorMovies(slug, names, meta, ids, []); };
         document.head.appendChild(s);
         return;
       }
     }
-    renderActorMovies(slug, names, ids, list);
+    renderActorMovies(slug, names, meta, ids, list);
   }
 
-  function renderActorMovies(slug, names, ids, list) {
+  function renderActorMovies(slug, names, meta, ids, list) {
     var name = names[slug] || slug;
     document.title = name + ' | Diễn viên | ' + (window.DAOP && window.DAOP.siteName ? window.DAOP.siteName : 'DAOP Phim');
     var titleEl = document.getElementById('actor-name');
     if (titleEl) titleEl.textContent = name;
+
+    var profileWrap = document.getElementById('actor-profile');
+    if (profileWrap) {
+      var m2 = meta && meta[slug] ? meta[slug] : null;
+      var img = m2 && m2.profile ? String(m2.profile) : '';
+      var url = m2 && m2.tmdb_url ? String(m2.tmdb_url) : '';
+      profileWrap.innerHTML =
+        '<div class="actor-profile-img">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(name) + '">' : '') + '</div>' +
+        '<div class="actor-profile-main">' +
+        '<div class="actor-profile-name">' + esc(name) + '</div>' +
+        (url ? '<div class="actor-profile-actions"><a class="actor-tmdb-btn" href="' + esc(url) + '" target="_blank" rel="noopener">Xem chi tiết trên TMDB</a></div>' : '') +
+        '</div>';
+      profileWrap.style.display = '';
+    }
     var grid = document.getElementById('movies-grid');
     var q0 = getQuery();
     var q = (q0.q || '').toLowerCase();
@@ -262,6 +316,32 @@
       setQuery({ page: p });
       init(0);
     });
+
+    // Grid columns toggle (detail)
+    (function () {
+      var toolbar = document.querySelector('.actors-grid-toolbar');
+      var gridEl = document.getElementById('movies-grid');
+      if (!toolbar || !gridEl) return;
+      var cols = 3;
+      try {
+        var w = window.innerWidth || document.documentElement.clientWidth || 0;
+        cols = w >= 1024 ? 6 : w >= 768 ? 4 : w >= 480 ? 3 : 2;
+      } catch (e) {}
+      function applyCols() {
+        [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { gridEl.classList.remove('movies-grid--cols-' + n); });
+        gridEl.classList.add('movies-grid--cols-' + cols);
+        toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === cols);
+        });
+      }
+      applyCols();
+      toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          cols = parseInt(btn.getAttribute('data-cols'), 10) || cols;
+          applyCols();
+        });
+      });
+    })();
   }
 
   function run() {

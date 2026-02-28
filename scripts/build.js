@@ -450,6 +450,7 @@ function parseSheetMovies(moviesRows, episodesRows) {
 }
 
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+const TMDB_LANG = 'vi-VN';
 
 /** 3. Làm giàu TMDB (credits, keywords, poster khi thiếu) */
 async function enrichTmdb(movies) {
@@ -461,14 +462,21 @@ async function enrichTmdb(movies) {
     await sleep(150);
     try {
       const [detailRes, creditsRes, keywordsRes] = await Promise.all([
-        fetchJson(`${TMDB_BASE}/${type}/${tid}?api_key=${TMDB_KEY}`).catch(() => null),
+        fetchJson(`${TMDB_BASE}/${type}/${tid}?api_key=${TMDB_KEY}&language=${TMDB_LANG}`).catch(() => null),
         fetchJson(`${TMDB_BASE}/${type}/${tid}/credits?api_key=${TMDB_KEY}`),
         fetchJson(`${TMDB_BASE}/${type}/${tid}/keywords?api_key=${TMDB_KEY}`).catch(() => ({ keywords: [] })),
       ]);
-      const cast = (creditsRes.cast || []).slice(0, 15).map((c) => c.name);
+      const castMeta = (creditsRes.cast || []).slice(0, 15).map((c) => ({
+        name: c.name,
+        tmdb_id: c.id,
+        profile: c.profile_path ? (TMDB_IMG_BASE + c.profile_path) : null,
+        tmdb_url: c.id ? `https://www.themoviedb.org/person/${c.id}` : null,
+      }));
+      const cast = castMeta.map((c) => c.name);
       const director = (creditsRes.crew || []).filter((c) => c.job === 'Director').map((c) => c.name);
       const keywords = (keywordsRes.keywords || []).map((k) => k.name);
       m.cast = m.cast?.length ? m.cast : cast;
+      m.cast_meta = Array.isArray(m.cast_meta) && m.cast_meta.length ? m.cast_meta : castMeta;
       m.director = m.director?.length ? m.director : director;
       m.keywords = m.keywords?.length ? m.keywords : keywords;
       if (!m.poster && detailRes?.poster_path) {
@@ -860,24 +868,36 @@ function toLightMovie(m) {
 function writeActors(movies) {
   const map = {};
   const names = {};
+  const meta = {};
   const movieById = new Map();
   for (const m of movies) {
     movieById.set(String(m.id), toLightMovie(m));
-    for (const name of m.cast || []) {
+    const castList = Array.isArray(m.cast_meta) && m.cast_meta.length
+      ? m.cast_meta
+      : (m.cast || []).map((n) => ({ name: n }));
+    for (const c of castList) {
+      const name = c && c.name ? String(c.name) : '';
       const s = slugify(name, { lower: true });
       if (!s) continue;
       if (!map[s]) map[s] = [];
       map[s].push(String(m.id));
       names[s] = name;
+      if (!meta[s] && (c.tmdb_id || c.profile || c.tmdb_url)) {
+        meta[s] = {
+          tmdb_id: c.tmdb_id || null,
+          profile: c.profile || null,
+          tmdb_url: c.tmdb_url || (c.tmdb_id ? `https://www.themoviedb.org/person/${c.tmdb_id}` : null),
+        };
+      }
     }
   }
   const slugs = Object.keys(names);
   // Legacy: một file đầy đủ (fallback + dùng cho incremental sau này)
-  fs.writeFileSync(path.join(PUBLIC_DATA, 'actors.js'), `window.actorsData = ${JSON.stringify({ map, names })};`, 'utf8');
+  fs.writeFileSync(path.join(PUBLIC_DATA, 'actors.js'), `window.actorsData = ${JSON.stringify({ map, names, meta })};`, 'utf8');
   // Index: chỉ names (cho trang danh sách "Chọn diễn viên")
   fs.writeFileSync(
     path.join(PUBLIC_DATA, 'actors-index.js'),
-    `window.actorsIndex = ${JSON.stringify({ names })};`,
+    `window.actorsIndex = ${JSON.stringify({ names, meta })};`,
     'utf8'
   );
   // Shard theo ký tự đầu (a-z, other), mỗi shard có thêm movies: { slug: [light objects] }
@@ -885,16 +905,17 @@ function writeActors(movies) {
   for (const slug of slugs) {
     const c = (slug[0] || '').toLowerCase();
     const key = c >= 'a' && c <= 'z' ? c : 'other';
-    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, movies: {} };
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, meta: {}, movies: {} };
     byFirst[key].map[slug] = map[slug];
     byFirst[key].names[slug] = names[slug];
+    if (meta[slug]) byFirst[key].meta[slug] = meta[slug];
     byFirst[key].movies[slug] = (map[slug] || [])
       .map((id) => movieById.get(String(id)))
       .filter(Boolean);
   }
   const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
   for (const key of keys) {
-    const data = byFirst[key] || { map: {}, names: {}, movies: {} };
+    const data = byFirst[key] || { map: {}, names: {}, meta: {}, movies: {} };
     fs.writeFileSync(
       path.join(PUBLIC_DATA, `actors-${key}.js`),
       `window.actorsData = ${JSON.stringify(data)};`,
@@ -906,20 +927,21 @@ function writeActors(movies) {
 }
 
 /** 7b. Tạo actors-index.js + shards từ object { map, names }, thêm movies nếu có movies-light.js (incremental) */
-function writeActorsShardsFromData(map = {}, names = {}, movieById = null) {
+function writeActorsShardsFromData(map = {}, names = {}, movieById = null, meta = {}) {
   const slugs = Object.keys(names);
   fs.writeFileSync(
     path.join(PUBLIC_DATA, 'actors-index.js'),
-    `window.actorsIndex = ${JSON.stringify({ names })};`,
+    `window.actorsIndex = ${JSON.stringify({ names, meta })};`,
     'utf8'
   );
   const byFirst = {};
   for (const slug of slugs) {
     const c = (slug[0] || '').toLowerCase();
     const key = c >= 'a' && c <= 'z' ? c : 'other';
-    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, movies: {} };
+    if (!byFirst[key]) byFirst[key] = { map: {}, names: {}, meta: {}, movies: {} };
     byFirst[key].map[slug] = map[slug] || [];
     byFirst[key].names[slug] = names[slug];
+    if (meta && meta[slug]) byFirst[key].meta[slug] = meta[slug];
     if (movieById) {
       byFirst[key].movies[slug] = (map[slug] || [])
         .map((id) => movieById.get(String(id)))
@@ -928,7 +950,7 @@ function writeActorsShardsFromData(map = {}, names = {}, movieById = null) {
   }
   const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'other'];
   for (const key of keys) {
-    const data = byFirst[key] || { map: {}, names: {}, movies: {} };
+    const data = byFirst[key] || { map: {}, names: {}, meta: {}, movies: {} };
     fs.writeFileSync(
       path.join(PUBLIC_DATA, `actors-${key}.js`),
       `window.actorsData = ${JSON.stringify(data)};`,
@@ -1426,7 +1448,7 @@ async function main() {
       const jsonStr = raw.replace(/^window\.actorsData\s*=\s*/, '').replace(/;\s*$/, '');
       try {
         const actorsData = JSON.parse(jsonStr);
-        const { map: m, names: n } = actorsData;
+        const { map: m, names: n, meta } = actorsData;
         let movieById = null;
         const mlPath = path.join(PUBLIC_DATA, 'movies-light.js');
         if (await fs.pathExists(mlPath)) {
@@ -1440,7 +1462,7 @@ async function main() {
             console.warn('   Không parse được movies-light.js:', ee.message);
           }
         }
-        writeActorsShardsFromData(m || {}, n || {}, movieById);
+        writeActorsShardsFromData(m || {}, n || {}, movieById, meta || {});
       } catch (e) {
         console.warn('   Không parse được actors.js, bỏ qua writeActorsShardsFromData:', e.message);
       }

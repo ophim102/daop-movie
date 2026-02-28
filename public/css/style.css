@@ -1757,6 +1757,113 @@ body.site-header--collapsed .site-header {
   flex-shrink: 0;
 }
 
+.actor-profile {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.9rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.08) 100%), var(--card);
+  margin: 1rem 0 0.75rem;
+}
+.actor-profile-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(240,246,252,0.12);
+  background: rgba(255,255,255,0.04);
+}
+.actor-profile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.actor-profile-main {
+  min-width: 0;
+}
+.actor-profile-name {
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin: 0 0 0.35rem;
+}
+.actor-profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.actor-tmdb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.actor-tmdb-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.actors-grid--cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+.actors-grid--cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+.actors-grid--cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+@media (max-width: 767px) {
+  .actors-grid--cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+.actor-card {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.1) 100%), var(--card);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.actor-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+.actor-card-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(240,246,252,0.12);
+  background: rgba(255,255,255,0.04);
+}
+.actor-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.actor-card-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+.actor-card-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
 /* Trang chi tiết phim */
 .md-page {
   display: block;
