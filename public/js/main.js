@@ -379,6 +379,19 @@
       document.body.classList.add('site-header--collapsed');
     }
 
+    function syncHeaderOffsetVar() {
+      try {
+        var collapsed = document.body.classList.contains('site-header--collapsed');
+        if (collapsed) {
+          document.documentElement.style.setProperty('--site-header-offset', '0px');
+          return;
+        }
+        var r = header.getBoundingClientRect();
+        var h = Math.max(0, Math.round(r.height || 0));
+        document.documentElement.style.setProperty('--site-header-offset', h + 'px');
+      } catch (e) {}
+    }
+
     function syncDesktopTop() {
       try {
         var w = window.innerWidth || document.documentElement.clientWidth || 0;
@@ -422,20 +435,30 @@
     }
     updateAria();
     syncDesktopTop();
+    syncHeaderOffsetVar();
 
     btn.addEventListener('click', function () {
       document.body.classList.toggle('site-header--collapsed');
       updateAria();
       showBtnTemporarily();
       syncDesktopTop();
+      syncHeaderOffsetVar();
     });
 
     window.addEventListener('resize', function () {
       syncDesktopTop();
+      syncHeaderOffsetVar();
     }, { passive: true });
     window.addEventListener('scroll', function () {
       syncDesktopTop();
     }, { passive: true });
+
+    try {
+      var mo = new MutationObserver(function () {
+        syncHeaderOffsetVar();
+      });
+      mo.observe(header, { attributes: true, attributeFilter: ['class', 'style'] });
+    } catch (e2) {}
   }
 
   /** Escape HTML */

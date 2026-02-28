@@ -2559,7 +2559,7 @@ body.site-header--collapsed .site-header {
 
 .watch-layout--pinned .watch-player-sticky {
   position: fixed;
-  top: 0;
+  top: var(--site-header-offset, 0px);
   left: var(--watch-pinned-left, 0px);
   width: var(--watch-pinned-width, 100%);
   z-index: 999;
@@ -2577,13 +2577,13 @@ body.site-header--collapsed .site-header {
 }
 
 .watch-layout--pinned .watch-main {
-  padding-top: calc(var(--watch-pinned-offset, 0px) + 0.75rem);
+  padding-top: calc(var(--watch-pinned-offset, 0px) + var(--site-header-offset, 0px) + 0.75rem);
 }
 
 @media (min-width: 1024px) {
   .watch-layout--pinned .watch-sidebar {
     position: fixed;
-    top: 0;
+    top: var(--site-header-offset, 0px);
     left: var(--watch-sidebar-left, auto);
     width: var(--watch-sidebar-width, auto);
     right: auto;
@@ -2599,7 +2599,7 @@ body.site-header--collapsed .site-header {
 .watch-layout--pinned #watch-comments,
 .watch-layout--pinned #watch-recommend,
 .watch-layout--pinned .watch-episodes-card {
-  scroll-margin-top: calc(var(--watch-pinned-offset, 0px) + 1rem);
+  scroll-margin-top: calc(var(--watch-pinned-offset, 0px) + var(--site-header-offset, 0px) + 1rem);
 }
 
 .watch-recommend-full {
