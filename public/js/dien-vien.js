@@ -5,6 +5,89 @@
   var PAGE_SIZE_ACTORS = 120;
   var PAGE_SIZE_MOVIES = 24;
 
+  function getGridSettings() {
+    var s = (window.DAOP && window.DAOP.siteSettings) || {};
+    var extra = parseInt(s.category_grid_columns_extra || s.grid_columns_extra || '8', 10);
+    if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+    var usePoster = (s.category_use_poster || s.default_use_poster || 'thumb') === 'poster';
+    var w = window.innerWidth || document.documentElement.clientWidth;
+    var xs = parseInt(s.category_grid_cols_xs || s.default_grid_cols_xs || '2', 10);
+    var sm = parseInt(s.category_grid_cols_sm || s.default_grid_cols_sm || '3', 10);
+    var md = parseInt(s.category_grid_cols_md || s.default_grid_cols_md || '4', 10);
+    var lg = parseInt(s.category_grid_cols_lg || s.default_grid_cols_lg || '6', 10);
+    var cols = w >= 1024 ? lg : w >= 768 ? md : w >= 480 ? sm : xs;
+    if ([2, 3, 4, 6, 8, 10, 12, 14, 16].indexOf(cols) < 0) cols = 4;
+    return { extra: extra, cols: cols, usePoster: usePoster };
+  }
+
+  function normalizeTmdbImg(url, usePoster) {
+    if (!url) return '';
+    var u = String(url);
+    // Prefer smaller size for "thumb" mode to match movie card density.
+    var size = usePoster ? 'w500' : 'w185';
+    return u.replace(/\/t\/p\/w\d+\//, '/t/p/' + size + '/');
+  }
+
+  function buildGridToolbar(toolbarEl, state, onChange) {
+    if (!toolbarEl) return;
+    var extraOpts = '<option value="6"' + (state.extra === 6 ? ' selected' : '') + '>6</option>' +
+      '<option value="8"' + (state.extra === 8 ? ' selected' : '') + '>8</option>' +
+      '<option value="10"' + (state.extra === 10 ? ' selected' : '') + '>10</option>' +
+      '<option value="12"' + (state.extra === 12 ? ' selected' : '') + '>12</option>' +
+      '<option value="14"' + (state.extra === 14 ? ' selected' : '') + '>14</option>' +
+      '<option value="16"' + (state.extra === 16 ? ' selected' : '') + '>16</option>';
+
+    var html = '';
+    html += '<span class="filter-label">Cột:</span>';
+    html += '<button type="button" class="grid-cols-btn' + (2 === state.cols ? ' active' : '') + '" data-cols="2">2</button>';
+    html += '<button type="button" class="grid-cols-btn' + (3 === state.cols ? ' active' : '') + '" data-cols="3">3</button>';
+    html += '<button type="button" class="grid-cols-btn' + (4 === state.cols ? ' active' : '') + '" data-cols="4">4</button>';
+    html += '<select class="grid-cols-select" id="actor-cols-extra" aria-label="Cột thêm">' + extraOpts + '</select>';
+    html += '<button type="button" class="grid-cols-btn' + (state.extra === state.cols ? ' active' : '') + '" data-cols="' + state.extra + '" id="actor-cols-extra-btn">' + state.extra + '</button>';
+    html += '<label class="grid-poster-toggle"><span class="filter-label">Ảnh:</span><select class="grid-poster-select" name="use_poster"><option value="thumb"' + (!state.usePoster ? ' selected' : '') + '>Thumb</option><option value="poster"' + (state.usePoster ? ' selected' : '') + '>Poster</option></select></label>';
+    toolbarEl.innerHTML = html;
+
+    toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.cols = parseInt(btn.getAttribute('data-cols'), 10) || state.cols;
+        if (typeof onChange === 'function') onChange();
+        toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === state.cols);
+        });
+      });
+    });
+
+    var exSel = toolbarEl.querySelector('#actor-cols-extra');
+    var exBtn = toolbarEl.querySelector('#actor-cols-extra-btn');
+    if (exSel && exBtn) {
+      exSel.addEventListener('change', function () {
+        var oldExtra = state.extra;
+        state.extra = parseInt(exSel.value, 10) || state.extra;
+        exBtn.textContent = state.extra;
+        exBtn.setAttribute('data-cols', state.extra);
+        if (state.cols === oldExtra) state.cols = state.extra;
+        if (typeof onChange === 'function') onChange();
+        toolbarEl.querySelectorAll('.grid-cols-btn').forEach(function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === state.cols);
+        });
+      });
+    }
+
+    var posterSel = toolbarEl.querySelector('.grid-poster-select');
+    if (posterSel) {
+      posterSel.addEventListener('change', function () {
+        state.usePoster = this.value === 'poster';
+        if (typeof onChange === 'function') onChange();
+      });
+    }
+  }
+
+  function applyMoviesGridClass(gridEl, cols) {
+    if (!gridEl) return;
+    [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { gridEl.classList.remove('movies-grid--cols-' + n); });
+    gridEl.classList.add('movies-grid--cols-' + (cols || 4));
+  }
+
   function getSlug() {
     var path = window.location.pathname;
     var m = path.match(/\/dien-vien\/([^/]+)(\.html)?$/);
@@ -160,26 +243,48 @@
       var paged = paginate(actorSlugs, q0.page, PAGE_SIZE_ACTORS);
       setQuery({ page: paged.page });
 
-      var listHtml = actorSlugs.length
-        ? '<div class="actors-grid" id="actors-grid">' + paged.slice.map(function (s) {
-            var n2 = names[s] || s;
-            var cnt = (map && map[s] && map[s].length) ? map[s].length : null;
-            var m2 = meta && meta[s] ? meta[s] : null;
-            var img = m2 && m2.profile ? String(m2.profile) : '';
-            return '<a class="actor-card" href="' + encodeURIComponent(s) + '.html">' +
-              '<span class="actor-card-avatar">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(n2) + '">' : '') + '</span>' +
-              '<span class="actor-card-main">' +
-              '<span class="actor-card-name">' + esc(n2) + '</span>' +
-              (cnt != null ? '<span class="actor-card-sub">' + cnt + ' phim</span>' : '') +
-              '</span>' +
-              '</a>';
-          }).join('') + '</div>'
-        : '<p>Chưa có dữ liệu diễn viên.</p>';
       document.title = 'Diễn viên | ' + (window.DAOP && window.DAOP.siteName ? window.DAOP.siteName : 'DAOP Phim');
       var titleEl = document.getElementById('actor-name');
       if (titleEl) titleEl.textContent = 'Diễn viên';
       var grid = document.getElementById('movies-grid');
-      if (grid) grid.innerHTML = listHtml;
+
+      var toolbar0 = document.getElementById('actor-grid-toolbar');
+      var state0 = getGridSettings();
+      state0.cols = [2, 3, 4, state0.extra].indexOf(state0.cols) >= 0 ? state0.cols : 4;
+
+      function renderActors() {
+        if (!grid) return;
+        grid.className = 'movies-grid';
+        applyMoviesGridClass(grid, state0.cols);
+        if (!actorSlugs.length) {
+          grid.innerHTML = '<p>Chưa có dữ liệu diễn viên.</p>';
+          return;
+        }
+        grid.innerHTML = paged.slice.map(function (s) {
+          var n2 = names[s] || s;
+          var cnt = (map && map[s] && map[s].length) ? map[s].length : null;
+          var m2 = meta && meta[s] ? meta[s] : null;
+          var img = m2 && m2.profile ? normalizeTmdbImg(m2.profile, state0.usePoster) : '';
+          var title = esc(n2);
+          var href = encodeURIComponent(s) + '.html';
+          return (
+            '<div class="movie-card movie-card--vertical">' +
+            '<a href="' + href + '">' +
+            '<div class="thumb-wrap">' +
+            (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + title + '">' : '') +
+            '</div>' +
+            '<div class="movie-info">' +
+            '<h3 class="title">' + title + '</h3>' +
+            '<p class="meta">' + (cnt != null ? (cnt + ' phim') : '') + '</p>' +
+            '</div></a></div>'
+          );
+        }).join('');
+      }
+
+      renderActors();
+      buildGridToolbar(toolbar0, state0, function () {
+        renderActors();
+      });
 
       var profileWrap0 = document.getElementById('actor-profile');
       if (profileWrap0) {
@@ -207,31 +312,6 @@
         init(0);
       });
 
-      // Grid columns toggle (index)
-      (function () {
-        var toolbar = document.querySelector('.actors-grid-toolbar');
-        var gridEl = document.getElementById('actors-grid');
-        if (!toolbar || !gridEl) return;
-        var cols = 3;
-        try {
-          var w = window.innerWidth || document.documentElement.clientWidth || 0;
-          cols = w >= 1024 ? 4 : w >= 480 ? 3 : 2;
-        } catch (e) {}
-        function applyCols() {
-          [2, 3, 4].forEach(function (n) { gridEl.classList.remove('actors-grid--cols-' + n); });
-          gridEl.classList.add('actors-grid--cols-' + cols);
-          toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) {
-            b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === cols);
-          });
-        }
-        applyCols();
-        toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            cols = parseInt(btn.getAttribute('data-cols'), 10) || cols;
-            applyCols();
-          });
-        });
-      })();
       return;
     }
     var ids = (map[slug] || []).map(function (x) { return String(x); });
@@ -275,6 +355,9 @@
       profileWrap.style.display = '';
     }
     var grid = document.getElementById('movies-grid');
+    var toolbar1 = document.getElementById('actor-grid-toolbar');
+    var state1 = getGridSettings();
+
     var q0 = getQuery();
     var q = (q0.q || '').toLowerCase();
     var filtered = list || [];
@@ -289,13 +372,23 @@
     var paged = paginate(filtered, q0.page, PAGE_SIZE_MOVIES);
     setQuery({ page: paged.page });
 
-    if (grid) {
+    function renderMovies() {
+      if (!grid) return;
+      grid.className = 'movies-grid';
+      applyMoviesGridClass(grid, state1.cols);
+      var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+      var render = (window.DAOP && window.DAOP.renderMovieCard);
       grid.innerHTML = paged.slice.length
         ? paged.slice.map(function (m) {
-            return window.DAOP && window.DAOP.renderMovieCard ? window.DAOP.renderMovieCard(m) : '';
+            return render ? render(m, baseUrl, { usePoster: state1.usePoster }) : '';
           }).join('')
         : '<p>Chưa có phim nào.</p>';
     }
+
+    renderMovies();
+    buildGridToolbar(toolbar1, state1, function () {
+      renderMovies();
+    });
 
     var search = document.getElementById('actor-search');
     if (search) {
@@ -317,31 +410,6 @@
       init(0);
     });
 
-    // Grid columns toggle (detail)
-    (function () {
-      var toolbar = document.querySelector('.actors-grid-toolbar');
-      var gridEl = document.getElementById('movies-grid');
-      if (!toolbar || !gridEl) return;
-      var cols = 3;
-      try {
-        var w = window.innerWidth || document.documentElement.clientWidth || 0;
-        cols = w >= 1024 ? 6 : w >= 768 ? 4 : w >= 480 ? 3 : 2;
-      } catch (e) {}
-      function applyCols() {
-        [2, 3, 4, 6, 8, 10, 12, 14, 16].forEach(function (n) { gridEl.classList.remove('movies-grid--cols-' + n); });
-        gridEl.classList.add('movies-grid--cols-' + cols);
-        toolbar.querySelectorAll('.grid-cols-btn').forEach(function (b) {
-          b.classList.toggle('active', parseInt(b.getAttribute('data-cols'), 10) === cols);
-        });
-      }
-      applyCols();
-      toolbar.querySelectorAll('.grid-cols-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          cols = parseInt(btn.getAttribute('data-cols'), 10) || cols;
-          applyCols();
-        });
-      });
-    })();
   }
 
   function run() {
