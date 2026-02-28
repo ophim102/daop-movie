@@ -452,6 +452,31 @@ function parseSheetMovies(moviesRows, episodesRows) {
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 const TMDB_LANG = 'vi-VN';
 
+const _tmdbPersonNameViCache = new Map();
+
+async function getTmdbPersonNameVi(personId) {
+  const id = String(personId || '').trim();
+  if (!id) return null;
+  if (_tmdbPersonNameViCache.has(id)) return _tmdbPersonNameViCache.get(id);
+  if (!TMDB_KEY) {
+    _tmdbPersonNameViCache.set(id, null);
+    return null;
+  }
+  await sleep(80);
+  try {
+    const res = await fetchJson(`${TMDB_BASE}/person/${id}/translations?api_key=${TMDB_KEY}`).catch(() => null);
+    const arr = (res && res.translations) ? res.translations : [];
+    const vi = Array.isArray(arr) ? arr.find((t) => t && t.iso_639_1 === 'vi') : null;
+    const nameVi = vi && vi.data && vi.data.name ? String(vi.data.name).trim() : '';
+    const out = nameVi || null;
+    _tmdbPersonNameViCache.set(id, out);
+    return out;
+  } catch {
+    _tmdbPersonNameViCache.set(id, null);
+    return null;
+  }
+}
+
 /** 3. Làm giàu TMDB (credits, keywords, poster khi thiếu) */
 async function enrichTmdb(movies) {
   if (!TMDB_KEY) return;
@@ -466,12 +491,18 @@ async function enrichTmdb(movies) {
         fetchJson(`${TMDB_BASE}/${type}/${tid}/credits?api_key=${TMDB_KEY}`),
         fetchJson(`${TMDB_BASE}/${type}/${tid}/keywords?api_key=${TMDB_KEY}`).catch(() => ({ keywords: [] })),
       ]);
-      const castMeta = (creditsRes.cast || []).slice(0, 15).map((c) => ({
-        name: c.name,
-        tmdb_id: c.id,
-        profile: c.profile_path ? (TMDB_IMG_BASE + c.profile_path) : null,
-        tmdb_url: c.id ? `https://www.themoviedb.org/person/${c.id}` : null,
-      }));
+      const castMeta = [];
+      for (const c of (creditsRes.cast || []).slice(0, 15)) {
+        const nameVi = await getTmdbPersonNameVi(c.id);
+        castMeta.push({
+          name: nameVi || c.name,
+          name_vi: nameVi || null,
+          name_original: c.name,
+          tmdb_id: c.id,
+          profile: c.profile_path ? (TMDB_IMG_BASE + c.profile_path) : null,
+          tmdb_url: c.id ? `https://www.themoviedb.org/person/${c.id}` : null,
+        });
+      }
       const cast = castMeta.map((c) => c.name);
       const director = (creditsRes.crew || []).filter((c) => c.job === 'Director').map((c) => c.name);
       const keywords = (keywordsRes.keywords || []).map((k) => k.name);
@@ -876,12 +907,13 @@ function writeActors(movies) {
       ? m.cast_meta
       : (m.cast || []).map((n) => ({ name: n }));
     for (const c of castList) {
-      const name = c && c.name ? String(c.name) : '';
-      const s = slugify(name, { lower: true });
+      const displayName = c && (c.name_vi || c.name) ? String(c.name_vi || c.name) : '';
+      const slugSourceName = c && (c.name_original || c.name) ? String(c.name_original || c.name) : '';
+      const s = slugify(slugSourceName, { lower: true });
       if (!s) continue;
       if (!map[s]) map[s] = [];
       map[s].push(String(m.id));
-      names[s] = name;
+      names[s] = displayName;
       if (!meta[s] && (c.tmdb_id || c.profile || c.tmdb_url)) {
         meta[s] = {
           tmdb_id: c.tmdb_id || null,
