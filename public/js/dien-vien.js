@@ -93,6 +93,7 @@
     var m = path.match(/\/dien-vien\/([^/]+)(\.html)?$/);
     if (!m) m = path.match(/.+\/dien-vien\/([^/]+)(\.html)?$/);
     var slug = m ? decodeURIComponent(m[1]) : null;
+    if (slug) slug = String(slug).replace(/\.html$/i, '');
     if (slug === 'index' || !slug) return null;
     return slug;
   }
