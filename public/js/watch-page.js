@@ -823,11 +823,8 @@
 
           var collapsed = document.body.classList.contains('site-header--collapsed');
 
-          // If user manually opened header while pinned (even when scrolled), do not auto-collapse it.
-          if (y > 0 && !_manualHeaderOpenWhilePinned) {
-            document.body.classList.add('site-header--collapsed');
-            collapsed = true;
-          }
+          // Khi header đang hiện thì không tự ẩn khi cuộn.
+          // Chỉ đồng bộ offset dựa trên trạng thái hiện tại của header.
           if (y === 0) {
             _manualHeaderOpenWhilePinned = false;
           }
