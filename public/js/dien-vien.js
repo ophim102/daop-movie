@@ -359,6 +359,7 @@
       renderPagination(pagBot, paged.page, paged.totalPages, function (p) {
         setQuery({ page: p });
         init(0);
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
       });
 
       return;
@@ -459,6 +460,7 @@
     renderPagination(pagBot, paged.page, paged.totalPages, function (p) {
       setQuery({ page: p });
       init(0);
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
     });
 
   }
