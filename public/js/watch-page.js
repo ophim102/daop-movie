@@ -808,6 +808,29 @@
     if (pinBtn) {
       saveSidebarWidth();
 
+      function syncHeaderForPinnedScroll() {
+        try {
+          var w = (window.innerWidth || document.documentElement.clientWidth || 0);
+          if (w > 768) return;
+          var layout = root.querySelector('.watch-layout');
+          if (!layout || !layout.classList.contains('watch-layout--pinned')) return;
+
+          var y = (window.scrollY != null) ? window.scrollY : (document.documentElement.scrollTop || 0);
+          var header = document.querySelector('.site-header');
+          if (!header) return;
+
+          if (y > 0) {
+            document.body.classList.add('site-header--collapsed');
+            document.documentElement.style.setProperty('--site-header-offset', '0px');
+          } else {
+            document.body.classList.remove('site-header--collapsed');
+            var r = header.getBoundingClientRect();
+            var h = Math.max(0, Math.round(r.height || 0));
+            document.documentElement.style.setProperty('--site-header-offset', h + 'px');
+          }
+        } catch (e) {}
+      }
+
       (function () {
         var w = (window.innerWidth || document.documentElement.clientWidth || 0);
         var shouldPin = w < 1024;
@@ -828,8 +851,15 @@
         var pinned = layout.classList.toggle('watch-layout--pinned');
         pinBtn.innerHTML = (pinned ? iconSvg('close') : iconSvg('pin')) + '<span class="watch-pin-text">' + (pinned ? 'Bỏ ghim' : 'Ghim') + '</span>';
         pinBtn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+        syncHeaderForPinnedScroll();
         updatePinnedOffset();
       });
+
+      window.addEventListener('scroll', function () {
+        syncHeaderForPinnedScroll();
+      }, { passive: true });
+
+      syncHeaderForPinnedScroll();
     }
 
     window.addEventListener('resize', function () {
