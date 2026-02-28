@@ -2602,6 +2602,20 @@ body.site-header--collapsed .site-header {
   scroll-margin-top: calc(var(--watch-pinned-offset, 0px) + var(--site-header-offset, 0px) + 1rem);
 }
 
+@media (max-width: 768px) {
+  .watch-layout--pinned .watch-player-sticky {
+    top: 0;
+  }
+  .watch-layout--pinned .watch-main {
+    padding-top: calc(var(--watch-pinned-offset, 0px) + 0.75rem);
+  }
+  .watch-layout--pinned #watch-comments,
+  .watch-layout--pinned #watch-recommend,
+  .watch-layout--pinned .watch-episodes-card {
+    scroll-margin-top: calc(var(--watch-pinned-offset, 0px) + 1rem);
+  }
+}
+
 .watch-recommend-full {
   margin-top: 1.5rem;
 }
