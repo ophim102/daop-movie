@@ -1152,6 +1152,13 @@ async function exportConfigFromSupabase() {
     actor_grid_cols_lg: '6',
     actor_grid_columns_extra: '8',
     actor_use_poster: 'thumb',
+
+    actor_detail_grid_cols_xs: '2',
+    actor_detail_grid_cols_sm: '3',
+    actor_detail_grid_cols_md: '4',
+    actor_detail_grid_cols_lg: '6',
+    actor_detail_grid_columns_extra: '8',
+    actor_detail_use_poster: 'thumb',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));

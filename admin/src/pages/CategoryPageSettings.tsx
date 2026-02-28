@@ -21,6 +21,12 @@ const KEYS = [
   'actor_grid_cols_lg',
   'actor_grid_columns_extra',
   'actor_use_poster',
+  'actor_detail_grid_cols_xs',
+  'actor_detail_grid_cols_sm',
+  'actor_detail_grid_cols_md',
+  'actor_detail_grid_cols_lg',
+  'actor_detail_grid_columns_extra',
+  'actor_detail_use_poster',
 ] as const;
 
 const COLUMN_OPTIONS = [2, 3, 4, 6, 8].map((n) => ({ value: String(n), label: String(n) }));
@@ -65,6 +71,13 @@ export default function CategoryPageSettings() {
           actor_grid_cols_lg: data.actor_grid_cols_lg || data.category_grid_cols_lg || '6',
           actor_grid_columns_extra: data.actor_grid_columns_extra || data.category_grid_columns_extra || '8',
           actor_use_poster: data.actor_use_poster || data.category_use_poster || 'thumb',
+
+          actor_detail_grid_cols_xs: data.actor_detail_grid_cols_xs || data.actor_grid_cols_xs || data.category_grid_cols_xs || '2',
+          actor_detail_grid_cols_sm: data.actor_detail_grid_cols_sm || data.actor_grid_cols_sm || data.category_grid_cols_sm || '3',
+          actor_detail_grid_cols_md: data.actor_detail_grid_cols_md || data.actor_grid_cols_md || data.category_grid_cols_md || '4',
+          actor_detail_grid_cols_lg: data.actor_detail_grid_cols_lg || data.actor_grid_cols_lg || data.category_grid_cols_lg || '6',
+          actor_detail_grid_columns_extra: data.actor_detail_grid_columns_extra || data.actor_grid_columns_extra || data.category_grid_columns_extra || '8',
+          actor_detail_use_poster: data.actor_detail_use_poster || data.actor_use_poster || data.category_use_poster || 'thumb',
         });
         setLoading(false);
       });
@@ -150,6 +163,26 @@ export default function CategoryPageSettings() {
             <Select options={COLUMN_EXTRA_OPTIONS} />
           </Form.Item>
           <Form.Item name="actor_use_poster" label="Loại ảnh">
+            <Select options={IMAGE_TYPE_OPTIONS} />
+          </Form.Item>
+
+          <h3 style={{ marginTop: 20 }}>Trang chi tiết diễn viên</h3>
+          <Form.Item name="actor_detail_grid_cols_xs" label="Số cột mặc định - Mobile nhỏ (&lt;480px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="actor_detail_grid_cols_sm" label="Số cột mặc định - Mobile lớn (480–767px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="actor_detail_grid_cols_md" label="Số cột mặc định - Tablet (768–1023px)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="actor_detail_grid_cols_lg" label="Số cột mặc định - Desktop (1024px+)">
+            <Select options={COLUMN_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="actor_detail_grid_columns_extra" label="Lựa chọn cột thứ 4 trên toolbar (2, 3, 4 và ô này: 6–16)">
+            <Select options={COLUMN_EXTRA_OPTIONS} />
+          </Form.Item>
+          <Form.Item name="actor_detail_use_poster" label="Loại ảnh">
             <Select options={IMAGE_TYPE_OPTIONS} />
           </Form.Item>
 

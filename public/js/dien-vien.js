@@ -20,6 +20,26 @@
     return { extra: extra, cols: cols, usePoster: usePoster };
   }
 
+  function getDetailGridSettings() {
+    var s = (window.DAOP && window.DAOP.siteSettings) || {};
+    var extra = parseInt(
+      s.actor_detail_grid_columns_extra || s.actor_grid_columns_extra || s.category_grid_columns_extra || s.grid_columns_extra || '8',
+      10
+    );
+    if ([6, 8, 10, 12, 14, 16].indexOf(extra) < 0) extra = 8;
+    var usePoster = (
+      s.actor_detail_use_poster || s.actor_use_poster || s.category_use_poster || s.default_use_poster || 'thumb'
+    ) === 'poster';
+    var w = window.innerWidth || document.documentElement.clientWidth;
+    var xs = parseInt(s.actor_detail_grid_cols_xs || s.actor_grid_cols_xs || s.category_grid_cols_xs || s.default_grid_cols_xs || '2', 10);
+    var sm = parseInt(s.actor_detail_grid_cols_sm || s.actor_grid_cols_sm || s.category_grid_cols_sm || s.default_grid_cols_sm || '3', 10);
+    var md = parseInt(s.actor_detail_grid_cols_md || s.actor_grid_cols_md || s.category_grid_cols_md || s.default_grid_cols_md || '4', 10);
+    var lg = parseInt(s.actor_detail_grid_cols_lg || s.actor_grid_cols_lg || s.category_grid_cols_lg || s.default_grid_cols_lg || '6', 10);
+    var cols = w >= 1024 ? lg : w >= 768 ? md : w >= 480 ? sm : xs;
+    if ([2, 3, 4, 6, 8, 10, 12, 14, 16].indexOf(cols) < 0) cols = 4;
+    return { extra: extra, cols: cols, usePoster: usePoster };
+  }
+
   function normalizeTmdbImg(url, usePoster) {
     if (!url) return '';
     var u = String(url);
@@ -357,7 +377,8 @@
     }
     var grid = document.getElementById('movies-grid');
     var toolbar1 = document.getElementById('actor-grid-toolbar');
-    var state1 = getGridSettings();
+    var state1 = getDetailGridSettings();
+    state1.cols = [2, 3, 4, state1.extra].indexOf(state1.cols) >= 0 ? state1.cols : 4;
 
     var q0 = getQuery();
     var q = (q0.q || '').toLowerCase();
