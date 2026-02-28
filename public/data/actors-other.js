@@ -1,1 +1,1 @@
-window.actorsData = {"map":{},"names":{},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
