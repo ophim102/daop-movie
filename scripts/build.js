@@ -1138,6 +1138,20 @@ async function exportConfigFromSupabase() {
     category_grid_cols_lg: '6',
     category_grid_columns_extra: '8',
     category_use_poster: 'thumb',
+
+    rec_grid_cols_xs: '2',
+    rec_grid_cols_sm: '3',
+    rec_grid_cols_md: '4',
+    rec_grid_cols_lg: '6',
+    rec_grid_columns_extra: '8',
+    rec_use_poster: 'thumb',
+
+    actor_grid_cols_xs: '2',
+    actor_grid_cols_sm: '3',
+    actor_grid_cols_md: '4',
+    actor_grid_cols_lg: '6',
+    actor_grid_columns_extra: '8',
+    actor_use_poster: 'thumb',
   };
   const mergedSettings = { ...defaultSettings, ...settingsObj };
   fs.writeFileSync(path.join(configDir, 'site-settings.json'), JSON.stringify(mergedSettings, null, 2));
