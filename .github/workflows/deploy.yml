@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: read
     # Khi trigger bởi workflow_run thì chỉ deploy nếu Build on demand thành công
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Update data daily' || vars.UPDATE_DATA_TWO_PHASE != '1')) }}
     steps:
       - uses: actions/checkout@v4
         with:

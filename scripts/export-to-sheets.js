@@ -23,13 +23,6 @@ function parseWindowArray(jsContent, globalName) {
 }
 
 async function loadLocalMovies() {
-  const moviesLightPath = path.join(PUBLIC_DATA, 'movies-light.js');
-  if (!(await fs.pathExists(moviesLightPath))) {
-    throw new Error('Không tìm thấy public/data/movies-light.js. Hãy chạy build trước.');
-  }
-  const mlRaw = await fs.readFile(moviesLightPath, 'utf8');
-  const light = parseWindowArray(mlRaw, 'moviesLight');
-
   const batchDir = path.join(PUBLIC_DATA, 'batches');
   const files = (await fs.readdir(batchDir)).filter((f) => /^batch_\d+_\d+\.js$/i.test(f));
   const moviesById = new Map();
@@ -63,10 +56,9 @@ async function loadLocalMovies() {
     }
   }
 
-  const fullMovies = light.map((m) => {
-    const idStr = String(m.id);
-    const full = moviesById.get(idStr);
-    const base = full || { ...m, episodes: [] };
+  const out = [];
+  for (const [idStr, base0] of moviesById.entries()) {
+    const base = base0 || { id: String(idStr), episodes: [] };
     const t = tmdbById.get(idStr);
     if (t) {
       if (t.tmdb) base.tmdb = t.tmdb;
@@ -76,10 +68,10 @@ async function loadLocalMovies() {
       if (t.cast_meta) base.cast_meta = t.cast_meta;
       if (t.keywords) base.keywords = t.keywords;
     }
-    return base;
-  });
-
-  return fullMovies;
+    out.push(base);
+  }
+  out.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  return out;
 }
 
 async function loadServiceAccountFromEnv() {

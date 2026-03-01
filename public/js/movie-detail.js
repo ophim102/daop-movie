@@ -23,6 +23,41 @@
     }
   }
 
+  function getSimilar(movie, limit) {
+    limit = limit || 16;
+    var fd = window.filtersData || {};
+    var genreMap = fd.genreMap || {};
+    var genres = (movie && movie.genre ? movie.genre : [])
+      .map(function (g) { return g && (g.slug || g.id); })
+      .filter(Boolean);
+    var idSet = new Set();
+    genres.forEach(function (g) {
+      var arr = genreMap[g] || [];
+      (arr || []).forEach(function (id) { if (id != null) idSet.add(String(id)); });
+    });
+    if (movie && movie.id != null) idSet.delete(String(movie.id));
+    var ids = Array.from(idSet).slice(0, Math.max(limit * 4, limit));
+
+    function getLightById(id) {
+      if (window.DAOP && typeof window.DAOP.getMovieLightByIdAsync === 'function') {
+        return window.DAOP.getMovieLightByIdAsync(id);
+      }
+      return Promise.resolve(null);
+    }
+
+    return Promise.all(ids.map(function (id) { return getLightById(id); }))
+      .then(function (arr) {
+        var list = (arr || []).filter(Boolean);
+        list.sort(function (a, b) {
+          return (Number(b.year) || 0) - (Number(a.year) || 0);
+        });
+        return list.slice(0, limit);
+      })
+      .catch(function () {
+        return [];
+      });
+  }
+
   function esc(s) {
     if (s == null || s === '') return '';
     return String(s)
@@ -350,8 +385,8 @@
       var slug = null;
       for (var s in namesMap) if (namesMap[s] === name) { slug = s; break; }
       var safe = (name || '').replace(/</g, '&lt;');
-      var base = (window.DAOP && window.DAOP.basePath) || '';
-      return slug ? '<a href="' + base + '/dien-vien/' + slug + '.html">' + safe + '</a>' : safe;
+      var base0 = (window.DAOP && window.DAOP.basePath) || '';
+      return slug ? '<a href="' + base0 + '/dien-vien/' + slug + '.html">' + safe + '</a>' : safe;
     }).join(', ');
     var directorStr = (movie.director || []).join(', ');
     var showtimes = movie.status === 'theater' && movie.showtimes ? '<p class="meta-line">Lịch chiếu: ' + (movie.showtimes || '').replace(/</g, '&lt;') + '</p>' : '';
@@ -423,7 +458,7 @@
       '        <h3 class="md-section-title">' + iconSvg('spark') + '<span class="md-section-title-text">Đề xuất</span></h3>' +
       '        <div class="grid-toolbar" id="md-rec-toolbar" aria-label="Tùy chọn hiển thị"></div>' +
       '      </div>' +
-      '      <div class="movies-grid" id="similar-grid"></div>' +
+      '      <div class="movies-grid" id="similar-grid"><p>Đang tải...</p></div>' +
       '    </section>' +
       '  </div>' +
       '</div>';
@@ -431,12 +466,20 @@
     if (el) el.innerHTML = html;
 
     var cfg = getDetailRecSettings();
-    var similar = getSimilar(movie, cfg.limit);
     var grid = document.getElementById('similar-grid');
     var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
-    var listRef = { list: similar };
     if (grid) grid.className = 'movies-grid';
-    setupRecommendToolbar(document.getElementById('md-rec-toolbar'), grid, baseUrl, listRef);
+
+    var listRef = { list: [] };
+    var toolbarEl = document.getElementById('md-rec-toolbar');
+    getSimilar(movie, cfg.limit).then(function (list) {
+      listRef.list = Array.isArray(list) ? list : [];
+      setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+    }).catch(function () {
+      listRef.list = [];
+      setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+    });
+
     setupActions(movie);
     try {
       if (window.DAOP && typeof window.DAOP.refreshQuickFavorites === 'function') window.DAOP.refreshQuickFavorites();
@@ -451,27 +494,6 @@
     }
   }
 
-  function getSimilar(movie, limit) {
-    limit = limit || 16;
-    var list = window.moviesLight || [];
-    var genres = (movie.genre || []).map(function (g) { return g.slug || g.id; });
-    var same = list.filter(function (m) {
-      if (m.id === movie.id) return false;
-      return (m.genre || []).some(function (g) { return genres.indexOf(g.slug || g.id) !== -1; });
-    });
-    return same.slice(0, limit);
-  }
-
-  function updateContinueButton(movie) {
-    var us = window.DAOP && window.DAOP.userSync;
-    var wrap = document.querySelector('.btn-continue-wrap');
-    if (!wrap || !us) return;
-    var hist = us.getWatchHistory().find(function (x) { return x.slug === movie.slug; });
-    if (!hist) return;
-    var base = (window.DAOP && window.DAOP.basePath) || '';
-    var href = base + '/xem-phim/' + encodeURIComponent(movie.slug || '') + '.html?ep=' + encodeURIComponent(String(hist.episode || ''));
-    wrap.innerHTML = '<a class="btn-continue" href="' + href.replace(/"/g, '&quot;') + '">Tiếp tục xem (Tập ' + (hist.episode || '').replace(/</g, '&lt;') + ')</a>';
-  }
   function attachEpisodeButtons(movie) {
     document.querySelectorAll('.episode-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {

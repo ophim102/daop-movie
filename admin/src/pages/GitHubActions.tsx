@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space, Modal } from 'antd';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space, Modal, Radio, Switch } from 'antd';
 import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
 
@@ -15,6 +15,8 @@ const OPHIM_AUTO_KEYS = {
   start_page: 'ophim_auto_start_page',
   end_page: 'ophim_auto_end_page',
 };
+
+const UPDATE_DATA_TWO_PHASE_KEY = 'update_data_two_phase';
 
 type ActionItem = {
   id: string;
@@ -48,6 +50,8 @@ export default function GitHubActions() {
   const [actions, setActions] = useState<ActionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
+  const [twoPhase, setTwoPhase] = useState(false);
+  const [autoTwoPhase, setAutoTwoPhase] = useState(false);
   const [updateSettings, setUpdateSettings] = useState<{ start_page: number; end_page: number }>({
     start_page: 1,
     end_page: 1,
@@ -67,6 +71,7 @@ export default function GitHubActions() {
         OPHIM_KEYS.end_page,
         OPHIM_AUTO_KEYS.start_page,
         OPHIM_AUTO_KEYS.end_page,
+        UPDATE_DATA_TWO_PHASE_KEY,
       ]);
     const map: Record<string, string> = {};
     (data || []).forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
@@ -74,6 +79,10 @@ export default function GitHubActions() {
     const end_page = map[OPHIM_KEYS.end_page] != null ? Number(map[OPHIM_KEYS.end_page]) : 1;
     const auto_start_page = map[OPHIM_AUTO_KEYS.start_page] != null ? Number(map[OPHIM_AUTO_KEYS.start_page]) : start_page;
     const auto_end_page = map[OPHIM_AUTO_KEYS.end_page] != null ? Number(map[OPHIM_AUTO_KEYS.end_page]) : end_page;
+    const t2 = (map[UPDATE_DATA_TWO_PHASE_KEY] || '').toString().trim().toLowerCase();
+    const t2On = (t2 === '1' || t2 === 'true');
+
+    setAutoTwoPhase(t2On);
 
     setUpdateSettings({ start_page, end_page });
     form.setFieldsValue({
@@ -123,6 +132,7 @@ export default function GitHubActions() {
           { key: OPHIM_KEYS.end_page, value: String(values.end_page ?? 1), updated_at: now },
           { key: OPHIM_AUTO_KEYS.start_page, value: String(values.auto_start_page ?? values.start_page ?? 1), updated_at: now },
           { key: OPHIM_AUTO_KEYS.end_page, value: String(values.auto_end_page ?? values.end_page ?? 1), updated_at: now },
+          { key: UPDATE_DATA_TWO_PHASE_KEY, value: autoTwoPhase ? '1' : '0', updated_at: now },
         ],
         { onConflict: 'key' }
       );
@@ -158,11 +168,12 @@ export default function GitHubActions() {
   const doTrigger = async (actionId: string) => {
     setTriggering(actionId);
     try {
-      const body: { action: string; start_page?: number; end_page?: number } = { action: actionId };
+      const body: { action: string; start_page?: number; end_page?: number; two_phase?: boolean } = { action: actionId };
       if (actionId === 'update-data' || actionId === 'clean-rebuild') {
         const values = form.getFieldsValue();
         if (values.start_page != null) body.start_page = values.start_page;
         if (values.end_page != null) body.end_page = values.end_page;
+        body.two_phase = !!twoPhase;
       }
       const res = await fetch(`${API_URL}/api/trigger-action`, {
         method: 'POST',
@@ -226,6 +237,27 @@ export default function GitHubActions() {
           Chỉ chọn khoảng trang để lấy. API mặc định: 24 phim/trang, trang 1 là mới nhất. Lấy theo kiểu lùi và kết thúc ở trang 1.
         </Text>
         <Form form={form} layout="inline" initialValues={updateSettings}>
+          <Text strong style={{ width: '100%', marginBottom: 8 }}>Chế độ chạy:</Text>
+          <Form.Item style={{ marginBottom: 8 }}>
+            <Radio.Group
+              value={twoPhase ? '2' : '1'}
+              onChange={(e) => setTwoPhase(e.target.value === '2')}
+              optionType="button"
+              buttonStyle="solid"
+            >
+              <Radio.Button value="1">1 pha (full)</Radio.Button>
+              <Radio.Button value="2">2 pha (core → tmdb)</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+
+          <Text strong style={{ width: '100%', marginBottom: 8 }}>Tự động (schedule):</Text>
+          <Form.Item style={{ marginBottom: 8 }}>
+            <Space size={8} align="center">
+              <Switch checked={autoTwoPhase} onChange={setAutoTwoPhase} />
+              <Text type="secondary">Bật 2 pha cho lịch tự động</Text>
+            </Space>
+          </Form.Item>
+
           <Text strong style={{ width: '100%' }}>Thủ công (khi bấm Kích hoạt):</Text>
           <Form.Item name="start_page" label="Trang bắt đầu" rules={[{ required: true }]}>
             <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />

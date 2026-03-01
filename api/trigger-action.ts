@@ -5,7 +5,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_REF = process.env.GITHUB_REF || 'main';
 
-type ActionId = 'build-on-demand' | 'update-data' | 'clean-rebuild' | 'export-to-sheets';
+type ActionId = 'build-on-demand' | 'update-data' | 'clean-rebuild' | 'export-to-sheets' | 'core-then-tmdb';
 
 const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'build-on-demand', name: 'Build on demand', description: 'Build incremental (config Supabase + category pages), commit & push.' },
@@ -29,10 +29,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
   const action = (req.body?.action ?? req.query?.action) as string;
-  if (!action || !ACTIONS.some((a) => a.id === action)) {
-    res.status(400).json({ error: 'Invalid action. Use one of: ' + ACTIONS.map((a) => a.id).join(', ') });
+  const allowed = new Set<string>([...ACTIONS.map((a) => a.id), 'core-then-tmdb']);
+  if (!action || !allowed.has(action)) {
+    res.status(400).json({ error: 'Invalid action. Use one of: ' + Array.from(allowed).join(', ') });
     return;
   }
+
+  const phaseRaw = req.body?.phase ?? req.query?.phase;
+  const twoPhaseRaw = req.body?.two_phase ?? req.query?.two_phase;
+  const phase = phaseRaw != null ? String(phaseRaw) : '';
+  const twoPhase = (twoPhaseRaw === true || twoPhaseRaw === 'true' || phase === '2');
 
   const repo = GITHUB_REPO.trim();
   const headers = {
@@ -75,8 +81,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const inputs: Record<string, string> = {};
       if (startPage !== undefined) inputs.start_page = startPage;
       if (endPage !== undefined) inputs.end_page = endPage;
+
+      const url = twoPhase
+        ? `https://api.github.com/repos/${repo}/actions/workflows/core-then-tmdb.yml/dispatches`
+        : `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`;
+      const payload = twoPhase
+        ? { ref: GITHUB_REF, inputs: Object.keys(inputs).length ? { ...inputs, clean: 'false' } : { clean: 'false' } }
+        : { ref: GITHUB_REF, inputs: Object.keys(inputs).length ? inputs : undefined };
+
+      const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
+      if (!r.ok) {
+        const t = await r.text();
+        let errMsg = t;
+        if (r.status === 404) {
+          try {
+            const j = JSON.parse(t);
+            if (j.message?.includes('Not Found')) {
+              errMsg = 'Workflow update-data.yml không tìm thấy hoặc repo chưa có Actions.';
+            }
+          } catch {
+            // keep raw t
+          }
+        }
+        if (r.status === 401) {
+          try {
+            const j = JSON.parse(t);
+            if (j.message === 'Bad credentials') errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn.';
+          } catch {
+            // keep raw t
+          }
+        }
+        res.status(r.status).json({ error: errMsg });
+        return;
+      }
+      res.status(200).json({ ok: true, message: twoPhase ? 'Update data triggered (2-phase)' : 'Update data (full build) triggered' });
+      return;
+    }
+
+    if (action === 'core-then-tmdb') {
+      const startPage = req.body?.start_page != null ? String(req.body.start_page) : undefined;
+      const endPage = req.body?.end_page != null ? String(req.body.end_page) : undefined;
+      const clean = req.body?.clean != null ? String(req.body.clean) : undefined;
+      const inputs: Record<string, string> = {};
+      if (startPage !== undefined) inputs.start_page = startPage;
+      if (endPage !== undefined) inputs.end_page = endPage;
+      if (clean !== undefined) inputs.clean = clean;
       const r = await fetch(
-        `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`,
+        `https://api.github.com/repos/${repo}/actions/workflows/core-then-tmdb.yml/dispatches`,
         {
           method: 'POST',
           headers,
@@ -90,7 +141,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           try {
             const j = JSON.parse(t);
             if (j.message?.includes('Not Found')) {
-              errMsg = 'Workflow update-data.yml không tìm thấy hoặc repo chưa có Actions.';
+              errMsg = 'Workflow core-then-tmdb.yml không tìm thấy hoặc repo chưa có Actions.';
             }
           } catch {
             // keep raw t
@@ -107,7 +158,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(r.status).json({ error: errMsg });
         return;
       }
-      res.status(200).json({ ok: true, message: 'Update data (full build) triggered' });
+      res.status(200).json({ ok: true, message: 'Core then TMDB (2-phase deploy) triggered' });
       return;
     }
 
@@ -117,14 +168,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const inputs: Record<string, string> = { clean: 'true' };
       if (startPage !== undefined) inputs.start_page = startPage;
       if (endPage !== undefined) inputs.end_page = endPage;
-      const r = await fetch(
-        `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ ref: GITHUB_REF, inputs }),
-        }
-      );
+
+      const url = twoPhase
+        ? `https://api.github.com/repos/${repo}/actions/workflows/core-then-tmdb.yml/dispatches`
+        : `https://api.github.com/repos/${repo}/actions/workflows/update-data.yml/dispatches`;
+      const payload = twoPhase
+        ? { ref: GITHUB_REF, inputs: inputs }
+        : { ref: GITHUB_REF, inputs: inputs };
+
+      const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
       if (!r.ok) {
         const t = await r.text();
         let errMsg = t;
@@ -149,7 +201,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(r.status).json({ error: errMsg });
         return;
       }
-      res.status(200).json({ ok: true, message: 'Clean & Rebuild triggered (xóa dữ liệu cũ + full build)' });
+      res.status(200).json({ ok: true, message: twoPhase ? 'Clean & Rebuild triggered (2-phase)' : 'Clean & Rebuild triggered (xóa dữ liệu cũ + full build)' });
       return;
     }
 

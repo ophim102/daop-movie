@@ -174,14 +174,9 @@
     }
   })();
 
-  /** Get movie by slug from moviesLight (so khớp chính xác, rồi không phân biệt hoa thường) */
-  window.DAOP.getMovieBySlug = function (slug) {
-    if (!slug) return undefined;
-    const list = window.moviesLight || [];
-    const s = String(slug).trim();
-    let m = list.find(function (x) { return (x.slug || '') === s; });
-    if (!m) m = list.find(function (x) { return (x.slug || '').toLowerCase() === s.toLowerCase(); });
-    return m;
+  /** Get movie by slug */
+  window.DAOP.getMovieBySlug = function () {
+    return null;
   };
 
   function normalizeShardText(s) {
@@ -248,8 +243,6 @@
 
   window.DAOP.getMovieBySlugAsync = function (slug) {
     return Promise.resolve().then(function () {
-      var m0 = window.DAOP.getMovieBySlug(slug);
-      if (m0) return m0;
       var s = String(slug || '').trim();
       if (!s) return null;
       var key = getShardKey2(s);
@@ -290,17 +283,7 @@
 
   /** Get movie index by id for batch path (id so sánh dạng string để tránh lệch kiểu) */
   window.DAOP.getBatchPath = function (id) {
-    if (id == null) return null;
-    const list = window.moviesLight || [];
-    const idStr = String(id);
-    const idx = list.findIndex(function (m) {
-      return String(m.id) === idStr;
-    });
-    if (idx < 0) return null;
-    const BATCH = (window.DAOP && window.DAOP.batchSize) || 120;
-    const start = Math.floor(idx / BATCH) * BATCH;
-    const end = Math.min(start + BATCH, list.length);
-    return `${BASE}/data/batches/batch_${start}_${end}.js`;
+    return null;
   };
 
   window.DAOP.getBatchPathAsync = function (id) {
@@ -315,6 +298,9 @@
         try {
           var idxMap = window.DAOP && window.DAOP.idIndex ? window.DAOP.idIndex[key] : null;
           var row = idxMap ? idxMap[idStr] : null;
+          if (row && row.b) {
+            return BASE + '/data/batches/' + String(row.b);
+          }
           var i = row && typeof row.i === 'number' ? row.i : -1;
           if (i < 0) return null;
           var BATCH = (window.DAOP && window.DAOP.batchSize) || 120;
@@ -335,10 +321,6 @@
     return Promise.resolve().then(function () {
       if (id == null) return null;
       var idStr = String(id);
-      if (window.moviesLight && Array.isArray(window.moviesLight) && window.moviesLight.length) {
-        var m0 = window.moviesLight.find(function (m) { return m && String(m.id) === idStr; });
-        if (m0) return m0;
-      }
       var key = getShardKey2(idStr);
       var url = BASE + '/data/index/id/' + key + '.js';
       return loadScriptOnce(url).then(function () {
@@ -354,17 +336,7 @@
   };
 
   window.DAOP.getTmdbBatchPath = function (id) {
-    if (id == null) return null;
-    const list = window.moviesLight || [];
-    const idStr = String(id);
-    const idx = list.findIndex(function (m) {
-      return String(m.id) === idStr;
-    });
-    if (idx < 0) return null;
-    const BATCH = (window.DAOP && window.DAOP.batchSize) || 120;
-    const start = Math.floor(idx / BATCH) * BATCH;
-    const end = Math.min(start + BATCH, list.length);
-    return `${BASE}/data/batches/tmdb_batch_${start}_${end}.js`;
+    return null;
   };
 
   window.DAOP.getTmdbBatchPathAsync = function (id) {
@@ -379,6 +351,9 @@
         try {
           var idxMap = window.DAOP && window.DAOP.idIndex ? window.DAOP.idIndex[key] : null;
           var row = idxMap ? idxMap[idStr] : null;
+          if (row && row.t) {
+            return BASE + '/data/batches/' + String(row.t);
+          }
           var i = row && typeof row.i === 'number' ? row.i : -1;
           if (i < 0) return null;
           var BATCH = (window.DAOP && window.DAOP.batchSize) || 120;

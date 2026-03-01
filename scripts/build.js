@@ -82,6 +82,153 @@ async function fetchJsonWithTimeout(url, timeoutMs = OPHIM_FETCH_TIMEOUT_MS) {
   }
 }
 
+function validateShardMetaFiles(metaPath, dirPath, filenameBuilder) {
+  if (!fs.existsSync(metaPath)) throw new Error('Missing meta file: ' + metaPath);
+  const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+  const parts = (meta && meta.parts) || {};
+  for (const k of Object.keys(parts)) {
+    const p = parseInt(parts[k], 10) || 1;
+    if (p <= 1) {
+      const f = path.join(dirPath, filenameBuilder(k));
+      if (!fs.existsSync(f)) throw new Error('Missing shard file: ' + f);
+      continue;
+    }
+    for (let i = 0; i < p; i++) {
+      const f = path.join(dirPath, filenameBuilder(k, i));
+      if (!fs.existsSync(f)) throw new Error('Missing shard part: ' + f);
+    }
+  }
+}
+
+function validateBatchWindowsAndFiles(allMovies, opts) {
+  opts = opts || {};
+  const validateTmdb = opts.validateTmdb !== false;
+  const batchDir = path.join(PUBLIC_DATA, 'batches');
+  const windowsPath = path.join(batchDir, 'batch-windows.json');
+  if (!fs.existsSync(windowsPath)) throw new Error('Missing batch windows: ' + windowsPath);
+  const wj = JSON.parse(fs.readFileSync(windowsPath, 'utf8'));
+  const wins = wj && Array.isArray(wj.windows) ? wj.windows : [];
+  const total = wj && typeof wj.total === 'number' ? wj.total : -1;
+  if (!wins.length) throw new Error('batch-windows.json has empty windows');
+  if (total !== (allMovies ? allMovies.length : total)) {
+    throw new Error('batch-windows.json total mismatch: ' + total + ' vs movies ' + (allMovies ? allMovies.length : 'n/a'));
+  }
+  let cur = 0;
+  for (const w of wins) {
+    if (!w || typeof w.start !== 'number' || typeof w.end !== 'number') throw new Error('Invalid window entry');
+    if (w.start !== cur) throw new Error('Non-contiguous window start: ' + w.start + ' expected ' + cur);
+    if (w.end <= w.start) throw new Error('Invalid window range: ' + w.start + ' -> ' + w.end);
+    if (w.end > total) throw new Error('Window end exceeds total: ' + w.end + ' > ' + total);
+    const core = path.join(batchDir, `batch_${w.start}_${w.end}.js`);
+    const tmdb = path.join(batchDir, `tmdb_batch_${w.start}_${w.end}.js`);
+    if (!fs.existsSync(core)) throw new Error('Missing batch file: ' + core);
+    if (validateTmdb && !fs.existsSync(tmdb)) throw new Error('Missing tmdb batch file: ' + tmdb);
+    cur = w.end;
+  }
+  if (cur !== total) throw new Error('Windows do not cover total: ' + cur + ' != ' + total);
+  return { windows: wins, total };
+}
+
+function loadBatchWindowsOrThrow() {
+  const windowsPath = path.join(PUBLIC_DATA, 'batches', 'batch-windows.json');
+  if (!fs.existsSync(windowsPath)) throw new Error('Missing batch windows: ' + windowsPath);
+  const wj = JSON.parse(fs.readFileSync(windowsPath, 'utf8'));
+  const wins = wj && Array.isArray(wj.windows) ? wj.windows : [];
+  const total = wj && typeof wj.total === 'number' ? wj.total : -1;
+  if (!wins.length || total < 0) throw new Error('Invalid batch-windows.json');
+  return { windows: wins, total };
+}
+
+function validateIdIndexPointersSample(allMovies, sampleCount = 200, opts) {
+  opts = opts || {};
+  const validateTmdb = opts.validateTmdb !== false;
+  const idDir = path.join(PUBLIC_DATA, 'index', 'id');
+  const batchDir = path.join(PUBLIC_DATA, 'batches');
+  if (!fs.existsSync(idDir)) throw new Error('Missing id index dir: ' + idDir);
+
+  const sorted = [...(allMovies || [])].sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  if (!sorted.length) return;
+
+  const picks = [];
+  const n = Math.min(sampleCount, sorted.length);
+  for (let i = 0; i < n; i++) {
+    const idx = Math.floor(i * (sorted.length - 1) / Math.max(1, n - 1));
+    picks.push(sorted[idx]);
+  }
+
+  const shards = new Map();
+  for (const m of picks) {
+    const idStr = m && m.id != null ? String(m.id) : '';
+    if (!idStr) continue;
+    const shard = getShardKey2(idStr);
+    if (shards.has(shard)) continue;
+    const f = path.join(idDir, `${shard}.js`);
+    if (!fs.existsSync(f)) throw new Error('Missing id shard: ' + f);
+    const raw = fs.readFileSync(f, 'utf8');
+    const jsonStr = raw
+      .replace(/^window\.DAOP\s*=\s*window\.DAOP\s*\|\|\s*\{\};\s*window\.DAOP\.idIndex\s*=\s*window\.DAOP\.idIndex\s*\|\|\s*\{\};\s*window\.DAOP\.idIndex\[[^\]]+\]\s*=\s*/i, '')
+      .replace(/;\s*$/, '');
+    shards.set(shard, JSON.parse(jsonStr));
+  }
+
+  for (const m of picks) {
+    const idStr = m && m.id != null ? String(m.id) : '';
+    if (!idStr) continue;
+    const shard = getShardKey2(idStr);
+    const map = shards.get(shard);
+    const row = map ? map[idStr] : null;
+    if (!row) throw new Error('idIndex missing id: ' + idStr);
+    if (!row.b) throw new Error('idIndex missing batch pointer (b) for id: ' + idStr);
+    if (validateTmdb && !row.t) throw new Error('idIndex missing tmdb batch pointer (t) for id: ' + idStr);
+    const core = path.join(batchDir, String(row.b));
+    if (!fs.existsSync(core)) throw new Error('Pointer batch missing: ' + core);
+    if (validateTmdb) {
+      const tmdb = path.join(batchDir, String(row.t));
+      if (!fs.existsSync(tmdb)) throw new Error('Pointer tmdb batch missing: ' + tmdb);
+    }
+  }
+}
+
+function validateBuildOutputs(allMovies) {
+  const validate = process.env.VALIDATE_BUILD;
+  if (validate === '0' || validate === 'false') return;
+
+  console.log('8. Validating build outputs...');
+
+  const moviesLightPath = path.join(PUBLIC_DATA, 'movies-light.js');
+  if (process.env.GENERATE_MOVIES_LIGHT !== '1' && fs.existsSync(moviesLightPath)) {
+    throw new Error('movies-light.js should not exist when GENERATE_MOVIES_LIGHT!=1');
+  }
+
+  const filtersPath = path.join(PUBLIC_DATA, 'filters.js');
+  if (!fs.existsSync(filtersPath)) throw new Error('Missing filters.js');
+  const filtersRaw = fs.readFileSync(filtersPath, 'utf8');
+  if (!/\"langMap\"\s*:\s*\{/.test(filtersRaw)) throw new Error('filters.js missing langMap');
+
+  const validateTmdb = !(process.env.SKIP_TMDB === '1' || process.env.SKIP_TMDB === 'true')
+    || (process.env.VALIDATE_TMDB === '1' || process.env.VALIDATE_TMDB === 'true');
+  validateBatchWindowsAndFiles(allMovies, { validateTmdb });
+
+  validateShardMetaFiles(
+    path.join(PUBLIC_DATA, 'index', 'slug', 'meta.json'),
+    path.join(PUBLIC_DATA, 'index', 'slug'),
+    (k, p) => (p == null ? `${k}.js` : `${k}.${p}.js`)
+  );
+  validateShardMetaFiles(
+    path.join(PUBLIC_DATA, 'search', 'prefix', 'meta.json'),
+    path.join(PUBLIC_DATA, 'search', 'prefix'),
+    (k, p) => (p == null ? `${k}.js` : `${k}.${p}.js`)
+  );
+
+  validateIdIndexPointersSample(
+    allMovies,
+    parseInt(process.env.VALIDATE_SAMPLE_COUNT || '200', 10) || 200,
+    { validateTmdb }
+  );
+
+  console.log('   Validation OK');
+}
+
 /** R2 client (S3 compatible) */
 function getR2Client() {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -524,7 +671,7 @@ function parseSheetMovies(moviesRows, episodesRows, opts) {
       keywords: [],
     };
 
-    // NEW/NEW2: ép modified=now để chắc chắn build lại/batch thay đổi, và lưu info để update lại sheet NEW->OK/NEW2->OK2 sau build.
+    // NEW/NEW2: ép modified=now để chắc chắn build lại/batch thay đổi, và lưu info để update lại sheet NEW->OK/NEW2 sau build.
     if (updateStatus === 'NEW' || updateStatus === 'NEW2') {
       movie.modified = new Date().toISOString();
       movie._sheetUpdateStatus = updateStatus;
@@ -970,7 +1117,7 @@ function splitArrayBySize(arr, maxBytes, keySelector) {
   return { parts: 64, buckets };
 }
 
-function writeIndexAndSearchShards(movies) {
+function writeIndexAndSearchShards(movies, batchPtrById) {
   const BATCH = 120;
   const maxBytes = Math.max(50_000, parseInt(process.env.SHARD_MAX_BYTES || '300000', 10) || 300000);
   const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
@@ -997,9 +1144,12 @@ function writeIndexAndSearchShards(movies) {
 
     const idShard = getShardKey2(idStr);
     if (!idIndexByShard.has(idShard)) idIndexByShard.set(idShard, {});
+    const ptr = batchPtrById ? batchPtrById.get(idStr) : null;
     idIndexByShard.get(idShard)[idStr] = {
       i,
       id: idStr,
+      b: ptr && ptr.b ? ptr.b : '',
+      t: ptr && ptr.t ? ptr.t : '',
       title: m.title,
       origin_name: m.origin_name || '',
       slug: slugStr,
@@ -1556,9 +1706,23 @@ function writeActorsShardsFromData(map = {}, names = {}, movieById = null, meta 
 
 /** 8. Tạo batch files (chỉ ghi lại batch có phim thay đổi dựa trên last_modified) */
 function writeBatches(movies, prevLastModified, tmdbById) {
+  const writeCore = !(process.env.TMDB_ONLY === '1' || process.env.TMDB_ONLY === 'true');
+  const writeTmdb = !(process.env.SKIP_TMDB === '1' || process.env.SKIP_TMDB === 'true');
   const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
   const batchDir = path.join(PUBLIC_DATA, 'batches');
   fs.ensureDirSync(batchDir);
+
+  let forcedWindows = null;
+  if (!writeCore && writeTmdb) {
+    forcedWindows = loadBatchWindowsOrThrow();
+    if (forcedWindows.total !== sorted.length) {
+      throw new Error('TMDB_ONLY requires movie total to match existing batch windows: ' + forcedWindows.total + ' vs ' + sorted.length);
+    }
+  }
+
+  const BASE_BATCH = Math.max(10, parseInt(process.env.BASE_BATCH_SIZE || String(BATCH_SIZE || 120), 10) || 120);
+  const MAX_BATCH_BYTES = Math.max(50_000, parseInt(process.env.BATCH_MAX_BYTES || '300000', 10) || 300000);
+  const windowsPath = path.join(batchDir, 'batch-windows.json');
 
   const toCoreMovie = (m) => {
     if (!m) return m;
@@ -1585,19 +1749,78 @@ function writeBatches(movies, prevLastModified, tmdbById) {
   };
 
   const total = sorted.length;
-  const changedBatchStarts = new Set();
   const newLastModified = {};
+  const batchPtrById = new Map();
+
+  function isWindowsValid(wins, expectedTotal) {
+    if (!Array.isArray(wins) || !wins.length) return false;
+    let cur = 0;
+    for (const w of wins) {
+      if (!w || typeof w.start !== 'number' || typeof w.end !== 'number') return false;
+      if (!Number.isInteger(w.start) || !Number.isInteger(w.end)) return false;
+      if (w.start !== cur) return false;
+      if (w.end <= w.start) return false;
+      if (w.end > expectedTotal) return false;
+      cur = w.end;
+    }
+    return cur === expectedTotal;
+  }
+
+  function buildWindowsBySize(from, to) {
+    const out = [];
+    for (let baseStart = from; baseStart < to; baseStart += BASE_BATCH) {
+      const baseEnd = Math.min(baseStart + BASE_BATCH, to);
+      const slice = sorted.slice(baseStart, baseEnd);
+
+      let curStart = baseStart;
+      let cur = [];
+      for (let j = 0; j < slice.length; j++) {
+        const m = slice[j];
+        const next = cur.concat([toCoreMovie(m)]);
+        const bytes = Buffer.byteLength(JSON.stringify(next), 'utf8');
+        if (cur.length > 0 && bytes > MAX_BATCH_BYTES) {
+          out.push({ start: curStart, end: baseStart + j });
+          curStart = baseStart + j;
+          cur = [];
+        }
+        cur.push(toCoreMovie(m));
+      }
+      if (cur.length) out.push({ start: curStart, end: baseEnd });
+    }
+    return out;
+  }
+
+  // Windows strategy:
+  // - First build: create windows by size cap and persist.
+  // - Subsequent builds (updates): reuse existing windows so updates do not re-split by size;
+  //   changed batches may exceed MAX_BATCH_BYTES.
+  // - If total increases: extend windows for new tail using size cap.
+  // - If movies removed (handled below): force full regen and rebuild windows.
+  let windows = [];
+  let prevWindowsTotal = 0;
+  if (prevLastModified && fs.existsSync(windowsPath)) {
+    try {
+      const wj = JSON.parse(fs.readFileSync(windowsPath, 'utf8'));
+      const wins = wj && Array.isArray(wj.windows) ? wj.windows : [];
+      prevWindowsTotal = typeof wj.total === 'number' ? wj.total : 0;
+      if (isWindowsValid(wins, Math.min(total, prevWindowsTotal || total))) {
+        windows = wins.slice(0);
+      }
+    } catch {}
+  }
+  if (!windows.length) {
+    windows = buildWindowsBySize(0, total);
+  } else if (windows.length && windows[windows.length - 1].end < total) {
+    const from = windows[windows.length - 1].end;
+    const extra = buildWindowsBySize(from, total);
+    if (extra.length) windows = windows.concat(extra);
+  }
 
   for (let idx = 0; idx < sorted.length; idx++) {
     const m = sorted[idx];
-    const idStr = String(m.id);
+    const idStr = m.id != null ? String(m.id) : '';
     const modified = m.modified || m.updated_at || '';
     newLastModified[idStr] = modified;
-    const old = prevLastModified ? prevLastModified[idStr] : undefined;
-    if (!prevLastModified || !old || old !== modified) {
-      const start = Math.floor(idx / BATCH_SIZE) * BATCH_SIZE;
-      changedBatchStarts.add(start);
-    }
   }
 
   // Nếu có phim bị xóa (có trong map cũ nhưng không còn trong map mới) → ghi lại toàn bộ để tránh lệch dữ liệu.
@@ -1605,46 +1828,74 @@ function writeBatches(movies, prevLastModified, tmdbById) {
     for (const idStr of Object.keys(prevLastModified)) {
       if (!newLastModified[idStr]) {
         console.log('   Detect removed movies, regenerate toàn bộ batch files.');
-        changedBatchStarts.clear();
-        for (let start = 0; start < total; start += BATCH_SIZE) {
-          changedBatchStarts.add(start);
-        }
+        prevLastModified = null;
+        windows = buildWindowsBySize(0, total);
         break;
       }
     }
   }
 
-  // Nếu không có map cũ hoặc không batch nào được đánh dấu thay đổi → build full.
-  if (!prevLastModified || changedBatchStarts.size === 0) {
-    for (let start = 0; start < total; start += BATCH_SIZE) {
-      const end = Math.min(start + BATCH_SIZE, total);
-      const slice = sorted.slice(start, end);
-      const batch = slice.map((m) => toCoreMovie(m));
-      const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
-      fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
+  let rewritten = 0;
+  for (const w of windows) {
+    const start = w.start;
+    const end = w.end;
+    const slice = sorted.slice(start, end);
 
-      const tmdbBatch = slice.map((m) => toTmdbPayload(m && m.id != null ? String(m.id) : ''));
-      const tmdbContent = `window.moviesTmdbBatch = ${JSON.stringify(tmdbBatch)};`;
-      fs.writeFileSync(path.join(batchDir, `tmdb_batch_${start}_${end}.js`), tmdbContent, 'utf8');
-    }
-    console.log('   Đã ghi lại toàn bộ batch files (lần đầu hoặc không có thông tin last_modified trước đó).');
-  } else {
-    const sortedStarts = Array.from(changedBatchStarts).sort((a, b) => a - b);
-    for (const start of sortedStarts) {
-      const end = Math.min(start + BATCH_SIZE, total);
-      const slice = sorted.slice(start, end);
-      const batch = slice.map((m) => toCoreMovie(m));
-      const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
-      fs.writeFileSync(path.join(batchDir, `batch_${start}_${end}.js`), content, 'utf8');
+    const coreFile = `batch_${start}_${end}.js`;
+    const tmdbFile = `tmdb_batch_${start}_${end}.js`;
+    const corePath = path.join(batchDir, coreFile);
+    const tmdbPath = path.join(batchDir, tmdbFile);
 
-      const tmdbBatch = slice.map((m) => toTmdbPayload(m && m.id != null ? String(m.id) : ''));
-      const tmdbContent = `window.moviesTmdbBatch = ${JSON.stringify(tmdbBatch)};`;
-      fs.writeFileSync(path.join(batchDir, `tmdb_batch_${start}_${end}.js`), tmdbContent, 'utf8');
+    let shouldWrite = !prevLastModified;
+    if (!shouldWrite) {
+      if (!fs.existsSync(corePath) || !fs.existsSync(tmdbPath)) shouldWrite = true;
     }
-    console.log('   Đã ghi lại', sortedStarts.length, 'batch files có phim mới hoặc thay đổi.');
+    if (!shouldWrite && prevLastModified) {
+      for (const m of slice) {
+        const idStr = m && m.id != null ? String(m.id) : '';
+        if (!idStr) continue;
+        const modified = m.modified || m.updated_at || '';
+        const old = prevLastModified ? prevLastModified[idStr] : undefined;
+        if (!old || old !== modified) { shouldWrite = true; break; }
+      }
+    }
+
+    for (const m of slice) {
+      const idStr = m && m.id != null ? String(m.id) : '';
+      if (!idStr) continue;
+      batchPtrById.set(idStr, { b: coreFile, t: tmdbFile });
+    }
+
+    if (!shouldWrite) continue;
+    const batch = slice.map((m) => toCoreMovie(m));
+    const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
+    fs.writeFileSync(corePath, content, 'utf8');
+
+    const tmdbBatch = slice.map((m) => toTmdbPayload(m && m.id != null ? String(m.id) : ''));
+    const tmdbContent = `window.moviesTmdbBatch = ${JSON.stringify(tmdbBatch)};`;
+    fs.writeFileSync(tmdbPath, tmdbContent, 'utf8');
+    rewritten++;
   }
 
-  return newLastModified;
+  if (!prevLastModified) {
+    console.log('   Đã ghi lại toàn bộ batch files (lần đầu hoặc không có thông tin last_modified trước đó).');
+  } else {
+    console.log('   Đã ghi lại', rewritten, 'batch files có phim mới hoặc thay đổi.');
+  }
+
+  try {
+    fs.writeFileSync(
+      windowsPath,
+      JSON.stringify({
+        baseBatchSize: BASE_BATCH,
+        maxBytes: MAX_BATCH_BYTES,
+        total,
+        windows,
+      }, null, 2)
+    );
+  } catch {}
+
+  return { newLastModified, batchPtrById };
 }
 
 /** 9. Đọc Supabase Admin và xuất config JSON */
@@ -2155,9 +2406,15 @@ async function main() {
   const custom = await fetchCustomMovies();
   console.log('   Custom count:', custom.length);
 
-  console.log('3. Enriching TMDB...');
-  await enrichTmdb((ophim || []).filter((m) => m && !m._skip_tmdb));
-  await enrichTmdb(custom);
+  const skipTmdb = (process.env.SKIP_TMDB === '1' || process.env.SKIP_TMDB === 'true');
+  const tmdbOnly = (process.env.TMDB_ONLY === '1' || process.env.TMDB_ONLY === 'true');
+  if (!skipTmdb) {
+    console.log('3. Enriching TMDB...');
+    await enrichTmdb((ophim || []).filter((m) => m && !m._skip_tmdb));
+    await enrichTmdb(custom);
+  } else {
+    console.log('3. Enriching TMDB... (SKIP_TMDB)');
+  }
 
   const tmdbById = new Map(prevTmdbById || []);
   for (const m of [...(ophim || []), ...(custom || [])]) {
@@ -2200,11 +2457,18 @@ async function main() {
   if (process.env.GENERATE_MOVIES_LIGHT === '1') {
     writeMoviesLight(allMovies);
   }
-  writeIndexAndSearchShards(allMovies);
+  const batchRes = writeBatches(allMovies, prevLastModified || undefined, tmdbById);
+  const newLastModified = batchRes && batchRes.newLastModified ? batchRes.newLastModified : batchRes;
+  const batchPtrById = batchRes && batchRes.batchPtrById ? batchRes.batchPtrById : null;
+
+  writeIndexAndSearchShards(allMovies, batchPtrById);
   const filters = writeFilters(allMovies, genreNames, countryNames);
   writeCategoryPages(filters);
   writeActors(allMovies);
-  const newLastModified = writeBatches(allMovies, prevLastModified || undefined, tmdbById);
+
+  try {
+    fs.writeFileSync(path.join(PUBLIC_DATA, 'last_modified.json'), JSON.stringify(newLastModified, null, 2));
+  } catch {}
 
   console.log('6b. Sync update status back to Google Sheets (NEW -> OK)...');
   await applySheetUpdateStatuses(custom);
@@ -2215,6 +2479,10 @@ async function main() {
   console.log('7. Writing sitemap.xml & robots.txt...');
   writeSitemap(allMovies);
   writeRobots();
+
+  if (process.env.VALIDATE_BUILD !== '0' && process.env.VALIDATE_BUILD !== 'false') {
+    validateBuildOutputs(allMovies);
+  }
 
   const lastBuild = { builtAt: new Date().toISOString(), movieCount: allMovies.length };
   fs.writeFileSync(path.join(PUBLIC_DATA, 'last_build.json'), JSON.stringify(lastBuild, null, 2));

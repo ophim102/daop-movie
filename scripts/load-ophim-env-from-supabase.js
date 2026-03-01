@@ -25,6 +25,7 @@ async function main() {
     'ophim_auto_end_page',
     'ophim_start_page',
     'ophim_end_page',
+    'update_data_two_phase',
   ];
 
   const { data, error } = await supabase
@@ -49,10 +50,13 @@ async function main() {
 
   const startPage = numOr(map.ophim_auto_start_page ?? map.ophim_start_page, 1);
   const endPage = numOr(map.ophim_auto_end_page ?? map.ophim_end_page, 1);
+  const twoPhase = String(map.update_data_two_phase || '').trim();
+  const twoPhaseOn = (twoPhase === '1' || twoPhase.toLowerCase() === 'true');
 
   const lines = [
     `OPHIM_START_PAGE=${startPage}`,
     `OPHIM_END_PAGE=${endPage}`,
+    `UPDATE_DATA_TWO_PHASE=${twoPhaseOn ? 1 : 0}`,
   ];
 
   fs.appendFileSync(envFile, lines.join('\n') + '\n', 'utf8');

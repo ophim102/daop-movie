@@ -1,16 +1,7 @@
-name: Update data daily
+name: Core then TMDB (2-phase deploy)
 on:
-  schedule:
-    - cron: '0 0 * * *'
-    - cron: '0 6 * * *'
-    - cron: '0 12 * * *'
-    - cron: '0 18 * * *'
   workflow_dispatch:
     inputs:
-      phase:
-        description: 'Chế độ chạy: 1 = full (1 pha), 2 = core -> tmdb (2 pha)'
-        required: false
-        default: '1'
       start_page:
         description: 'Trang bắt đầu (OPhim), 0 = mặc định'
         required: false
@@ -20,67 +11,32 @@ on:
         required: false
         default: '1'
       clean:
-        description: 'Xóa dữ liệu cũ trước khi build (true/false)'
+        description: 'Xóa dữ liệu cũ trước khi build core (true/false)'
         required: false
         default: 'false'
+
 jobs:
-  build:
+  build_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
+
       - run: npm install
+
       - name: Load OPhim env from Supabase (auto settings)
         run: node scripts/load-ophim-env-from-supabase.js
         env:
           SUPABASE_ADMIN_URL: ${{ secrets.SUPABASE_ADMIN_URL }}
           SUPABASE_ADMIN_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_ADMIN_SERVICE_ROLE_KEY }}
 
-      - name: Decide phase mode
-        run: |
-          if [ "${{ inputs.phase }}" = "2" ]; then
-            echo "TWO_PHASE=true" >> $GITHUB_ENV
-          elif [ "${UPDATE_DATA_TWO_PHASE}" = "1" ]; then
-            echo "TWO_PHASE=true" >> $GITHUB_ENV
-          else
-            echo "TWO_PHASE=false" >> $GITHUB_ENV
-          fi
-
-      - name: Build (1-phase full)
-        if: ${{ env.TWO_PHASE != 'true' }}
-        run: npm run build
-        env:
-          CLEAN_OLD_DATA: ${{ inputs.clean == 'true' && '1' || '0' }}
-          OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
-          OPHIM_START_PAGE: ${{ inputs.start_page || vars.OPHIM_START_PAGE || '1' }}
-          OPHIM_END_PAGE: ${{ inputs.end_page || vars.OPHIM_END_PAGE || '1' }}
-          OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-          GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
-          GOOGLE_SHEETS_JSON: ${{ secrets.GOOGLE_SHEETS_JSON }}
-          SUPABASE_ADMIN_URL: ${{ secrets.SUPABASE_ADMIN_URL }}
-          SUPABASE_ADMIN_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_ADMIN_SERVICE_ROLE_KEY }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
-
-      - name: Commit and push (1-phase)
-        if: ${{ env.TWO_PHASE != 'true' }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add public/data
-          git diff --staged --quiet || (git commit -m "chore: update data" && git push)
-
-      - name: Build CORE (2-phase, skip TMDB)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Build CORE (skip TMDB)
         run: npm run build
         env:
           CLEAN_OLD_DATA: ${{ inputs.clean == 'true' && '1' || '0' }}
@@ -100,16 +56,15 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
-      - name: Commit & push CORE (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Commit & push CORE
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add public/data
-          git diff --staged --quiet || (git commit -m "chore: update data (core)" && git push)
+          git add public/data public/the-loai public/quoc-gia public/nam-phat-hanh public/_redirects public/_routes.json
+          git status
+          git diff --staged --quiet || (git commit -m "chore: core build (skip tmdb)" && git push)
 
-      - name: Deploy CORE to Cloudflare Pages (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Deploy CORE to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -117,8 +72,7 @@ jobs:
           wranglerVersion: '3.91.0'
           command: pages deploy public --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'daop' }} --commit-dirty=true
 
-      - name: Build TMDB ONLY (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Build TMDB ONLY
         run: npm run build
         env:
           CLEAN_OLD_DATA: '0'
@@ -138,16 +92,15 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
 
-      - name: Commit & push TMDB ONLY (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Commit & push TMDB
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add public/data
-          git diff --staged --quiet || (git commit -m "chore: update data (tmdb only)" && git push)
+          git status
+          git diff --staged --quiet || (git commit -m "chore: tmdb build (tmdb only)" && git push)
 
-      - name: Deploy TMDB to Cloudflare Pages (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+      - name: Deploy TMDB to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -168,52 +168,6 @@
       });
   }
 
-  function buildIndex() {
-    var list = window.moviesLight || [];
-    if (!list.length) return null;
-    if (typeof FlexSearch !== 'undefined' && FlexSearch.Index) {
-      try {
-        var idx = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
-        var idxUnsigned = new FlexSearch.Index({ tokenize: 'forward', charset: 'latin:extra' });
-        list.forEach(function (m, i) {
-          var text = ((m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '')).toLowerCase();
-          idx.add(i, text);
-          idxUnsigned.add(i, removeVietnameseTones(text));
-        });
-        return { index: idx, indexUnsigned: idxUnsigned, list: list, useFlexSearch: true };
-      } catch (e) {
-        console.warn('FlexSearch index build failed:', e);
-      }
-    }
-    return { index: null, indexUnsigned: null, list: list, useFlexSearch: false };
-  }
-
-  function searchFallback(list, q) {
-    var qLow = q.toLowerCase();
-    var qUnsigned = removeVietnameseTones(qLow);
-    return list.filter(function (m) {
-      var title = (m.title || '').toLowerCase();
-      var origin = (m.origin_name || '').toLowerCase();
-      var slug = (m.slug || '').toLowerCase();
-      var titleU = removeVietnameseTones(title);
-      var originU = removeVietnameseTones(origin);
-      var slugU = removeVietnameseTones(slug);
-      return title.indexOf(qLow) >= 0 || origin.indexOf(qLow) >= 0 || slug.indexOf(qLow) >= 0 ||
-             titleU.indexOf(qUnsigned) >= 0 || originU.indexOf(qUnsigned) >= 0 || slugU.indexOf(qUnsigned) >= 0;
-    }).slice(0, 50);
-  }
-
-  function exactContains(m, qLower) {
-    if (!m) return false;
-    var q = (qLower || '').trim();
-    if (!q) return true;
-    var text = ((m.title || '') + ' ' + (m.origin_name || '') + ' ' + (m.slug || '')).toLowerCase();
-    if (text.indexOf(q) >= 0) return true;
-    var textU = removeVietnameseTones(text);
-    var qU = removeVietnameseTones(q);
-    return textU.indexOf(qU) >= 0;
-  }
-
   function doSearch(q) {
     q = (q || '').trim();
     if (!q.length) {
@@ -221,49 +175,6 @@
       return;
     }
     var qLower = q.toLowerCase();
-
-    // Nếu có moviesLight (dataset nhỏ) thì giữ logic cũ.
-    if (window.moviesLight && Array.isArray(window.moviesLight) && window.moviesLight.length) {
-      if (!index) index = buildIndex();
-      if (!index) return;
-      var list;
-      if (index.useFlexSearch && index.index) {
-        try {
-          var ids = index.index.search(qLower, 50);
-          if (!Array.isArray(ids)) ids = [];
-          var qUnsigned = removeVietnameseTones(qLower);
-          var idsU = index.indexUnsigned ? index.indexUnsigned.search(qUnsigned, 50) : [];
-          if (!Array.isArray(idsU)) idsU = [];
-
-          var seen = {};
-          var ordered = [];
-          function pushUnique(arr) {
-            arr.forEach(function (i) {
-              if (i == null) return;
-              var k = String(i);
-              if (seen[k]) return;
-              seen[k] = true;
-              ordered.push(i);
-            });
-          }
-          pushUnique(ids);
-          pushUnique(idsU);
-
-          ordered = ordered
-            .map(Number)
-            .filter(function (i) { return i >= 0 && i < index.list.length; });
-          list = ordered.map(function (i) { return index.list[i]; }).filter(Boolean);
-          list = list.filter(function (m) { return exactContains(m, qLower); });
-          if (list.length > 50) list = list.slice(0, 50);
-        } catch (e) {
-          list = searchFallback(index.list, qLower);
-        }
-      } else {
-        list = searchFallback(index.list, qLower);
-      }
-      renderResults(list);
-      return;
-    }
 
     // Dataset lớn: dùng shard prefix.
     var tokens = pickQueryTokens(qLower);

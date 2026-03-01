@@ -937,16 +937,39 @@
       var grid = document.getElementById('watch-recommend-grid');
       if (grid) {
         var cfg = getWatchRecSettings();
-        var list = (window.moviesLight || []).slice(0);
-        var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); });
-        var same = list.filter(function (m) {
-          if (!m || m.id === movie.id) return false;
-          return (m.genre || []).some(function (g) { return genres.indexOf(g && (g.slug || g.id)) !== -1; });
-        }).slice(0, cfg.limit);
-
-        var listRef = { list: same };
+        var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
         grid.className = 'movies-grid';
-        setupRecommendToolbar(document.getElementById('watch-rec-toolbar'), grid, baseUrl, listRef);
+        grid.innerHTML = '<p>Đang tải...</p>';
+
+        var fd = window.filtersData || {};
+        var genreMap = fd.genreMap || {};
+        var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); }).filter(Boolean);
+        var idSet = new Set();
+        genres.forEach(function (g) {
+          var arr = genreMap[g] || [];
+          (arr || []).forEach(function (id) { if (id != null) idSet.add(String(id)); });
+        });
+        if (movie && movie.id != null) idSet.delete(String(movie.id));
+        var ids = Array.from(idSet).slice(0, Math.max(cfg.limit * 4, cfg.limit));
+
+        var listRef = { list: [] };
+        var toolbarEl = document.getElementById('watch-rec-toolbar');
+        var getById = window.DAOP && window.DAOP.getMovieLightByIdAsync;
+        if (typeof getById !== 'function') {
+          grid.innerHTML = '<p>Không thể tải dữ liệu phim.</p>';
+          setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+        } else {
+          Promise.all(ids.map(function (id) { return getById(id); }))
+            .then(function (arr) {
+              listRef.list = (arr || []).filter(Boolean).slice(0, cfg.limit);
+              setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+            })
+            .catch(function () {
+              listRef.list = [];
+              grid.innerHTML = '<p>Không có phim.</p>';
+              setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+            });
+        }
       }
     }
 

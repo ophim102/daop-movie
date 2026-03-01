@@ -285,12 +285,6 @@
       grid.innerHTML = '<p>Lỗi: không thể hiển thị danh sách.</p>';
     } else if (!slice.length) {
       grid.innerHTML = '<p>Không có phim nào.</p>';
-    } else if (window.moviesLight && Array.isArray(window.moviesLight) && window.moviesLight.length) {
-      var html0 = slice.map(function (id) {
-        var m = window.moviesLight.find(function (x) { return x && x.id === id; });
-        return m ? render(m, baseUrl, { usePoster: usePoster }) : '';
-      }).join('');
-      grid.innerHTML = html0 || '<p>Không có phim nào.</p>';
     } else if (typeof getById !== 'function') {
       grid.innerHTML = '<p>Không thể tải dữ liệu phim.</p>';
     } else {

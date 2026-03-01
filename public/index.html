@@ -101,7 +101,24 @@
         ];
         var banners = res[1] || [];
         var fd = window.filtersData || {};
-        var list = window.moviesLight || [];
+        var lightCache = {};
+        function getLightById(id) {
+          var k = String(id);
+          if (lightCache[k]) return Promise.resolve(lightCache[k]);
+          if (window.DAOP && typeof window.DAOP.getMovieLightByIdAsync === 'function') {
+            return window.DAOP.getMovieLightByIdAsync(id).then(function (m) {
+              if (m) lightCache[k] = m;
+              return m;
+            });
+          }
+          return Promise.resolve(null);
+        }
+        function resolveMoviesByIds(ids, limit) {
+          var slice = (ids || []).slice(0, limit || 24);
+          return Promise.all(slice.map(function (id) { return getLightById(id); }))
+            .then(function (arr) { return (arr || []).filter(Boolean); })
+            .catch(function () { return []; });
+        }
         var bannerWrap = document.getElementById('banner-wrap');
         if (banners.length && bannerWrap) {
           var b = banners[0];
@@ -120,7 +137,6 @@
           else if (sec.source_type === 'status' && fd.statusMap && fd.statusMap[sec.source_value]) ids = fd.statusMap[sec.source_value];
           else if (sec.source_type === 'quality_4k' && fd.quality4kIds) ids = fd.quality4kIds;
           var limit = sec.limit_count || 24;
-          var movies = ids.slice(0, limit).map(function(id){ return list.find(function(m){ return m.id === id; }); }).filter(Boolean);
           var moreLink = sec.more_link ? '<a href="' + sec.more_link + '">Xem thêm</a>' : '';
           var layout = (sec.display_type || 'grid').toLowerCase();
           var xs = [2,3,4,6,8].indexOf(Number(sec.grid_columns_xs)) >= 0 ? Number(sec.grid_columns_xs) : 2;
@@ -132,30 +148,53 @@
           var cardOrientation = (sec.use_poster === true || sec.use_poster === 'true' || defaultPoster) ? 'horizontal' : 'vertical';
           var html = '<section class="home-section home-section-' + layout + (layout === 'grid' ? ' home-section--grid-cols' : '') + '"' + (layout === 'grid' ? ' style="' + gridVars + '"' : '') + '><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
           if (layout === 'slider') {
-            html += '<div class="section-slider-wrap"><div class="section-slider-track">';
-            movies.forEach(function(m){ html += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }) + '</div>'; });
-            html += '</div><button type="button" class="section-slider-prev" aria-label="Trước">‹</button><button type="button" class="section-slider-next" aria-label="Sau">›</button></div>';
+            html += '<div class="section-slider-wrap"><div class="section-slider-track"><p>Đang tải...</p></div><button type="button" class="section-slider-prev" aria-label="Trước">‹</button><button type="button" class="section-slider-next" aria-label="Sau">›</button></div>';
           } else if (layout === 'list') {
-            html += '<div class="movies-list movies-list--' + cardOrientation + '">';
-            movies.forEach(function(m){
-              var href = base + '/phim/' + (m.slug || m.id) + '.html';
-              var slug = String(m.slug || m.id || '');
-              var posterUrl = (cardOrientation === 'horizontal' ? (m.poster || m.thumb) : (m.thumb || m.poster) || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="168"%3E%3Crect fill="%2321262d" width="120" height="168"/%3E%3C/svg%3E';
-              var title = (m.title || '').replace(/</g, '&lt;');
-              var origin = (m.origin_name || '').replace(/</g, '&lt;');
-              html += '<div class="movies-list-item-wrap">' +
-                '<button type="button" class="movie-fav-btn" data-movie-slug="' + slug.replace(/"/g, '&quot;') + '" aria-pressed="false" aria-label="Yêu thích">♥</button>' +
-                '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + posterUrl + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (origin ? '<em class="list-origin">' + origin + '</em>' : '') + (m.episode_current ? ' <span class="list-ep">• ' + m.episode_current + ' tập</span>' : '') + '</span></a>' +
-                '</div>';
-            });
-            html += '</div>';
+            html += '<div class="movies-list movies-list--' + cardOrientation + '"><p>Đang tải...</p></div>';
           } else {
-            html += '<div class="movies-grid">';
-            movies.forEach(function(m){ html += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }); });
-            html += '</div>';
+            html += '<div class="movies-grid"><p>Đang tải...</p></div>';
           }
           html += '</section>';
           container.insertAdjacentHTML('beforeend', html);
+
+          var secEl = container.lastElementChild;
+          resolveMoviesByIds(ids, limit).then(function (movies) {
+            if (!secEl) return;
+            if (!movies || !movies.length) {
+              var grid0 = secEl.querySelector('.section-slider-track') || secEl.querySelector('.movies-list') || secEl.querySelector('.movies-grid');
+              if (grid0) grid0.innerHTML = '<p>Không có phim.</p>';
+              return;
+            }
+            if (layout === 'slider') {
+              var track = secEl.querySelector('.section-slider-track');
+              if (!track) return;
+              var out = '';
+              movies.forEach(function (m) { out += '<div class="section-slider-item">' + window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }) + '</div>'; });
+              track.innerHTML = out;
+            } else if (layout === 'list') {
+              var listEl = secEl.querySelector('.movies-list');
+              if (!listEl) return;
+              var out2 = '';
+              movies.forEach(function(m){
+                var href = base + '/phim/' + (m.slug || m.id) + '.html';
+                var slug = String(m.slug || m.id || '');
+                var posterUrl = (cardOrientation === 'horizontal' ? (m.poster || m.thumb) : (m.thumb || m.poster) || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="168"%3E%3Crect fill="%2321262d" width="120" height="168"/%3E%3C/svg%3E';
+                var title = (m.title || '').replace(/</g, '&lt;');
+                var origin = (m.origin_name || '').replace(/</g, '&lt;');
+                out2 += '<div class="movies-list-item-wrap">' +
+                  '<button type="button" class="movie-fav-btn" data-movie-slug="' + slug.replace(/"/g, '&quot;') + '" aria-pressed="false" aria-label="Yêu thích">♥</button>' +
+                  '<a href="' + href + '" class="movies-list-item"><span class="list-thumb"><img loading="lazy" src="' + posterUrl + '" alt=""></span><span class="list-info"><strong>' + title + '</strong>' + (origin ? '<em class="list-origin">' + origin + '</em>' : '') + (m.episode_current ? ' <span class="list-ep">• ' + m.episode_current + ' tập</span>' : '') + '</span></a>' +
+                  '</div>';
+              });
+              listEl.innerHTML = out2;
+            } else {
+              var gridEl = secEl.querySelector('.movies-grid');
+              if (!gridEl) return;
+              var out3 = '';
+              movies.forEach(function(m){ out3 += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }); });
+              gridEl.innerHTML = out3;
+            }
+          });
         });
         container.querySelectorAll('.section-slider-wrap').forEach(function(wrap){
           var track = wrap.querySelector('.section-slider-track');

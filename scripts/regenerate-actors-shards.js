@@ -10,16 +10,67 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DATA = path.join(__dirname, '..', 'public', 'data');
 
+function parseWindowArray(jsContent, globalName) {
+  const prefix = `window.${globalName}`;
+  let s = String(jsContent || '').trim();
+  if (!s.startsWith(prefix)) {
+    throw new Error(`Không tìm thấy prefix ${prefix} trong file.`);
+  }
+  s = s.replace(new RegExp(`^${prefix}\\s*=\\s*`), '');
+  s = s.replace(/;\s*$/, '');
+  return JSON.parse(s);
+}
+
+function toLight(m) {
+  if (!m) return null;
+  return {
+    id: String(m.id),
+    title: m.title,
+    origin_name: m.origin_name,
+    slug: m.slug,
+    thumb: m.thumb,
+    poster: m.poster,
+    year: m.year,
+    type: m.type,
+    episode_current: m.episode_current,
+    lang_key: m.lang_key,
+    is_4k: !!m.is_4k,
+    is_exclusive: !!m.is_exclusive,
+    sub_docquyen: !!m.sub_docquyen,
+    chieurap: !!m.chieurap,
+  };
+}
+
+function loadMovieLightByIdFromBatches() {
+  const batchDir = path.join(PUBLIC_DATA, 'batches');
+  if (!fs.existsSync(batchDir)) {
+    throw new Error('batches/ không tồn tại. Chạy build trước.');
+  }
+  const files = fs.readdirSync(batchDir).filter((f) => /^batch_\d+_\d+\.js$/i.test(f));
+  const byId = new Map();
+  for (const f of files) {
+    const raw = fs.readFileSync(path.join(batchDir, f), 'utf8');
+    let arr;
+    try {
+      arr = parseWindowArray(raw, 'moviesBatch');
+    } catch (e) {
+      console.warn('Skip batch file:', f, e.message);
+      continue;
+    }
+    for (const m of arr || []) {
+      if (!m || m.id == null) continue;
+      const light = toLight(m);
+      if (light) byId.set(String(light.id), light);
+    }
+  }
+  return byId;
+}
+
 function main() {
   const actorsPath = path.join(PUBLIC_DATA, 'actors.js');
-  const mlPath = path.join(PUBLIC_DATA, 'movies-light.js');
 
   if (!fs.existsSync(actorsPath)) {
     console.error('actors.js không tồn tại. Chạy npm run build trước.');
-    process.exit(1);
-  }
-  if (!fs.existsSync(mlPath)) {
-    console.error('movies-light.js không tồn tại. Chạy npm run build trước.');
     process.exit(1);
   }
 
@@ -28,11 +79,7 @@ function main() {
   const actorsData = JSON.parse(actorsStr);
   const { map: m = {}, names: n = {} } = actorsData;
 
-  const mlRaw = fs.readFileSync(mlPath, 'utf8');
-  const mlStr = mlRaw.replace(/^window\.moviesLight\s*=\s*/, '').replace(/;\s*$/, '');
-  const light = JSON.parse(mlStr);
-  const movieById = new Map();
-  for (const mv of light || []) movieById.set(String(mv.id), mv);
+  const movieById = loadMovieLightByIdFromBatches();
 
   const slugs = Object.keys(n);
   const byFirst = {};

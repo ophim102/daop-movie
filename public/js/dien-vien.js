@@ -367,18 +367,22 @@
     var ids = (map[slug] || []).map(function (x) { return String(x); });
     var list = (data && data.movies && data.movies[slug]) ? data.movies[slug] : [];
     if (list.length === 0 && ids.length > 0) {
-      var moviesLight = window.moviesLight;
-      if (moviesLight && moviesLight.length > 0) {
-        var idsSet = {};
-        for (var i = 0; i < ids.length; i++) idsSet[ids[i]] = true;
-        list = moviesLight.filter(function (m) { return idsSet[String(m.id)]; });
-      } else if (retryCount < 2) {
-        var base = (window.DAOP && window.DAOP.basePath) || '';
-        var s = document.createElement('script');
-        s.src = base + '/data/movies-light.js';
-        s.onload = function () { init(retryCount + 1); };
-        s.onerror = function () { renderActorMovies(slug, names, meta, ids, []); };
-        document.head.appendChild(s);
+      if (window.DAOP && typeof window.DAOP.getMovieLightByIdAsync === 'function') {
+        var cache = window.DAOP._actorMovieLightCache || (window.DAOP._actorMovieLightCache = {});
+        Promise.all(ids.slice(0, PAGE_SIZE_MOVIES * 20).map(function (id) {
+          if (cache[id]) return Promise.resolve(cache[id]);
+          return window.DAOP.getMovieLightByIdAsync(id).then(function (m) {
+            if (m) cache[id] = m;
+            return m;
+          });
+        }))
+          .then(function (arr) {
+            var resolved = (arr || []).filter(Boolean);
+            renderActorMovies(slug, names, meta, ids, resolved);
+          })
+          .catch(function () {
+            renderActorMovies(slug, names, meta, ids, []);
+          });
         return;
       }
     }
