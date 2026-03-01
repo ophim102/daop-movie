@@ -628,6 +628,8 @@ function mergeMovies(ophim, custom) {
   }
   const merged = Array.from(bySlug.values());
   for (const m of merged) {
+    if (m && m.thumb) m.thumb = compactOphimImgUrl(m.thumb);
+    if (m && m.poster) m.poster = compactOphimImgUrl(m.poster);
     if (!m.poster && m.thumb) m.poster = m.thumb;
     dedupeThumbPoster(m);
   }
