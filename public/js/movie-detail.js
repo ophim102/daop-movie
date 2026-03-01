@@ -276,12 +276,18 @@
   }
 
   function renderFromLight(light) {
-    var posterUrl = (light.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
+    var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+      ? window.DAOP.normalizeImgUrl
+      : function (x) { return x; };
+    var derivedPoster = (!light.poster && light.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
+      ? window.DAOP.derivePosterFromThumb(light.thumb)
+      : '';
+    var posterUrl = norm(light.poster || derivedPoster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
     var base = (window.DAOP && window.DAOP.basePath) || '';
     var slug = light.slug || '';
     var watchHref = base + '/xem-phim/' + encodeURIComponent(slug) + '.html';
-    var posterBg = (light.poster || light.thumb || '').replace(/^\/\//, 'https://');
-    var thumbMain = (light.thumb || light.poster || '').replace(/^\/\//, 'https://');
+    var posterBg = norm(light.poster || derivedPoster || light.thumb || '').replace(/^\/\//, 'https://');
+    var thumbMain = norm(light.thumb || light.poster || derivedPoster || '').replace(/^\/\//, 'https://');
     var title = esc(light.title || '');
     var origin = esc(light.origin_name || '');
     var year = esc(light.year || '');
@@ -320,9 +326,15 @@
   }
 
   function renderFull(movie) {
-    var poster = (movie.poster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
-    var posterBg = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
-    var thumbMain = (movie.thumb || movie.poster || '').replace(/^\/\//, 'https://');
+    var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+      ? window.DAOP.normalizeImgUrl
+      : function (x) { return x; };
+    var derivedPoster = (!movie.poster && movie.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
+      ? window.DAOP.derivePosterFromThumb(movie.thumb)
+      : '';
+    var poster = norm(movie.poster || derivedPoster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
+    var posterBg = norm(movie.poster || derivedPoster || movie.thumb || '').replace(/^\/\//, 'https://');
+    var thumbMain = norm(movie.thumb || movie.poster || derivedPoster || '').replace(/^\/\//, 'https://');
     var title = (movie.title || '').replace(/</g, '&lt;');
     var origin = (movie.origin_name || '').replace(/</g, '&lt;');
     var genreStr = (movie.genre || []).map(function (g) { return g.name; }).join(', ');

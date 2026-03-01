@@ -91,6 +91,27 @@ function colToLetter(n) {
   return s || 'A';
 }
 
+function derivePosterFromThumb(url) {
+  if (!url) return '';
+  const u = String(url);
+  if (/poster\.(jpe?g|png|webp)$/i.test(u)) return u;
+  const r1 = u.replace(/thumb\.(jpe?g|png|webp)$/i, 'poster.$1');
+  if (r1 !== u) return r1;
+  const r2 = u.replace(/-thumb\.(jpe?g|png|webp)$/i, '-poster.$1');
+  if (r2 !== u) return r2;
+  const r3 = u.replace(/_thumb\.(jpe?g|png|webp)$/i, '_poster.$1');
+  if (r3 !== u) return r3;
+  return '';
+}
+
+function expandImgUrl(url) {
+  if (!url) return '';
+  const u = String(url);
+  if (u.startsWith('/uploads/')) return `https://img.ophim.live${u}`;
+  if (u.startsWith('//')) return `https:${u}`;
+  return u;
+}
+
 function buildMovieRow(movie, headers, nextId) {
   const row = new Array(headers.length).fill('');
   const headerIndex = (name) => {
@@ -121,10 +142,13 @@ function buildMovieRow(movie, headers, nextId) {
   setIfExists('language', movie.lang_key || movie.language || '');
   setIfExists('episode_current', movie.episode_current || '');
   setIfExists('quality', movie.quality || '');
-  setIfExists('thumb_url', movie.thumb || '');
-  setIfExists('thumb', movie.thumb || '');
-  setIfExists('poster_url', movie.poster || movie.thumb || '');
-  setIfExists('poster', movie.poster || movie.thumb || '');
+  const thumbUrl = expandImgUrl(movie.thumb || '');
+  setIfExists('thumb_url', thumbUrl);
+  setIfExists('thumb', thumbUrl);
+  const derivedPoster = (!movie.poster && thumbUrl) ? derivePosterFromThumb(thumbUrl) : '';
+  const posterUrl = expandImgUrl(movie.poster || '') || derivedPoster || thumbUrl || '';
+  setIfExists('poster_url', posterUrl);
+  setIfExists('poster', posterUrl);
   const desc = movie.description || movie.content || '';
   setIfExists('description', desc);
   setIfExists('content', desc);

@@ -206,8 +206,8 @@ function normalizeOPhimMovie(m, slug, cdnBase = 'https://img.ophim.live') {
     title: m.name || m.title || '',
     origin_name: m.origin_name || m.original_title || '',
     slug: slugNorm || id,
-    thumb,
-    poster,
+    thumb: compactOphimImgUrl(thumb),
+    poster: compactOphimImgUrl(poster),
     year: m.year || '',
     type: m.type || 'single',
     genre: m.category?.map((c) => ({ id: c.id, name: c.name, slug: c.slug || slugify(c.name, { lower: true }) })) || [],
@@ -230,6 +230,38 @@ function normalizeOPhimMovie(m, slug, cdnBase = 'https://img.ophim.live') {
         ? m.modified.time
         : (m.modified || m.updated_at || new Date().toISOString()),
   };
+}
+
+const OPHIM_IMG_DOMAIN = 'https://img.ophim.live';
+
+function compactOphimImgUrl(url) {
+  if (!url) return '';
+  const u = String(url).trim();
+  if (!u) return '';
+  const domain = OPHIM_IMG_DOMAIN.replace(/\/$/, '');
+  if (u.startsWith(domain + '/')) return u.slice(domain.length);
+  return u;
+}
+
+function derivePosterFromThumb(url) {
+  if (!url) return '';
+  const u = String(url);
+  if (/poster\.(jpe?g|png|webp)$/i.test(u)) return u;
+  const r1 = u.replace(/thumb\.(jpe?g|png|webp)$/i, 'poster.$1');
+  if (r1 !== u) return r1;
+  const r2 = u.replace(/-thumb\.(jpe?g|png|webp)$/i, '-poster.$1');
+  if (r2 !== u) return r2;
+  const r3 = u.replace(/_thumb\.(jpe?g|png|webp)$/i, '_poster.$1');
+  if (r3 !== u) return r3;
+  return '';
+}
+
+function dedupeThumbPoster(m) {
+  if (!m || !m.thumb || !m.poster) return;
+  const derived = derivePosterFromThumb(m.thumb);
+  if (derived && String(m.poster) === String(derived)) {
+    m.poster = '';
+  }
 }
 
 async function loadServiceAccountFromEnv(readWrite) {
@@ -597,6 +629,7 @@ function mergeMovies(ophim, custom) {
   const merged = Array.from(bySlug.values());
   for (const m of merged) {
     if (!m.poster && m.thumb) m.poster = m.thumb;
+    dedupeThumbPoster(m);
   }
   return merged;
 }

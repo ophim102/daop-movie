@@ -984,7 +984,13 @@
     window.DAOP.loadMovieDetail(light.id, function (movie) {
       movie = movie || light;
 
-      var poster = (movie.poster || movie.thumb || '').replace(/^\/\//, 'https://');
+      var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+        ? window.DAOP.normalizeImgUrl
+        : function (x) { return x; };
+      var derivedPoster = (!movie.poster && movie.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
+        ? window.DAOP.derivePosterFromThumb(movie.thumb)
+        : '';
+      var poster = norm(movie.poster || derivedPoster || movie.thumb || '').replace(/^\/\//, 'https://');
       var title = (movie.title || '').replace(/</g, '&lt;');
 
       var baseUrl = (window.DAOP && window.DAOP.basePath) || '';

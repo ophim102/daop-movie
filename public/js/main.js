@@ -222,6 +222,27 @@
     document.head.appendChild(script);
   };
 
+  window.DAOP.derivePosterFromThumb = function (url) {
+    if (!url) return '';
+    var u = String(url);
+    if (/poster\.(jpe?g|png|webp)$/i.test(u)) return u;
+    var r1 = u.replace(/thumb\.(jpe?g|png|webp)$/i, 'poster.$1');
+    if (r1 !== u) return r1;
+    var r2 = u.replace(/-thumb\.(jpe?g|png|webp)$/i, '-poster.$1');
+    if (r2 !== u) return r2;
+    var r3 = u.replace(/_thumb\.(jpe?g|png|webp)$/i, '_poster.$1');
+    if (r3 !== u) return r3;
+    return '';
+  };
+
+  window.DAOP.normalizeImgUrl = function (url) {
+    if (!url) return '';
+    var u = String(url);
+    if (u.startsWith('/uploads/')) return 'https://img.ophim.live' + u;
+    if (u.startsWith('//')) return 'https:' + u;
+    return u;
+  };
+
   /** Render movie card HTML (title + origin_name). opts: { cardOrientation?: 'vertical'|'horizontal', usePoster?: boolean } */
   window.DAOP.renderMovieCard = function (m, baseUrl, opts) {
     baseUrl = baseUrl || BASE;
@@ -231,9 +252,15 @@
     const cardOrientation = (opts.cardOrientation === 'horizontal' || opts.cardOrientation === 'vertical')
       ? opts.cardOrientation
       : (opts.usePoster ? 'horizontal' : 'vertical');
+    const derivedPoster = (!m.poster && m.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
+      ? window.DAOP.derivePosterFromThumb(m.thumb)
+      : '';
+    const norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+      ? window.DAOP.normalizeImgUrl
+      : function (x) { return x; };
     const imgUrl = cardOrientation === 'horizontal'
-      ? ((m.poster || m.thumb || '').replace(/^\/\//, 'https://'))
-      : ((m.thumb || m.poster || '').replace(/^\/\//, 'https://'));
+      ? (norm(m.poster || derivedPoster || m.thumb || '').replace(/^\/\//, 'https://'))
+      : (norm(m.thumb || m.poster || derivedPoster || '').replace(/^\/\//, 'https://'));
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
 
