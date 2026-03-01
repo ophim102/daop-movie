@@ -1,0 +1,1 @@
+window.moviesTmdbBatch = [{"id":"694007d997899389f0c82e9d","tmdb":{"type":"tv","id":"41967","season":1,"vote_average":0,"vote_count":0},"imdb":null,"cast":[],"director":[],"cast_meta":[],"keywords":[]},{"id":"694011abd08107ed0734e717","tmdb":{"type":"tv","id":"308290","season":1,"vote_average":5.5,"vote_count":2},"imdb":null,"cast":[],"director":[],"cast_meta":[],"keywords":[]}];
