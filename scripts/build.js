@@ -1705,7 +1705,7 @@ function writeActorsShardsFromData(map = {}, names = {}, movieById = null, meta 
 }
 
 /** 8. Tạo batch files (chỉ ghi lại batch có phim thay đổi dựa trên last_modified) */
-function writeBatches(movies, prevLastModified, tmdbById) {
+function writeBatches(movies, prevLastModified, tmdbById, prevTmdbById) {
   const writeCore = !(process.env.TMDB_ONLY === '1' || process.env.TMDB_ONLY === 'true');
   const writeTmdb = !(process.env.SKIP_TMDB === '1' || process.env.SKIP_TMDB === 'true');
   const sorted = [...movies].sort((a, b) => String(a.id).localeCompare(String(b.id)));
@@ -1835,7 +1835,8 @@ function writeBatches(movies, prevLastModified, tmdbById) {
     }
   }
 
-  let rewritten = 0;
+  let rewrittenCore = 0;
+  let rewrittenTmdb = 0;
   for (const w of windows) {
     const start = w.start;
     const end = w.end;
@@ -1846,17 +1847,64 @@ function writeBatches(movies, prevLastModified, tmdbById) {
     const corePath = path.join(batchDir, coreFile);
     const tmdbPath = path.join(batchDir, tmdbFile);
 
-    let shouldWrite = !prevLastModified;
-    if (!shouldWrite) {
-      if (!fs.existsSync(corePath) || !fs.existsSync(tmdbPath)) shouldWrite = true;
-    }
-    if (!shouldWrite && prevLastModified) {
+    // 1) Xác định slice có phim thay đổi theo last_modified (dùng chung cho core + tmdb)
+    let sliceHasModifiedChange = !prevLastModified;
+    if (!sliceHasModifiedChange && prevLastModified) {
       for (const m of slice) {
         const idStr = m && m.id != null ? String(m.id) : '';
         if (!idStr) continue;
         const modified = m.modified || m.updated_at || '';
         const old = prevLastModified ? prevLastModified[idStr] : undefined;
-        if (!old || old !== modified) { shouldWrite = true; break; }
+        if (!old || old !== modified) {
+          sliceHasModifiedChange = true;
+          break;
+        }
+      }
+    }
+
+    // 2) Quyết định ghi core
+    let shouldWriteCore = false;
+    if (writeCore) {
+      shouldWriteCore = sliceHasModifiedChange;
+      if (!shouldWriteCore && !fs.existsSync(corePath)) shouldWriteCore = true;
+    }
+
+    // 3) Quyết định ghi tmdb
+    // - SKIP_TMDB: không ghi tmdb batch (để tránh tạo file "id-only" làm phase-2 bị skip)
+    // - TMDB_ONLY: chỉ ghi tmdb batch, và chỉ ghi các batch có payload TMDB đổi / thiếu so với build trước.
+    let shouldWriteTmdb = false;
+    if (writeTmdb) {
+      if (!fs.existsSync(tmdbPath)) {
+        shouldWriteTmdb = true;
+      } else if (!prevLastModified) {
+        // first build (hoặc không có last_modified) => ghi tất cả
+        shouldWriteTmdb = true;
+      } else if (!prevTmdbById || typeof prevTmdbById.get !== 'function') {
+        // không có dữ liệu tmdb trước đó => fallback theo last_modified
+        shouldWriteTmdb = sliceHasModifiedChange;
+      } else {
+        for (const m of slice) {
+          const idStr = m && m.id != null ? String(m.id) : '';
+          if (!idStr) continue;
+          const prevPayload = prevTmdbById.get(idStr);
+          const curPayload = tmdbById && typeof tmdbById.get === 'function' ? tmdbById.get(idStr) : undefined;
+          // Nếu trước đó chưa có payload, hoặc hiện tại có thêm dữ liệu => cần ghi lại batch
+          if (!prevPayload && curPayload) { shouldWriteTmdb = true; break; }
+          // Nếu hiện tại mất payload (hiếm) => cũng ghi để đồng bộ
+          if (prevPayload && !curPayload) { shouldWriteTmdb = true; break; }
+          // So sánh nội dung (nhẹ) để detect thay đổi TMDB
+          if (prevPayload && curPayload) {
+            try {
+              if (JSON.stringify(prevPayload) !== JSON.stringify(curPayload)) {
+                shouldWriteTmdb = true;
+                break;
+              }
+            } catch {
+              // fallback theo last_modified
+              if (sliceHasModifiedChange) { shouldWriteTmdb = true; break; }
+            }
+          }
+        }
       }
     }
 
@@ -1866,21 +1914,26 @@ function writeBatches(movies, prevLastModified, tmdbById) {
       batchPtrById.set(idStr, { b: coreFile, t: tmdbFile });
     }
 
-    if (!shouldWrite) continue;
-    const batch = slice.map((m) => toCoreMovie(m));
-    const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
-    fs.writeFileSync(corePath, content, 'utf8');
+    if (shouldWriteCore) {
+      const batch = slice.map((m) => toCoreMovie(m));
+      const content = `window.moviesBatch = ${JSON.stringify(batch)};`;
+      fs.writeFileSync(corePath, content, 'utf8');
+      rewrittenCore++;
+    }
 
-    const tmdbBatch = slice.map((m) => toTmdbPayload(m && m.id != null ? String(m.id) : ''));
-    const tmdbContent = `window.moviesTmdbBatch = ${JSON.stringify(tmdbBatch)};`;
-    fs.writeFileSync(tmdbPath, tmdbContent, 'utf8');
-    rewritten++;
+    if (shouldWriteTmdb) {
+      const tmdbBatch = slice.map((m) => toTmdbPayload(m && m.id != null ? String(m.id) : ''));
+      const tmdbContent = `window.moviesTmdbBatch = ${JSON.stringify(tmdbBatch)};`;
+      fs.writeFileSync(tmdbPath, tmdbContent, 'utf8');
+      rewrittenTmdb++;
+    }
   }
 
   if (!prevLastModified) {
     console.log('   Đã ghi lại toàn bộ batch files (lần đầu hoặc không có thông tin last_modified trước đó).');
   } else {
-    console.log('   Đã ghi lại', rewritten, 'batch files có phim mới hoặc thay đổi.');
+    console.log('   Đã ghi lại', rewrittenCore, 'core batch files có phim mới hoặc thay đổi.');
+    if (writeTmdb) console.log('   Đã ghi lại', rewrittenTmdb, 'tmdb batch files có TMDB thay đổi.');
   }
 
   try {
@@ -2411,9 +2464,27 @@ async function main() {
   if (!skipTmdb) {
     console.log('3. Enriching TMDB...');
     if (tmdbOnly) {
-      // TMDB_ONLY: vẫn cần enrich lại cho cả phim reused (vì reused thường bị đánh dấu _skip_tmdb).
-      await enrichTmdb((ophim || []).filter((m) => m));
-      await enrichTmdb(custom);
+      const shouldEnrich = (m) => {
+        if (!m) return false;
+        const tid = (m.tmdb && m.tmdb.id) || m.tmdb_id;
+        if (!tid) return false;
+        const idStr = m && m.id != null ? String(m.id) : '';
+        if (!idStr) return true;
+        if (!prevTmdbById || typeof prevTmdbById.get !== 'function') return true;
+        const prev = prevTmdbById.get(idStr);
+        if (!prev) return true;
+        const prevTid = prev && prev.tmdb ? prev.tmdb.id : null;
+        if (prevTid != null && String(prevTid) !== String(tid)) return true;
+        const hasCast = Array.isArray(prev.cast) && prev.cast.length;
+        const hasCastMeta = Array.isArray(prev.cast_meta) && prev.cast_meta.length;
+        const hasDirector = Array.isArray(prev.director) && prev.director.length;
+        const hasKeywords = Array.isArray(prev.keywords) && prev.keywords.length;
+        const hasImdb = !!prev.imdb;
+        const hasTmdb = !!prev.tmdb;
+        return !(hasTmdb && (hasCast || hasCastMeta) && (hasDirector || hasKeywords || hasImdb));
+      };
+      await enrichTmdb((ophim || []).filter(shouldEnrich));
+      await enrichTmdb((custom || []).filter(shouldEnrich));
     } else {
       await enrichTmdb((ophim || []).filter((m) => m && !m._skip_tmdb));
       await enrichTmdb(custom);
@@ -2463,7 +2534,7 @@ async function main() {
   if (process.env.GENERATE_MOVIES_LIGHT === '1') {
     writeMoviesLight(allMovies);
   }
-  const batchRes = writeBatches(allMovies, prevLastModified || undefined, tmdbById);
+  const batchRes = writeBatches(allMovies, prevLastModified || undefined, tmdbById, prevTmdbById);
   const newLastModified = batchRes && batchRes.newLastModified ? batchRes.newLastModified : batchRes;
   const batchPtrById = batchRes && batchRes.batchPtrById ? batchRes.batchPtrById : null;
 
