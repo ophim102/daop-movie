@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"peng-yang":["69a56aec46046a8eb69006b0"]},"names":{"peng-yang":"Peng Yang"},"meta":{"peng-yang":{"tmdb_id":2356055,"profile":"https://image.tmdb.org/t/p/w500/i1Jw4WBjdpOjU0h2SWh2qVcxvgn.jpg","tmdb_url":"https://www.themoviedb.org/person/2356055"}},"movies":{"peng-yang":[{"id":"69a56aec46046a8eb69006b0","title":"Huyễn Thế","origin_name":"Mind Toxin","slug":"huyen-the","thumb":"/uploads/movies/huyen-the-thumb.jpg","year":2026,"type":"series","episode_current":"Hoàn tất (10/10)"}]}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
