@@ -48,6 +48,22 @@
     return '';
   }
 
+  function imgOnErrorAttr(ophimUrl, fallbackUrl, defaultUrl) {
+    var o = String(ophimUrl || '').replace(/'/g, '%27');
+    var f = String(fallbackUrl || '').replace(/'/g, '%27');
+    var d = String(defaultUrl || '').replace(/'/g, '%27');
+    if (o) {
+      if (f && f !== o) {
+        return ' onerror="this.onerror=function(){this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';};this.src=\'' + o + '\';"';
+      }
+      return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + o + '\';"';
+    }
+    if (f) {
+      return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';"';
+    }
+    return ' onerror="this.onerror=null;this.src=\'' + d + '\';"';
+  }
+
   function getSlug() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -1013,13 +1029,18 @@
           var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
             ? window.DAOP.normalizeImgUrl
             : function (x) { return x; };
+          var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+            ? window.DAOP.normalizeImgUrlOphim
+            : function (x) { return x; };
           var derivedPoster = (!movie.poster && movie.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
             ? window.DAOP.derivePosterFromThumb(movie.thumb)
             : '';
-          var poster = norm(movie.poster || derivedPoster || movie.thumb || '').replace(/^\/\//, 'https://');
-          var title = (movie.title || '').replace(/</g, '&lt;');
-
           var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+          var defaultPoster = baseUrl + '/images/default_poster.png';
+          var posterRaw = (movie.poster || derivedPoster || movie.thumb || '');
+          var poster = norm(posterRaw).replace(/^\/\//, 'https://') || defaultPoster;
+          var posterOphim = normOphim(posterRaw).replace(/^\/\//, 'https://') || '';
+          var title = (movie.title || '').replace(/</g, '&lt;');
           var slugSafe = esc(movie.slug || slug);
 
           rootEl.innerHTML =
@@ -1028,6 +1049,7 @@
             '    <div class="watch-player-sticky">' +
             '      <div data-role="player"></div>' +
             '    </div>' +
+            '    <img alt="" style="position:absolute;left:-99999px;top:-99999px;width:1px;height:1px;opacity:0" src="' + esc(poster) + '"' + imgOnErrorAttr(posterOphim, '', defaultPoster) + '>' +
             '    <div class="watch-player-meta" style="margin-top:0.75rem;">' +
             '      <div class="watch-player-meta-head">' +
             '        <a class="watch-back-btn" href="/phim/' + esc(movie.slug || slug) + '.html" aria-label="Về trang chi tiết">' +
