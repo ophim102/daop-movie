@@ -92,6 +92,56 @@
     return '';
   }
 
+  function setBgWithFallback(el, primaryUrl, fallbackUrl, defaultUrl) {
+    if (!el) return;
+    var p = String(primaryUrl || '').trim();
+    var f = String(fallbackUrl || '').trim();
+    var d = String(defaultUrl || '').trim();
+    function set(u) {
+      if (!u) return;
+      el.style.backgroundImage = 'url(' + u + ')';
+    }
+    function test(u, ok, bad) {
+      if (!u) return bad && bad();
+      try {
+        var img = new Image();
+        img.onload = function () { ok && ok(); };
+        img.onerror = function () { bad && bad(); };
+        img.src = u;
+      } catch {
+        bad && bad();
+      }
+    }
+    set(p || d);
+    test(p,
+      function () {},
+      function () {
+        if (f && f !== p) {
+          set(f);
+          test(f, function () {}, function () { if (d) set(d); });
+        } else if (d) {
+          set(d);
+        }
+      }
+    );
+  }
+
+  function imgOnErrorAttr(ophimUrl, fallbackUrl, defaultUrl) {
+    var o = String(ophimUrl || '').replace(/'/g, '%27');
+    var f = String(fallbackUrl || '').replace(/'/g, '%27');
+    var d = String(defaultUrl || '').replace(/'/g, '%27');
+    if (o) {
+      if (f && f !== o) {
+        return ' onerror="this.onerror=function(){this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';};this.src=\'' + o + '\';"';
+      }
+      return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + o + '\';"';
+    }
+    if (f) {
+      return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';"';
+    }
+    return ' onerror="this.onerror=null;this.src=\'' + d + '\';"';
+  }
+
   function getSlug() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -318,15 +368,25 @@
     var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
       ? window.DAOP.normalizeImgUrl
       : function (x) { return x; };
+    var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+      ? window.DAOP.normalizeImgUrlOphim
+      : function (x) { return x; };
     var derivedPoster = (!light.poster && light.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
       ? window.DAOP.derivePosterFromThumb(light.thumb)
       : '';
-    var posterUrl = norm(light.poster || derivedPoster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
     var base = (window.DAOP && window.DAOP.basePath) || '';
+    var defaultPoster = base + '/images/default_poster.png';
+    var posterRaw = (light.poster || derivedPoster || '');
+    var posterUrl = norm(posterRaw).replace(/^\/\//, 'https://') || defaultPoster;
+    var posterOphimUrl = normOphim(posterRaw).replace(/^\/\//, 'https://') || '';
     var slug = light.slug || '';
     var watchHref = base + '/xem-phim/' + encodeURIComponent(slug) + '.html';
-    var posterBg = norm(light.poster || derivedPoster || light.thumb || '').replace(/^\/\//, 'https://');
-    var thumbMain = norm(light.thumb || light.poster || derivedPoster || '').replace(/^\/\//, 'https://');
+    var posterBgRaw = (light.poster || derivedPoster || light.thumb || '');
+    var posterBg = norm(posterBgRaw).replace(/^\/\//, 'https://') || '';
+    var posterBgOphim = normOphim(posterBgRaw).replace(/^\/\//, 'https://') || '';
+    var thumbRaw = (light.thumb || light.poster || derivedPoster || '');
+    var thumbMain = norm(thumbRaw).replace(/^\/\//, 'https://') || '';
+    var thumbOphim = normOphim(thumbRaw).replace(/^\/\//, 'https://') || '';
     var title = esc(light.title || '');
     var origin = esc(light.origin_name || '');
     var year = esc(light.year || '');
@@ -334,9 +394,9 @@
     var html = '' +
       '<div class="md-page">' +
       '  <div class="md-hero">' +
-      '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || posterUrl) + ')"></div>' +
+      '    <div class="md-hero-bg" id="md-hero-bg" style="background-image:url(' + esc(posterBg || posterUrl) + ')"></div>' +
       '    <div class="md-hero-inner">' +
-      '      <div class="md-thumb"><img src="' + esc(thumbMain || posterUrl) + '" alt=""></div>' +
+      '      <div class="md-thumb"><img decoding="async" fetchpriority="high" src="' + esc(thumbMain || posterUrl) + '"' + imgOnErrorAttr(thumbOphim || posterOphimUrl, posterUrl, defaultPoster) + ' alt=""></div>' +
       '      <div class="md-hero-meta">' +
       '        <div class="md-title">' + title + '</div>' +
       (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
@@ -361,6 +421,7 @@
       '</div>';
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
+    setBgWithFallback(document.getElementById('md-hero-bg'), posterBg || posterUrl, posterBgOphim || posterOphimUrl, defaultPoster);
     setupActions(light);
   }
 
@@ -368,12 +429,23 @@
     var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
       ? window.DAOP.normalizeImgUrl
       : function (x) { return x; };
+    var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+      ? window.DAOP.normalizeImgUrlOphim
+      : function (x) { return x; };
     var derivedPoster = (!movie.poster && movie.thumb && window.DAOP && typeof window.DAOP.derivePosterFromThumb === 'function')
       ? window.DAOP.derivePosterFromThumb(movie.thumb)
       : '';
-    var poster = norm(movie.poster || derivedPoster || '').replace(/^\/\//, 'https://') || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="220" height="330"%3E%3Crect fill="%2321262d" width="220" height="330"/%3E%3C/svg%3E';
-    var posterBg = norm(movie.poster || derivedPoster || movie.thumb || '').replace(/^\/\//, 'https://');
-    var thumbMain = norm(movie.thumb || movie.poster || derivedPoster || '').replace(/^\/\//, 'https://');
+    var base = (window.DAOP && window.DAOP.basePath) || '';
+    var defaultPoster = base + '/images/default_poster.png';
+    var posterRaw = (movie.poster || derivedPoster || '');
+    var poster = norm(posterRaw).replace(/^\/\//, 'https://') || defaultPoster;
+    var posterOphim = normOphim(posterRaw).replace(/^\/\//, 'https://') || '';
+    var posterBgRaw = (movie.poster || derivedPoster || movie.thumb || '');
+    var posterBg = norm(posterBgRaw).replace(/^\/\//, 'https://') || '';
+    var posterBgOphim = normOphim(posterBgRaw).replace(/^\/\//, 'https://') || '';
+    var thumbRaw = (movie.thumb || movie.poster || derivedPoster || '');
+    var thumbMain = norm(thumbRaw).replace(/^\/\//, 'https://') || '';
+    var thumbOphim = normOphim(thumbRaw).replace(/^\/\//, 'https://') || '';
     var title = (movie.title || '').replace(/</g, '&lt;');
     var origin = (movie.origin_name || '').replace(/</g, '&lt;');
     var genreStr = (movie.genre || []).map(function (g) { return g.name; }).join(', ');
@@ -391,7 +463,6 @@
     var directorStr = (movie.director || []).join(', ');
     var showtimes = movie.status === 'theater' && movie.showtimes ? '<p class="meta-line">Lịch chiếu: ' + (movie.showtimes || '').replace(/</g, '&lt;') + '</p>' : '';
 
-    var base = (window.DAOP && window.DAOP.basePath) || '';
     var watchHref = base + '/xem-phim/' + encodeURIComponent(movie.slug || '') + '.html';
     var watchLabel = 'Xem ngay';
     try {
@@ -418,9 +489,9 @@
     var html = '' +
       '<div class="md-page">' +
       '  <div class="md-hero">' +
-      '    <div class="md-hero-bg" style="background-image:url(' + esc(posterBg || poster) + ')"></div>' +
+      '    <div class="md-hero-bg" id="md-hero-bg" style="background-image:url(' + esc(posterBg || poster) + ')"></div>' +
       '    <div class="md-hero-inner">' +
-      '      <div class="md-thumb"><img src="' + esc(thumbMain || poster) + '" alt=""></div>' +
+      '      <div class="md-thumb"><img decoding="async" fetchpriority="high" src="' + esc(thumbMain || poster) + '"' + imgOnErrorAttr(thumbOphim || posterOphim, poster, defaultPoster) + ' alt=""></div>' +
       '      <div class="md-hero-meta">' +
       '        <div class="md-title">' + title + '</div>' +
       (origin ? '        <div class="md-origin">' + origin + '</div>' : '') +
@@ -464,6 +535,8 @@
       '</div>';
     var el = document.getElementById('movie-detail');
     if (el) el.innerHTML = html;
+
+    setBgWithFallback(document.getElementById('md-hero-bg'), posterBg || poster, posterBgOphim || posterOphim, defaultPoster);
 
     var cfg = getDetailRecSettings();
     var grid = document.getElementById('similar-grid');
