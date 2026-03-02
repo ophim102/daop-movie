@@ -19,7 +19,18 @@
       el.classList.add('loading-screen-hidden');
       el.setAttribute('aria-hidden', 'true');
     }
-    window.DAOP.loadConfig('site-settings').then(function (s) {
+    var loadSiteSettings = function () {
+      try {
+        if (window.DAOP && typeof window.DAOP.loadConfig === 'function') {
+          return window.DAOP.loadConfig('site-settings');
+        }
+      } catch (e0) {}
+      return fetch(BASE + '/data/config/site-settings.json')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; });
+    };
+
+    loadSiteSettings().then(function (s) {
       if (s && s.loading_screen_enabled === 'false') {
         hide();
         return;
