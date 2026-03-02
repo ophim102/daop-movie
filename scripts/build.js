@@ -903,7 +903,7 @@ const TMDB_CACHE_ENABLED = (process.env.TMDB_CACHE !== '0' && process.env.TMDB_C
 const TMDB_CACHE_TTL_DAYS = Number(process.env.TMDB_CACHE_TTL_DAYS || 7);
 const TMDB_CACHE_TTL_MS = Number.isFinite(TMDB_CACHE_TTL_DAYS) ? (TMDB_CACHE_TTL_DAYS * 24 * 60 * 60 * 1000) : (7 * 24 * 60 * 60 * 1000);
 const TMDB_CONCURRENCY = Math.max(1, Math.min(32, Number(process.env.TMDB_CONCURRENCY || 6)));
-const TMDB_CACHE_SHARDS = Math.max(1, Math.min(256, Number(process.env.TMDB_CACHE_SHARDS || 64)));
+const TMDB_CACHE_SHARDS = Math.max(1, Math.min(256, Number(process.env.TMDB_CACHE_SHARDS || 200)));
 
 function safeJsonRead(p) {
   try {
