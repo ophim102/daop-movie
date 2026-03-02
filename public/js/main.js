@@ -507,6 +507,19 @@
     return u;
   };
 
+  window.DAOP.normalizeImgUrlOphim = function (url) {
+    if (!url) return '';
+    var u = String(url);
+    if (u.startsWith('/uploads/')) {
+      var settings = (window.DAOP && window.DAOP.siteSettings) ? window.DAOP.siteSettings : null;
+      var ophimDomain = (settings && settings.ophim_img_domain) ? String(settings.ophim_img_domain) : 'https://img.ophim.live';
+      ophimDomain = ophimDomain.replace(/\/$/, '');
+      return ophimDomain + u;
+    }
+    if (u.startsWith('//')) return 'https:' + u;
+    return u;
+  };
+
   /** Render movie card HTML (title + origin_name). opts: { cardOrientation?: 'vertical'|'horizontal', usePoster?: boolean } */
   window.DAOP.renderMovieCard = function (m, baseUrl, opts) {
     baseUrl = baseUrl || BASE;
@@ -522,6 +535,9 @@
     const norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
       ? window.DAOP.normalizeImgUrl
       : function (x) { return x; };
+    const normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+      ? window.DAOP.normalizeImgUrlOphim
+      : function (x) { return x; };
     const primaryRaw = cardOrientation === 'horizontal'
       ? (m.poster || derivedPoster || m.thumb || '')
       : (m.thumb || m.poster || derivedPoster || '');
@@ -531,6 +547,7 @@
       : (baseUrl + '/images/default_thumb.png');
     const imgUrl = norm(primaryRaw).replace(/^\/\//, 'https://') || defaultImg;
     const fallbackUrl = norm(fallbackRaw).replace(/^\/\//, 'https://') || defaultImg;
+    const ophimUrl = normOphim(primaryRaw).replace(/^\/\//, 'https://') || '';
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
 
@@ -557,9 +574,21 @@
       favBtn +
       '<a href="' + href + '">' +
       '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '"' +
-      (fallbackUrl && fallbackUrl !== imgUrl
-        ? (' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + defaultImg.replace(/'/g, '%27') + '\';};this.src=\'' + fallbackUrl.replace(/'/g, '%27') + '\';"')
-        : (' onerror="this.onerror=null;this.src=\'' + defaultImg.replace(/'/g, '%27') + '\';"')) +
+      (function(){
+        var d = defaultImg.replace(/'/g, '%27');
+        var f = (fallbackUrl || '').replace(/'/g, '%27');
+        var o = (ophimUrl || '').replace(/'/g, '%27');
+        if (o && o !== imgUrl) {
+          if (f && f !== imgUrl && f !== o) {
+            return ' onerror="this.onerror=function(){this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';};this.src=\'' + o + '\';"';
+          }
+          return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + o + '\';"';
+        }
+        if (f && f !== imgUrl) {
+          return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + d + '\';};this.src=\'' + f + '\';"';
+        }
+        return ' onerror="this.onerror=null;this.src=\'' + d + '\';"';
+      })() +
       ' decoding="async" fetchpriority="low"' +
       ' alt="' + title + '"></div>' +
       '<div class="movie-info">' +

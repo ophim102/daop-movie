@@ -210,13 +210,22 @@
                   ? (m.poster || derivedPoster || m.thumb || '')
                   : (m.thumb || m.poster || derivedPoster || '');
                 var posterUrl = norm(raw).replace(/^\/\//, 'https://') || defaultPoster;
+                var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+                  ? window.DAOP.normalizeImgUrlOphim
+                  : function (x) { return x; };
+                var ophimPosterUrl = normOphim(raw).replace(/^\/\//, 'https://') || '';
                 var thumbUrl = norm(m.thumb || '').replace(/^\/\//, 'https://') || defaultThumb;
                 var posterEsc = posterUrl.replace(/'/g, '%27');
                 var thumbEsc = thumbUrl.replace(/'/g, '%27');
                 var defaultPosterEsc = defaultPoster.replace(/'/g, '%27');
-                var imgOnError = (thumbUrl && thumbUrl !== posterUrl)
-                  ? ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + defaultPosterEsc + '\';};this.src=\'' + thumbEsc + '\';"'
-                  : ' onerror="this.onerror=null;this.src=\'' + defaultPosterEsc + '\';"';
+                var ophimPosterEsc = ophimPosterUrl ? ophimPosterUrl.replace(/'/g, '%27') : '';
+                var imgOnError = (ophimPosterUrl && ophimPosterUrl !== posterUrl)
+                  ? ((thumbUrl && thumbUrl !== posterUrl && thumbUrl !== ophimPosterUrl)
+                    ? ' onerror="this.onerror=function(){this.onerror=function(){this.onerror=null;this.src=\'' + defaultPosterEsc + '\';};this.src=\'' + thumbEsc + '\';};this.src=\'' + ophimPosterEsc + '\';"'
+                    : ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + defaultPosterEsc + '\';};this.src=\'' + ophimPosterEsc + '\';"')
+                  : ((thumbUrl && thumbUrl !== posterUrl)
+                    ? ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + defaultPosterEsc + '\';};this.src=\'' + thumbEsc + '\';"'
+                    : ' onerror="this.onerror=null;this.src=\'' + defaultPosterEsc + '\';"');
                 var title = (m.title || '').replace(/</g, '&lt;');
                 var origin = (m.origin_name || '').replace(/</g, '&lt;');
                 out2 += '<div class="movies-list-item-wrap">' +
