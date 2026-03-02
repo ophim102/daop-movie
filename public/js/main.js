@@ -492,9 +492,12 @@
     const norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
       ? window.DAOP.normalizeImgUrl
       : function (x) { return x; };
-    const imgUrl = cardOrientation === 'horizontal'
-      ? (norm(m.poster || derivedPoster || m.thumb || '').replace(/^\/\//, 'https://'))
-      : (norm(m.thumb || m.poster || derivedPoster || '').replace(/^\/\//, 'https://'));
+    const primaryRaw = cardOrientation === 'horizontal'
+      ? (m.poster || derivedPoster || m.thumb || '')
+      : (m.thumb || m.poster || derivedPoster || '');
+    const fallbackRaw = m.thumb || '';
+    const imgUrl = norm(primaryRaw).replace(/^\/\//, 'https://');
+    const fallbackUrl = norm(fallbackRaw).replace(/^\/\//, 'https://');
     const title = (m.title || '').replace(/</g, '&lt;');
     const origin = (m.origin_name || '').replace(/</g, '&lt;');
 
@@ -520,7 +523,9 @@
       '<div class="movie-card movie-card--' + cardOrientation + '">' +
       favBtn +
       '<a href="' + href + '">' +
-      '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '" alt="' + title + '"></div>' +
+      '<div class="thumb-wrap"><img loading="lazy" src="' + imgUrl + '"' +
+      (fallbackUrl && fallbackUrl !== imgUrl ? (' onerror="this.onerror=null;this.src=\'' + fallbackUrl.replace(/'/g, '%27') + '\';"') : '') +
+      ' alt="' + title + '"></div>' +
       '<div class="movie-info">' +
       '<h3 class="title">' + title + '</h3>' +
       (origin ? '<p class="origin-title">' + origin + '</p>' : '') +

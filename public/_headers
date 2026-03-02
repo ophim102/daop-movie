@@ -1,0 +1,36 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/batches/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/index/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/search/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/actors-*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/data/filters.js
+  Cache-Control: public, max-age=86400
+
+/data/config/*.json
+  Cache-Control: public, max-age=600
+
+/data/build_version.json
+  Cache-Control: public, max-age=60
