@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["op"] = {"opus-hao-quang-lac-loi":{"id":"6926f8942b0897049aa2bf07","i":880,"title":"Opus: Hào Quang Lạc Lối","origin_name":"Opus","slug":"opus-hao-quang-lac-loi","thumb":"/uploads/movies/opus-hao-quang-lac-loi-thumb.jpg","year":2025,"type":"single","episode_current":"Full"}};

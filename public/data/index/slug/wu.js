@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["wu"] = {"wulin-story":{"id":"691fe53611016fdfcf3d820a","i":610,"title":"Võ Lâm Ngoại Sử","origin_name":"Fated in the Martial World","slug":"wulin-story","thumb":"/uploads/movies/wulin-story-thumb.jpg","year":2025,"type":"series","episode_current":"Hoàn tất (34/34)"}};
