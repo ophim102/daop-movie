@@ -92,6 +92,18 @@ function contentTypeFromExt(ext) {
   return 'image/jpeg';
 }
 
+function normalizeSourceUrl(url) {
+  if (!url) return '';
+  const u = String(url).trim();
+  if (!u) return '';
+  if (u.startsWith('//')) return 'https:' + u;
+  if (u.startsWith('/uploads/')) {
+    const base = String(process.env.OPHIM_IMG_DOMAIN || 'https://img.ophim.live').replace(/\/$/, '');
+    return base + u;
+  }
+  return u;
+}
+
 async function optimizeAndResize(buf, ext, opts) {
   const e = String(ext || '').toLowerCase();
   if (e === 'gif') return buf;
@@ -217,6 +229,7 @@ async function main() {
   let skipped = 0;
   let uploaded = 0;
   let failed = 0;
+  const failureSamples = [];
 
   let writeQueue = Promise.resolve();
   const enqueueStateWrite = () => {
@@ -245,7 +258,8 @@ async function main() {
         continue;
       }
 
-      const url = kind === 'thumb' ? (m.thumb || '') : (m.poster || '');
+      const rawUrl = kind === 'thumb' ? (m.thumb || '') : (m.poster || '');
+      const url = normalizeSourceUrl(rawUrl);
       if (!url) {
         skipped++;
         continue;
@@ -254,17 +268,21 @@ async function main() {
       let res;
       try {
         res = await fetch(url);
-      } catch {
+      } catch (e) {
         failed++;
         state.uploaded[idStr] = state.uploaded[idStr] || {};
-        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason: 'fetch_failed' };
+        const reason = e && e.message ? `fetch_failed:${e.message}` : 'fetch_failed';
+        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason };
+        if (failureSamples.length < 8) failureSamples.push({ id: idStr, kind, url, reason });
         continue;
       }
 
       if (!res.ok) {
         failed++;
         state.uploaded[idStr] = state.uploaded[idStr] || {};
-        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason: `http_${res.status}` };
+        const reason = `http_${res.status}`;
+        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason };
+        if (failureSamples.length < 8) failureSamples.push({ id: idStr, kind, url, reason });
         continue;
       }
 
@@ -295,7 +313,9 @@ async function main() {
       } catch (e) {
         failed++;
         state.uploaded[idStr] = state.uploaded[idStr] || {};
-        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason: e && e.message ? e.message : 'upload_failed' };
+        const reason = e && e.message ? e.message : 'upload_failed';
+        state.uploaded[idStr][kind] = { ok: false, at: Date.now(), reason };
+        if (failureSamples.length < 8) failureSamples.push({ id: idStr, kind, url, reason });
       }
     }
   };
@@ -320,6 +340,13 @@ async function main() {
 
   await enqueueStateWrite();
   await writeQueue;
+
+  if (failureSamples.length) {
+    console.log('Failure samples (first ' + failureSamples.length + '):');
+    for (const f of failureSamples) {
+      console.log('-', f.id + ':' + f.kind, f.reason, f.url);
+    }
+  }
 
   console.log('Done. uploaded=', uploaded, 'skipped=', skipped, 'failed=', failed, 'state=', statePath);
   return;
