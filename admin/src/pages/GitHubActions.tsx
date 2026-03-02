@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Form, Space, Modal, Radio } from 'antd';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Input, Form, Space, Modal, Radio } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
@@ -62,6 +62,7 @@ export default function GitHubActions() {
   const [totalMovies, setTotalMovies] = useState<number | null>(null);
   const [fetchingTotalPages, setFetchingTotalPages] = useState(false);
   const [form] = Form.useForm();
+  const [uploadForm] = Form.useForm();
 
   const loadUpdateSettings = async () => {
     const { data } = await supabase
@@ -293,6 +294,118 @@ export default function GitHubActions() {
               )}
             </Space>
           </Form.Item>
+        </Form>
+      </Card>
+
+      <Card title="Upload movie images to R2" style={{ marginTop: 24 }}>
+        <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+          Chạy tải + nén + upload ảnh (thumb/poster) lên R2 bằng GitHub Actions.
+        </Text>
+
+        <Form
+          form={uploadForm}
+          layout="vertical"
+          initialValues={{
+            mode: 'thumb,poster',
+            quality: 70,
+            thumb_quality: '',
+            poster_quality: '',
+            thumb_width: 238,
+            thumb_height: 344,
+            poster_width: 486,
+            poster_height: 274,
+            limit: 0,
+            concurrency: 6,
+            force_ids: '',
+            force_id_min: '',
+            force_id_max: '',
+          }}
+        >
+          <Space wrap align="start">
+            <Form.Item name="mode" label="Mode (thumb, poster, thumb,poster)">
+              <Input style={{ width: 220 }} placeholder="thumb,poster" />
+            </Form.Item>
+
+            <Form.Item name="quality" label="Quality (1-100)">
+              <InputNumber min={1} max={100} style={{ width: 140 }} />
+            </Form.Item>
+
+            <Form.Item name="thumb_quality" label="Thumb quality (override)">
+              <Input style={{ width: 190 }} placeholder="" />
+            </Form.Item>
+
+            <Form.Item name="poster_quality" label="Poster quality (override)">
+              <Input style={{ width: 190 }} placeholder="" />
+            </Form.Item>
+
+            <Form.Item name="thumb_width" label="Thumb width">
+              <InputNumber min={0} style={{ width: 140 }} />
+            </Form.Item>
+
+            <Form.Item name="thumb_height" label="Thumb height">
+              <InputNumber min={0} style={{ width: 140 }} />
+            </Form.Item>
+
+            <Form.Item name="poster_width" label="Poster width">
+              <InputNumber min={0} style={{ width: 140 }} />
+            </Form.Item>
+
+            <Form.Item name="poster_height" label="Poster height">
+              <InputNumber min={0} style={{ width: 140 }} />
+            </Form.Item>
+
+            <Form.Item name="limit" label="Limit (0 = no limit)">
+              <InputNumber min={0} style={{ width: 170 }} />
+            </Form.Item>
+
+            <Form.Item name="concurrency" label="Concurrency (1-32)">
+              <InputNumber min={1} max={32} style={{ width: 190 }} />
+            </Form.Item>
+
+            <Form.Item name="force_ids" label="Force IDs (comma-separated)">
+              <Input style={{ width: 260 }} placeholder="123,456" />
+            </Form.Item>
+
+            <Form.Item name="force_id_min" label="Force ID min">
+              <Input style={{ width: 160 }} placeholder="" />
+            </Form.Item>
+
+            <Form.Item name="force_id_max" label="Force ID max">
+              <Input style={{ width: 160 }} placeholder="" />
+            </Form.Item>
+
+            <Form.Item label=" ">
+              <Button
+                type="primary"
+                icon={triggering === 'upload-movie-images-r2' ? <Spin size="small" /> : <PlayCircleOutlined />}
+                onClick={async () => {
+                  setTriggering('upload-movie-images-r2');
+                  try {
+                    const values = uploadForm.getFieldsValue();
+                    const res = await fetch(`${API_URL}/api/trigger-action`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'upload-movie-images-r2', ...values }),
+                    });
+                    const data = await res.json().catch(async () => ({ error: await res.text() }));
+                    if (res.ok && data?.ok) {
+                      message.success(data?.message || 'Đã kích hoạt upload ảnh.');
+                    } else {
+                      message.error(data?.error || data?.message || `Lỗi ${res.status}`);
+                    }
+                  } catch (e: any) {
+                    message.error(e?.message || 'Không kết nối được API.');
+                  } finally {
+                    setTriggering(null);
+                  }
+                }}
+                loading={triggering === 'upload-movie-images-r2'}
+                disabled={!!triggering}
+              >
+                Upload ảnh
+              </Button>
+            </Form.Item>
+          </Space>
         </Form>
       </Card>
 

@@ -5,13 +5,20 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_REF = process.env.GITHUB_REF || 'main';
 
-type ActionId = 'build-on-demand' | 'update-data' | 'clean-rebuild' | 'export-to-sheets' | 'core-then-tmdb';
+type ActionId =
+  | 'build-on-demand'
+  | 'update-data'
+  | 'clean-rebuild'
+  | 'export-to-sheets'
+  | 'core-then-tmdb'
+  | 'upload-movie-images-r2';
 
 const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'build-on-demand', name: 'Build on demand', description: 'Build incremental (config Supabase + category pages), commit & push.' },
   { id: 'update-data', name: 'Update data daily', description: 'Full build (OPhim, TMDB, Sheets…), commit & push.' },
   { id: 'clean-rebuild', name: 'Clean & Rebuild', description: 'Xóa toàn bộ dữ liệu cũ (batches, movies-light, actors…) rồi full build lại từ đầu.' },
   { id: 'export-to-sheets', name: 'Export to Google Sheets', description: 'Đẩy phim từ dữ liệu build hiện tại xuống Google Sheets (chỉ append phim mới).' },
+  { id: 'upload-movie-images-r2', name: 'Upload movie images to R2', description: 'Tải + nén + upload thumb/poster lên R2, rồi commit upload state.' },
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -233,6 +240,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
       res.status(200).json({ ok: true, message: 'Export to Google Sheets triggered' });
+      return;
+    }
+
+    if (action === 'upload-movie-images-r2') {
+      const inputs: Record<string, string> = {};
+      const pick = (k: string) => (req.body?.[k] ?? req.query?.[k]);
+
+      const keys = [
+        'mode',
+        'quality',
+        'thumb_quality',
+        'poster_quality',
+        'thumb_width',
+        'thumb_height',
+        'poster_width',
+        'poster_height',
+        'limit',
+        'concurrency',
+        'force_ids',
+        'force_id_min',
+        'force_id_max',
+      ];
+
+      for (const k of keys) {
+        const v = pick(k);
+        if (v != null && String(v).trim() !== '') inputs[k] = String(v);
+      }
+
+      const r = await fetch(
+        `https://api.github.com/repos/${repo}/actions/workflows/upload-movie-images-r2.yml/dispatches`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ref: GITHUB_REF, inputs: Object.keys(inputs).length ? inputs : undefined }),
+        }
+      );
+
+      if (!r.ok) {
+        const t = await r.text();
+        let errMsg = t;
+        if (r.status === 404) {
+          errMsg = 'Workflow upload-movie-images-r2.yml không tìm thấy hoặc repo chưa có Actions.';
+        }
+        if (r.status === 401) {
+          errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn.';
+        }
+        res.status(r.status).json({ error: errMsg });
+        return;
+      }
+
+      res.status(200).json({ ok: true, message: 'Upload movie images to R2 triggered' });
       return;
     }
 
