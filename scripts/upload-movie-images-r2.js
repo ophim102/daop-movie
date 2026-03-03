@@ -198,6 +198,18 @@ function normalizeSlugLike(raw) {
   if (!raw) return '';
   let s = String(raw).trim().toLowerCase();
   if (!s) return '';
+
+  // strip common wrappers when slugs are pasted from JSON/CSV or copied with quotes
+  while (
+    (s.startsWith('"') && s.endsWith('"')) ||
+    (s.startsWith("'") && s.endsWith("'")) ||
+    (s.startsWith('`') && s.endsWith('`'))
+  ) {
+    s = s.slice(1, -1).trim();
+  }
+  s = s.replace(/^[\[\(\{\s]+/, '').replace(/[\]\)\}\s]+$/, '').trim();
+  s = s.replace(/^[,;\s]+/, '').replace(/[,;\s]+$/, '').trim();
+
   s = s.replace(/^https?:\/\/[^/]+/i, '');
   s = s.replace(/\?.*$/, '');
   s = s.replace(/#.*$/, '');
@@ -224,6 +236,33 @@ function parseBool(raw, fallback) {
   if (s === '1' || s === 'true' || s === 'yes' || s === 'y' || s === 'on') return true;
   if (s === '0' || s === 'false' || s === 'no' || s === 'n' || s === 'off') return false;
   return !!fallback;
+}
+
+async function fetchOphimDetailBySlug(base, slug) {
+  const b = String(base || '').replace(/\/$/, '');
+  const s = normalizeSlugLike(slug);
+  if (!b || !s) return null;
+
+  const url = `${b}/phim/${encodeURIComponent(s)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`ophim_http_${res.status}`);
+  const detail = await res.json().catch(() => null);
+
+  const movie = detail?.data?.item || detail?.data?.movie || detail?.data || null;
+  if (!movie) return null;
+
+  const idStr = (movie?._id != null ? String(movie._id)
+    : (movie?.id != null ? String(movie.id)
+      : (movie?.movie_id != null ? String(movie.movie_id) : '')));
+
+  const thumb = movie?.thumb_url || movie?.thumb || '';
+  const poster = movie?.poster_url || movie?.poster || '';
+  return {
+    id: idStr || s,
+    slug: s,
+    thumb,
+    poster,
+  };
 }
 
 async function main() {
@@ -258,30 +297,37 @@ async function main() {
   if (!process.env.R2_PUBLIC_URL) missing.push('R2_PUBLIC_URL');
   if (missing.length) throw new Error('Missing env: ' + missing.join(', '));
 
-  const movies = loadMovieListFromBatches();
-  console.log('Movies loaded:', movies.length);
+  let moviesToProcess = [];
+  if (forceSlugSet) {
+    const sample = Array.from(forceSlugSet).slice(0, 12);
+    console.log('force_slugs parsed:', forceSlugSet.size, sample.length ? `sample=${sample.join(', ')}` : '');
 
-  const moviesFiltered = (movies || []).filter((m) => m && m.id != null);
-  const moviesBySlug = forceSlugSet
-    ? moviesFiltered.filter((m) => {
-      const slug = normalizeSlugLike(m && (m.slug || '') ? String(m.slug) : '');
-      const idStr = m && m.id != null ? String(m.id) : '';
-      return (slug && forceSlugSet.has(slug)) || (idStr && forceSlugSet.has(normalizeSlugLike(idStr)));
-    })
-    : moviesFiltered;
+    const ophimBase = String(args.ophim_base || process.env.OPHIM_BASE_URL || 'https://ophim1.com/v1/api').replace(/\/$/, '');
+    console.log('Using OPhim base:', ophimBase);
 
-  if (forceSlugSet && !moviesBySlug.length) {
-    const samples = moviesFiltered
-      .slice(0, 12)
-      .map((m) => normalizeSlugLike(m && m.slug ? m.slug : (m && m.id != null ? String(m.id) : '')))
-      .filter(Boolean);
-    throw new Error(
-      'force_slugs provided but no movies matched. ' +
-      'Check slugs (should be like "vong-xoay-gia-tao"). ' +
-      'Sample available slugs: ' + samples.join(', ')
-    );
+    const slugs = Array.from(forceSlugSet);
+    const picked = limit ? slugs.slice(0, limit) : slugs;
+    const out = [];
+    for (const slug of picked) {
+      try {
+        const m = await fetchOphimDetailBySlug(ophimBase, slug);
+        if (m) out.push(m);
+      } catch (e) {
+        console.warn('OPhim detail skip:', slug, e && e.message ? e.message : String(e));
+      }
+    }
+    moviesToProcess = out.filter((m) => m && m.id != null);
+
+    console.log('Movies loaded:', moviesToProcess.length);
+    if (!moviesToProcess.length) {
+      throw new Error('force_slugs provided but OPhim returned no movies. Check slugs and OPHIM_BASE_URL/ophim_base.');
+    }
+  } else {
+    const movies = loadMovieListFromBatches();
+    console.log('Movies loaded:', movies.length);
+    const moviesFiltered = (movies || []).filter((m) => m && m.id != null);
+    moviesToProcess = limit ? moviesFiltered.slice(0, limit) : moviesFiltered;
   }
-  const moviesToProcess = limit ? moviesBySlug.slice(0, limit) : moviesBySlug;
 
   let done = 0;
   let skipped = 0;

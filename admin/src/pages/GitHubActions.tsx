@@ -21,6 +21,20 @@ const UPDATE_DATA_TWO_PHASE_KEY = 'update_data_two_phase';
 const UPDATE_DATA_MANUAL_TWO_PHASE_KEY = 'update_data_manual_two_phase';
 const UPLOAD_IMAGES_AFTER_BUILD_KEY = 'upload_images_after_build';
 
+const UPLOAD_R2_KEYS = {
+  mode: 'upload_r2_mode',
+  quality: 'upload_r2_quality',
+  thumb_quality: 'upload_r2_thumb_quality',
+  poster_quality: 'upload_r2_poster_quality',
+  thumb_width: 'upload_r2_thumb_width',
+  thumb_height: 'upload_r2_thumb_height',
+  poster_width: 'upload_r2_poster_width',
+  poster_height: 'upload_r2_poster_height',
+  limit: 'upload_r2_limit',
+  concurrency: 'upload_r2_concurrency',
+  reupload_existing: 'upload_r2_reupload_existing',
+};
+
 type ActionItem = {
   id: string;
   name: string;
@@ -64,6 +78,7 @@ export default function GitHubActions() {
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [totalMovies, setTotalMovies] = useState<number | null>(null);
   const [fetchingTotalPages, setFetchingTotalPages] = useState(false);
+  const [savingUploadSettings, setSavingUploadSettings] = useState(false);
   const [form] = Form.useForm();
   const [uploadForm] = Form.useForm();
 
@@ -74,6 +89,36 @@ export default function GitHubActions() {
       reader.onerror = () => reject(new Error('Không đọc được file'));
       reader.readAsText(file);
     });
+  };
+
+  const handleSaveUploadSettings = async () => {
+    const values = await uploadForm.validateFields();
+    setSavingUploadSettings(true);
+    try {
+      const now = new Date().toISOString();
+      const { error } = await supabase.from('site_settings').upsert(
+        [
+          { key: UPLOAD_R2_KEYS.mode, value: String(values.mode ?? 'thumb,poster'), updated_at: now },
+          { key: UPLOAD_R2_KEYS.quality, value: String(values.quality ?? 70), updated_at: now },
+          { key: UPLOAD_R2_KEYS.thumb_quality, value: String(values.thumb_quality ?? ''), updated_at: now },
+          { key: UPLOAD_R2_KEYS.poster_quality, value: String(values.poster_quality ?? ''), updated_at: now },
+          { key: UPLOAD_R2_KEYS.thumb_width, value: String(values.thumb_width ?? 238), updated_at: now },
+          { key: UPLOAD_R2_KEYS.thumb_height, value: String(values.thumb_height ?? 344), updated_at: now },
+          { key: UPLOAD_R2_KEYS.poster_width, value: String(values.poster_width ?? 486), updated_at: now },
+          { key: UPLOAD_R2_KEYS.poster_height, value: String(values.poster_height ?? 274), updated_at: now },
+          { key: UPLOAD_R2_KEYS.limit, value: String(values.limit ?? 0), updated_at: now },
+          { key: UPLOAD_R2_KEYS.concurrency, value: String(values.concurrency ?? 6), updated_at: now },
+          { key: UPLOAD_R2_KEYS.reupload_existing, value: values.reupload_existing ? '1' : '0', updated_at: now },
+        ],
+        { onConflict: 'key' }
+      );
+      if (error) throw error;
+      message.success('Đã lưu cài đặt upload ảnh.');
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu cài đặt upload ảnh thất bại.');
+    } finally {
+      setSavingUploadSettings(false);
+    }
   };
 
   const parseSlugList = (raw: any) => {
@@ -98,6 +143,17 @@ export default function GitHubActions() {
         UPDATE_DATA_TWO_PHASE_KEY,
         UPDATE_DATA_MANUAL_TWO_PHASE_KEY,
         UPLOAD_IMAGES_AFTER_BUILD_KEY,
+        UPLOAD_R2_KEYS.mode,
+        UPLOAD_R2_KEYS.quality,
+        UPLOAD_R2_KEYS.thumb_quality,
+        UPLOAD_R2_KEYS.poster_quality,
+        UPLOAD_R2_KEYS.thumb_width,
+        UPLOAD_R2_KEYS.thumb_height,
+        UPLOAD_R2_KEYS.poster_width,
+        UPLOAD_R2_KEYS.poster_height,
+        UPLOAD_R2_KEYS.limit,
+        UPLOAD_R2_KEYS.concurrency,
+        UPLOAD_R2_KEYS.reupload_existing,
       ]);
     const map: Record<string, string> = {};
     (data || []).forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
@@ -125,6 +181,25 @@ export default function GitHubActions() {
       auto_start_page,
       auto_end_page,
     });
+
+    const uploadDefaults = {
+      mode: (map[UPLOAD_R2_KEYS.mode] || 'thumb,poster').toString(),
+      quality: map[UPLOAD_R2_KEYS.quality] != null && map[UPLOAD_R2_KEYS.quality] !== '' ? Number(map[UPLOAD_R2_KEYS.quality]) : 70,
+      thumb_quality: map[UPLOAD_R2_KEYS.thumb_quality] ?? '',
+      poster_quality: map[UPLOAD_R2_KEYS.poster_quality] ?? '',
+      thumb_width: map[UPLOAD_R2_KEYS.thumb_width] != null && map[UPLOAD_R2_KEYS.thumb_width] !== '' ? Number(map[UPLOAD_R2_KEYS.thumb_width]) : 238,
+      thumb_height: map[UPLOAD_R2_KEYS.thumb_height] != null && map[UPLOAD_R2_KEYS.thumb_height] !== '' ? Number(map[UPLOAD_R2_KEYS.thumb_height]) : 344,
+      poster_width: map[UPLOAD_R2_KEYS.poster_width] != null && map[UPLOAD_R2_KEYS.poster_width] !== '' ? Number(map[UPLOAD_R2_KEYS.poster_width]) : 486,
+      poster_height: map[UPLOAD_R2_KEYS.poster_height] != null && map[UPLOAD_R2_KEYS.poster_height] !== '' ? Number(map[UPLOAD_R2_KEYS.poster_height]) : 274,
+      limit: map[UPLOAD_R2_KEYS.limit] != null && map[UPLOAD_R2_KEYS.limit] !== '' ? Number(map[UPLOAD_R2_KEYS.limit]) : 0,
+      concurrency: map[UPLOAD_R2_KEYS.concurrency] != null && map[UPLOAD_R2_KEYS.concurrency] !== '' ? Number(map[UPLOAD_R2_KEYS.concurrency]) : 6,
+      reupload_existing: (() => {
+        const v = (map[UPLOAD_R2_KEYS.reupload_existing] || '').toString().trim().toLowerCase();
+        if (!v) return false;
+        return v === '1' || v === 'true' || v === 'yes' || v === 'on';
+      })(),
+    };
+    uploadForm.setFieldsValue(uploadDefaults);
   };
 
   const fetchActions = async () => {
@@ -339,7 +414,15 @@ export default function GitHubActions() {
         </Form>
       </Card>
 
-      <Card title="Upload movie images to R2" style={{ marginTop: 24 }}>
+      <Card
+        title="Upload movie images to R2"
+        style={{ marginTop: 24 }}
+        extra={
+          <Button icon={<SaveOutlined />} onClick={handleSaveUploadSettings} loading={savingUploadSettings}>
+            Lưu mặc định
+          </Button>
+        }
+      >
         <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
           Chạy tải + nén + upload ảnh (thumb/poster) lên R2 bằng GitHub Actions.
         </Text>

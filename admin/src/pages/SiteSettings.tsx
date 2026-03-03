@@ -62,6 +62,7 @@ const SITE_SETTINGS_KEYS = [
 export default function SiteSettings() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,6 +114,7 @@ export default function SiteSettings() {
   }, [form]);
 
   const onFinish = async (values: Record<string, any>) => {
+    setSaving(true);
     try {
       const toSave: Record<string, string> = {};
       for (const key of SITE_SETTINGS_KEYS) {
@@ -128,13 +130,22 @@ export default function SiteSettings() {
       message.success('Đã lưu cài đặt');
     } catch (e: any) {
       message.error(e?.message || 'Lưu thất bại');
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <>
       <h1>Cài đặt chung</h1>
-      <Card loading={loading}>
+      <Card
+        loading={loading}
+        extra={
+          <Button type="primary" onClick={() => form.submit()} loading={saving} disabled={loading}>
+            Lưu
+          </Button>
+        }
+      >
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Tabs
             items={[
@@ -416,7 +427,9 @@ export default function SiteSettings() {
             ]}
           />
           <Form.Item>
-            <Button type="primary" htmlType="submit">Lưu</Button>
+            <Button type="primary" htmlType="submit" loading={saving} disabled={loading}>
+              Lưu
+            </Button>
           </Form.Item>
         </Form>
       </Card>
