@@ -194,6 +194,29 @@ function parseSlugList(raw) {
   return new Set(parts);
 }
 
+function normalizeSlugLike(raw) {
+  if (!raw) return '';
+  let s = String(raw).trim().toLowerCase();
+  if (!s) return '';
+  s = s.replace(/^https?:\/\/[^/]+/i, '');
+  s = s.replace(/\?.*$/, '');
+  s = s.replace(/#.*$/, '');
+  s = s.replace(/^\/+/, '').replace(/\/+$/, '');
+  s = s.replace(/\.html$/i, '');
+  if (s.startsWith('phim/')) s = s.slice('phim/'.length);
+  return s;
+}
+
+function normalizeSlugSet(set) {
+  if (!set) return null;
+  const out = new Set();
+  for (const v of set) {
+    const n = normalizeSlugLike(v);
+    if (n) out.add(n);
+  }
+  return out.size ? out : null;
+}
+
 function parseBool(raw, fallback) {
   if (raw == null) return !!fallback;
   const s = String(raw).trim().toLowerCase();
@@ -217,7 +240,7 @@ async function main() {
   const posterW = Number(args.poster_width || 486);
   const posterH = Number(args.poster_height || 274);
 
-  const forceSlugSet = parseSlugList(args.force_slugs);
+  const forceSlugSet = normalizeSlugSet(parseSlugList(args.force_slugs));
   const reuploadExisting = parseBool(args.reupload_existing, false);
 
   const limit = args.limit != null ? Math.max(0, Number(args.limit)) : 0;
@@ -241,10 +264,23 @@ async function main() {
   const moviesFiltered = (movies || []).filter((m) => m && m.id != null);
   const moviesBySlug = forceSlugSet
     ? moviesFiltered.filter((m) => {
-      const slug = m && (m.slug || m.id) ? String(m.slug || m.id) : '';
-      return slug && forceSlugSet.has(slug);
+      const slug = normalizeSlugLike(m && (m.slug || '') ? String(m.slug) : '');
+      const idStr = m && m.id != null ? String(m.id) : '';
+      return (slug && forceSlugSet.has(slug)) || (idStr && forceSlugSet.has(normalizeSlugLike(idStr)));
     })
     : moviesFiltered;
+
+  if (forceSlugSet && !moviesBySlug.length) {
+    const samples = moviesFiltered
+      .slice(0, 12)
+      .map((m) => normalizeSlugLike(m && m.slug ? m.slug : (m && m.id != null ? String(m.id) : '')))
+      .filter(Boolean);
+    throw new Error(
+      'force_slugs provided but no movies matched. ' +
+      'Check slugs (should be like "vong-xoay-gia-tao"). ' +
+      'Sample available slugs: ' + samples.join(', ')
+    );
+  }
   const moviesToProcess = limit ? moviesBySlug.slice(0, limit) : moviesBySlug;
 
   let done = 0;
@@ -270,7 +306,7 @@ async function main() {
     const idStr = m && m.id != null ? String(m.id) : '';
     if (!idStr) return;
 
-    const slugStr = m && (m.slug || m.id) ? String(m.slug || m.id) : '';
+    const slugStr = normalizeSlugLike(m && (m.slug || '') ? String(m.slug) : '');
     const inForceList = !!(forceSlugSet && slugStr && forceSlugSet.has(slugStr));
     const row = state.uploaded[idStr] || {};
 
