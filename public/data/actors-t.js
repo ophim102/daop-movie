@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"trent-culkin":["69a68580400bf394bd8dfb5c"]},"names":{"trent-culkin":"Trent Culkin"},"meta":{"trent-culkin":{"tmdb_id":3059432,"profile":"https://image.tmdb.org/t/p/w500/1uQyzJQUy0wuMAj4HCrxX7QnvJv.jpg","tmdb_url":"https://www.themoviedb.org/person/3059432"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

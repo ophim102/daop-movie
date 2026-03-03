@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"wang-ziwen":["68e4c2797554a460a6e769a5"]},"names":{"wang-ziwen":"Vương Tử Văn"},"meta":{"wang-ziwen":{"tmdb_id":1006594,"profile":"https://image.tmdb.org/t/p/w500/qcbGx4uKq3HAbAZRsZkrOztVgGe.jpg","tmdb_url":"https://www.themoviedb.org/person/1006594"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

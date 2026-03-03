@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"arlan-ruf":["69a6876b4da3bf6eb33e5128"]},"names":{"arlan-ruf":"Arlan Ruf"},"meta":{"arlan-ruf":{"tmdb_id":5014159,"profile":null,"tmdb_url":"https://www.themoviedb.org/person/5014159"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"huang-ziqi":["68e4c2797554a460a6e769a5"]},"names":{"huang-ziqi":"Hoàng Tử Kỳ"},"meta":{"huang-ziqi":{"tmdb_id":3286607,"profile":"https://image.tmdb.org/t/p/w500/yMf8hLXvfCx0n2vm5oey7OEfOZC.jpg","tmdb_url":"https://www.themoviedb.org/person/3286607"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

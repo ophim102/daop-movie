@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"gao-weiguang":["68e4c2797554a460a6e769a5"]},"names":{"gao-weiguang":"Cao Vỹ Quang"},"meta":{"gao-weiguang":{"tmdb_id":1686321,"profile":"https://image.tmdb.org/t/p/w500/iJE4p3pKMtcPG3V6kTKcHd85EZO.jpg","tmdb_url":"https://www.themoviedb.org/person/1686321"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

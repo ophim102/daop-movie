@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"vivienne-tien":["68e4c2797554a460a6e769a5"]},"names":{"vivienne-tien":"Vivienne Tien"},"meta":{"vivienne-tien":{"tmdb_id":2762135,"profile":"https://image.tmdb.org/t/p/w500/iIMSjySpkMhgxIm1rzMJb089GUG.jpg","tmdb_url":"https://www.themoviedb.org/person/2762135"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"david-harbour":["69a6876b4da3bf6eb33e5128"]},"names":{"david-harbour":"David Harbour"},"meta":{"david-harbour":{"tmdb_id":35029,"profile":"https://image.tmdb.org/t/p/w500/qMFtMWlYVtFVyBoBhX5IoA5sN5a.jpg","tmdb_url":"https://www.themoviedb.org/person/35029"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
