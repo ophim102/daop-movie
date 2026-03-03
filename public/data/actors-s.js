@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"suet-lee":["69a44a87f937c3b5a112a21f"]},"names":{"suet-lee":"Suet Lee"},"meta":{"suet-lee":{"tmdb_id":1402747,"profile":"https://image.tmdb.org/t/p/w500/uNp6euj6sssP1D7fyZKm22tOr0z.jpg","tmdb_url":"https://www.themoviedb.org/person/1402747"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

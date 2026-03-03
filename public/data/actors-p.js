@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"pat-poon":["69a44a87f937c3b5a112a21f"]},"names":{"pat-poon":"Pat Poon"},"meta":{"pat-poon":{"tmdb_id":1772642,"profile":"https://image.tmdb.org/t/p/w500/s8gWIlOq9sfnSQufNdZydpkkdvK.jpg","tmdb_url":"https://www.themoviedb.org/person/1772642"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};

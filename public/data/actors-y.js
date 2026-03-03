@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"yeung-chung":["69a44a87f937c3b5a112a21f"]},"names":{"yeung-chung":"Yeung Chung"},"meta":{"yeung-chung":{"tmdb_id":1720224,"profile":"https://image.tmdb.org/t/p/w500/yIdWEf4g0ndHfhsekRGmEdA7JfC.jpg","tmdb_url":"https://www.themoviedb.org/person/1720224"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
