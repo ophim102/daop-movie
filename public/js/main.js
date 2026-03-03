@@ -1132,6 +1132,29 @@
     var footer = document.querySelector('.site-footer');
     if (footer && settings.footer_content) {
       footer.innerHTML = settings.footer_content;
+      try {
+        // Defensive fix: if custom footer HTML contains the Vietnam flag SVG without the expected wrapper/classes,
+        // it can render at an unintended large size. Constrain any likely flag SVG inside footer.
+        var svgs = footer.querySelectorAll('svg');
+        svgs.forEach(function (svg) {
+          try {
+            var vb = (svg.getAttribute('viewBox') || '').replace(/\s+/g, ' ').trim();
+            var isFlag = vb === '0 0 30 20' || vb === '0 0 30 20 ';
+            if (!isFlag) return;
+            svg.style.display = 'block';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            var p = svg.parentElement;
+            if (p && !p.classList.contains('footer-flag')) {
+              p.style.display = 'inline-block';
+              p.style.width = '1.25em';
+              p.style.height = '0.833em';
+              p.style.verticalAlign = 'middle';
+              p.style.marginRight = '0.35em';
+            }
+          } catch (eSvg) {}
+        });
+      } catch (eFooterSvg) {}
     }
     var footerLogo = document.querySelector('.site-footer .footer-logo');
     if (footerLogo) {
