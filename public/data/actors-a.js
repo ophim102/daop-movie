@@ -1,1 +1,1 @@
-window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
+window.actorsData = {"map":{"arlan-ruf":["69a6876b4da3bf6eb33e5128"]},"names":{"arlan-ruf":"Arlan Ruf"},"meta":{"arlan-ruf":{"tmdb_id":5014159,"profile":null,"tmdb_url":"https://www.themoviedb.org/person/5014159"}},"movies":{"arlan-ruf":[{"id":"69a6876b4da3bf6eb33e5128","title":"DTF St. Louis","origin_name":"DTF St. Louis","slug":"dtf-st-louis","thumb":"/uploads/movies/dtf-st-louis-thumb.jpg","year":2026,"type":"series","episode_current":"Tập 1"}]}};
