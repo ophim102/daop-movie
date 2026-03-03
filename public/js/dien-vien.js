@@ -313,13 +313,18 @@
           var cnt = (map && map[s] && map[s].length) ? map[s].length : null;
           var m2 = meta && meta[s] ? meta[s] : null;
           var img = m2 && m2.profile ? normalizeTmdbImg(m2.profile, state0.usePoster) : '';
+          var baseUrl0 = (window.DAOP && window.DAOP.basePath) || '';
+          var defaultImg0 = baseUrl0 + '/images/default_thumb.png';
+          if (!defaultImg0) defaultImg0 = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="64"%3E%3Crect fill="%2321262d" width="96" height="64"/%3E%3C/svg%3E';
           var title = esc(n2);
           var href = encodeURIComponent(s) + '.html';
           return (
             '<div class="movie-card movie-card--vertical">' +
             '<a href="' + href + '">' +
             '<div class="thumb-wrap">' +
-            (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + title + '">' : '') +
+            (img
+              ? '<img loading="lazy" decoding="async" src="' + esc(img) + '" onerror="this.onerror=null;this.src=\'' + String(defaultImg0).replace(/'/g, '%27') + '\';" alt="' + title + '">'
+              : '<img loading="lazy" decoding="async" src="' + esc(defaultImg0) + '" alt="' + title + '">') +
             '</div>' +
             '<div class="movie-info">' +
             '<h3 class="title">' + title + '</h3>' +
@@ -400,8 +405,15 @@
       var m2 = meta && meta[slug] ? meta[slug] : null;
       var img = m2 && m2.profile ? String(m2.profile) : '';
       var url = m2 && m2.tmdb_url ? String(m2.tmdb_url) : '';
+      var baseUrlP = (window.DAOP && window.DAOP.basePath) || '';
+      var defaultImgP = baseUrlP + '/images/default_thumb.png';
+      if (!defaultImgP) defaultImgP = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="64"%3E%3Crect fill="%2321262d" width="96" height="64"/%3E%3C/svg%3E';
       profileWrap.innerHTML =
-        '<div class="actor-profile-img">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(name) + '">' : '') + '</div>' +
+        '<div class="actor-profile-img">' +
+        (img
+          ? '<img loading="lazy" decoding="async" src="' + esc(img) + '" onerror="this.onerror=null;this.src=\'' + String(defaultImgP).replace(/'/g, '%27') + '\';" alt="' + esc(name) + '">' 
+          : '<img loading="lazy" decoding="async" src="' + esc(defaultImgP) + '" alt="' + esc(name) + '">') +
+        '</div>' +
         '<div class="actor-profile-main">' +
         '<div class="actor-profile-name">' + esc(name) + '</div>' +
         (url ? '<div class="actor-profile-actions"><a class="actor-tmdb-btn" href="' + esc(url) + '" target="_blank" rel="noopener">Xem chi tiết trên TMDB</a></div>' : '') +

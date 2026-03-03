@@ -124,11 +124,25 @@
     if (preroll && preroll.video_url) {
       var skipAfter = Math.max(0, parseInt(preroll.skip_after, 10) || 0);
       var safePrerollUrl = (preroll.video_url || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+      var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+        ? window.DAOP.normalizeImgUrl
+        : function (x) { return x; };
+      var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+        ? window.DAOP.normalizeImgUrlOphim
+        : function (x) { return x; };
+      var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+      var defaultPoster = baseUrl + '/images/default_poster.png';
+      var posterRaw = preroll.image_url || '';
+      var poster = norm(posterRaw).replace(/^\/\//, 'https://') || defaultPoster;
+      var posterOphim = normOphim(posterRaw).replace(/^\/\//, 'https://') || '';
+      var safePoster = String(poster || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
       overlay.innerHTML =
         '<button type="button" class="close-player" aria-label="Đóng">Đóng</button>' +
         '<div class="preroll-wrap">' +
         '<p class="preroll-label">Quảng cáo</p>' +
-        '<video id="daop-preroll-video" controls src="' + safePrerollUrl + '" poster="' + (preroll.image_url || '').replace(/"/g, '&quot;') + '"></video>' +
+        '<video id="daop-preroll-video" controls src="' + safePrerollUrl + '" poster="' + safePoster + '"></video>' +
         '<div class="preroll-skip-wrap">' +
         '<button type="button" id="daop-preroll-skip" class="preroll-skip-btn" disabled>Bỏ qua sau <span id="daop-preroll-countdown">' + skipAfter + '</span>s</button>' +
         '</div></div>';
@@ -139,6 +153,26 @@
       var countEl = document.getElementById('daop-preroll-countdown');
       var countdown = skipAfter;
       var countdownInterval = null;
+
+      // Poster fallback chain (R2 -> OPhim -> default)
+      try {
+        if (prVideo && poster && posterOphim && posterOphim !== poster) {
+          var img = new Image();
+          img.onload = function () {};
+          img.onerror = function () {
+            try {
+              prVideo.poster = posterOphim;
+              var img2 = new Image();
+              img2.onerror = function () {
+                try { prVideo.poster = defaultPoster; } catch (e3) {}
+              };
+              img2.src = posterOphim;
+            } catch (e2) {}
+          };
+          img.src = poster;
+        }
+      } catch (e0) {}
+
       var done = function () {
         if (countdownInterval) clearInterval(countdownInterval);
         if (prVideo) {

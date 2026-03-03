@@ -809,7 +809,19 @@
     var html = '<div class="slider-viewport"><div class="slider-track">';
     slides.forEach(function (s, i) {
       var href = (s.link_url || '#').replace(/"/g, '&quot;');
-      var img = (s.image_url || '').replace(/"/g, '&quot;');
+      var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
+        ? window.DAOP.normalizeImgUrl
+        : function (x) { return x; };
+      var normOphim = (window.DAOP && typeof window.DAOP.normalizeImgUrlOphim === 'function')
+        ? window.DAOP.normalizeImgUrlOphim
+        : function (x) { return x; };
+      var imgRaw = (s.image_url || '');
+      var defaultImg = base + '/images/default_poster.png';
+      var img = norm(imgRaw).replace(/^\/\//, 'https://') || defaultImg;
+      var imgOphim = normOphim(imgRaw).replace(/^\/\//, 'https://') || '';
+      var imgEsc = String(img || '').replace(/"/g, '&quot;');
+      var oEsc = String(imgOphim || '').replace(/'/g, '%27');
+      var dEsc = String(defaultImg || '').replace(/'/g, '%27');
       var title = esc(s.title || '');
       var year = esc(s.year || '');
       var country = esc(s.country || '');
@@ -831,7 +843,14 @@
       html +=
         '<div class="slider-slide" data-index="' + i + '">' +
         '<a href="' + href + '" class="slider-slide-link">' +
-        '<div class="slider-slide-bg"><img loading="' + imgLoading + '" decoding="async" fetchpriority="' + imgPriority + '" src="' + img + '" alt="' + title + '"></div>' +
+        '<div class="slider-slide-bg"><img loading="' + imgLoading + '" decoding="async" fetchpriority="' + imgPriority + '" src="' + imgEsc + '"' +
+        (function(){
+          if (oEsc && oEsc !== imgEsc) {
+            return ' onerror="this.onerror=function(){this.onerror=null;this.src=\'' + dEsc + '\';};this.src=\'' + oEsc + '\';"';
+          }
+          return ' onerror="this.onerror=null;this.src=\'' + dEsc + '\';"';
+        })() +
+        ' alt="' + title + '"></div>' +
         '<div class="slider-slide-overlay"></div>' +
         '<div class="slider-slide-content">' +
         '<h2 class="slider-slide-title">' + title + '</h2>' +
