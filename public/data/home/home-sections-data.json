@@ -802,6 +802,55 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-02T17:44:28.000Z"
+      },
+      {
+        "id": "69a44a87f937c3b5a112a21f",
+        "title": "Thiên tằm biến",
+        "origin_name": "Reincarnated",
+        "slug": "thien-tam-bien",
+        "thumb": "/uploads/movies/thien-tam-bien-thumb.jpg",
+        "poster": "",
+        "year": 1979,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          },
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          },
+          {
+            "id": "620a2347e0fc277084dfd876",
+            "name": "Hồng Kông",
+            "slug": "hong-kong"
+          }
+        ],
+        "lang_key": "Lồng Tiếng",
+        "episode_current": "Trailer",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-01T21:17:46.000Z"
       }
     ]
   },
