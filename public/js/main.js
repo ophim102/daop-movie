@@ -971,7 +971,6 @@
           }
           moved = true;
         }
-        if (Math.abs(dx) >= 10) hadSwipe = true;
         e.preventDefault();
         setTranslate(dx);
       }, { passive: false });
@@ -983,6 +982,7 @@
         var w = viewport.clientWidth || 1;
         var threshold = Math.max(45, Math.min(120, w * 0.18));
         if (moved && Math.abs(dx) > threshold) {
+          hadSwipe = true;
           if (dx < 0) goTo(idx + 1);
           else goTo(idx - 1);
         } else {
@@ -1013,64 +1013,66 @@
       }, true);
 
       // Touch fallback (iOS Safari / some WebViews)
-      var tStartX = 0;
-      var tStartY = 0;
-      var tDragging = false;
-      var tMoved = false;
+      if (!window.PointerEvent) {
+        var tStartX = 0;
+        var tStartY = 0;
+        var tDragging = false;
+        var tMoved = false;
 
-      viewport.addEventListener('touchstart', function (e) {
-        if (!e.touches || e.touches.length !== 1) return;
-        tDragging = true;
-        tMoved = false;
-        hadSwipe = false;
-        tStartX = e.touches[0].clientX;
-        tStartY = e.touches[0].clientY;
-        stopAuto();
-      }, { passive: true });
-
-      viewport.addEventListener('touchmove', function (e) {
-        if (!tDragging || !e.touches || e.touches.length !== 1) return;
-        var dx = e.touches[0].clientX - tStartX;
-        var dy = e.touches[0].clientY - tStartY;
-        if (!tMoved) {
-          if (Math.abs(dx) < 10) return;
-          if (Math.abs(dy) > Math.abs(dx) * 1.2) {
-            tDragging = false;
-            startAuto();
-            return;
-          }
-          tMoved = true;
-        }
-        if (Math.abs(dx) >= 10) hadSwipe = true;
-        e.preventDefault();
-        setTranslate(dx);
-      }, { passive: false });
-
-      viewport.addEventListener('touchend', function (e) {
-        if (!tDragging) return;
-        tDragging = false;
-        var endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : tStartX;
-        var dx = endX - tStartX;
-        var w = viewport.clientWidth || 1;
-        var threshold = Math.max(45, Math.min(120, w * 0.18));
-        if (tMoved && Math.abs(dx) > threshold) {
-          if (dx < 0) goTo(idx + 1);
-          else goTo(idx - 1);
-        } else {
-          resetTranslate();
+        viewport.addEventListener('touchstart', function (e) {
+          if (!e.touches || e.touches.length !== 1) return;
+          tDragging = true;
+          tMoved = false;
           hadSwipe = false;
-        }
-        tMoved = false;
-        startAuto();
-      }, { passive: true });
+          tStartX = e.touches[0].clientX;
+          tStartY = e.touches[0].clientY;
+          stopAuto();
+        }, { passive: true });
 
-      viewport.addEventListener('touchcancel', function () {
-        if (!tDragging) return;
-        tDragging = false;
-        tMoved = false;
-        resetTranslate();
-        startAuto();
-      }, { passive: true });
+        viewport.addEventListener('touchmove', function (e) {
+          if (!tDragging || !e.touches || e.touches.length !== 1) return;
+          var dx = e.touches[0].clientX - tStartX;
+          var dy = e.touches[0].clientY - tStartY;
+          if (!tMoved) {
+            if (Math.abs(dx) < 10) return;
+            if (Math.abs(dy) > Math.abs(dx) * 1.2) {
+              tDragging = false;
+              startAuto();
+              return;
+            }
+            tMoved = true;
+          }
+          e.preventDefault();
+          setTranslate(dx);
+        }, { passive: false });
+
+        viewport.addEventListener('touchend', function (e) {
+          if (!tDragging) return;
+          tDragging = false;
+          var endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : tStartX;
+          var dx = endX - tStartX;
+          var w = viewport.clientWidth || 1;
+          var threshold = Math.max(45, Math.min(120, w * 0.18));
+          if (tMoved && Math.abs(dx) > threshold) {
+            hadSwipe = true;
+            if (dx < 0) goTo(idx + 1);
+            else goTo(idx - 1);
+          } else {
+            resetTranslate();
+            hadSwipe = false;
+          }
+          tMoved = false;
+          startAuto();
+        }, { passive: true });
+
+        viewport.addEventListener('touchcancel', function () {
+          if (!tDragging) return;
+          tDragging = false;
+          tMoved = false;
+          resetTranslate();
+          startAuto();
+        }, { passive: true });
+      }
     }
   };
 
