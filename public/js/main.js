@@ -716,6 +716,11 @@
 
     var actions = header.querySelector('.site-nav-actions');
 
+    function isMobileToggleMode() {
+      var w = window.innerWidth || document.documentElement.clientWidth || 0;
+      return w < 769;
+    }
+
     var btn = document.getElementById('site-header-toggle');
     if (!btn) {
       btn = document.createElement('button');
@@ -774,6 +779,16 @@
     var hideTimer = null;
     function showBtnTemporarily() {
       btn.classList.remove('is-auto-hidden');
+
+       // Mobile: nút luôn hiển thị, không tự ẩn.
+      if (isMobileToggleMode()) {
+        if (hideTimer) {
+          clearTimeout(hideTimer);
+          hideTimer = null;
+        }
+        return;
+      }
+
       if (hideTimer) {
         clearTimeout(hideTimer);
         hideTimer = null;
@@ -816,6 +831,12 @@
     window.addEventListener('resize', function () {
       syncDesktopTop();
       syncHeaderOffsetVar();
+
+      // Khi chuyển breakpoint: mobile thì luôn show, desktop thì dùng auto-hide.
+      try {
+        if (isMobileToggleMode()) btn.classList.remove('is-auto-hidden');
+        else showBtnTemporarily();
+      } catch (e4) {}
     }, { passive: true });
     window.addEventListener('scroll', function () {
       syncDesktopTop();

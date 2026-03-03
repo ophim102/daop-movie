@@ -40,10 +40,10 @@ a:hover {
 }
 
 .site-header-toggle {
-  position: relative;
-  top: auto;
-  right: auto;
-  z-index: 1;
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2000;
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -79,17 +79,19 @@ body.site-header--collapsed .site-header {
 
 @media (max-width: 768px) {
   .site-header-toggle {
-    margin-left: 0.25rem;
+    top: 0.55rem;
+    right: 0.55rem;
   }
 
   body:not(.site-header--collapsed) .site-header-toggle {
-    margin-top: 0;
+    top: 4.25rem;
   }
 }
 
 @media (min-width: 769px) {
   .site-header-toggle {
-    margin-left: 0.35rem;
+    left: auto;
+    right: 0.9rem;
     background: var(--accent);
     border-color: rgba(255, 255, 255, 0.15);
     color: #0d1117;
