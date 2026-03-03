@@ -102,20 +102,40 @@ export default function Slider() {
   const normalizePreviewUrl = (raw: string, siteBase: string) => {
     const u = String(raw || '').trim();
     if (!u) return '';
-    if (/^https?:\/\//i.test(u)) {
-      const r2 = String(r2ImgDomain || '').replace(/\/$/, '');
-      const ophim = String(ophimImgDomain || '').replace(/\/$/, '');
-      if (r2 && ophim && u.indexOf(ophim + '/uploads/') === 0) {
-        return r2 + u.slice(ophim.length);
+    const r2 = String(r2ImgDomain || '').replace(/\/$/, '');
+    const ophim = String(ophimImgDomain || '').replace(/\/$/, '');
+    const buildR2FromUploadsPath = (uploadsPath: string) => {
+      const p = String(uploadsPath || '').trim();
+      if (!p || p.indexOf('/uploads/') !== 0) return '';
+      if (!r2) return '';
+      let filename = '';
+      try {
+        filename = p.split('/').pop() || '';
+      } catch {
+        filename = '';
       }
+      if (!filename) return '';
+      const lower = filename.toLowerCase();
+      const folder = (lower.indexOf('poster') >= 0) ? 'posters' : 'thumbs';
+      return r2 + '/' + folder + '/' + filename;
+    };
+    if (/^https?:\/\//i.test(u)) {
+      try {
+        const parsed = new URL(u);
+        const p = parsed.pathname || '';
+        if (p.indexOf('/uploads/') === 0) {
+          const r2u = buildR2FromUploadsPath(p);
+          if (r2u) return r2u;
+          if (ophim) return ophim + p;
+        }
+      } catch {}
       return u;
     }
     if (u.startsWith('//')) return 'https:' + u;
     if (u.startsWith('/uploads/')) {
-      const r2 = String(r2ImgDomain || '').replace(/\/$/, '');
-      if (r2) return r2 + u;
-      const d = String(ophimImgDomain || '').replace(/\/$/, '');
-      if (d) return d + u;
+      const r2u = buildR2FromUploadsPath(u);
+      if (r2u) return r2u;
+      if (ophim) return ophim + u;
       const b = String(siteBase || '').replace(/\/$/, '');
       return b ? b + u : u;
     }
