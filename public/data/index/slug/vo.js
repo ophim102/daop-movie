@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["vo"] = {"vo-than-chua-te":{"id":"68e4bc4d69d7b4696cc59469","i":2,"title":"Võ Thần Chúa Tể","origin_name":"Martial Master","slug":"vo-than-chua-te","thumb":"/uploads/movies/vo-than-chua-te-thumb.jpg","year":2020,"type":"hoathinh","episode_current":"Tập 624"}};

@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.searchPrefix = window.DAOP.searchPrefix || {};window.DAOP.searchPrefix["xi"] = [{"id":"69a685dff063d23bbbcf34ee","title":"Bẫy Tâm","origin_name":"Bu Xin Shi","slug":"bay-tam","thumb":"/uploads/movies/bay-tam-thumb.jpg","year":2026,"type":"series","episode_current":"Trailer","_t":"bay tam bu xin shi bay tam"}];

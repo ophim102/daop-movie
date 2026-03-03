@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ca"] = {"cam-nang-yeu":{"id":"69a402dada6ce23e8ea149e2","i":16,"title":"Cẩm Nang Yêu","origin_name":"The Practical Guide to Love","slug":"cam-nang-yeu","thumb":"/uploads/movies/cam-nang-yeu-thumb.jpg","year":2026,"type":"series","episode_current":"Tập 2"}};

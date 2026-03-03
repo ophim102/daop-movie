@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["lo"] = {"lop-hoc-cua-tae-ri":{"id":"699c7307f063d23bbbcb694f","i":13,"title":"Lớp Học Của Tae Ri","origin_name":"Curtain Up, Class!","slug":"lop-hoc-cua-tae-ri","thumb":"/uploads/movies/lop-hoc-cua-tae-ri-thumb.jpg","year":2026,"type":"tvshows","episode_current":"Tập 2"}};

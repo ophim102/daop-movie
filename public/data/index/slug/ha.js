@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ha"] = {"hat-mam-duc-vong":{"id":"699fcba4400bf394bd8b72c6","i":15,"title":"Hạt Mầm Dục Vọng","origin_name":"Seeds of Scarlet Longing","slug":"hat-mam-duc-vong","thumb":"/uploads/movies/hat-mam-duc-vong-thumb.jpg","year":2026,"type":"series","episode_current":"Tập 14"}};

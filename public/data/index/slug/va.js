@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["va"] = {"van-gioi-doc-ton":{"id":"68e4ba284f7493692abb949c","i":1,"title":"Vạn Giới Độc Tôn","origin_name":"Ten Thousand Worlds","slug":"van-gioi-doc-ton","thumb":"/uploads/movies/van-gioi-doc-ton-thumb.jpg","year":2021,"type":"hoathinh","episode_current":"Tập 407"}};

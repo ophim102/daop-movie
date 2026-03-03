@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["fl"] = {"flower-girl":{"id":"691e697012e9642cc2101130","i":566,"title":"Flower Girl","origin_name":"Flower Girl","slug":"flower-girl","thumb":"/uploads/movies/flower-girl-thumb.jpg","year":2025,"type":"single","episode_current":"Full"}};

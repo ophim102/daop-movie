@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"olivier-bonjour":["627b9e9cdb9df06c65952600"]},"names":{"olivier-bonjour":"Olivier Bonjour"},"meta":{"olivier-bonjour":{"tmdb_id":1210044,"profile":"https://image.tmdb.org/t/p/w500/pq1L0e6v8KsGGqFWQbUZSbHgklx.jpg","tmdb_url":"https://www.themoviedb.org/person/1210044"}},"movies":{}};

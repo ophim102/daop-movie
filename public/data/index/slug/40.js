@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["40"] = {"40-tuoi-doi":{"id":"6772a502b8c09d6b07ad7b9c","i":139,"title":"40 Tuổi Đời","origin_name":"Forty Something","slug":"40-tuoi-doi","thumb":"/uploads/movies/40-tuoi-doi-thumb.jpg","year":1995,"type":"series","episode_current":"Hoàn tất (20/20)"}};

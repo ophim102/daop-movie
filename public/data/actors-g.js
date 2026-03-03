@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"guan-xiaotong":["69a6dee9eea244e3e8b1b29e"]},"names":{"guan-xiaotong":"Quan Hiểu Đồng"},"meta":{"guan-xiaotong":{"tmdb_id":1686977,"profile":"https://image.tmdb.org/t/p/w500/b48jZXCEzBLMHZoTuAHLMXayWqE.jpg","tmdb_url":"https://www.themoviedb.org/person/1686977"}},"movies":{}};

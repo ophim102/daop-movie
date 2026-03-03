@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ho"] = {"hoc-xa-quy-ngu":{"id":"699ede14400bf394bd8b2070","i":14,"title":"Học Xá Quỷ Ngự","origin_name":"Labinak: They Are Amongst Us","slug":"hoc-xa-quy-ngu","thumb":"/uploads/movies/hoc-xa-quy-ngu-thumb.jpg","year":2025,"type":"single","episode_current":"Full"}};

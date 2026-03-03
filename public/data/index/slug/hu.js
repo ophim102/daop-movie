@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["hu"] = {"huyen-the":{"id":"69a56aec46046a8eb69006b0","i":17,"title":"Huyễn Thế","origin_name":"Mind Toxin","slug":"huyen-the","thumb":"/uploads/movies/huyen-the-thumb.jpg","year":2026,"type":"series","episode_current":"Hoàn tất (10/10)"}};

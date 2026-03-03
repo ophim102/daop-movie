@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"asavarid-pinitkanjanapun":["697053ae32adc86a1e713b10"]},"names":{"asavarid-pinitkanjanapun":"Asavarid Pinitkanjanapun"},"meta":{"asavarid-pinitkanjanapun":{"tmdb_id":3380429,"profile":"https://image.tmdb.org/t/p/w500/fUpI3Wd3DuHq9Qy6xGTJ6qvUA4T.jpg","tmdb_url":"https://www.themoviedb.org/person/3380429"}},"movies":{}};

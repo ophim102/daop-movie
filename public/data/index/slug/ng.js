@@ -1,1 +1,0 @@
-window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ng"] = {"ngay-24":{"id":"627b9e9cdb9df06c65952600","i":0,"title":"Ngày 24","origin_name":"The Advent Calendar","slug":"ngay-24","thumb":"/uploads/movies/ngay-24-thumb.jpg","year":2021,"type":"single","episode_current":"Full"}};

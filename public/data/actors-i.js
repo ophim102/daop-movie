@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"isabelle-tanakil":["627b9e9cdb9df06c65952600"]},"names":{"isabelle-tanakil":"Isabelle Tanakil"},"meta":{"isabelle-tanakil":{"tmdb_id":1494003,"profile":"https://image.tmdb.org/t/p/w500/ih1pmoIEu84MdbeVhD28fku1Rfn.jpg","tmdb_url":"https://www.themoviedb.org/person/1494003"}},"movies":{}};

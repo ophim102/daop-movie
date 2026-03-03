@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"vladimir-perrin":["627b9e9cdb9df06c65952600"]},"names":{"vladimir-perrin":"Vladimir Perrin"},"meta":{"vladimir-perrin":{"tmdb_id":1675003,"profile":"https://image.tmdb.org/t/p/w500/hoSUPf2EolfLYysFAwuLDougxAI.jpg","tmdb_url":"https://www.themoviedb.org/person/1675003"}},"movies":{}};

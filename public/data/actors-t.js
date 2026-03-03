@@ -1,1 +1,0 @@
-window.actorsData = {"map":{"theerameth-pheerabawornsuk":["697053ae32adc86a1e713b10"]},"names":{"theerameth-pheerabawornsuk":"Theerameth Pheerabawornsuk"},"meta":{"theerameth-pheerabawornsuk":{"tmdb_id":3958918,"profile":"https://image.tmdb.org/t/p/w500/cCzbUZLVvAjpIICj7GsiWDKnmvp.jpg","tmdb_url":"https://www.themoviedb.org/person/3958918"}},"movies":{}};
