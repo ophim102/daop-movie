@@ -23,6 +23,7 @@ const DEFAULT_FOOTER_HTML = `<div class="footer-vietnam-wrap">
 
 const SITE_SETTINGS_KEYS = [
   'site_name',
+  'site_url',
   'logo_url',
   'favicon_url',
   'r2_img_domain',
@@ -73,6 +74,7 @@ export default function SiteSettings() {
       }, {});
       form.setFieldsValue({
         site_name: data.site_name ?? 'DAOP Phim',
+        site_url: data.site_url ?? '',
         logo_url: data.logo_url ?? '',
         favicon_url: data.favicon_url ?? '',
         r2_img_domain: data.r2_img_domain ?? 'https://pub-62eef44669df48e4bca5388a38e69522.r2.dev',
@@ -147,6 +149,9 @@ export default function SiteSettings() {
                   <>
                     <Form.Item name="site_name" label="Tên website">
                       <Input />
+                    </Form.Item>
+                    <Form.Item name="site_url" label="Site URL (website chính)">
+                      <Input placeholder="https://your-site.com" />
                     </Form.Item>
                     <Form.Item name="logo_url" label="Logo (URL ảnh)">
                       <Input

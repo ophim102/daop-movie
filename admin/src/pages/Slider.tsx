@@ -44,6 +44,7 @@ type MovieLight = {
 
 const SLIDER_KEY = 'homepage_slider';
 const LOCAL_SITE_BASE_KEY = 'daop_admin_slider_site_base';
+const SITE_URL_KEY = 'site_url';
 
 export default function Slider() {
   const [list, setList] = useState<SlideItem[]>([]);
@@ -63,6 +64,18 @@ export default function Slider() {
     }
   });
   const [form] = Form.useForm();
+
+  const saveDefaultSiteUrl = async (nextUrl: string) => {
+    try {
+      const v = String(nextUrl || '').trim();
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({ key: SITE_URL_KEY, value: v, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+      if (error) throw error;
+    } catch (e: any) {
+      message.error(e?.message || 'Lưu Site URL thất bại');
+    }
+  };
 
   const getSiteBaseFromMovieUrl = (rawUrl: string) => {
     const raw = String(rawUrl || '').trim();
@@ -137,9 +150,10 @@ export default function Slider() {
 
   const loadData = async () => {
     setLoading(true);
-    const [sliderRes, ophimRes] = await Promise.all([
+    const [sliderRes, ophimRes, siteUrlRes] = await Promise.all([
       supabase.from('site_settings').select('value').eq('key', SLIDER_KEY).single(),
       supabase.from('site_settings').select('value').eq('key', 'ophim_img_domain').maybeSingle(),
+      supabase.from('site_settings').select('value').eq('key', SITE_URL_KEY).maybeSingle(),
     ]);
     try {
       const parsed = sliderRes.data?.value ? JSON.parse(sliderRes.data.value) : [];
@@ -149,6 +163,18 @@ export default function Slider() {
       setList([]);
     }
     setOphimImgDomain(ophimRes.data?.value ?? '');
+
+    try {
+      const cached = (localStorage.getItem(LOCAL_SITE_BASE_KEY) || '').trim();
+      if (!cached) {
+        const def = String(siteUrlRes.data?.value ?? '').trim();
+        if (def) setSiteBase(def);
+      }
+    } catch {
+      const def = String(siteUrlRes.data?.value ?? '').trim();
+      if (def) setSiteBase(def);
+    }
+
     setLoading(false);
   };
 
@@ -370,6 +396,7 @@ export default function Slider() {
                 localStorage.setItem(LOCAL_SITE_BASE_KEY, v);
               } catch {}
             }}
+            onBlur={() => saveDefaultSiteUrl(siteBase)}
           />
           <InputNumber min={1} max={50} value={latestCount} onChange={(v) => setLatestCount(Number(v) || 5)} />
           <Button type="primary" icon={<ThunderboltOutlined />} loading={addingLatest} onClick={addLatestMovies}>
