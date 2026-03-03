@@ -149,11 +149,23 @@
     return (s == null) ? '' : String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function normalizeText(s) {
+    if (!s) return '';
+    var t = String(s).toLowerCase();
+    try {
+      if (t.normalize) t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    } catch (e) {}
+    t = t.replace(/đ/g, 'd');
+    // Collapse whitespace so queries like "thuy  ngan" still match.
+    t = t.replace(/\s+/g, ' ').trim();
+    return t;
+  }
+
   function getQuery() {
     try {
       var p = new URLSearchParams(window.location.search || '');
       return {
-        q: (p.get('q') || '').trim(),
+        q: (p.get('q') || ''),
         page: Math.max(1, parseInt(p.get('page') || '1', 10) || 1),
       };
     } catch (e) {
@@ -165,8 +177,8 @@
     try {
       var p = new URLSearchParams(window.location.search || '');
       if (next.q != null) {
-        var q = String(next.q || '').trim();
-        if (q) p.set('q', q);
+        var q = String(next.q || '');
+        if (q.trim()) p.set('q', q);
         else p.delete('q');
       }
       if (next.page != null) {
@@ -280,11 +292,12 @@
       var actorSlugs = Object.keys(names || {});
       actorSlugs.sort(function (a, b) { return String(names[a] || a).localeCompare(String(names[b] || b)); });
 
-      var q = (q0.q || '').toLowerCase();
+      var q = normalizeText(q0.q || '');
       if (q) {
         actorSlugs = actorSlugs.filter(function (s) {
-          var n = String(names[s] || s).toLowerCase();
-          return n.indexOf(q) >= 0 || String(s).toLowerCase().indexOf(q) >= 0;
+          var n = normalizeText(names[s] || s);
+          var ss = normalizeText(s);
+          return n.indexOf(q) >= 0 || ss.indexOf(q) >= 0;
         });
       }
 
@@ -426,13 +439,13 @@
     state1.cols = [2, 3, 4, state1.extra].indexOf(state1.cols) >= 0 ? state1.cols : 4;
 
     var q0 = getQuery();
-    var q = (q0.q || '').toLowerCase();
+    var q = normalizeText(q0.q || '');
     var filtered = list || [];
     if (q) {
       filtered = filtered.filter(function (m) {
-        var t = String((m && m.title) || '').toLowerCase();
-        var o = String((m && m.origin_name) || '').toLowerCase();
-        var s = String((m && m.slug) || '').toLowerCase();
+        var t = normalizeText((m && m.title) || '');
+        var o = normalizeText((m && m.origin_name) || '');
+        var s = normalizeText((m && m.slug) || '');
         return t.indexOf(q) >= 0 || o.indexOf(q) >= 0 || s.indexOf(q) >= 0;
       });
     }
