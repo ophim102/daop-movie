@@ -49,6 +49,13 @@ const EXTRA_ACTIONS = [
     triggerable: false,
   },
   {
+    id: 'purge-movie-data',
+    name: 'Purge movie data',
+    description: 'Xóa sạch dữ liệu phim đã build trong public/data (giữ config) để chạy update data lại từ đầu.',
+    triggerable: true,
+    danger: true,
+  },
+  {
     id: 'export-to-sheets',
     name: 'Export to Google Sheets',
     description: 'Đẩy phim hiện có (build) xuống Google Sheets (chỉ append phim mới).',
@@ -270,6 +277,41 @@ export default function GitHubActions() {
         okType: 'danger',
         cancelText: 'Hủy',
         onOk: () => doTrigger(actionId),
+      });
+      return;
+    }
+    if (actionId === 'purge-movie-data') {
+      const PHRASE = 'XOA DU LIEU PHIM';
+      let typed = '';
+      Modal.confirm({
+        title: 'Xác nhận xóa sạch dữ liệu phim',
+        content: (
+          <div>
+            <div style={{ marginBottom: 8 }}>
+              Thao tác này sẽ xóa các file dữ liệu phim trong <code>public/data</code> (giữ <code>public/data/config</code>). Sau đó bạn có thể chạy <b>Update data</b> để build lại từ đầu.
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              Nhập chính xác cụm sau để xác nhận: <b>{PHRASE}</b>
+            </div>
+            <Input
+              autoFocus
+              placeholder={PHRASE}
+              onChange={(e) => {
+                typed = e.target.value || '';
+              }}
+            />
+          </div>
+        ),
+        okText: 'Xóa dữ liệu phim',
+        okType: 'danger',
+        cancelText: 'Hủy',
+        onOk: () => {
+          if ((typed || '').trim() !== PHRASE) {
+            message.error('Cụm xác nhận không đúng. Đã hủy thao tác.');
+            return Promise.reject();
+          }
+          return doTrigger(actionId);
+        },
       });
       return;
     }
