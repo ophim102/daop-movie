@@ -117,6 +117,23 @@ function normalizeSourceUrl(url) {
   return u;
 }
 
+function normalizeOphimCdnUrl(raw, cdnBase) {
+  if (!raw) return '';
+  const u = String(raw).trim();
+  if (!u) return '';
+  if (u.startsWith('http://') || u.startsWith('https://')) return u;
+  if (u.startsWith('//')) return 'https:' + u;
+  if (u.startsWith('/uploads/')) {
+    const base = String(process.env.OPHIM_IMG_DOMAIN || 'https://img.ophim.live').replace(/\/$/, '');
+    return base + u;
+  }
+
+  // Some OPhim responses return only a filename like "xxx-thumb.jpg"
+  const base = String(cdnBase || '').replace(/\/$/, '');
+  if (base) return base + '/' + u.replace(/^\/+/, '');
+  return u;
+}
+
 async function optimizeAndResize(buf, ext, opts) {
   const e = String(ext || '').toLowerCase();
   if (e === 'gif') return buf;
@@ -251,12 +268,16 @@ async function fetchOphimDetailBySlug(base, slug) {
   const movie = detail?.data?.item || detail?.data?.movie || detail?.data || null;
   if (!movie) return null;
 
+  const cdnBase = String(detail?.data?.APP_DOMAIN_CDN_IMAGE || '').replace(/\/$/, '');
+
   const idStr = (movie?._id != null ? String(movie._id)
     : (movie?.id != null ? String(movie.id)
       : (movie?.movie_id != null ? String(movie.movie_id) : '')));
 
-  const thumb = movie?.thumb_url || movie?.thumb || '';
-  const poster = movie?.poster_url || movie?.poster || '';
+  const thumbRaw = movie?.thumb_url || movie?.thumb || '';
+  const posterRaw = movie?.poster_url || movie?.poster || '';
+  const thumb = normalizeOphimCdnUrl(thumbRaw, cdnBase);
+  const poster = normalizeOphimCdnUrl(posterRaw, cdnBase);
   return {
     id: idStr || s,
     slug: s,

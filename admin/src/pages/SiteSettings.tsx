@@ -138,14 +138,7 @@ export default function SiteSettings() {
   return (
     <>
       <h1>Cài đặt chung</h1>
-      <Card
-        loading={loading}
-        extra={
-          <Button type="primary" onClick={() => form.submit()} loading={saving} disabled={loading}>
-            Lưu
-          </Button>
-        }
-      >
+      <Card loading={loading}>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Tabs
             items={[
