@@ -3678,6 +3678,18 @@
         "key": "posters/nhung-ong-bo-cua-ma-ri-poster.jpg",
         "bytes": 12521
       }
+    },
+    "699eda59988d934ea9eda503": {
+      "thumb": {
+        "ok": false,
+        "at": 1772508433666,
+        "reason": "fetch_failed:Invalid URL"
+      },
+      "poster": {
+        "ok": false,
+        "at": 1772508433667,
+        "reason": "fetch_failed:Invalid URL"
+      }
     }
   }
 }
