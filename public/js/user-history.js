@@ -200,6 +200,11 @@
           var ep = safeText(h.episode || '');
           var href = '/phim/' + encodeURIComponent(m.slug || m.id || h.slug) + '.html';
           var last = h.lastWatched ? safeText(h.lastWatched) : '';
+          var us2 = window.DAOP && window.DAOP.userSync;
+          var isFav = false;
+          try {
+            isFav = !!(us2 && us2.getFavorites && us2.getFavorites().has(h.slug));
+          } catch (eFav0) {}
           var norm = (window.DAOP && typeof window.DAOP.normalizeImgUrl === 'function')
             ? window.DAOP.normalizeImgUrl
             : function (x) { return x; };
@@ -233,6 +238,8 @@
             '  </div>' +
             '  <div class="user-history-actions">' +
             '    <button type="button" class="login-btn login-btn--primary btn-continue" data-slug="' + safeText(h.slug) + '" data-episode="' + ep + '">Xem tiếp</button>' +
+            '    <button type="button" class="login-btn btn-fav" data-slug="' + safeText(h.slug) + '" aria-pressed="' + (isFav ? 'true' : 'false') + '">' + (isFav ? 'Bỏ thích' : 'Yêu thích') + '</button>' +
+            '    <button type="button" class="login-btn btn-remove" data-slug="' + safeText(h.slug) + '">Xóa</button>' +
             '  </div>' +
             '</div>';
 
@@ -248,6 +255,37 @@
             var href = base + '/xem-phim/' + encodeURIComponent(slug) + '.html';
             if (ep) href += '?ep=' + encodeURIComponent(ep);
             window.location.href = href;
+          });
+        });
+
+        histList.querySelectorAll('.btn-fav').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var slug = btn.getAttribute('data-slug');
+            var us = window.DAOP && window.DAOP.userSync;
+            if (!slug || !us) return;
+            try {
+              var nowFav = !!(us.toggleFavorite && us.toggleFavorite(slug));
+              btn.textContent = nowFav ? 'Bỏ thích' : 'Yêu thích';
+              btn.setAttribute('aria-pressed', nowFav ? 'true' : 'false');
+            } catch (eFav1) {}
+          });
+        });
+
+        histList.querySelectorAll('.btn-remove').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var slug = btn.getAttribute('data-slug');
+            var us = window.DAOP && window.DAOP.userSync;
+            if (!slug || !us || typeof us.removeWatchHistory !== 'function') return;
+            try {
+              us.removeWatchHistory(slug);
+            } catch (eDel0) {}
+            try {
+              var nextList = (us.getWatchHistory && us.getWatchHistory()) || [];
+              if (currentPage > 1 && ((currentPage - 1) * pageSize) >= nextList.length) {
+                currentPage = Math.max(1, currentPage - 1);
+              }
+            } catch (eDel1) {}
+            renderHistory();
           });
         });
       })

@@ -30,14 +30,15 @@
   function getLocal() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { version: 1, lastSync: null, favorites: [], watchHistory: [], pendingActions: [] };
+      if (!raw) return { version: 1, lastSync: null, favorites: [], watchHistory: [], deletedHistory: {}, pendingActions: [] };
       var data = JSON.parse(raw);
       data.favorites = data.favorites || [];
       data.watchHistory = data.watchHistory || [];
+      data.deletedHistory = data.deletedHistory || {};
       data.pendingActions = data.pendingActions || [];
       return data;
     } catch (e) {
-      return { version: 1, lastSync: null, favorites: [], watchHistory: [], pendingActions: [] };
+      return { version: 1, lastSync: null, favorites: [], watchHistory: [], deletedHistory: {}, pendingActions: [] };
     }
   }
 
@@ -75,6 +76,30 @@
     getWatchHistory: function () {
       return getLocal().watchHistory || [];
     },
+    removeWatchHistory: function (slug) {
+      var s = String(slug || '').trim();
+      if (!s) return;
+      var data = getLocal();
+      data.watchHistory = (data.watchHistory || []).filter(function (x) { return x && x.slug !== s; });
+      data.deletedHistory = data.deletedHistory || {};
+      data.deletedHistory[s] = Date.now();
+      data.pendingActions.push({ type: 'remove_watch_history', payload: { slug: s }, timestamp: Date.now() });
+      setLocal(data);
+      this.sync();
+    },
+    clearWatchHistory: function () {
+      var data = getLocal();
+      var list = data.watchHistory || [];
+      data.deletedHistory = data.deletedHistory || {};
+      list.forEach(function (x) {
+        if (!x || !x.slug) return;
+        data.deletedHistory[x.slug] = Date.now();
+        data.pendingActions.push({ type: 'remove_watch_history', payload: { slug: x.slug }, timestamp: Date.now() });
+      });
+      data.watchHistory = [];
+      setLocal(data);
+      this.sync();
+    },
     updateWatchProgress: function (slug, episode, timestamp) {
       var data = getLocal();
       var list = data.watchHistory || [];
@@ -83,6 +108,9 @@
       if (idx >= 0) list[idx] = entry;
       else list.push(entry);
       data.watchHistory = list;
+      if (data.deletedHistory && data.deletedHistory[slug]) {
+        try { delete data.deletedHistory[slug]; } catch (e0) { data.deletedHistory[slug] = 0; }
+      }
       data.pendingActions.push({ type: 'watch_progress', payload: entry, timestamp: Date.now() });
       setLocal(data);
       this.sync();
@@ -124,6 +152,9 @@
               if (action.type === 'remove_favorite') {
                 return client.from('favorites').delete().eq('user_uid', uid).eq('movie_slug', action.payload.movie_slug);
               }
+              if (action.type === 'remove_watch_history') {
+                return client.from('watch_history').delete().eq('user_uid', uid).eq('movie_slug', action.payload.slug);
+              }
               if (action.type === 'watch_progress') {
                 return client.from('watch_history').upsert({
                   user_uid: uid,
@@ -159,7 +190,9 @@
 
               var histMap = {};
               (data.watchHistory || []).forEach(function (h) { if (h && h.slug) histMap[h.slug] = h; });
+              var deleted = data.deletedHistory || {};
               cloudHist.forEach(function (h) {
+                if (deleted && deleted[h.slug]) return;
                 var cur = histMap[h.slug];
                 if (!cur) {
                   histMap[h.slug] = h;
