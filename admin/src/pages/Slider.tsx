@@ -43,31 +43,44 @@ type MovieLight = {
 };
 
 const SLIDER_KEY = 'homepage_slider';
-const MOVIES_DATA_URL_KEY = 'movies_data_url';
+const LOCAL_SITE_BASE_KEY = 'daop_admin_slider_site_base';
 
 export default function Slider() {
   const [list, setList] = useState<SlideItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [moviesDataUrl, setMoviesDataUrl] = useState<string>('');
   const [ophimImgDomain, setOphimImgDomain] = useState<string>('');
   const [movieLinkInput, setMovieLinkInput] = useState('');
   const [addingFromMovie, setAddingFromMovie] = useState(false);
   const [addingLatest, setAddingLatest] = useState(false);
   const [latestCount, setLatestCount] = useState(5);
+  const [siteBase, setSiteBase] = useState<string>(() => {
+    try {
+      return localStorage.getItem(LOCAL_SITE_BASE_KEY) || '';
+    } catch {
+      return '';
+    }
+  });
   const [form] = Form.useForm();
 
-  const getSiteBaseFromMoviesDataUrl = (rawUrl: string) => {
+  const getSiteBaseFromMovieUrl = (rawUrl: string) => {
     const raw = String(rawUrl || '').trim();
     if (!raw) return '';
     try {
       const u = new URL(raw);
       const path = u.pathname || '';
-      const basePath = path.replace(/\/?data\/.*$/, '');
+      const basePath = path
+        .replace(/\/?phim\/.*$/, '')
+        .replace(/\/?xem-phim\/.*$/, '')
+        .replace(/\/?dien-vien\/.*$/, '')
+        .replace(/\/?the-loai\/.*$/, '')
+        .replace(/\/?quoc-gia\/.*$/, '')
+        .replace(/\/?tim-kiem\/.*$/, '')
+        .replace(/\/?$/, '');
       return u.origin + basePath;
     } catch {
-      return raw.replace(/\/?data\/.*$/, '');
+      return '';
     }
   };
 
@@ -79,12 +92,6 @@ export default function Slider() {
     const p1 = ok(c1) ? c1 : '_';
     const p2 = ok(c2) ? c2 : '_';
     return p1 + p2;
-  };
-
-  const parseMoviesLightText = (text: string) => {
-    let t = String(text || '');
-    t = t.replace(/^[\s\S]*?window\.moviesLight\s*=\s*/, '').replace(/;\s*$/, '');
-    return JSON.parse(t);
   };
 
   const parseSlugShardText = (text: string) => {
@@ -117,7 +124,7 @@ export default function Slider() {
 
   const fetchMovieLightBySlug = async (siteBase: string, slug: string) => {
     const base = String(siteBase || '').replace(/\/$/, '');
-    if (!base) throw new Error('Thiếu base URL (movies_data_url)');
+    if (!base) throw new Error('Thiếu Site URL');
     const prefix = getSlugShardPrefix(slug);
     const shardUrl = base + '/data/index/slug/' + prefix + '.js';
     const res = await fetch(shardUrl);
@@ -130,9 +137,8 @@ export default function Slider() {
 
   const loadData = async () => {
     setLoading(true);
-    const [sliderRes, settingsRes, ophimRes] = await Promise.all([
+    const [sliderRes, ophimRes] = await Promise.all([
       supabase.from('site_settings').select('value').eq('key', SLIDER_KEY).single(),
-      supabase.from('site_settings').select('value').eq('key', MOVIES_DATA_URL_KEY).maybeSingle(),
       supabase.from('site_settings').select('value').eq('key', 'ophim_img_domain').maybeSingle(),
     ]);
     try {
@@ -142,7 +148,6 @@ export default function Slider() {
     } catch {
       setList([]);
     }
-    setMoviesDataUrl(settingsRes.data?.value ?? '');
     setOphimImgDomain(ophimRes.data?.value ?? '');
     setLoading(false);
   };
@@ -157,14 +162,13 @@ export default function Slider() {
       message.warning('Nhập link trang phim hoặc slug phim');
       return;
     }
-    if (!moviesDataUrl) {
-      message.warning('Cấu hình URL dữ liệu phim trong Cài đặt (movies_data_url) để dùng tính năng này.');
-      return;
-    }
     let slug = '';
+    let baseFromLink = '';
     try {
       if (/^https?:\/\//i.test(raw)) {
-        const path = new URL(raw).pathname;
+        const u = new URL(raw);
+        baseFromLink = getSiteBaseFromMovieUrl(raw);
+        const path = u.pathname;
         const m = path.match(/\/phim\/([^/]+)\.html$/);
         slug = m ? m[1] : path.replace(/^\/phim\//, '').replace(/\.html$/, '');
       } else {
@@ -177,26 +181,20 @@ export default function Slider() {
       message.warning('Không tìm thấy slug phim trong link');
       return;
     }
+    if (!baseFromLink) {
+      message.warning('Vui lòng dán link đầy đủ của trang phim (không hỗ trợ chỉ nhập slug).');
+      return;
+    }
     setAddingFromMovie(true);
     try {
-      const siteBase = getSiteBaseFromMoviesDataUrl(moviesDataUrl);
-      let movie: any = null;
-      try {
-        const res = await fetch(moviesDataUrl);
-        if (!res.ok) throw new Error('Không tải được dữ liệu phim');
-        const text = await res.text();
-        const movies: MovieLight[] = parseMoviesLightText(text);
-        movie = movies.find((m) => (m.slug || '').toLowerCase() === slug.toLowerCase()) || null;
-      } catch {
-        movie = await fetchMovieLightBySlug(siteBase, slug);
-      }
+      const movie = await fetchMovieLightBySlug(baseFromLink, slug);
 
       if (!movie) {
         message.error('Không tìm thấy phim với slug: ' + slug);
         return;
       }
 
-      const linkUrl = String(siteBase || '').replace(/\/$/, '') + '/phim/' + (movie.slug || slug) + '.html';
+      const linkUrl = String(baseFromLink || '').replace(/\/$/, '') + '/phim/' + (movie.slug || slug) + '.html';
       const img = ((movie as any).poster || movie.thumb || (movie as any).image_url || '').replace(/^\/\//, 'https://');
       const title = movie.title || movie.origin_name || (movie as any).name || '';
       const countryName = Array.isArray(movie.country)
@@ -261,33 +259,25 @@ export default function Slider() {
   };
 
   const addLatestMovies = async () => {
-    if (!moviesDataUrl) {
-      message.warning('Cấu hình URL dữ liệu phim trong Cài đặt (movies_data_url).');
+    const base = String(siteBase || '').trim().replace(/\/$/, '');
+    if (!base) {
+      message.warning('Nhập Site URL để lấy danh sách phim mới nhất.');
       return;
     }
     const n = Math.max(1, Math.min(50, latestCount || 5));
     setAddingLatest(true);
     try {
-      const siteBase = getSiteBaseFromMoviesDataUrl(moviesDataUrl);
-      let movies: any[] = [];
-      try {
-        const res = await fetch(moviesDataUrl);
-        if (!res.ok) throw new Error('Không tải được dữ liệu phim');
-        const text = await res.text();
-        movies = parseMoviesLightText(text);
-      } catch {
-        const res2 = await fetch(String(siteBase || '').replace(/\/$/, '') + '/data/home/home-sections-data.json');
-        if (!res2.ok) throw new Error('Không tải được dữ liệu phim');
-        const sections = await res2.json();
-        const pool: Record<string, any> = {};
-        (sections || []).forEach((sec: any) => {
-          (sec?.movies || []).forEach((m: any) => {
-            const k = String(m?.slug || m?.id || '');
-            if (k && !pool[k]) pool[k] = m;
-          });
+      const res2 = await fetch(base + '/data/home/home-sections-data.json');
+      if (!res2.ok) throw new Error('Không tải được dữ liệu phim');
+      const sections = await res2.json();
+      const pool: Record<string, any> = {};
+      (sections || []).forEach((sec: any) => {
+        (sec?.movies || []).forEach((m: any) => {
+          const k = String(m?.slug || m?.id || '');
+          if (k && !pool[k]) pool[k] = m;
         });
-        movies = Object.values(pool);
-      }
+      });
+      const movies: any[] = Object.values(pool);
 
       const sorted = [...movies].sort((a: any, b: any) => {
         const ya = Number(a.year) || 0;
@@ -296,7 +286,6 @@ export default function Slider() {
         return 0;
       });
 
-      const base = String(siteBase || '').replace(/\/$/, '');
       const newSlides: SlideItem[] = sorted.slice(0, n).map((movie: any, i: number) => {
         const linkUrl = base + '/phim/' + (movie.slug || movie.id) + '.html';
         const img = (movie.poster || movie.thumb || movie.image_url || '').replace(/^\/\//, 'https://');
@@ -367,9 +356,21 @@ export default function Slider() {
       </p>
       <Card title="Thêm phim mới nhất" style={{ marginBottom: 16 }}>
         <p style={{ color: '#666', marginBottom: 8 }}>
-          Thêm N phim mới nhất (sắp xếp theo năm) vào slider. Cần cấu hình URL dữ liệu phim trong Cài đặt.
+          Thêm N phim mới nhất (sắp xếp theo năm) vào slider. Cần nhập Site URL (website chính).
         </p>
         <Space>
+          <Input
+            placeholder="Site URL (vd: https://your-site.com)"
+            value={siteBase}
+            style={{ width: 320 }}
+            onChange={(e) => {
+              const v = e.target.value;
+              setSiteBase(v);
+              try {
+                localStorage.setItem(LOCAL_SITE_BASE_KEY, v);
+              } catch {}
+            }}
+          />
           <InputNumber min={1} max={50} value={latestCount} onChange={(v) => setLatestCount(Number(v) || 5)} />
           <Button type="primary" icon={<ThunderboltOutlined />} loading={addingLatest} onClick={addLatestMovies}>
             Thêm phim mới nhất
@@ -378,11 +379,11 @@ export default function Slider() {
       </Card>
       <Card title="Thêm slide từ phim" style={{ marginBottom: 16 }}>
         <p style={{ color: '#666', marginBottom: 8 }}>
-          Nhập link trang phim (ví dụ: https://your-site.com/phim/nam-em-la-ba-anh.html) hoặc slug phim. Cần cấu hình URL dữ liệu phim trong Cài đặt.
+          Nhập link trang phim (ví dụ: https://your-site.com/phim/nam-em-la-ba-anh.html).
         </p>
         <Space.Compact style={{ width: '100%', maxWidth: 480 }}>
           <Input
-            placeholder="Link phim hoặc slug (vd: nam-em-la-ba-anh)"
+            placeholder="Link phim (vd: https://your-site.com/phim/nam-em-la-ba-anh.html)"
             value={movieLinkInput}
             onChange={(e) => setMovieLinkInput(e.target.value)}
             onPressEnter={addSlideFromMovieLink}
@@ -421,7 +422,7 @@ export default function Slider() {
             render: (url: string) =>
               url ? (
                 <Image
-                  src={normalizePreviewUrl(url, getSiteBaseFromMoviesDataUrl(moviesDataUrl))}
+                  src={normalizePreviewUrl(url, String(siteBase || '').trim())}
                   width={80}
                   height={45}
                   style={{ objectFit: 'cover' }}
