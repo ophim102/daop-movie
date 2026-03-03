@@ -172,40 +172,6 @@
         "modified": "2026-03-03T11:23:59.000Z"
       },
       {
-        "id": "6965dcdada6ce23e8e95a700",
-        "title": "Trái Tim Của Yiwha: Tình Yêu Và Báo Thù",
-        "origin_name": "The Heart of Yiwha: Of Love & Vengeance",
-        "slug": "trai-tim-cua-yiwha-tinh-yeu-va-bao-thu",
-        "thumb": "/uploads/movies/trai-tim-cua-yiwha-tinh-yeu-va-bao-thu-thumb.jpg",
-        "poster": "",
-        "year": 2026,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2318e0fc277084dfd77a",
-            "name": "Thái Lan",
-            "slug": "thai-lan"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 15",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T11:23:41.000Z"
-      },
-      {
         "id": "699fccb1f937c3b5a110e678",
         "title": "Khoảng Thời Gian Tuyệt Vời",
         "origin_name": "Wonderful Times",
@@ -487,6 +453,50 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-02T23:01:48.000Z"
+      },
+      {
+        "id": "693a839b8e1195b71e9271a9",
+        "title": "Vùng Đất Lửa (Phần 4)",
+        "origin_name": "Fire Country (Season 4)",
+        "slug": "fire-country-phan-4",
+        "thumb": "/uploads/movies/fire-country-phan-4-thumb.jpg",
+        "poster": "",
+        "year": 2025,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620a2249e0fc277084dfd2e5",
+            "name": "Hình Sự",
+            "slug": "hinh-su"
+          },
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          },
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          }
+        ],
+        "country": [
+          {
+            "id": "620a231fe0fc277084dfd7ce",
+            "name": "Âu Mỹ",
+            "slug": "au-my"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 10",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": true,
+        "modified": "2026-03-02T22:48:29.000Z"
       }
     ]
   },
@@ -706,109 +716,6 @@
         "modified": "2026-03-03T12:06:20.000Z"
       },
       {
-        "id": "68e4bc4d69d7b4696cc59469",
-        "title": "Võ Thần Chúa Tể",
-        "origin_name": "Martial Master",
-        "slug": "vo-than-chua-te",
-        "thumb": "/uploads/movies/vo-than-chua-te-thumb.jpg",
-        "poster": "",
-        "year": 2020,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2282e0fc277084dfd435",
-            "name": "Viễn Tưởng",
-            "slug": "vien-tuong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          },
-          {
-            "id": "620a229be0fc277084dfd4dd",
-            "name": "Khoa Học",
-            "slug": "khoa-hoc"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 625",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T12:06:04.000Z"
-      },
-      {
-        "id": "68e4ba284f7493692abb949c",
-        "title": "Vạn Giới Độc Tôn",
-        "origin_name": "Ten Thousand Worlds",
-        "slug": "van-gioi-doc-ton",
-        "thumb": "/uploads/movies/van-gioi-doc-ton-thumb.jpg",
-        "poster": "",
-        "year": 2021,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2282e0fc277084dfd435",
-            "name": "Viễn Tưởng",
-            "slug": "vien-tuong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          },
-          {
-            "id": "620a229be0fc277084dfd4dd",
-            "name": "Khoa Học",
-            "slug": "khoa-hoc"
-          },
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 408",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T12:05:52.000Z"
-      },
-      {
         "id": "69042d90b234f5d94935f1ca",
         "title": "Luyện Khí Mười Vạn Năm",
         "origin_name": "One Hundred Thousand Years of Qi Refining",
@@ -856,55 +763,6 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-03T12:05:38.000Z"
-      },
-      {
-        "id": "67209e4087a7be4c2dd1c330",
-        "title": "Mục Thần Ký",
-        "origin_name": "Tales of Qin Mu",
-        "slug": "muc-than-ky",
-        "thumb": "/uploads/movies/muc-than-ky-thumb.jpg",
-        "poster": "",
-        "year": 2024,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2282e0fc277084dfd435",
-            "name": "Viễn Tưởng",
-            "slug": "vien-tuong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          },
-          {
-            "id": "620a229be0fc277084dfd4dd",
-            "name": "Khoa Học",
-            "slug": "khoa-hoc"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 71",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T12:05:23.000Z"
       },
       {
         "id": "68f9f11ea2d805aecaf99b2e",
@@ -988,45 +846,6 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-03T11:50:35.000Z"
-      },
-      {
-        "id": "695352d854ca9185bba8155f",
-        "title": "Tiên Kiếm Kỳ Hiệp Truyện 3",
-        "origin_name": "Sword and Fairy 3",
-        "slug": "tien-kiem-ky-hiep-truyen-3",
-        "thumb": "/uploads/movies/tien-kiem-ky-hiep-truyen-3-thumb.jpg",
-        "poster": "",
-        "year": 2025,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 12",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T11:24:11.000Z"
       },
       {
         "id": "695f54c2f063d23bbbc21c73",
@@ -1127,6 +946,109 @@
         "modified": "2026-03-02T22:48:29.000Z"
       },
       {
+        "id": "68e4ba284f7493692abb949c",
+        "title": "Vạn Giới Độc Tôn",
+        "origin_name": "Ten Thousand Worlds",
+        "slug": "van-gioi-doc-ton",
+        "thumb": "/uploads/movies/van-gioi-doc-ton-thumb.jpg",
+        "poster": "",
+        "year": 2021,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2282e0fc277084dfd435",
+            "name": "Viễn Tưởng",
+            "slug": "vien-tuong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          },
+          {
+            "id": "620a229be0fc277084dfd4dd",
+            "name": "Khoa Học",
+            "slug": "khoa-hoc"
+          },
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 407",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-02T09:23:21.000Z"
+      },
+      {
+        "id": "67209e4087a7be4c2dd1c330",
+        "title": "Mục Thần Ký",
+        "origin_name": "Tales of Qin Mu",
+        "slug": "muc-than-ky",
+        "thumb": "/uploads/movies/muc-than-ky-thumb.jpg",
+        "poster": "",
+        "year": 2024,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2282e0fc277084dfd435",
+            "name": "Viễn Tưởng",
+            "slug": "vien-tuong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          },
+          {
+            "id": "620a229be0fc277084dfd4dd",
+            "name": "Khoa Học",
+            "slug": "khoa-hoc"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 70",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-02T09:20:30.000Z"
+      },
+      {
         "id": "69a44a87f937c3b5a112a21f",
         "title": "Thiên tằm biến",
         "origin_name": "Reincarnated",
@@ -1174,6 +1096,94 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-01T21:17:46.000Z"
+      },
+      {
+        "id": "68e4bc4d69d7b4696cc59469",
+        "title": "Võ Thần Chúa Tể",
+        "origin_name": "Martial Master",
+        "slug": "vo-than-chua-te",
+        "thumb": "/uploads/movies/vo-than-chua-te-thumb.jpg",
+        "poster": "",
+        "year": 2020,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2282e0fc277084dfd435",
+            "name": "Viễn Tưởng",
+            "slug": "vien-tuong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          },
+          {
+            "id": "620a229be0fc277084dfd4dd",
+            "name": "Khoa Học",
+            "slug": "khoa-hoc"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 624",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-01T11:46:11.000Z"
+      },
+      {
+        "id": "695352d854ca9185bba8155f",
+        "title": "Tiên Kiếm Kỳ Hiệp Truyện 3",
+        "origin_name": "Sword and Fairy 3",
+        "slug": "tien-kiem-ky-hiep-truyen-3",
+        "thumb": "/uploads/movies/tien-kiem-ky-hiep-truyen-3-thumb.jpg",
+        "poster": "",
+        "year": 2025,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 11",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-02-24T10:36:47.000Z"
       }
     ]
   },
@@ -1539,40 +1549,6 @@
         "modified": "2026-03-03T11:23:59.000Z"
       },
       {
-        "id": "6965dcdada6ce23e8e95a700",
-        "title": "Trái Tim Của Yiwha: Tình Yêu Và Báo Thù",
-        "origin_name": "The Heart of Yiwha: Of Love & Vengeance",
-        "slug": "trai-tim-cua-yiwha-tinh-yeu-va-bao-thu",
-        "thumb": "/uploads/movies/trai-tim-cua-yiwha-tinh-yeu-va-bao-thu-thumb.jpg",
-        "poster": "",
-        "year": 2026,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2318e0fc277084dfd77a",
-            "name": "Thái Lan",
-            "slug": "thai-lan"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 15",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T11:23:41.000Z"
-      },
-      {
         "id": "699fccb1f937c3b5a110e678",
         "title": "Khoảng Thời Gian Tuyệt Vời",
         "origin_name": "Wonderful Times",
@@ -1810,6 +1786,40 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-02T23:01:48.000Z"
+      },
+      {
+        "id": "6965dcdada6ce23e8e95a700",
+        "title": "Trái Tim Của Yiwha: Tình Yêu Và Báo Thù",
+        "origin_name": "The Heart of Yiwha: Of Love & Vengeance",
+        "slug": "trai-tim-cua-yiwha-tinh-yeu-va-bao-thu",
+        "thumb": "/uploads/movies/trai-tim-cua-yiwha-tinh-yeu-va-bao-thu-thumb.jpg",
+        "poster": "",
+        "year": 2026,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "620a2318e0fc277084dfd77a",
+            "name": "Thái Lan",
+            "slug": "thai-lan"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 14",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-02-25T10:43:14.000Z"
       }
     ]
   },
@@ -1889,109 +1899,6 @@
         "modified": "2026-03-03T12:06:20.000Z"
       },
       {
-        "id": "68e4bc4d69d7b4696cc59469",
-        "title": "Võ Thần Chúa Tể",
-        "origin_name": "Martial Master",
-        "slug": "vo-than-chua-te",
-        "thumb": "/uploads/movies/vo-than-chua-te-thumb.jpg",
-        "poster": "",
-        "year": 2020,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2282e0fc277084dfd435",
-            "name": "Viễn Tưởng",
-            "slug": "vien-tuong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          },
-          {
-            "id": "620a229be0fc277084dfd4dd",
-            "name": "Khoa Học",
-            "slug": "khoa-hoc"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 625",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T12:06:04.000Z"
-      },
-      {
-        "id": "68e4ba284f7493692abb949c",
-        "title": "Vạn Giới Độc Tôn",
-        "origin_name": "Ten Thousand Worlds",
-        "slug": "van-gioi-doc-ton",
-        "thumb": "/uploads/movies/van-gioi-doc-ton-thumb.jpg",
-        "poster": "",
-        "year": 2021,
-        "type": "hoathinh",
-        "genre": [
-          {
-            "id": "620a21b2e0fc277084dfd0c5",
-            "name": "Hành Động",
-            "slug": "hanh-dong"
-          },
-          {
-            "id": "620a2282e0fc277084dfd435",
-            "name": "Viễn Tưởng",
-            "slug": "vien-tuong"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          },
-          {
-            "id": "620a229be0fc277084dfd4dd",
-            "name": "Khoa Học",
-            "slug": "khoa-hoc"
-          },
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 408",
-        "quality": "HD",
-        "status": "",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-03-03T12:05:52.000Z"
-      },
-      {
         "id": "69042d90b234f5d94935f1ca",
         "title": "Luyện Khí Mười Vạn Năm",
         "origin_name": "One Hundred Thousand Years of Qi Refining",
@@ -2041,6 +1948,60 @@
         "modified": "2026-03-03T12:05:38.000Z"
       },
       {
+        "id": "68e4ba284f7493692abb949c",
+        "title": "Vạn Giới Độc Tôn",
+        "origin_name": "Ten Thousand Worlds",
+        "slug": "van-gioi-doc-ton",
+        "thumb": "/uploads/movies/van-gioi-doc-ton-thumb.jpg",
+        "poster": "",
+        "year": 2021,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2282e0fc277084dfd435",
+            "name": "Viễn Tưởng",
+            "slug": "vien-tuong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          },
+          {
+            "id": "620a229be0fc277084dfd4dd",
+            "name": "Khoa Học",
+            "slug": "khoa-hoc"
+          },
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 407",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-02T09:23:21.000Z"
+      },
+      {
         "id": "67209e4087a7be4c2dd1c330",
         "title": "Mục Thần Ký",
         "origin_name": "Tales of Qin Mu",
@@ -2079,7 +2040,7 @@
           }
         ],
         "lang_key": "Vietsub",
-        "episode_current": "Tập 71",
+        "episode_current": "Tập 70",
         "quality": "HD",
         "status": "",
         "showtimes": "",
@@ -2087,16 +2048,16 @@
         "is_exclusive": false,
         "chieurap": false,
         "sub_docquyen": false,
-        "modified": "2026-03-03T12:05:23.000Z"
+        "modified": "2026-03-02T09:20:30.000Z"
       },
       {
-        "id": "695352d854ca9185bba8155f",
-        "title": "Tiên Kiếm Kỳ Hiệp Truyện 3",
-        "origin_name": "Sword and Fairy 3",
-        "slug": "tien-kiem-ky-hiep-truyen-3",
-        "thumb": "/uploads/movies/tien-kiem-ky-hiep-truyen-3-thumb.jpg",
+        "id": "68e4bc4d69d7b4696cc59469",
+        "title": "Võ Thần Chúa Tể",
+        "origin_name": "Martial Master",
+        "slug": "vo-than-chua-te",
+        "thumb": "/uploads/movies/vo-than-chua-te-thumb.jpg",
         "poster": "",
-        "year": 2025,
+        "year": 2020,
         "type": "hoathinh",
         "genre": [
           {
@@ -2105,9 +2066,19 @@
             "slug": "hanh-dong"
           },
           {
+            "id": "620a2282e0fc277084dfd435",
+            "name": "Viễn Tưởng",
+            "slug": "vien-tuong"
+          },
+          {
             "id": "620a2293e0fc277084dfd489",
             "name": "Phiêu Lưu",
             "slug": "phieu-luu"
+          },
+          {
+            "id": "620a229be0fc277084dfd4dd",
+            "name": "Khoa Học",
+            "slug": "khoa-hoc"
           }
         ],
         "country": [
@@ -2118,7 +2089,7 @@
           }
         ],
         "lang_key": "Vietsub",
-        "episode_current": "Tập 12",
+        "episode_current": "Tập 624",
         "quality": "HD",
         "status": "",
         "showtimes": "",
@@ -2126,7 +2097,7 @@
         "is_exclusive": false,
         "chieurap": false,
         "sub_docquyen": false,
-        "modified": "2026-03-03T11:24:11.000Z"
+        "modified": "2026-03-01T11:46:11.000Z"
       },
       {
         "id": "6981538df063d23bbbc4c7d1",
@@ -2157,7 +2128,7 @@
           }
         ],
         "lang_key": "Thuyết Minh",
-        "episode_current": "Tập 1",
+        "episode_current": "Tập 8",
         "quality": "HD",
         "status": "",
         "showtimes": "",
@@ -2165,7 +2136,46 @@
         "is_exclusive": false,
         "chieurap": false,
         "sub_docquyen": false,
-        "modified": "2026-03-03T11:13:56.000Z"
+        "modified": "2026-02-27T15:07:07.000Z"
+      },
+      {
+        "id": "695352d854ca9185bba8155f",
+        "title": "Tiên Kiếm Kỳ Hiệp Truyện 3",
+        "origin_name": "Sword and Fairy 3",
+        "slug": "tien-kiem-ky-hiep-truyen-3",
+        "thumb": "/uploads/movies/tien-kiem-ky-hiep-truyen-3-thumb.jpg",
+        "poster": "",
+        "year": 2025,
+        "type": "hoathinh",
+        "genre": [
+          {
+            "id": "620a21b2e0fc277084dfd0c5",
+            "name": "Hành Động",
+            "slug": "hanh-dong"
+          },
+          {
+            "id": "620a2293e0fc277084dfd489",
+            "name": "Phiêu Lưu",
+            "slug": "phieu-luu"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 11",
+        "quality": "HD",
+        "status": "",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-02-24T10:36:47.000Z"
       }
     ]
   },
