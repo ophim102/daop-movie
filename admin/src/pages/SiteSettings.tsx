@@ -76,6 +76,11 @@ export default function SiteSettings() {
 
   useEffect(() => {
     supabase.from('site_settings').select('key, value').then((r) => {
+      if (r.error) {
+        message.error(r.error.message || 'Không tải được cài đặt từ Supabase');
+        setLoading(false);
+        return;
+      }
       const data = (r.data ?? []).reduce((acc: Record<string, any>, row: any) => {
         acc[row.key] = row.value;
         return acc;
@@ -134,6 +139,7 @@ export default function SiteSettings() {
     try {
       const toSave: Record<string, string> = {};
       for (const key of SITE_SETTINGS_KEYS) {
+        if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
         const raw = values[key];
         toSave[key] = raw === true || raw === false ? String(raw) : (raw ?? '');
       }
