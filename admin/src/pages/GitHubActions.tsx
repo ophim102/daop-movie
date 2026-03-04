@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Input, Form, Space, Modal, Radio, Switch } from 'antd';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Input, Form, Space, Modal, Radio, Switch, Tag } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
@@ -42,6 +42,20 @@ type ActionItem = {
   description: string;
 };
 
+type WorkflowRunItem = {
+  id: number;
+  name: string;
+  display_title?: string;
+  event: string;
+  status: string;
+  conclusion: string | null;
+  html_url: string;
+  created_at: string;
+  updated_at: string;
+  run_attempt?: number;
+  actor?: { login?: string };
+};
+
 const EXTRA_ACTIONS = [
   {
     id: 'deploy',
@@ -75,6 +89,8 @@ export default function GitHubActions() {
   const [actions, setActions] = useState<ActionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
+  const [runsLoading, setRunsLoading] = useState(false);
+  const [runs, setRuns] = useState<WorkflowRunItem[]>([]);
   const [twoPhase, setTwoPhase] = useState(false);
   const [autoTwoPhase, setAutoTwoPhase] = useState(false);
   const [autoUploadImagesAfterBuild, setAutoUploadImagesAfterBuild] = useState(false);
@@ -127,6 +143,24 @@ export default function GitHubActions() {
       message.error(e?.message || 'Lưu cài đặt upload ảnh thất bại.');
     } finally {
       setSavingUploadSettings(false);
+    }
+  };
+
+  const fetchRuns = async (opts?: { silent?: boolean }) => {
+    const silent = !!opts?.silent;
+    if (!silent) setRunsLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/github-runs?per_page=20&page=1`, { method: 'GET' });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.ok && Array.isArray(data?.runs)) {
+        setRuns(data.runs as WorkflowRunItem[]);
+      } else {
+        if (!silent) message.error(data?.error || data?.message || `Lỗi ${res.status}`);
+      }
+    } catch (e: any) {
+      if (!silent) message.error(e?.message || 'Không lấy được danh sách workflow runs.');
+    } finally {
+      if (!silent) setRunsLoading(false);
     }
   };
 
@@ -242,7 +276,40 @@ export default function GitHubActions() {
   useEffect(() => {
     fetchActions();
     loadUpdateSettings();
+    fetchRuns({ silent: true });
   }, []);
+
+  useEffect(() => {
+    const hasInProgress = (runs || []).some((r) => r.status === 'in_progress' || r.status === 'queued');
+    if (!hasInProgress) return;
+    const t = setInterval(() => {
+      fetchRuns({ silent: true });
+    }, 15000);
+    return () => clearInterval(t);
+  }, [runs]);
+
+  const fmtTime = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleString();
+    } catch {
+      return iso;
+    }
+  };
+
+  const renderRunTag = (r: WorkflowRunItem) => {
+    const st = (r.status || '').toLowerCase();
+    const c = (r.conclusion || '').toLowerCase();
+    if (st === 'queued') return <Tag color="default">queued</Tag>;
+    if (st === 'in_progress') return <Tag color="processing">running</Tag>;
+    if (st === 'completed') {
+      if (c === 'success') return <Tag color="success">success</Tag>;
+      if (c === 'failure') return <Tag color="error">failed</Tag>;
+      if (c === 'cancelled') return <Tag color="default">cancelled</Tag>;
+      if (c) return <Tag color="warning">{c}</Tag>;
+      return <Tag color="warning">completed</Tag>;
+    }
+    return <Tag>{r.status}</Tag>;
+  };
 
   const handleSaveUpdateSettings = async () => {
     const values = await form.validateFields();
@@ -393,6 +460,60 @@ export default function GitHubActions() {
       <Text type="secondary">
         Gom tất cả workflow có thể kích hoạt. Mỗi nút gọi API trigger tương ứng trên GitHub.
       </Text>
+
+      <Card
+        title="Tiến trình GitHub Actions"
+        style={{ marginTop: 24 }}
+        extra={
+          <Space size={8}>
+            <Button onClick={() => fetchRuns()} loading={runsLoading}>
+              Refresh
+            </Button>
+          </Space>
+        }
+      >
+        <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+          Hiển thị các workflow runs gần đây. Khi có job đang chạy, trang sẽ tự refresh mỗi 15 giây.
+        </Text>
+
+        <List
+          size="small"
+          loading={runsLoading}
+          dataSource={runs}
+          locale={{ emptyText: 'Chưa có run nào hoặc không truy cập được GitHub API.' }}
+          renderItem={(r: WorkflowRunItem) => (
+            <List.Item
+              style={{ alignItems: 'flex-start' }}
+              actions={[
+                <a key="open" href={r.html_url} target="_blank" rel="noreferrer">
+                  Mở
+                </a>,
+              ]}
+            >
+              <List.Item.Meta
+                title={
+                  <Space size={8} wrap>
+                    <Text strong>{r.name || 'Workflow'}</Text>
+                    {renderRunTag(r)}
+                    <Text type="secondary">#{String(r.id).slice(-6)}</Text>
+                  </Space>
+                }
+                description={
+                  <div>
+                    <div>
+                      <Text type="secondary">{r.display_title || r.event}</Text>
+                      {r.actor?.login ? <Text type="secondary"> • {r.actor.login}</Text> : null}
+                    </div>
+                    <div>
+                      <Text type="secondary">Created: {fmtTime(r.created_at)} • Updated: {fmtTime(r.updated_at)}</Text>
+                    </div>
+                  </div>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      </Card>
 
       <Card title="Cài đặt Update data" style={{ marginTop: 24 }}>
         <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
