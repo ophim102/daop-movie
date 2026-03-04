@@ -2770,6 +2770,14 @@ async function main() {
     try {
       const batchDir = path.join(PUBLIC_DATA, 'batches');
       await fs.remove(batchDir);
+      const homeDir = path.join(PUBLIC_DATA, 'home');
+      await fs.remove(homeDir);
+      const indexDir = path.join(PUBLIC_DATA, 'index');
+      await fs.remove(indexDir);
+      const searchDir = path.join(PUBLIC_DATA, 'search');
+      await fs.remove(searchDir);
+      const cacheDir = path.join(PUBLIC_DATA, 'cache');
+      await fs.remove(cacheDir);
       const filesToRemove = [
         'movies-light.js',
         'filters.js',
