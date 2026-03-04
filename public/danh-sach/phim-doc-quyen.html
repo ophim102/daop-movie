@@ -38,7 +38,7 @@
   <script src="/js/category-page.js"></script>
   <script>
     new CategoryPage({
-      baseFilter: function(){ var list = window.moviesLight || []; var fd = window.filtersData || {}; var exclusiveIds = fd.exclusiveIds || []; var fromList = list.filter(function(m){ return m.sub_docquyen === true; }).map(function(m){ return m.id; }); var set = new Set(fromList); exclusiveIds.forEach(function(id){ set.add(id); }); return set; },
+      baseFilter: function(){ var fd = window.filtersData || {}; return new Set((fd.exclusiveIds || []).slice(0)); },
       title: 'Phim Độc quyền',
       gridId: 'movies-grid',
       filterContainerId: 'filter-bar',

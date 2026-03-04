@@ -41,6 +41,10 @@ const SOURCE_TYPE_OPTIONS = [
   { value: 'year', label: 'Năm phát hành' },
   { value: 'status', label: 'Trạng thái (current, upcoming, theater)' },
   { value: 'quality_4k', label: 'Phim 4K (quality_4k)' },
+  { value: 'exclusive', label: 'Phim Độc quyền (exclusive)' },
+  { value: 'vietsub', label: 'Phim Vietsub' },
+  { value: 'thuyetminh', label: 'Phim Thuyết minh' },
+  { value: 'longtieng', label: 'Phim Lồng tiếng' },
 ];
 
 const DISPLAY_TYPE_OPTIONS = [
@@ -64,6 +68,11 @@ export default function HomepageSections() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm<SectionRow>();
+
+  const sourceType = Form.useWatch('source_type', form);
+  const sourceValueOptional = ['quality_4k', 'exclusive', 'vietsub', 'thuyetminh', 'longtieng'].includes(
+    String(sourceType || '').toLowerCase()
+  );
 
   const loadData = async () => {
     setLoading(true);
@@ -310,7 +319,7 @@ export default function HomepageSections() {
           <Form.Item
             name="source_value"
             label="Giá trị (slug hoặc giá trị tương ứng)"
-            rules={[{ required: true }]}
+            rules={sourceValueOptional ? [] : [{ required: true }]}
           >
             <Input />
           </Form.Item>

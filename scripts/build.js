@@ -1359,7 +1359,26 @@ function writeHomeSectionsData(movies) {
         else if (st === 'country') ok = Array.isArray(m.country) && m.country.some((c) => String(c.slug || '').toLowerCase() === sv);
         else if (st === 'status') ok = String(m.status || '').toLowerCase() === sv;
         else if (st === 'quality_4k') ok = !!m.is_4k;
-        else if (st === 'exclusive') ok = !!m.is_exclusive;
+        else if (st === 'exclusive') {
+          const subDocQuyenRaw = m && m.sub_docquyen != null ? String(m.sub_docquyen).trim().toLowerCase() : '';
+          ok =
+            !!m.is_exclusive ||
+            m.sub_docquyen === true ||
+            subDocQuyenRaw === '1' ||
+            subDocQuyenRaw === 'true' ||
+            subDocQuyenRaw === 'yes' ||
+            subDocQuyenRaw === 'on' ||
+            subDocQuyenRaw === 'ok';
+        } else if (st === 'vietsub') {
+          const lk = String(m.lang_key || '').toLowerCase();
+          ok = lk.includes('vietsub');
+        } else if (st === 'thuyetminh') {
+          const lk = String(m.lang_key || '').toLowerCase();
+          ok = lk.includes('thuyết minh') || lk.includes('thuyet minh');
+        } else if (st === 'longtieng') {
+          const lk = String(m.lang_key || '').toLowerCase();
+          ok = lk.includes('lồng tiếng') || lk.includes('long tieng');
+        }
         if (ok) picked.push(m);
         if (picked.length >= limit) break;
       }
@@ -1367,6 +1386,7 @@ function writeHomeSectionsData(movies) {
 
     out.push({
       ...sec,
+      ids: picked.map((x) => x && x.id).filter(Boolean),
       movies: picked.map(pickMovieLight).filter(Boolean),
     });
   }
@@ -1647,16 +1667,59 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
   const exclusiveIds = [];
   const yearsSet = new Set();
   for (const m of movies) {
-    if (m.is_4k) quality4kIds.push(m.id);
-    if (m.is_exclusive) exclusiveIds.push(m.id);
+    const q = (m.quality || '').toString().toLowerCase();
+    const is4k = !!m.is_4k || /4k|uhd|2160p/.test(q);
+    if (is4k) quality4kIds.push(m.id);
+    const subDocQuyenRaw = m && m.sub_docquyen != null ? String(m.sub_docquyen).trim().toLowerCase() : '';
+    const isExclusive =
+      !!m.is_exclusive ||
+      m.sub_docquyen === true ||
+      subDocQuyenRaw === '1' ||
+      subDocQuyenRaw === 'true' ||
+      subDocQuyenRaw === 'yes' ||
+      subDocQuyenRaw === 'on' ||
+      subDocQuyenRaw === 'ok';
+    if (isExclusive) exclusiveIds.push(m.id);
     if (m.type) {
       if (!typeMap[m.type]) typeMap[m.type] = [];
       typeMap[m.type].push(m.id);
     }
-    if (m.status) {
-      if (!statusMap[m.status]) statusMap[m.status] = [];
-      statusMap[m.status].push(m.id);
+    const statusRaw = (m.status || '').toString().trim();
+    const statusKey = statusRaw ? statusRaw.toLowerCase() : '';
+    if (statusRaw) {
+      if (!statusMap[statusRaw]) statusMap[statusRaw] = [];
+      statusMap[statusRaw].push(m.id);
     }
+
+    if (!statusMap.current) statusMap.current = [];
+    if (!statusMap.upcoming) statusMap.upcoming = [];
+    if (!statusMap.theater) statusMap.theater = [];
+
+    const showtimes = (m.showtimes || '').toString().toLowerCase();
+    const isTheater = !!m.chieurap || statusKey.includes('chiếu rạp') || statusKey.includes('chieu rap') || showtimes.includes('rạp') || showtimes.includes('rap');
+    if (isTheater) statusMap.theater.push(m.id);
+
+    const isUpcoming =
+      statusKey.includes('sắp') ||
+      statusKey.includes('sap') ||
+      statusKey.includes('upcoming') ||
+      statusKey.includes('soon') ||
+      statusKey === 'trailer' ||
+      statusKey.includes('trailer') ||
+      showtimes.includes('sắp') ||
+      showtimes.includes('sap');
+    if (isUpcoming) statusMap.upcoming.push(m.id);
+
+    const isCurrent =
+      statusKey.includes('đang') ||
+      statusKey.includes('dang') ||
+      statusKey === 'ongoing' ||
+      statusKey.includes('ongoing') ||
+      statusKey.includes('current') ||
+      statusKey.includes('on going') ||
+      statusKey.includes('cập nhật') ||
+      statusKey.includes('cap nhat');
+    if (isCurrent) statusMap.current.push(m.id);
 
     const lk = (m.lang_key || '').toString().toLowerCase();
     if (!lk) langMap.khac.push(m.id);

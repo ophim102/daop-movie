@@ -162,20 +162,30 @@
 
           var secEl = container.lastElementChild;
           var preMovies = null;
+          var preIds = null;
           if (pre && Array.isArray(pre)) {
             var match = pre.find(function(p){ return p && (String(p.id||'') === String(sec.id||'')) || (p && p.title && sec.title && String(p.title) === String(sec.title)); });
             if (match && Array.isArray(match.movies)) preMovies = match.movies.slice(0, limit);
+            if (!preMovies && match && Array.isArray(match.ids)) preIds = match.ids.slice(0, limit);
           }
 
-          var p = preMovies ? Promise.resolve(preMovies) : (function(){
+          var p = preMovies
+            ? Promise.resolve(preMovies)
+            : (preIds
+              ? resolveMoviesByIds(preIds, limit)
+              : (function(){
             if (sec.source_type === 'type' && fd.typeMap && fd.typeMap[sec.source_value]) ids = fd.typeMap[sec.source_value];
             else if (sec.source_type === 'genre' && fd.genreMap && fd.genreMap[sec.source_value]) ids = fd.genreMap[sec.source_value];
             else if (sec.source_type === 'country' && fd.countryMap && fd.countryMap[sec.source_value]) ids = fd.countryMap[sec.source_value];
             else if (sec.source_type === 'year' && fd.yearMap && fd.yearMap[sec.source_value]) ids = fd.yearMap[sec.source_value];
             else if (sec.source_type === 'status' && fd.statusMap && fd.statusMap[sec.source_value]) ids = fd.statusMap[sec.source_value];
             else if (sec.source_type === 'quality_4k' && fd.quality4kIds) ids = fd.quality4kIds;
+            else if (sec.source_type === 'exclusive' && fd.exclusiveIds) ids = fd.exclusiveIds;
+            else if (sec.source_type === 'vietsub' && fd.langMap && fd.langMap.vietsub) ids = fd.langMap.vietsub;
+            else if (sec.source_type === 'thuyetminh' && fd.langMap && fd.langMap.thuyetminh) ids = fd.langMap.thuyetminh;
+            else if (sec.source_type === 'longtieng' && fd.langMap && fd.langMap.longtieng) ids = fd.langMap.longtieng;
             return resolveMoviesByIds(ids, limit);
-          })();
+          })()));
 
           p.then(function (movies) {
             if (!secEl) return;
