@@ -38,7 +38,7 @@
   <script src="/js/category-page.js"></script>
   <script>
     new CategoryPage({
-      baseFilter: function(){ var list = window.moviesLight || []; return new Set(list.filter(function(m){ var lk = (m.lang_key || '').toLowerCase(); return lk.indexOf('thuyết minh') >= 0 || lk.indexOf('thuyet minh') >= 0; }).map(function(m){ return m.id; })); },
+      baseFilter: function(){ var fd = window.filtersData || {}; var lm = fd.langMap || {}; return new Set((lm.thuyetminh || []).slice(0)); },
       title: 'Phim Thuyết minh',
       gridId: 'movies-grid',
       filterContainerId: 'filter-bar',
