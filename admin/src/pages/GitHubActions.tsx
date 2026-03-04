@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, List, message, Spin, Typography, InputNumber, Input, Form, Space, Modal, Radio, Switch, Tag } from 'antd';
+import { Card, Button, List, message, Spin, Typography, InputNumber, Input, Form, Space, Modal, Radio, Switch, Tag, Tabs } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import { PlayCircleOutlined, InfoCircleOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabase } from '../lib/supabase';
@@ -461,315 +461,333 @@ export default function GitHubActions() {
         Gom tất cả workflow có thể kích hoạt. Mỗi nút gọi API trigger tương ứng trên GitHub.
       </Text>
 
-      <Card
-        title="Tiến trình GitHub Actions"
+      <Tabs
         style={{ marginTop: 24 }}
-        extra={
-          <Space size={8}>
-            <Button onClick={() => fetchRuns()} loading={runsLoading}>
-              Refresh
-            </Button>
-          </Space>
-        }
-      >
-        <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
-          Hiển thị các workflow runs gần đây. Khi có job đang chạy, trang sẽ tự refresh mỗi 15 giây.
-        </Text>
-
-        <List
-          size="small"
-          loading={runsLoading}
-          dataSource={runs}
-          locale={{ emptyText: 'Chưa có run nào hoặc không truy cập được GitHub API.' }}
-          renderItem={(r: WorkflowRunItem) => (
-            <List.Item
-              style={{ alignItems: 'flex-start' }}
-              actions={[
-                <a key="open" href={r.html_url} target="_blank" rel="noreferrer">
-                  Mở
-                </a>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space size={8} wrap>
-                    <Text strong>{r.name || 'Workflow'}</Text>
-                    {renderRunTag(r)}
-                    <Text type="secondary">#{String(r.id).slice(-6)}</Text>
+        defaultActiveKey="progress"
+        items={[
+          {
+            key: 'progress',
+            label: 'Tiến trình',
+            children: (
+              <Card
+                title="Tiến trình GitHub Actions"
+                extra={
+                  <Space size={8}>
+                    <Button onClick={() => fetchRuns()} loading={runsLoading}>
+                      Refresh
+                    </Button>
                   </Space>
                 }
-                description={
-                  <div>
-                    <div>
-                      <Text type="secondary">{r.display_title || r.event}</Text>
-                      {r.actor?.login ? <Text type="secondary"> • {r.actor.login}</Text> : null}
-                    </div>
-                    <div>
-                      <Text type="secondary">Created: {fmtTime(r.created_at)} • Updated: {fmtTime(r.updated_at)}</Text>
-                    </div>
-                  </div>
-                }
-              />
-            </List.Item>
-          )}
-        />
-      </Card>
-
-      <Card title="Cài đặt Update data" style={{ marginTop: 24 }}>
-        <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
-          Chỉ chọn khoảng trang để lấy. API mặc định: 24 phim/trang, trang 1 là mới nhất. Lấy theo kiểu lùi và kết thúc ở trang 1.
-        </Text>
-        <Form form={form} layout="inline" initialValues={updateSettings}>
-          <Text strong style={{ width: '100%', marginBottom: 8 }}>Chế độ chạy:</Text>
-          <Form.Item style={{ marginBottom: 8 }}>
-            <Radio.Group
-              value={twoPhase ? '2' : '1'}
-              onChange={(e: RadioChangeEvent) => setTwoPhase(e.target.value === '2')}
-              optionType="button"
-              buttonStyle="solid"
-            >
-              <Radio.Button value="1">1 pha (full)</Radio.Button>
-              <Radio.Button value="2">2 pha (core → tmdb)</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-
-          <Text strong style={{ width: '100%', marginBottom: 8 }}>Tự động (schedule):</Text>
-          <Form.Item style={{ marginBottom: 8 }}>
-            <Radio.Group
-              value={autoTwoPhase ? '2' : '1'}
-              onChange={(e: RadioChangeEvent) => setAutoTwoPhase(e.target.value === '2')}
-              optionType="button"
-              buttonStyle="solid"
-            >
-              <Radio.Button value="1">1 pha (full)</Radio.Button>
-              <Radio.Button value="2">2 pha (core → tmdb)</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 8 }}>
-            <Space size={8} align="center">
-              <Text>Tự động upload ảnh lên R2 sau khi Update data:</Text>
-              <Switch checked={autoUploadImagesAfterBuild} onChange={setAutoUploadImagesAfterBuild} />
-            </Space>
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 8 }}>
-            <Space size={8} align="center">
-              <Text>Chỉ deploy Cloudflare sau khi upload ảnh R2 xong (khi chạy 2 pha):</Text>
-              <Switch checked={deployAfterR2Upload} onChange={setDeployAfterR2Upload} />
-            </Space>
-          </Form.Item>
-
-          <Text strong style={{ width: '100%' }}>Thủ công (khi bấm Kích hoạt):</Text>
-          <Form.Item name="start_page" label="Trang bắt đầu" rules={[{ required: true }]}>
-            <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />
-          </Form.Item>
-          <Form.Item name="end_page" label="Trang kết thúc">
-            <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />
-          </Form.Item>
-          <Form.Item>
-            <Button icon={<SaveOutlined />} onClick={handleSaveUpdateSettings} loading={savingSettings}>
-              Lưu mặc định
-            </Button>
-          </Form.Item>
-          <Text strong style={{ width: '100%', marginTop: 16 }}>Tự động (0h, 6h, 12h, 18h):</Text>
-          <Form.Item name="auto_start_page" label="Auto: Trang bắt đầu">
-            <InputNumber min={1} max={100000} placeholder="1" style={{ width: 140 }} />
-          </Form.Item>
-          <Form.Item name="auto_end_page" label="Auto: Trang kết thúc">
-            <InputNumber min={1} max={100000} placeholder="1" style={{ width: 140 }} />
-          </Form.Item>
-          <Form.Item>
-            <Space direction="vertical" size={4}>
-              <Button onClick={handleFetchTotalPages} loading={fetchingTotalPages}>
-                Lấy tổng số trang/phim
-              </Button>
-              {totalMovies != null && totalPages != null && (
-                <Text type="secondary">Tổng phim: {totalMovies} • Tổng trang: {totalPages}</Text>
-              )}
-            </Space>
-          </Form.Item>
-        </Form>
-      </Card>
-
-      <Card
-        title="Upload movie images to R2"
-        style={{ marginTop: 24 }}
-        extra={
-          <Button icon={<SaveOutlined />} onClick={handleSaveUploadSettings} loading={savingUploadSettings}>
-            Lưu mặc định
-          </Button>
-        }
-      >
-        <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
-          Chạy tải + nén + upload ảnh (thumb/poster) lên R2 bằng GitHub Actions.
-        </Text>
-
-        <Form
-          form={uploadForm}
-          layout="vertical"
-          initialValues={{
-            mode: 'thumb,poster',
-            quality: 70,
-            thumb_quality: '',
-            poster_quality: '',
-            thumb_width: 238,
-            thumb_height: 344,
-            poster_width: 486,
-            poster_height: 274,
-            limit: 0,
-            concurrency: 6,
-            force_slugs: '',
-            force_slugs_file: null,
-            reupload_existing: false,
-          }}
-        >
-          <Space wrap align="start">
-            <Form.Item name="mode" label="Mode (thumb, poster, thumb,poster)">
-              <Input style={{ width: 220 }} placeholder="thumb,poster" />
-            </Form.Item>
-
-            <Form.Item name="quality" label="Quality (1-100)">
-              <InputNumber min={1} max={100} style={{ width: 140 }} />
-            </Form.Item>
-
-            <Form.Item name="thumb_quality" label="Thumb quality (override)">
-              <Input style={{ width: 190 }} placeholder="" />
-            </Form.Item>
-
-            <Form.Item name="poster_quality" label="Poster quality (override)">
-              <Input style={{ width: 190 }} placeholder="" />
-            </Form.Item>
-
-            <Form.Item name="thumb_width" label="Thumb width">
-              <InputNumber min={0} style={{ width: 140 }} />
-            </Form.Item>
-
-            <Form.Item name="thumb_height" label="Thumb height">
-              <InputNumber min={0} style={{ width: 140 }} />
-            </Form.Item>
-
-            <Form.Item name="poster_width" label="Poster width">
-              <InputNumber min={0} style={{ width: 140 }} />
-            </Form.Item>
-
-            <Form.Item name="poster_height" label="Poster height">
-              <InputNumber min={0} style={{ width: 140 }} />
-            </Form.Item>
-
-            <Form.Item name="limit" label="Limit (0 = no limit)">
-              <InputNumber min={0} style={{ width: 170 }} />
-            </Form.Item>
-
-            <Form.Item name="concurrency" label="Concurrency (1-32)">
-              <InputNumber min={1} max={32} style={{ width: 190 }} />
-            </Form.Item>
-
-            <Form.Item name="force_slugs" label="Force slugs (comma/newline separated)">
-              <Input.TextArea style={{ width: 360 }} rows={3} placeholder="slug-1\nslug-2" />
-            </Form.Item>
-
-            <Form.Item name="force_slugs_file" label="File danh sách slug (.txt/.csv)">
-              <input
-                type="file"
-                accept=".txt,.csv,text/plain,text/csv"
-                onChange={(e) => {
-                  const f = (e.target && (e.target as HTMLInputElement).files && (e.target as HTMLInputElement).files?.[0]) || null;
-                  uploadForm.setFieldsValue({ force_slugs_file: f });
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item name="reupload_existing" label="Upload lại nếu đã upload" valuePropName="checked">
-              <Switch />
-            </Form.Item>
-
-            <Form.Item label=" ">
-              <Button
-                type="primary"
-                icon={triggering === 'upload-movie-images-r2' ? <Spin size="small" /> : <PlayCircleOutlined />}
-                onClick={async () => {
-                  setTriggering('upload-movie-images-r2');
-                  try {
-                    const values = uploadForm.getFieldsValue();
-                    const file: File | null = values.force_slugs_file || null;
-                    const fileText = file ? await readTextFile(file).catch(() => '') : '';
-                    const slugs = Array.from(
-                      new Set([
-                        ...parseSlugList(values.force_slugs),
-                        ...parseSlugList(fileText),
-                      ])
-                    );
-                    const payload = {
-                      ...values,
-                      force_slugs: slugs.join('\n'),
-                      reupload_existing: values.reupload_existing ? 'true' : 'false',
-                    } as any;
-                    delete payload.force_slugs_file;
-                    const res = await fetch(`${API_URL}/api/trigger-action`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ action: 'upload-movie-images-r2', ...payload }),
-                    });
-                    const data = await res.json().catch(async () => ({ error: await res.text() }));
-                    if (res.ok && data?.ok) {
-                      message.success(data?.message || 'Đã kích hoạt upload ảnh.');
-                    } else {
-                      message.error(data?.error || data?.message || `Lỗi ${res.status}`);
-                    }
-                  } catch (e: any) {
-                    message.error(e?.message || 'Không kết nối được API.');
-                  } finally {
-                    setTriggering(null);
-                  }
-                }}
-                loading={triggering === 'upload-movie-images-r2'}
-                disabled={!!triggering}
               >
-                Upload ảnh
-              </Button>
-            </Form.Item>
-          </Space>
-        </Form>
-      </Card>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                  Hiển thị các workflow runs gần đây. Khi có job đang chạy, trang sẽ tự refresh mỗi 15 giây.
+                </Text>
 
-      <div style={{ marginTop: 16 }}>
-        {loading ? (
-          <Spin tip="Đang tải danh sách..." />
-        ) : (
-          <List
-            grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 2 }}
-            dataSource={allList}
-            renderItem={(item: ActionItem & { triggerable?: boolean; danger?: boolean }) => (
-              <List.Item>
-                <Card
-                  title={item.name}
-                  extra={
-                    item.triggerable !== false ? (
-                      <Button
-                        type={item.danger ? 'default' : 'primary'}
-                        danger={!!item.danger}
-                        icon={triggering === item.id ? <Spin size="small" /> : item.danger ? <DeleteOutlined /> : <PlayCircleOutlined />}
-                        onClick={() => handleTrigger(item.id)}
-                        loading={triggering === item.id}
-                        disabled={!!triggering}
+                <List
+                  size="small"
+                  loading={runsLoading}
+                  dataSource={runs}
+                  locale={{ emptyText: 'Chưa có run nào hoặc không truy cập được GitHub API.' }}
+                  renderItem={(r: WorkflowRunItem) => (
+                    <List.Item
+                      style={{ alignItems: 'flex-start' }}
+                      actions={[
+                        <a key="open" href={r.html_url} target="_blank" rel="noreferrer">
+                          Mở
+                        </a>,
+                      ]}
+                    >
+                      <List.Item.Meta
+                        title={
+                          <Space size={8} wrap>
+                            <Text strong>{r.name || 'Workflow'}</Text>
+                            {renderRunTag(r)}
+                            <Text type="secondary">#{String(r.id).slice(-6)}</Text>
+                          </Space>
+                        }
+                        description={
+                          <div>
+                            <div>
+                              <Text type="secondary">{r.display_title || r.event}</Text>
+                              {r.actor?.login ? <Text type="secondary"> • {r.actor.login}</Text> : null}
+                            </div>
+                            <div>
+                              <Text type="secondary">Created: {fmtTime(r.created_at)} • Updated: {fmtTime(r.updated_at)}</Text>
+                            </div>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              </Card>
+            ),
+          },
+          {
+            key: 'actions',
+            label: 'Thiết lập & thao tác',
+            children: (
+              <>
+                <Card title="Cài đặt Update data">
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                    Chỉ chọn khoảng trang để lấy. API mặc định: 24 phim/trang, trang 1 là mới nhất. Lấy theo kiểu lùi và kết thúc ở trang 1.
+                  </Text>
+                  <Form form={form} layout="inline" initialValues={updateSettings}>
+                    <Text strong style={{ width: '100%', marginBottom: 8 }}>Chế độ chạy:</Text>
+                    <Form.Item style={{ marginBottom: 8 }}>
+                      <Radio.Group
+                        value={twoPhase ? '2' : '1'}
+                        onChange={(e: RadioChangeEvent) => setTwoPhase(e.target.value === '2')}
+                        optionType="button"
+                        buttonStyle="solid"
                       >
-                        {item.danger ? 'Clean & Build' : 'Kích hoạt'}
+                        <Radio.Button value="1">1 pha (full)</Radio.Button>
+                        <Radio.Button value="2">2 pha (core → tmdb)</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+
+                    <Text strong style={{ width: '100%', marginBottom: 8 }}>Tự động (schedule):</Text>
+                    <Form.Item style={{ marginBottom: 8 }}>
+                      <Radio.Group
+                        value={autoTwoPhase ? '2' : '1'}
+                        onChange={(e: RadioChangeEvent) => setAutoTwoPhase(e.target.value === '2')}
+                        optionType="button"
+                        buttonStyle="solid"
+                      >
+                        <Radio.Button value="1">1 pha (full)</Radio.Button>
+                        <Radio.Button value="2">2 pha (core → tmdb)</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 8 }}>
+                      <Space size={8} align="center">
+                        <Text>Tự động upload ảnh lên R2 sau khi Update data:</Text>
+                        <Switch checked={autoUploadImagesAfterBuild} onChange={setAutoUploadImagesAfterBuild} />
+                      </Space>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 8 }}>
+                      <Space size={8} align="center">
+                        <Text>Chỉ deploy Cloudflare sau khi upload ảnh R2 xong (khi chạy 2 pha):</Text>
+                        <Switch checked={deployAfterR2Upload} onChange={setDeployAfterR2Upload} />
+                      </Space>
+                    </Form.Item>
+
+                    <Text strong style={{ width: '100%' }}>Thủ công (khi bấm Kích hoạt):</Text>
+                    <Form.Item name="start_page" label="Trang bắt đầu" rules={[{ required: true }]}>
+                      <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />
+                    </Form.Item>
+                    <Form.Item name="end_page" label="Trang kết thúc">
+                      <InputNumber min={1} max={100000} placeholder="1" style={{ width: 120 }} />
+                    </Form.Item>
+                    <Form.Item>
+                      <Button icon={<SaveOutlined />} onClick={handleSaveUpdateSettings} loading={savingSettings}>
+                        Lưu mặc định
                       </Button>
-                    ) : (
-                      <Button type="text" icon={<InfoCircleOutlined />} disabled>
-                        Tự động (push main)
-                      </Button>
-                    )
+                    </Form.Item>
+                    <Text strong style={{ width: '100%', marginTop: 16 }}>Tự động (0h, 6h, 12h, 18h):</Text>
+                    <Form.Item name="auto_start_page" label="Auto: Trang bắt đầu">
+                      <InputNumber min={1} max={100000} placeholder="1" style={{ width: 140 }} />
+                    </Form.Item>
+                    <Form.Item name="auto_end_page" label="Auto: Trang kết thúc">
+                      <InputNumber min={1} max={100000} placeholder="1" style={{ width: 140 }} />
+                    </Form.Item>
+                    <Form.Item>
+                      <Space direction="vertical" size={4}>
+                        <Button onClick={handleFetchTotalPages} loading={fetchingTotalPages}>
+                          Lấy tổng số trang/phim
+                        </Button>
+                        {totalMovies != null && totalPages != null && (
+                          <Text type="secondary">Tổng phim: {totalMovies} • Tổng trang: {totalPages}</Text>
+                        )}
+                      </Space>
+                    </Form.Item>
+                  </Form>
+                </Card>
+
+                <Card
+                  title="Upload movie images to R2"
+                  style={{ marginTop: 24 }}
+                  extra={
+                    <Button icon={<SaveOutlined />} onClick={handleSaveUploadSettings} loading={savingUploadSettings}>
+                      Lưu mặc định
+                    </Button>
                   }
                 >
-                  <Text type="secondary">{item.description}</Text>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                    Chạy tải + nén + upload ảnh (thumb/poster) lên R2 bằng GitHub Actions.
+                  </Text>
+
+                  <Form
+                    form={uploadForm}
+                    layout="vertical"
+                    initialValues={{
+                      mode: 'thumb,poster',
+                      quality: 70,
+                      thumb_quality: '',
+                      poster_quality: '',
+                      thumb_width: 238,
+                      thumb_height: 344,
+                      poster_width: 486,
+                      poster_height: 274,
+                      limit: 0,
+                      concurrency: 6,
+                      force_slugs: '',
+                      force_slugs_file: null,
+                      reupload_existing: false,
+                    }}
+                  >
+                    <Space wrap align="start">
+                      <Form.Item name="mode" label="Mode (thumb, poster, thumb,poster)">
+                        <Input style={{ width: 220 }} placeholder="thumb,poster" />
+                      </Form.Item>
+
+                      <Form.Item name="quality" label="Quality (1-100)">
+                        <InputNumber min={1} max={100} style={{ width: 140 }} />
+                      </Form.Item>
+
+                      <Form.Item name="thumb_quality" label="Thumb quality (override)">
+                        <Input style={{ width: 190 }} placeholder="" />
+                      </Form.Item>
+
+                      <Form.Item name="poster_quality" label="Poster quality (override)">
+                        <Input style={{ width: 190 }} placeholder="" />
+                      </Form.Item>
+
+                      <Form.Item name="thumb_width" label="Thumb width">
+                        <InputNumber min={0} style={{ width: 140 }} />
+                      </Form.Item>
+
+                      <Form.Item name="thumb_height" label="Thumb height">
+                        <InputNumber min={0} style={{ width: 140 }} />
+                      </Form.Item>
+
+                      <Form.Item name="poster_width" label="Poster width">
+                        <InputNumber min={0} style={{ width: 140 }} />
+                      </Form.Item>
+
+                      <Form.Item name="poster_height" label="Poster height">
+                        <InputNumber min={0} style={{ width: 140 }} />
+                      </Form.Item>
+
+                      <Form.Item name="limit" label="Limit (0 = no limit)">
+                        <InputNumber min={0} style={{ width: 170 }} />
+                      </Form.Item>
+
+                      <Form.Item name="concurrency" label="Concurrency (1-32)">
+                        <InputNumber min={1} max={32} style={{ width: 190 }} />
+                      </Form.Item>
+
+                      <Form.Item name="force_slugs" label="Force slugs (comma/newline separated)">
+                        <Input.TextArea style={{ width: 360 }} rows={3} placeholder="slug-1\nslug-2" />
+                      </Form.Item>
+
+                      <Form.Item name="force_slugs_file" label="File danh sách slug (.txt/.csv)">
+                        <input
+                          type="file"
+                          accept=".txt,.csv,text/plain,text/csv"
+                          onChange={(e) => {
+                            const f = (e.target && (e.target as HTMLInputElement).files && (e.target as HTMLInputElement).files?.[0]) || null;
+                            uploadForm.setFieldsValue({ force_slugs_file: f });
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item name="reupload_existing" label="Upload lại nếu đã upload" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+
+                      <Form.Item label=" ">
+                        <Button
+                          type="primary"
+                          icon={triggering === 'upload-movie-images-r2' ? <Spin size="small" /> : <PlayCircleOutlined />}
+                          onClick={async () => {
+                            setTriggering('upload-movie-images-r2');
+                            try {
+                              const values = uploadForm.getFieldsValue();
+                              const file: File | null = values.force_slugs_file || null;
+                              const fileText = file ? await readTextFile(file).catch(() => '') : '';
+                              const slugs = Array.from(
+                                new Set([
+                                  ...parseSlugList(values.force_slugs),
+                                  ...parseSlugList(fileText),
+                                ])
+                              );
+                              const payload = {
+                                ...values,
+                                force_slugs: slugs.join('\n'),
+                                reupload_existing: values.reupload_existing ? 'true' : 'false',
+                              } as any;
+                              delete payload.force_slugs_file;
+                              const res = await fetch(`${API_URL}/api/trigger-action`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'upload-movie-images-r2', ...payload }),
+                              });
+                              const data = await res.json().catch(async () => ({ error: await res.text() }));
+                              if (res.ok && data?.ok) {
+                                message.success(data?.message || 'Đã kích hoạt upload ảnh.');
+                              } else {
+                                message.error(data?.error || data?.message || `Lỗi ${res.status}`);
+                              }
+                            } catch (e: any) {
+                              message.error(e?.message || 'Không kết nối được API.');
+                            } finally {
+                              setTriggering(null);
+                            }
+                          }}
+                          loading={triggering === 'upload-movie-images-r2'}
+                          disabled={!!triggering}
+                        >
+                          Upload ảnh
+                        </Button>
+                      </Form.Item>
+                    </Space>
+                  </Form>
                 </Card>
-              </List.Item>
-            )}
-          />
-        )}
-      </div>
+
+                <div style={{ marginTop: 16 }}>
+                  {loading ? (
+                    <Spin tip="Đang tải danh sách..." />
+                  ) : (
+                    <List
+                      grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 2 }}
+                      dataSource={allList}
+                      renderItem={(item: ActionItem & { triggerable?: boolean; danger?: boolean }) => (
+                        <List.Item>
+                          <Card
+                            title={item.name}
+                            extra={
+                              item.triggerable !== false ? (
+                                <Button
+                                  type={item.danger ? 'default' : 'primary'}
+                                  danger={!!item.danger}
+                                  icon={triggering === item.id ? <Spin size="small" /> : item.danger ? <DeleteOutlined /> : <PlayCircleOutlined />}
+                                  onClick={() => handleTrigger(item.id)}
+                                  loading={triggering === item.id}
+                                  disabled={!!triggering}
+                                >
+                                  {item.danger ? 'Clean & Build' : 'Kích hoạt'}
+                                </Button>
+                              ) : (
+                                <Button type="text" icon={<InfoCircleOutlined />} disabled>
+                                  Tự động (push main)
+                                </Button>
+                              )
+                            }
+                          >
+                            <Text type="secondary">{item.description}</Text>
+                          </Card>
+                        </List.Item>
+                      )}
+                    />
+                  )}
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </>
   );
 }
