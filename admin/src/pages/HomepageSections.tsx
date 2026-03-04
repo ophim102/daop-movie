@@ -32,6 +32,14 @@ type SectionRow = {
   grid_columns_md?: number | null;
   grid_columns_lg?: number | null;
   use_poster?: boolean | null;
+  featured_count_xs?: number | null;
+  featured_count_sm?: number | null;
+  featured_count_md?: number | null;
+  featured_count_lg?: number | null;
+  featured_span_xs?: number | null;
+  featured_span_sm?: number | null;
+  featured_span_md?: number | null;
+  featured_span_lg?: number | null;
 };
 
 const SOURCE_TYPE_OPTIONS = [
@@ -49,6 +57,7 @@ const SOURCE_TYPE_OPTIONS = [
 
 const DISPLAY_TYPE_OPTIONS = [
   { value: 'grid', label: 'Grid' },
+  { value: 'grid_featured', label: 'Grid (Featured)' },
   { value: 'slider', label: 'Slider' },
   { value: 'list', label: 'List' },
 ];
@@ -70,6 +79,7 @@ export default function HomepageSections() {
   const [form] = Form.useForm<SectionRow>();
 
   const sourceType = Form.useWatch('source_type', form);
+  const displayType = Form.useWatch('display_type', form);
   const sourceValueOptional = ['quality_4k', 'exclusive', 'vietsub', 'thuyetminh', 'longtieng'].includes(
     String(sourceType || '').toLowerCase()
   );
@@ -98,6 +108,14 @@ export default function HomepageSections() {
       grid_columns_md: 4,
       grid_columns_lg: 6,
       use_poster: 'vertical',
+      featured_count_xs: 1,
+      featured_count_sm: 1,
+      featured_count_md: 1,
+      featured_count_lg: 2,
+      featured_span_xs: 2,
+      featured_span_sm: 3,
+      featured_span_md: 4,
+      featured_span_lg: 4,
     } as any);
     setModalVisible(true);
   };
@@ -113,6 +131,14 @@ export default function HomepageSections() {
       grid_columns_md: row.grid_columns_md ?? fc.grid_columns_md ?? 4,
       grid_columns_lg: row.grid_columns_lg ?? fc.grid_columns_lg ?? 6,
       use_poster: (row.use_poster ?? fc.use_poster) ? 'horizontal' : 'vertical',
+      featured_count_xs: (row.featured_count_xs ?? (fc as any).featured_count_xs ?? 0) as any,
+      featured_count_sm: (row.featured_count_sm ?? (fc as any).featured_count_sm ?? 0) as any,
+      featured_count_md: (row.featured_count_md ?? (fc as any).featured_count_md ?? 0) as any,
+      featured_count_lg: (row.featured_count_lg ?? (fc as any).featured_count_lg ?? 0) as any,
+      featured_span_xs: (row.featured_span_xs ?? (fc as any).featured_span_xs ?? 2) as any,
+      featured_span_sm: (row.featured_span_sm ?? (fc as any).featured_span_sm ?? 3) as any,
+      featured_span_md: (row.featured_span_md ?? (fc as any).featured_span_md ?? 4) as any,
+      featured_span_lg: (row.featured_span_lg ?? (fc as any).featured_span_lg ?? 4) as any,
     } as any);
     setModalVisible(true);
   };
@@ -128,6 +154,14 @@ export default function HomepageSections() {
         grid_columns_md: Number(values.grid_columns_md ?? 4),
         grid_columns_lg: Number(values.grid_columns_lg ?? 6),
         use_poster: values.use_poster === 'horizontal',
+        featured_count_xs: Number(values.featured_count_xs ?? 0),
+        featured_count_sm: Number(values.featured_count_sm ?? 0),
+        featured_count_md: Number(values.featured_count_md ?? 0),
+        featured_count_lg: Number(values.featured_count_lg ?? 0),
+        featured_span_xs: Number(values.featured_span_xs ?? 2),
+        featured_span_sm: Number(values.featured_span_sm ?? 3),
+        featured_span_md: Number(values.featured_span_md ?? 4),
+        featured_span_lg: Number(values.featured_span_lg ?? 4),
       };
       const payload: Record<string, any> = {
         title: values.title,
@@ -329,6 +363,34 @@ export default function HomepageSections() {
           <Form.Item name="display_type" label="Kiểu hiển thị">
             <Select allowClear options={DISPLAY_TYPE_OPTIONS} placeholder="Mặc định: grid" />
           </Form.Item>
+          {String(displayType || '').toLowerCase() === 'grid_featured' && (
+            <>
+              <Form.Item name="featured_count_xs" label="Featured - Số phim nổi bật (Mobile nhỏ <480px)">
+                <InputNumber min={0} max={6} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="featured_count_sm" label="Featured - Số phim nổi bật (Mobile lớn 480–767px)">
+                <InputNumber min={0} max={6} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="featured_count_md" label="Featured - Số phim nổi bật (Tablet 768–1023px)">
+                <InputNumber min={0} max={6} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="featured_count_lg" label="Featured - Số phim nổi bật (Desktop 1024px+)">
+                <InputNumber min={0} max={6} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="featured_span_xs" label="Featured - Chiếm bao nhiêu cột (Mobile nhỏ <480px)">
+                <Select options={COLUMN_COUNT_OPTIONS} />
+              </Form.Item>
+              <Form.Item name="featured_span_sm" label="Featured - Chiếm bao nhiêu cột (Mobile lớn 480–767px)">
+                <Select options={COLUMN_COUNT_OPTIONS} />
+              </Form.Item>
+              <Form.Item name="featured_span_md" label="Featured - Chiếm bao nhiêu cột (Tablet 768–1023px)">
+                <Select options={COLUMN_COUNT_OPTIONS} />
+              </Form.Item>
+              <Form.Item name="featured_span_lg" label="Featured - Chiếm bao nhiêu cột (Desktop 1024px+)">
+                <Select options={COLUMN_COUNT_OPTIONS} />
+              </Form.Item>
+            </>
+          )}
           <Form.Item name="grid_columns_xs" label="Số cột - Mobile nhỏ (&lt;480px)">
             <Select options={COLUMN_COUNT_OPTIONS} />
           </Form.Item>
