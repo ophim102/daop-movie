@@ -3672,6 +3672,20 @@
         "key": "posters/56-ngay-poster.jpg",
         "bytes": 7101
       }
+    },
+    "6947a82897c71dcd0d63982e": {
+      "thumb": {
+        "ok": true,
+        "at": 1772643912487,
+        "key": "thumbs/nguoi-dan-ong-dau-tien-thumb.jpg",
+        "bytes": 9379
+      },
+      "poster": {
+        "ok": true,
+        "at": 1772643915000,
+        "key": "posters/nguoi-dan-ong-dau-tien-poster.jpg",
+        "bytes": 11497
+      }
     }
   }
 }
