@@ -136,6 +136,27 @@
         if (!container) return;
         sections.sort(function(a,b){ return (a.sort_order || 0) - (b.sort_order || 0); });
         var ss = window.DAOP && window.DAOP.siteSettings || {};
+        function getBpKey() {
+          var w = window.innerWidth || 0;
+          if (w >= 1024) return 'lg';
+          if (w >= 768) return 'md';
+          if (w >= 480) return 'sm';
+          return 'xs';
+        }
+        function getFeaturedCount(sec) {
+          var k = getBpKey();
+          var v = 0;
+          if (k === 'lg') v = Number(sec.featured_count_lg);
+          else if (k === 'md') v = Number(sec.featured_count_md);
+          else if (k === 'sm') v = Number(sec.featured_count_sm);
+          else v = Number(sec.featured_count_xs);
+          if (!Number.isFinite(v) || v < 0) v = 0;
+          return Math.min(6, Math.floor(v));
+        }
+        function markFeaturedCardHtml(html) {
+          if (!html) return html;
+          return String(html).replace('class="movie-card', 'class="movie-card is-featured');
+        }
         sections.forEach(function(sec){
           var ids = [];
           var limit = sec.limit_count || 24;
@@ -145,14 +166,27 @@
           var sm = [2,3,4,6,8].indexOf(Number(sec.grid_columns_sm)) >= 0 ? Number(sec.grid_columns_sm) : 3;
           var md = [2,3,4,6,8].indexOf(Number(sec.grid_columns_md)) >= 0 ? Number(sec.grid_columns_md) : 4;
           var lg = [2,3,4,6,8].indexOf(Number(sec.grid_columns_lg)) >= 0 ? Number(sec.grid_columns_lg) : 6;
-          var gridVars = '--grid-cols-xs:' + xs + ';--grid-cols-sm:' + sm + ';--grid-cols-md:' + md + ';--grid-cols-lg:' + lg + ';';
+          var fxs = Number(sec.featured_span_xs);
+          var fsm = Number(sec.featured_span_sm);
+          var fmd = Number(sec.featured_span_md);
+          var flg = Number(sec.featured_span_lg);
+          if (!Number.isFinite(fxs) || fxs <= 0) fxs = 2;
+          if (!Number.isFinite(fsm) || fsm <= 0) fsm = 2;
+          if (!Number.isFinite(fmd) || fmd <= 0) fmd = 3;
+          if (!Number.isFinite(flg) || flg <= 0) flg = 4;
+          var gridVars = '--grid-cols-xs:' + xs + ';--grid-cols-sm:' + sm + ';--grid-cols-md:' + md + ';--grid-cols-lg:' + lg + ';' +
+            '--featured-span-xs:' + fxs + ';--featured-span-sm:' + fsm + ';--featured-span-md:' + fmd + ';--featured-span-lg:' + flg + ';';
           var defaultPoster = (ss.default_use_poster === true || ss.default_use_poster === 'true' || ss.default_use_poster === 'poster');
           var cardOrientation = (sec.use_poster === true || sec.use_poster === 'true' || defaultPoster) ? 'horizontal' : 'vertical';
-          var html = '<section class="home-section home-section-' + layout + (layout === 'grid' ? ' home-section--grid-cols' : '') + '"' + (layout === 'grid' ? ' style="' + gridVars + '"' : '') + '><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
+          var isGridLike = (layout === 'grid' || layout === 'grid_featured');
+          var html = '<section class="home-section home-section-' + layout + (isGridLike ? ' home-section--grid-cols' : '') + (layout === 'grid_featured' ? ' home-section--featured' : '') + '"' + (isGridLike ? ' style="' + gridVars + '"' : '') + '><h2>' + (sec.title || '') + ' ' + moreLink + '</h2>';
           if (layout === 'slider') {
             html += '<div class="section-slider-wrap"><div class="section-slider-track"><p>Đang tải...</p></div><button type="button" class="section-slider-prev" aria-label="Trước">‹</button><button type="button" class="section-slider-next" aria-label="Sau">›</button></div>';
           } else if (layout === 'list') {
             html += '<div class="movies-list movies-list--' + cardOrientation + '"><p>Đang tải...</p></div>';
+          } else if (layout === 'grid_featured') {
+            html += '<div class="movies-featured-row"><p>Đang tải...</p></div>';
+            html += '<div class="movies-grid"><p>Đang tải...</p></div>';
           } else {
             html += '<div class="movies-grid"><p>Đang tải...</p></div>';
           }
@@ -231,6 +265,33 @@
                   '</div>';
               });
               listEl.innerHTML = out2;
+            } else if (layout === 'grid_featured') {
+              var featuredEl = secEl.querySelector('.movies-featured-row');
+              var gridEl2 = secEl.querySelector('.movies-grid');
+              if (!featuredEl || !gridEl2) return;
+              var fCount = getFeaturedCount(sec);
+              var featured = (movies || []).slice(0, fCount);
+              var rest = (movies || []).slice(fCount);
+
+              if (!featured.length) {
+                featuredEl.innerHTML = '';
+              } else {
+                var outF = '';
+                featured.forEach(function (m) {
+                  outF += markFeaturedCardHtml(window.DAOP.renderMovieCard(m, base, { cardOrientation: 'horizontal' }));
+                });
+                featuredEl.innerHTML = outF;
+              }
+
+              if (!rest.length) {
+                gridEl2.innerHTML = featured.length ? '' : '<p>Không có phim.</p>';
+              } else {
+                var out4 = '';
+                rest.forEach(function (m) {
+                  out4 += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation });
+                });
+                gridEl2.innerHTML = out4;
+              }
             } else {
               var gridEl = secEl.querySelector('.movies-grid');
               if (!gridEl) return;

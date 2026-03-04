@@ -1147,11 +1147,68 @@ body.site-header--collapsed .site-header {
   color: var(--accent-hover);
 }
 
-/* Section display: slider (horizontal scroll) */
-.section-slider-wrap {
-  position: relative;
-}
-.section-slider-track {
+ /* Section display: slider (horizontal scroll) */
+ .section-slider-wrap {
+   position: relative;
+ }
+
+ .home-section--featured .movies-grid {
+   align-items: stretch;
+ }
+ .home-section--featured .movies-featured-row {
+   display: grid;
+   gap: 1rem;
+   margin-bottom: 1rem;
+   grid-template-columns: repeat(var(--grid-cols-xs, 2), 1fr) !important;
+ }
+ @media (min-width: 480px) {
+   .home-section--featured .movies-featured-row {
+     grid-template-columns: repeat(var(--grid-cols-sm, 3), 1fr) !important;
+   }
+ }
+ @media (min-width: 768px) {
+   .home-section--featured .movies-featured-row {
+     grid-template-columns: repeat(var(--grid-cols-md, 4), 1fr) !important;
+   }
+ }
+ @media (min-width: 1024px) {
+   .home-section--featured .movies-featured-row {
+     grid-template-columns: repeat(var(--grid-cols-lg, 6), 1fr) !important;
+   }
+ }
+ .home-section--featured .movie-card.is-featured {
+   grid-column: span var(--featured-span-xs, 2);
+ }
+ @media (min-width: 480px) {
+   .home-section--featured .movie-card.is-featured {
+     grid-column: span var(--featured-span-sm, 2);
+   }
+ }
+ @media (min-width: 768px) {
+   .home-section--featured .movie-card.is-featured {
+     grid-column: span var(--featured-span-md, 3);
+   }
+ }
+ @media (min-width: 1024px) {
+   .home-section--featured .movie-card.is-featured {
+     grid-column: span var(--featured-span-lg, 4);
+   }
+ }
+ .home-section--featured .movie-card.is-featured .thumb-wrap {
+   aspect-ratio: 16/9;
+ }
+ .home-section--featured .movie-card.is-featured .movie-info .title,
+ .home-section--featured .movie-card.is-featured .title {
+   font-size: 1.05rem;
+   line-clamp: 2;
+   -webkit-line-clamp: 2;
+ }
+ .home-section--featured .movie-card.is-featured .movie-info .meta,
+ .home-section--featured .movie-card.is-featured .meta {
+   font-size: 0.8rem;
+ }
+
+ .section-slider-track {
   display: flex;
   gap: 0.75rem;
   overflow-x: auto;

@@ -1462,13 +1462,16 @@ function writeHomeSectionsData(movies) {
             subDocQuyenRaw === 'ok';
         } else if (st === 'vietsub') {
           const lk = String(m.lang_key || '').toLowerCase();
-          ok = lk.includes('vietsub');
+          const lkNorm = normalizeSearchText(lk);
+          ok = lkNorm.includes('vietsub');
         } else if (st === 'thuyetminh') {
           const lk = String(m.lang_key || '').toLowerCase();
-          ok = lk.includes('thuyết minh') || lk.includes('thuyet minh');
+          const lkNorm = normalizeSearchText(lk);
+          ok = lkNorm.includes('thuyet minh');
         } else if (st === 'longtieng') {
           const lk = String(m.lang_key || '').toLowerCase();
-          ok = lk.includes('lồng tiếng') || lk.includes('long tieng');
+          const lkNorm = normalizeSearchText(lk);
+          ok = lkNorm.includes('long tieng');
         }
         if (ok) picked.push(m);
         if (picked.length >= limit) break;
@@ -1813,11 +1816,25 @@ function writeFilters(movies, genreNames = {}, countryNames = {}) {
     if (isCurrent) statusMap.current.push(m.id);
 
     const lk = (m.lang_key || '').toString().toLowerCase();
-    if (!lk) langMap.khac.push(m.id);
-    else if (lk.includes('vietsub')) langMap.vietsub.push(m.id);
-    else if (lk.includes('thuyết minh') || lk.includes('thuyet minh')) langMap.thuyetminh.push(m.id);
-    else if (lk.includes('lồng tiếng') || lk.includes('long tieng')) langMap.longtieng.push(m.id);
-    else langMap.khac.push(m.id);
+    const lkNorm = normalizeSearchText(lk);
+    if (!lkNorm) {
+      langMap.khac.push(m.id);
+    } else {
+      let any = false;
+      if (lkNorm.includes('vietsub')) {
+        langMap.vietsub.push(m.id);
+        any = true;
+      }
+      if (lkNorm.includes('thuyet minh')) {
+        langMap.thuyetminh.push(m.id);
+        any = true;
+      }
+      if (lkNorm.includes('long tieng')) {
+        langMap.longtieng.push(m.id);
+        any = true;
+      }
+      if (!any) langMap.khac.push(m.id);
+    }
     const y = (m.year || '').toString();
     if (y) {
       yearsSet.add(y);
