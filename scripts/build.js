@@ -1312,6 +1312,15 @@ function writeHomeSectionsData(movies) {
   const enableGenre = isOn(siteSettings.home_prebuild_enable_genre, true);
   const enableCountry = isOn(siteSettings.home_prebuild_enable_country, true);
 
+  const enableQuality4k = isOn(siteSettings.home_prebuild_enable_quality_4k, true);
+  const enableStatusCurrent = isOn(siteSettings.home_prebuild_enable_status_current, true);
+  const enableStatusUpcoming = isOn(siteSettings.home_prebuild_enable_status_upcoming, true);
+  const enableStatusTheater = isOn(siteSettings.home_prebuild_enable_status_theater, true);
+  const enableExclusive = isOn(siteSettings.home_prebuild_enable_exclusive, true);
+  const enableVietsub = isOn(siteSettings.home_prebuild_enable_vietsub, true);
+  const enableThuyetminh = isOn(siteSettings.home_prebuild_enable_thuyetminh, true);
+  const enableLongtieng = isOn(siteSettings.home_prebuild_enable_longtieng, true);
+
   const allowYears = parseCsvSet(siteSettings.home_prebuild_years);
   const allowGenres = parseCsvSet(siteSettings.home_prebuild_genres);
   const allowCountries = parseCsvSet(siteSettings.home_prebuild_countries);
@@ -1351,6 +1360,27 @@ function writeHomeSectionsData(movies) {
       if (allowCountries && sv && !allowCountries.has(sv)) continue;
     }
 
+    if (st === 'quality_4k') {
+      if (!enableQuality4k) continue;
+    }
+    if (st === 'exclusive') {
+      if (!enableExclusive) continue;
+    }
+    if (st === 'vietsub') {
+      if (!enableVietsub) continue;
+    }
+    if (st === 'thuyetminh') {
+      if (!enableThuyetminh) continue;
+    }
+    if (st === 'longtieng') {
+      if (!enableLongtieng) continue;
+    }
+    if (st === 'status') {
+      if (sv === 'current' && !enableStatusCurrent) continue;
+      if (sv === 'upcoming' && !enableStatusUpcoming) continue;
+      if (sv === 'theater' && !enableStatusTheater) continue;
+    }
+
     const secLimitRaw = Number(sec.limit_count || 0);
     const secLimit = Number.isFinite(secLimitRaw) && secLimitRaw > 0 ? secLimitRaw : globalLimit;
     const limit = Math.max(1, Math.min(50, secLimit));
@@ -1380,7 +1410,36 @@ function writeHomeSectionsData(movies) {
         else if (st === 'year') ok = String(m.year || '') === String(sec.source_value || '');
         else if (st === 'genre') ok = Array.isArray(m.genre) && m.genre.some((g) => String(g.slug || '').toLowerCase() === sv);
         else if (st === 'country') ok = Array.isArray(m.country) && m.country.some((c) => String(c.slug || '').toLowerCase() === sv);
-        else if (st === 'status') ok = String(m.status || '').toLowerCase() === sv;
+        else if (st === 'status') {
+          const statusRaw = (m.status || '').toString().trim();
+          const statusKey = statusRaw ? statusRaw.toLowerCase() : '';
+          const showtimes = (m.showtimes || '').toString().toLowerCase();
+          if (sv === 'theater') {
+            ok = !!m.chieurap;
+          } else if (sv === 'upcoming') {
+            ok =
+              statusKey.includes('sắp') ||
+              statusKey.includes('sap') ||
+              statusKey.includes('upcoming') ||
+              statusKey.includes('soon') ||
+              statusKey === 'trailer' ||
+              statusKey.includes('trailer') ||
+              showtimes.includes('sắp') ||
+              showtimes.includes('sap');
+          } else if (sv === 'current') {
+            ok =
+              statusKey.includes('đang') ||
+              statusKey.includes('dang') ||
+              statusKey === 'ongoing' ||
+              statusKey.includes('ongoing') ||
+              statusKey.includes('current') ||
+              statusKey.includes('on going') ||
+              statusKey.includes('cập nhật') ||
+              statusKey.includes('cap nhat');
+          } else {
+            ok = statusKey === sv;
+          }
+        }
         else if (st === 'quality_4k') ok = !!m.is_4k;
         else if (st === 'exclusive') {
           const subDocQuyenRaw = m && m.sub_docquyen != null ? String(m.sub_docquyen).trim().toLowerCase() : '';
@@ -2471,6 +2530,26 @@ async function exportConfigFromSupabase() {
     favicon_url: '',
     r2_img_domain: 'https://pub-62eef44669df48e4bca5388a38e69522.r2.dev',
     ophim_img_domain: 'https://img.ophim.live',
+    home_prebuild_enabled: 'true',
+    home_prebuild_limit: '24',
+    home_prebuild_enable_series: 'true',
+    home_prebuild_enable_single: 'true',
+    home_prebuild_enable_hoathinh: 'true',
+    home_prebuild_enable_tvshows: 'true',
+    home_prebuild_enable_year: 'true',
+    home_prebuild_years: '',
+    home_prebuild_enable_genre: 'true',
+    home_prebuild_genres: '',
+    home_prebuild_enable_country: 'true',
+    home_prebuild_countries: '',
+    home_prebuild_enable_quality_4k: 'true',
+    home_prebuild_enable_status_current: 'true',
+    home_prebuild_enable_status_upcoming: 'true',
+    home_prebuild_enable_status_theater: 'true',
+    home_prebuild_enable_exclusive: 'true',
+    home_prebuild_enable_vietsub: 'true',
+    home_prebuild_enable_thuyetminh: 'true',
+    home_prebuild_enable_longtieng: 'true',
     google_analytics_id: '',
     simple_analytics_script: '',
     twikoo_env_id: '',
@@ -2707,6 +2786,26 @@ async function writeDefaultConfig() {
       site_name: 'DAOP Phim',
       logo_url: '',
       favicon_url: '',
+      home_prebuild_enabled: 'true',
+      home_prebuild_limit: '24',
+      home_prebuild_enable_series: 'true',
+      home_prebuild_enable_single: 'true',
+      home_prebuild_enable_hoathinh: 'true',
+      home_prebuild_enable_tvshows: 'true',
+      home_prebuild_enable_year: 'true',
+      home_prebuild_years: '',
+      home_prebuild_enable_genre: 'true',
+      home_prebuild_genres: '',
+      home_prebuild_enable_country: 'true',
+      home_prebuild_countries: '',
+      home_prebuild_enable_quality_4k: 'true',
+      home_prebuild_enable_status_current: 'true',
+      home_prebuild_enable_status_upcoming: 'true',
+      home_prebuild_enable_status_theater: 'true',
+      home_prebuild_enable_exclusive: 'true',
+      home_prebuild_enable_vietsub: 'true',
+      home_prebuild_enable_thuyetminh: 'true',
+      home_prebuild_enable_longtieng: 'true',
       google_analytics_id: '',
       simple_analytics_script: '',
       twikoo_env_id: '',

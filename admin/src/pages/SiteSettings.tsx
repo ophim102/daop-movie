@@ -40,6 +40,14 @@ const SITE_SETTINGS_KEYS = [
   'home_prebuild_genres',
   'home_prebuild_enable_country',
   'home_prebuild_countries',
+  'home_prebuild_enable_quality_4k',
+  'home_prebuild_enable_status_current',
+  'home_prebuild_enable_status_upcoming',
+  'home_prebuild_enable_status_theater',
+  'home_prebuild_enable_exclusive',
+  'home_prebuild_enable_vietsub',
+  'home_prebuild_enable_thuyetminh',
+  'home_prebuild_enable_longtieng',
   'google_analytics_id',
   'simple_analytics_script',
   'twikoo_env_id',
@@ -91,6 +99,14 @@ export default function SiteSettings() {
         home_prebuild_genres: data.home_prebuild_genres ?? '',
         home_prebuild_enable_country: data.home_prebuild_enable_country !== 'false',
         home_prebuild_countries: data.home_prebuild_countries ?? '',
+        home_prebuild_enable_quality_4k: data.home_prebuild_enable_quality_4k !== 'false',
+        home_prebuild_enable_status_current: data.home_prebuild_enable_status_current !== 'false',
+        home_prebuild_enable_status_upcoming: data.home_prebuild_enable_status_upcoming !== 'false',
+        home_prebuild_enable_status_theater: data.home_prebuild_enable_status_theater !== 'false',
+        home_prebuild_enable_exclusive: data.home_prebuild_enable_exclusive !== 'false',
+        home_prebuild_enable_vietsub: data.home_prebuild_enable_vietsub !== 'false',
+        home_prebuild_enable_thuyetminh: data.home_prebuild_enable_thuyetminh !== 'false',
+        home_prebuild_enable_longtieng: data.home_prebuild_enable_longtieng !== 'false',
         google_analytics_id: data.google_analytics_id ?? '',
         simple_analytics_script: data.simple_analytics_script ?? '',
         twikoo_env_id: data.twikoo_env_id ?? '',
@@ -311,6 +327,30 @@ export default function SiteSettings() {
                       </Form.Item>
                       <Form.Item name="home_prebuild_countries" label="Danh sách quốc gia slug (cách nhau bởi dấu phẩy, để trống = lấy tất cả section quốc gia)">
                         <Input placeholder="au-my,han-quoc,trung-quoc" />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_quality_4k" label="Lấy Phim 4K (quality_4k)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_status_current" label="Lấy Phim đang chiếu (status=current)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_status_upcoming" label="Lấy Phim sắp chiếu (status=upcoming)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_status_theater" label="Lấy Phim chiếu rạp (status=theater)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_exclusive" label="Lấy Phim độc quyền (exclusive)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_vietsub" label="Lấy Phim Vietsub" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_thuyetminh" label="Lấy Phim Thuyết minh" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                      <Form.Item name="home_prebuild_enable_longtieng" label="Lấy Phim Lồng tiếng" valuePropName="checked">
+                        <Switch />
                       </Form.Item>
                     </Card>
                   </>
