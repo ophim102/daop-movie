@@ -27,7 +27,7 @@
     if (getCreateClient()) return Promise.resolve();
     return new Promise(function (resolve) {
       var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
       s.onload = function () { resolve(); };
       s.onerror = function () { resolve(); };
       document.head.appendChild(s);
@@ -82,6 +82,20 @@
     });
   }
 
+  var _clientPromise = null;
+  function ensureClient() {
+    if (window.DAOP && window.DAOP._supabaseUser) return Promise.resolve(window.DAOP._supabaseUser);
+    if (_clientPromise) return _clientPromise;
+    _clientPromise = initClient().then(function (c) {
+      if (!c) {
+        _clientPromise = null;
+        return null;
+      }
+      return c;
+    });
+    return _clientPromise;
+  }
+
   function refreshUi(client) {
     if (!client) return;
     client.auth.getSession().then(function (res) {
@@ -96,17 +110,7 @@
     });
   }
 
-  function bind(client) {
-    if (!client) return;
-
-    refreshUi(client);
-    client.auth.onAuthStateChange(function () {
-      refreshUi(client);
-      if (window.DAOP && window.DAOP.userSync) {
-        window.DAOP.userSync.sync();
-      }
-    });
-
+  function bindActions() {
     function getCreds() {
       return {
         email: (emailEl && emailEl.value || '').trim(),
@@ -130,16 +134,20 @@
           return;
         }
         setStatus('Đang đăng nhập...');
-        client.auth.signInWithPassword(c).then(function (r) {
-          if (r.error) {
-            setStatus(r.error.message || 'Đăng nhập thất bại', true);
-            return;
-          }
-          setStatus('Đăng nhập thành công.');
-          if (window.DAOP && window.DAOP.userSync) window.DAOP.userSync.sync();
-          setTimeout(function () {
-            window.location.href = '/nguoi-dung.html';
-          }, 300);
+        ensureClient().then(function (client) {
+          if (!client) return;
+          refreshUi(client);
+          client.auth.signInWithPassword(c).then(function (r) {
+            if (r.error) {
+              setStatus(r.error.message || 'Đăng nhập thất bại', true);
+              return;
+            }
+            setStatus('Đăng nhập thành công.');
+            if (window.DAOP && window.DAOP.userSync) window.DAOP.userSync.sync();
+            setTimeout(function () {
+              window.location.href = '/nguoi-dung.html';
+            }, 300);
+          });
         });
       });
     }
@@ -166,16 +174,20 @@
         }
         setStatus('Đang tạo tài khoản...');
         var redirectTo = window.location.origin + '/xac-thuc.html';
-        client.auth.signUp({
-          email: c.email,
-          password: c.password,
-          options: { emailRedirectTo: redirectTo, data: { full_name: fullName } },
-        }).then(function (r) {
-          if (r.error) {
-            setStatus(r.error.message || 'Đăng ký thất bại', true);
-            return;
-          }
-          setStatus('Đăng ký thành công. Kiểm tra email để xác nhận.');
+        ensureClient().then(function (client) {
+          if (!client) return;
+          refreshUi(client);
+          client.auth.signUp({
+            email: c.email,
+            password: c.password,
+            options: { emailRedirectTo: redirectTo, data: { full_name: fullName } },
+          }).then(function (r) {
+            if (r.error) {
+              setStatus(r.error.message || 'Đăng ký thất bại', true);
+              return;
+            }
+            setStatus('Đăng ký thành công. Kiểm tra email để xác nhận.');
+          });
         });
       });
     }
@@ -183,8 +195,12 @@
     if (btnLogout) {
       btnLogout.addEventListener('click', function () {
         setStatus('Đang đăng xuất...');
-        client.auth.signOut().then(function () {
-          setStatus('Đã đăng xuất.');
+        ensureClient().then(function (client) {
+          if (!client) return;
+          client.auth.signOut().then(function () {
+            setStatus('Đã đăng xuất.');
+            refreshUi(client);
+          });
         });
       });
     }
@@ -198,8 +214,16 @@
   }
 
   function init() {
-    initClient().then(function (client) {
-      bind(client);
+    bindActions();
+    ensureClient().then(function (client) {
+      if (!client) return;
+      refreshUi(client);
+      client.auth.onAuthStateChange(function () {
+        refreshUi(client);
+        if (window.DAOP && window.DAOP.userSync) {
+          window.DAOP.userSync.sync();
+        }
+      });
     });
   }
 

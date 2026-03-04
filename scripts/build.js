@@ -2318,6 +2318,14 @@ async function exportConfigFromSupabase() {
   const key = process.env.SUPABASE_ADMIN_SERVICE_ROLE_KEY;
   if (!url || !key) {
     console.warn('SUPABASE_ADMIN_URL hoặc SUPABASE_ADMIN_SERVICE_ROLE_KEY chưa đặt — dùng config mặc định. Cập nhật trên Admin sẽ không xuất ra website. Thêm 2 secret này vào GitHub Actions (build-on-demand) để export đúng từ Supabase.');
+    try {
+      const configDir = path.join(PUBLIC_DATA, 'config');
+      const hasExisting = await fs.pathExists(path.join(configDir, 'site-settings.json'));
+      if (hasExisting) {
+        console.warn('Config đã tồn tại (public/data/config). Bỏ qua ghi đè default để tránh reset settings.');
+        return;
+      }
+    } catch {}
     await writeDefaultConfig();
     return;
   }
