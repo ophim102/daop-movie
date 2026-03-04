@@ -21,13 +21,7 @@ body {
 }
 
 body.theme-light {
-  --bg: #f6f8fa;
-  --card: #ffffff;
-  --border: #d0d7de;
-  --text: #24292f;
-  --muted: #57606a;
-  --accent: #0969da;
-  --accent-hover: #0550ae;
+  background: #f6f8fa;
 }
 a {
   color: var(--link-color, var(--accent));
@@ -79,7 +73,7 @@ a:hover {
 
 .theme-toggle {
   position: fixed;
-  top: 0.75rem;
+  bottom: 0.75rem;
   left: 0.75rem;
   z-index: 2000;
   width: 44px;
@@ -94,6 +88,7 @@ a:hover {
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.2s ease, color 0.2s ease;
+  touch-action: manipulation;
 }
 body.theme-light .theme-toggle {
   background: rgba(255, 255, 255, 0.9);
@@ -107,6 +102,7 @@ body.theme-light .theme-toggle {
   height: 20px;
   display: block;
   fill: currentColor;
+  overflow: visible;
 }
 
 body.site-header--collapsed .site-header {
