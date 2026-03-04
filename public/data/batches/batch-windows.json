@@ -1,11 +1,47 @@
 {
   "baseBatchSize": 120,
   "maxBytes": 300000,
+<<<<<<< HEAD
   "total": 24,
   "windows": [
     {
       "start": 0,
       "end": 24
+=======
+  "total": 240,
+  "windows": [
+    {
+      "start": 0,
+      "end": 5
+    },
+    {
+      "start": 5,
+      "end": 10
+    },
+    {
+      "start": 10,
+      "end": 22
+    },
+    {
+      "start": 22,
+      "end": 28
+    },
+    {
+      "start": 28,
+      "end": 55
+    },
+    {
+      "start": 55,
+      "end": 120
+    },
+    {
+      "start": 120,
+      "end": 193
+    },
+    {
+      "start": 193,
+      "end": 240
+>>>>>>> 9a295e1434743c1fc71b6648706e10cf923b6ed8
     }
   ]
 }
