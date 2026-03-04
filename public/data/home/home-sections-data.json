@@ -3912,8 +3912,7 @@
       "699c7049f07c400a86caa21f",
       "69a57dc2f063d23bbbcee1d5",
       "699c7307f063d23bbbcb694f",
-      "69849cd2ccc6cea26874ef34",
-      "62bd3e259464119c3454b6ba"
+      "69849cd2ccc6cea26874ef34"
     ],
     "movies": [
       {
@@ -4056,45 +4055,6 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-01T11:14:47.000Z"
-      },
-      {
-        "id": "62bd3e259464119c3454b6ba",
-        "title": "Thử Thách Thần Tượng",
-        "origin_name": "RUNNING MAN",
-        "slug": "thu-thach-than-tuong",
-        "thumb": "/uploads/movies/thu-thach-than-tuong-thumb.jpg",
-        "poster": "",
-        "year": 2010,
-        "type": "tvshows",
-        "genre": [
-          {
-            "id": "620a221de0fc277084dfd1c1",
-            "name": "Hài Hước",
-            "slug": "hai-huoc"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 791",
-        "quality": "HD",
-        "status": "ongoing",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-02-23T22:27:59.000Z"
       }
     ]
   },
