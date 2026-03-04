@@ -20,6 +20,7 @@ const OPHIM_AUTO_KEYS = {
 const UPDATE_DATA_TWO_PHASE_KEY = 'update_data_two_phase';
 const UPDATE_DATA_MANUAL_TWO_PHASE_KEY = 'update_data_manual_two_phase';
 const UPLOAD_IMAGES_AFTER_BUILD_KEY = 'upload_images_after_build';
+const DEPLOY_AFTER_R2_UPLOAD_KEY = 'deploy_after_r2_upload';
 
 const UPLOAD_R2_KEYS = {
   mode: 'upload_r2_mode',
@@ -77,6 +78,7 @@ export default function GitHubActions() {
   const [twoPhase, setTwoPhase] = useState(false);
   const [autoTwoPhase, setAutoTwoPhase] = useState(false);
   const [autoUploadImagesAfterBuild, setAutoUploadImagesAfterBuild] = useState(false);
+  const [deployAfterR2Upload, setDeployAfterR2Upload] = useState(false);
   const [updateSettings, setUpdateSettings] = useState<{ start_page: number; end_page: number }>({
     start_page: 1,
     end_page: 1,
@@ -150,6 +152,7 @@ export default function GitHubActions() {
         UPDATE_DATA_TWO_PHASE_KEY,
         UPDATE_DATA_MANUAL_TWO_PHASE_KEY,
         UPLOAD_IMAGES_AFTER_BUILD_KEY,
+        DEPLOY_AFTER_R2_UPLOAD_KEY,
         UPLOAD_R2_KEYS.mode,
         UPLOAD_R2_KEYS.quality,
         UPLOAD_R2_KEYS.thumb_quality,
@@ -177,9 +180,13 @@ export default function GitHubActions() {
     const tUpload = (map[UPLOAD_IMAGES_AFTER_BUILD_KEY] || '').toString().trim().toLowerCase();
     const tUploadOn = (tUpload === '1' || tUpload === 'true');
 
+    const tDeployAfter = (map[DEPLOY_AFTER_R2_UPLOAD_KEY] || '').toString().trim().toLowerCase();
+    const tDeployAfterOn = (tDeployAfter === '1' || tDeployAfter === 'true');
+
     setAutoTwoPhase(t2On);
     setAutoUploadImagesAfterBuild(tUploadOn);
     setTwoPhase(tManual2On);
+    setDeployAfterR2Upload(tDeployAfterOn);
 
     setUpdateSettings({ start_page, end_page });
     form.setFieldsValue({
@@ -251,6 +258,7 @@ export default function GitHubActions() {
           { key: UPDATE_DATA_TWO_PHASE_KEY, value: autoTwoPhase ? '1' : '0', updated_at: now },
           { key: UPDATE_DATA_MANUAL_TWO_PHASE_KEY, value: twoPhase ? '1' : '0', updated_at: now },
           { key: UPLOAD_IMAGES_AFTER_BUILD_KEY, value: autoUploadImagesAfterBuild ? '1' : '0', updated_at: now },
+          { key: DEPLOY_AFTER_R2_UPLOAD_KEY, value: deployAfterR2Upload ? '1' : '0', updated_at: now },
         ],
         { onConflict: 'key' }
       );
@@ -421,6 +429,13 @@ export default function GitHubActions() {
             <Space size={8} align="center">
               <Text>Tự động upload ảnh lên R2 sau khi Update data:</Text>
               <Switch checked={autoUploadImagesAfterBuild} onChange={setAutoUploadImagesAfterBuild} />
+            </Space>
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 8 }}>
+            <Space size={8} align="center">
+              <Text>Chỉ deploy Cloudflare sau khi upload ảnh R2 xong (khi chạy 2 pha):</Text>
+              <Switch checked={deployAfterR2Upload} onChange={setDeployAfterR2Upload} />
             </Space>
           </Form.Item>
 

@@ -18,11 +18,11 @@ on:
       start_page:
         description: 'Trang bắt đầu (OPhim), 0 = mặc định'
         required: false
-        default: '1'
+        default: '0'
       end_page:
         description: 'Trang kết thúc (OPhim), 0 = không giới hạn'
         required: false
-        default: '1'
+        default: '0'
       clean:
         description: 'Xóa dữ liệu cũ trước khi build (true/false)'
         required: false
@@ -71,8 +71,8 @@ jobs:
         env:
           CLEAN_OLD_DATA: ${{ inputs.clean == 'true' && '1' || '0' }}
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
-          OPHIM_START_PAGE: ${{ inputs.start_page || vars.OPHIM_START_PAGE || '1' }}
-          OPHIM_END_PAGE: ${{ inputs.end_page || vars.OPHIM_END_PAGE || '1' }}
+          OPHIM_START_PAGE: ${{ inputs.start_page != '0' && inputs.start_page || env.OPHIM_START_PAGE || vars.OPHIM_START_PAGE || '1' }}
+          OPHIM_END_PAGE: ${{ inputs.end_page != '0' && inputs.end_page || env.OPHIM_END_PAGE || vars.OPHIM_END_PAGE || '1' }}
           OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
@@ -110,8 +110,8 @@ jobs:
           CLEAN_OLD_DATA: ${{ inputs.clean == 'true' && '1' || '0' }}
           SKIP_TMDB: '1'
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
-          OPHIM_START_PAGE: ${{ inputs.start_page || vars.OPHIM_START_PAGE || '1' }}
-          OPHIM_END_PAGE: ${{ inputs.end_page || vars.OPHIM_END_PAGE || '1' }}
+          OPHIM_START_PAGE: ${{ inputs.start_page != '0' && inputs.start_page || env.OPHIM_START_PAGE || vars.OPHIM_START_PAGE || '1' }}
+          OPHIM_END_PAGE: ${{ inputs.end_page != '0' && inputs.end_page || env.OPHIM_END_PAGE || vars.OPHIM_END_PAGE || '1' }}
           OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
@@ -133,7 +133,7 @@ jobs:
           git diff --staged --quiet || (git commit -m "chore: update data (core)" && git push)
 
       - name: Deploy CORE to Cloudflare Pages (2-phase)
-        if: ${{ env.TWO_PHASE == 'true' }}
+        if: ${{ env.TWO_PHASE == 'true' && (env.DEPLOY_AFTER_R2_UPLOAD != '1' || env.UPLOAD_IMAGES != 'true') }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -148,8 +148,8 @@ jobs:
           CLEAN_OLD_DATA: '0'
           TMDB_ONLY: '1'
           OPHIM_BASE_URL: ${{ secrets.OPHIM_BASE_URL || 'https://ophim1.com/v1/api' }}
-          OPHIM_START_PAGE: ${{ inputs.start_page || vars.OPHIM_START_PAGE || '1' }}
-          OPHIM_END_PAGE: ${{ inputs.end_page || vars.OPHIM_END_PAGE || '1' }}
+          OPHIM_START_PAGE: ${{ inputs.start_page != '0' && inputs.start_page || env.OPHIM_START_PAGE || vars.OPHIM_START_PAGE || '1' }}
+          OPHIM_END_PAGE: ${{ inputs.end_page != '0' && inputs.end_page || env.OPHIM_END_PAGE || vars.OPHIM_END_PAGE || '1' }}
           OPHIM_FETCH_TIMEOUT_MS: ${{ vars.OPHIM_FETCH_TIMEOUT_MS || '25000' }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}

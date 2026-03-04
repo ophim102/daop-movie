@@ -69,6 +69,7 @@ jobs:
           git diff --staged --quiet || (git commit -m "chore: core build (skip tmdb)" && git push)
 
       - name: Deploy CORE to Cloudflare Pages
+        if: ${{ env.DEPLOY_AFTER_R2_UPLOAD != '1' || inputs.upload_images != 'true' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

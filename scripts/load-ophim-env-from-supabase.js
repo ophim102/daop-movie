@@ -27,6 +27,7 @@ async function main() {
     'ophim_end_page',
     'update_data_two_phase',
     'upload_images_after_build',
+    'deploy_after_r2_upload',
   ];
 
   const { data, error } = await supabase
@@ -56,11 +57,15 @@ async function main() {
   const uploadImages = String(map.upload_images_after_build || '').trim();
   const uploadImagesOn = (uploadImages === '1' || uploadImages.toLowerCase() === 'true');
 
+  const deployAfter = String(map.deploy_after_r2_upload || '').trim();
+  const deployAfterOn = (deployAfter === '1' || deployAfter.toLowerCase() === 'true');
+
   const lines = [
     `OPHIM_START_PAGE=${startPage}`,
     `OPHIM_END_PAGE=${endPage}`,
     `UPDATE_DATA_TWO_PHASE=${twoPhaseOn ? 1 : 0}`,
     `UPLOAD_IMAGES_AFTER_BUILD=${uploadImagesOn ? 1 : 0}`,
+    `DEPLOY_AFTER_R2_UPLOAD=${deployAfterOn ? 1 : 0}`,
   ];
 
   fs.appendFileSync(envFile, lines.join('\n') + '\n', 'utf8');
