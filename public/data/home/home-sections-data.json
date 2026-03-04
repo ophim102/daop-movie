@@ -4292,8 +4292,7 @@
       "699c7049f07c400a86caa21f",
       "69a57dc2f063d23bbbcee1d5",
       "699c7307f063d23bbbcb694f",
-      "69849cd2ccc6cea26874ef34",
-      "62bd3e259464119c3454b6ba"
+      "69849cd2ccc6cea26874ef34"
     ],
     "movies": [
       {
@@ -4436,45 +4435,6 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-01T11:14:47.000Z"
-      },
-      {
-        "id": "62bd3e259464119c3454b6ba",
-        "title": "Thử Thách Thần Tượng",
-        "origin_name": "RUNNING MAN",
-        "slug": "thu-thach-than-tuong",
-        "thumb": "/uploads/movies/thu-thach-than-tuong-thumb.jpg",
-        "poster": "",
-        "year": 2010,
-        "type": "tvshows",
-        "genre": [
-          {
-            "id": "620a221de0fc277084dfd1c1",
-            "name": "Hài Hước",
-            "slug": "hai-huoc"
-          },
-          {
-            "id": "620a2293e0fc277084dfd489",
-            "name": "Phiêu Lưu",
-            "slug": "phieu-luu"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Tập 791",
-        "quality": "HD",
-        "status": "ongoing",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-02-23T22:27:59.000Z"
       }
     ]
   },
@@ -7635,8 +7595,7 @@
       "65f9b8daf49fd219607d6371",
       "648451260fba73ffd2ea91a1",
       "6540f7b9e2f0dc639fda12fb",
-      "65991e0e7074f826ccbde32e",
-      "63c12e757e5c0d5397ae8e79"
+      "65991e0e7074f826ccbde32e"
     ],
     "movies": [
       {
@@ -7984,50 +7943,6 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-02-24T16:04:34.000Z"
-      },
-      {
-        "id": "63c12e757e5c0d5397ae8e79",
-        "title": "Đối Với Tôi, Anh Ấy Là Người Nguy Hiểm",
-        "origin_name": "My Lethal Man",
-        "slug": "doi-voi-toi-anh-ay-la-nguoi-nguy-hiem",
-        "thumb": "/uploads/movies/doi-voi-toi-anh-ay-la-nguoi-nguy-hiem-thumb.jpg",
-        "poster": "",
-        "year": 2023,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620a220de0fc277084dfd16d",
-            "name": "Tình Cảm",
-            "slug": "tinh-cam"
-          },
-          {
-            "id": "620a2238e0fc277084dfd291",
-            "name": "Tâm Lý",
-            "slug": "tam-ly"
-          },
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "62093063196e9f4ab6b448b8",
-            "name": "Trung Quốc",
-            "slug": "trung-quoc"
-          }
-        ],
-        "lang_key": "Vietsub + Thuyết Minh",
-        "episode_current": "Hoàn tất (24/24)",
-        "quality": "FHD",
-        "status": "completed",
-        "showtimes": "<p>11:00 giờ hàng ngày cập nhật 2 tập</p>",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": false,
-        "modified": "2026-02-24T16:04:15.000Z"
       }
     ]
   }
