@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["tr"] = {"tram-gac-trong-suong":{"id":"69a68580400bf394bd8dfb5c","i":20,"title":"Trạm Gác Trong Sương","origin_name":"Lookout","slug":"tram-gac-trong-suong","thumb":"/uploads/movies/tram-gac-trong-suong-thumb.jpg","year":2025,"type":"single","episode_current":"Full"}};
