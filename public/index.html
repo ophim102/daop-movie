@@ -153,6 +153,20 @@
           if (!Number.isFinite(v) || v < 0) v = 0;
           return Math.min(6, Math.floor(v));
         }
+        function getColsForBp(xs, sm, md, lg) {
+          var k = getBpKey();
+          if (k === 'lg') return lg;
+          if (k === 'md') return md;
+          if (k === 'sm') return sm;
+          return xs;
+        }
+        function getFeaturedSpanForBp(fxs, fsm, fmd, flg) {
+          var k = getBpKey();
+          if (k === 'lg') return flg;
+          if (k === 'md') return fmd;
+          if (k === 'sm') return fsm;
+          return fxs;
+        }
         function markFeaturedCardHtml(html) {
           if (!html) return html;
           return String(html).replace('class="movie-card', 'class="movie-card is-featured');
@@ -274,8 +288,21 @@
               var gridEl2 = secEl.querySelector('.movies-grid');
               if (!featuredEl || !gridEl2) return;
               var fCount = getFeaturedCount(sec);
-              var featured = (movies || []).slice(0, fCount);
-              var rest = (movies || []).slice(fCount);
+              var colsNow = getColsForBp(xs, sm, md, lg);
+              var spanNow = getFeaturedSpanForBp(fxs, fsm, fmd, flg);
+              if (!Number.isFinite(colsNow) || colsNow <= 0) colsNow = 4;
+              if (!Number.isFinite(spanNow) || spanNow <= 0) spanNow = 2;
+
+              var maxFeaturedInRow = Math.max(1, Math.floor(colsNow / spanNow));
+              var featuredInRow = Math.max(0, Math.min(fCount, maxFeaturedInRow));
+              var featured = (movies || []).slice(0, featuredInRow);
+              var afterFeatured = (movies || []).slice(featuredInRow);
+              var usedSmall = 0;
+              var remainingCols = colsNow - (featuredInRow * spanNow);
+              if (!Number.isFinite(remainingCols) || remainingCols < 0) remainingCols = 0;
+              var smalls = remainingCols > 0 ? afterFeatured.slice(0, remainingCols) : [];
+              usedSmall = smalls.length;
+              var rest = afterFeatured.slice(usedSmall);
 
               if (!featured.length) {
                 featuredEl.innerHTML = '';
@@ -283,6 +310,9 @@
                 var outF = '';
                 featured.forEach(function (m) {
                   outF += markFeaturedCardHtml(window.DAOP.renderMovieCard(m, base, { cardOrientation: 'horizontal' }));
+                });
+                smalls.forEach(function (m) {
+                  outF += window.DAOP.renderMovieCard(m, base, { cardOrientation: 'vertical' });
                 });
                 featuredEl.innerHTML = outF;
               }
