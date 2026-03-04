@@ -167,6 +167,19 @@
           if (k === 'sm') return fsm;
           return fxs;
         }
+        function trimToFullRows(arr, cols) {
+          try {
+            var a = Array.isArray(arr) ? arr : [];
+            var c = Number(cols);
+            if (!Number.isFinite(c) || c <= 0) return a;
+            if (a.length < c) return a;
+            var n = Math.floor(a.length / c) * c;
+            if (n <= 0) return a;
+            return a.slice(0, n);
+          } catch (e) {
+            return Array.isArray(arr) ? arr : [];
+          }
+        }
         function markFeaturedCardHtml(html) {
           if (!html) return html;
           return String(html).replace('class="movie-card', 'class="movie-card is-featured');
@@ -304,6 +317,7 @@
               var smalls = (allowFillSmalls && remainingCols > 0) ? afterFeatured.slice(0, remainingCols) : [];
               usedSmall = smalls.length;
               var rest = afterFeatured.slice(usedSmall);
+              rest = trimToFullRows(rest, colsNow);
 
               if (!featured.length) {
                 featuredEl.innerHTML = '';
@@ -330,8 +344,14 @@
             } else {
               var gridEl = secEl.querySelector('.movies-grid');
               if (!gridEl) return;
+              var colsNow2 = getColsForBp(xs, sm, md, lg);
+              var movies2 = trimToFullRows(movies, colsNow2);
+              if (!movies2.length) {
+                gridEl.innerHTML = '<p>Không có phim.</p>';
+                return;
+              }
               var out3 = '';
-              movies.forEach(function(m){ out3 += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }); });
+              movies2.forEach(function(m){ out3 += window.DAOP.renderMovieCard(m, base, { cardOrientation: cardOrientation }); });
               gridEl.innerHTML = out3;
             }
           });
