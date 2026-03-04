@@ -102,13 +102,13 @@
   "upload_r2_limit": "0",
   "upload_r2_concurrency": "6",
   "upload_r2_reupload_existing": "0",
+  "site_url": "https://daop.pages.dev/",
   "ophim_start_page": "11",
   "ophim_end_page": "1",
   "ophim_auto_start_page": "10",
   "ophim_auto_end_page": "1",
   "update_data_two_phase": "1",
-  "site_url": "https://daop.pages.dev/",
-  "upload_images_after_build": "1",
+  "deploy_after_r2_upload": "1",
   "home_prebuild_enabled": "",
   "home_prebuild_limit": "",
   "home_prebuild_enable_series": "",
@@ -120,5 +120,6 @@
   "home_prebuild_enable_genre": "",
   "home_prebuild_genres": "",
   "home_prebuild_enable_country": "",
-  "home_prebuild_countries": ""
+  "home_prebuild_countries": "",
+  "upload_images_after_build": "1"
 }

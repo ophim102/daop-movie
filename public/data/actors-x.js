@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"xu-xu":["6981538df063d23bbbc4c7d1"],"xu-ruohan":["692f127d54d8512f7b458667"]},"names":{"xu-xu":"Xu Xu","xu-ruohan":"Từ Nhược Hàm"},"meta":{"xu-xu":{"tmdb_id":5151498,"profile":"https://image.tmdb.org/t/p/w500/xAr8rtsx8plNKP5I5AOEMBqyJ9q.jpg","tmdb_url":"https://www.themoviedb.org/person/5151498"},"xu-ruohan":{"tmdb_id":2914051,"profile":"https://image.tmdb.org/t/p/w500/2STQEbzr74sOlJ4iGZLyWxsMenp.jpg","tmdb_url":"https://www.themoviedb.org/person/2914051"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
