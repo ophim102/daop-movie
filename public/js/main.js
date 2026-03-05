@@ -576,7 +576,11 @@
       if (r2Domain && filename) {
         var lower = filename.toLowerCase();
         var folder = (lower.indexOf('poster') >= 0) ? 'posters' : 'thumbs';
-        return r2Domain + '/' + folder + '/' + filename;
+        var r2Name = filename;
+        if (!/\.(gif)$/i.test(r2Name)) {
+          r2Name = r2Name.replace(/\.(jpe?g|jpg|png|webp)$/i, '') + '.webp';
+        }
+        return r2Domain + '/' + folder + '/' + r2Name;
       }
       return ophimDomain + u;
     }

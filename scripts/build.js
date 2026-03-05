@@ -253,6 +253,7 @@ async function uploadToR2(buffer, key, contentType = 'image/webp') {
       Key: key,
       Body: buffer,
       ContentType: contentType,
+      CacheControl: 'public, max-age=31536000, immutable',
     })
   );
   const base = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
@@ -294,9 +295,7 @@ async function optimizeImageBuffer(buf, ext) {
   if (e === 'gif') return buf;
   try {
     const img = sharp(buf, { failOn: 'none' }).rotate();
-    if (e === 'png') return await img.png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
-    if (e === 'webp') return await img.webp({ quality: 80 }).toBuffer();
-    return await img.jpeg({ quality: 80, mozjpeg: true }).toBuffer();
+    return await img.webp({ quality: 80 }).toBuffer();
   } catch {
     return buf;
   }
@@ -313,11 +312,13 @@ async function processImage(url, slug, folder = 'thumbs') {
     const ct = res.headers.get('content-type') || '';
     const ext = guessExtFromContentType(ct) || guessExtFromUrl(url) || 'jpg';
     const fromUrlName = sanitizeR2Name((new URL(url).pathname || '').split('/').pop() || '');
-    const filename = fromUrlName || sanitizeR2Name(`${slug}.${ext}`) || `${slug}.${ext}`;
+    const baseName = (fromUrlName || sanitizeR2Name(`${slug}.${ext}`) || `${slug}.${ext}`)
+      .replace(/\.(jpe?g|jpg|png|webp)$/i, '');
+    const filename = (baseName || slug) + (String(ext).toLowerCase() === 'gif' ? '.gif' : '.webp');
 
     const optimized = await optimizeImageBuffer(buf, ext);
     const key = `${folder}/${filename}`;
-    const r2Url = await uploadToR2(optimized, key, `image/${ext === 'jpg' ? 'jpeg' : ext}`);
+    const r2Url = await uploadToR2(optimized, key, String(ext).toLowerCase() === 'gif' ? 'image/gif' : 'image/webp');
     return r2Url || url;
   } catch {
     return url;

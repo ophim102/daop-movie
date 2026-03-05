@@ -38,9 +38,7 @@ async function optimizeImage(buffer: Buffer, contentType: string) {
   if (contentType === 'image/gif') return buffer;
   try {
     const img = sharp(buffer, { failOn: 'none' }).rotate();
-    if (contentType === 'image/png') return await img.png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
-    if (contentType === 'image/webp') return await img.webp({ quality: 80 }).toBuffer();
-    return await img.jpeg({ quality: 80, mozjpeg: true }).toBuffer();
+    return await img.webp({ quality: 80 }).toBuffer();
   } catch {
     return buffer;
   }
@@ -75,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   let contentType = (body.contentType || 'image/jpeg').toLowerCase();
   if (!ALLOWED_TYPES.includes(contentType)) contentType = 'image/jpeg';
-  const ext = contentType === 'image/png' ? 'png' : contentType === 'image/webp' ? 'webp' : contentType === 'image/gif' ? 'gif' : 'jpg';
+  const ext = contentType === 'image/gif' ? 'gif' : 'webp';
   let buffer: Buffer;
   try {
     buffer = Buffer.from(base64, 'base64');
@@ -89,13 +87,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const folder = sanitizeFolder(body?.folder || 'uploads');
-  const filename = sanitizeFilename(body?.filename || `image.${ext}`);
+  const rawFilename = sanitizeFilename(body?.filename || `image.${ext}`);
+  const filename = ext === 'webp'
+    ? (rawFilename.replace(/\.(jpe?g|jpg|png|webp)$/i, '') + '.webp')
+    : rawFilename;
   if (!filename) {
     res.status(400).json({ error: 'Thiếu filename hoặc filename không hợp lệ' });
     return;
   }
 
   const optimized = await optimizeImage(buffer, contentType);
+  if (ext === 'webp') contentType = 'image/webp';
 
   const client = getR2Client();
   const bucket = process.env.R2_BUCKET_NAME;
@@ -120,6 +122,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         Key: key,
         Body: optimized,
         ContentType: contentType,
+        CacheControl: 'public, max-age=31536000, immutable',
       })
     );
   } catch (e: any) {

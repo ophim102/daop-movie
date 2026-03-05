@@ -56,6 +56,7 @@ async function uploadToR2(buffer, key, contentType) {
       Key: key,
       Body: buffer,
       ContentType: contentType,
+      CacheControl: 'public, max-age=31536000, immutable',
     })
   );
   return true;
@@ -159,9 +160,7 @@ async function optimizeAndResize(buf, ext, opts) {
 
   const q = opts && opts.quality ? Math.max(1, Math.min(100, Number(opts.quality))) : 80;
   try {
-    if (e === 'png') return await img.png({ compressionLevel: 9, adaptiveFiltering: true }).toBuffer();
-    if (e === 'webp') return await img.webp({ quality: q }).toBuffer();
-    return await img.jpeg({ quality: q, mozjpeg: true }).toBuffer();
+    return await img.webp({ quality: q }).toBuffer();
   } catch {
     return buf;
   }
@@ -429,7 +428,9 @@ async function main() {
       } catch {
         fromUrlName = '';
       }
-      const filename = fromUrlName || sanitizeR2Name(`${idStr}-${kind}.${ext}`) || `${idStr}-${kind}.${ext}`;
+      const baseName = (fromUrlName || sanitizeR2Name(`${idStr}-${kind}.${ext}`) || `${idStr}-${kind}.${ext}`)
+        .replace(/\.(jpe?g|jpg|png|webp)$/i, '');
+      const filename = (baseName || `${idStr}-${kind}`) + '.webp';
 
       const q = kind === 'thumb' ? thumbQuality : posterQuality;
       const w = kind === 'thumb' ? thumbW : posterW;
@@ -440,7 +441,7 @@ async function main() {
       const key = `${folder}/${filename}`;
 
       try {
-        await uploadToR2(optimized, key, contentTypeFromExt(ext));
+        await uploadToR2(optimized, key, 'image/webp');
         uploaded++;
         state.uploaded[idStr] = state.uploaded[idStr] || {};
         state.uploaded[idStr][kind] = { ok: true, at: Date.now(), key, bytes: optimized.length };
