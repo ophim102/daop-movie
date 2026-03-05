@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["bo"] = {"bo-gia-tro-lai":{"id":"69785a930a0114095c72a8c7","i":172,"title":"Bố Già Trở Lại","origin_name":"Bố Già Trở Lại","slug":"bo-gia-tro-lai","thumb":"/uploads/movies/bo-gia-tro-lai-thumb.jpg","year":2026,"type":"single","episode_current":"Trailer"}};

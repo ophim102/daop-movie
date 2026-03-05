@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["go"] = {"goi-ten-tinh-yeu":{"id":"696b4c0f988d934ea9e46519","i":83,"title":"Gọi Tên Tình Yêu","origin_name":"Love, Now","slug":"goi-ten-tinh-yeu","thumb":"/uploads/movies/goi-ten-tinh-yeu-thumb.jpg","year":2012,"type":"series","episode_current":"Hoàn tất (72/72)"}};

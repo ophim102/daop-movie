@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ye"] = {"yet-hi":{"id":"695f833732adc86a1e6fe2a0","i":47,"title":"Yết Hí","origin_name":"Love Between Lines","slug":"yet-hi","thumb":"/uploads/movies/yet-hi-thumb.jpg","year":2026,"type":"series","episode_current":"Hoàn tất (28/28)"}};

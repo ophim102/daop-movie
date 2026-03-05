@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["la"] = {"lang-lang-nhan-sinh":{"id":"696b2005da6ce23e8e961125","i":79,"title":"Lãng Lãng Nhân Sinh","origin_name":"Row to Win","slug":"lang-lang-nhan-sinh","thumb":"/uploads/movies/lang-lang-nhan-sinh-thumb.jpg","year":2025,"type":"single","episode_current":"Full"}};

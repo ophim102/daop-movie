@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.searchPrefix = window.DAOP.searchPrefix || {};window.DAOP.searchPrefix["x_"] = [{"id":"692f11ac76f490735cc50f33","title":"LOVE (X)","origin_name":"LOVE (X)","slug":"love-x","thumb":"/uploads/movies/love-x-thumb.jpg","year":2025,"type":"series","episode_current":"Hoàn tất (10/10)","_t":"love x love x love x"}];

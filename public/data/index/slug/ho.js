@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["ho"] = {"hoang-dao-3-nguoi":{"id":"697ac1cbda6ce23e8e9755f8","i":181,"title":"Hoang Đảo 3 Người","origin_name":"Three","slug":"hoang-dao-3-nguoi","thumb":"/uploads/movies/hoang-dao-3-nguoi-thumb.jpg","year":2005,"type":"single","episode_current":"Full"}};

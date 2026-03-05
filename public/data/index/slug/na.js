@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["na"] = {"nam-nu-binh-thuong":{"id":"69800f5ad88856be77133b73","i":241,"title":"Nam Nữ Bình Thường","origin_name":"In Our Prime","slug":"nam-nu-binh-thuong","thumb":"/uploads/movies/nam-nu-binh-thuong-thumb.jpg","year":2023,"type":"single","episode_current":"Trailer"}};

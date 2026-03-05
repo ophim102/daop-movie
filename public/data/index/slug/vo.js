@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["vo"] = {"vo-le":{"id":"69785987f65d22d617a665d4","i":164,"title":"Vợ lẽ","origin_name":"Gundik","slug":"vo-le","thumb":"/uploads/movies/vo-le-thumb.jpg","year":2025,"type":"single","episode_current":"Trailer"}};
