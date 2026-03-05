@@ -12,7 +12,8 @@ type ActionId =
   | 'purge-movie-data'
   | 'export-to-sheets'
   | 'core-then-tmdb'
-  | 'upload-movie-images-r2';
+  | 'upload-movie-images-r2'
+  | 'delete-movie-images-r2';
 
 const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'build-on-demand', name: 'Build on demand', description: 'Build incremental (config Supabase + category pages), commit & push.' },
@@ -21,6 +22,7 @@ const ACTIONS: { id: ActionId; name: string; description: string }[] = [
   { id: 'purge-movie-data', name: 'Purge movie data', description: 'Xóa sạch dữ liệu phim đã build trong public/data (giữ config) để chạy update data lại từ đầu.' },
   { id: 'export-to-sheets', name: 'Export to Google Sheets', description: 'Đẩy phim từ dữ liệu build hiện tại xuống Google Sheets (chỉ append phim mới).' },
   { id: 'upload-movie-images-r2', name: 'Upload movie images to R2', description: 'Tải + nén + upload thumb/poster lên R2, rồi commit upload state.' },
+  { id: 'delete-movie-images-r2', name: 'Delete movie images on R2', description: 'Xóa ảnh trên R2 theo prefix/keys/movie_ids. Mặc định dry-run để an toàn.' },
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -320,6 +322,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       res.status(200).json({ ok: true, message: 'Upload movie images to R2 triggered' });
+      return;
+    }
+
+    if (action === 'delete-movie-images-r2') {
+      const inputs: Record<string, string> = {};
+      const pick = (k: string) => (req.body?.[k] ?? req.query?.[k]);
+
+      const keys = [
+        'mode',
+        'prefix',
+        'keys',
+        'movie_ids',
+        'kind',
+        'dry_run',
+        'limit',
+      ];
+
+      for (const k of keys) {
+        const v = pick(k);
+        if (v != null && String(v).trim() !== '') inputs[k] = String(v);
+      }
+
+      const r = await fetch(
+        `https://api.github.com/repos/${repo}/actions/workflows/delete-movie-images-r2.yml/dispatches`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ref: GITHUB_REF, inputs: Object.keys(inputs).length ? inputs : undefined }),
+        }
+      );
+
+      if (!r.ok) {
+        const t = await r.text();
+        let errMsg = t;
+        if (r.status === 404) {
+          errMsg = 'Workflow delete-movie-images-r2.yml không tìm thấy hoặc repo chưa có Actions.';
+        }
+        if (r.status === 401) {
+          errMsg = 'GITHUB_TOKEN không hợp lệ hoặc hết hạn.';
+        }
+        res.status(r.status).json({ error: errMsg });
+        return;
+      }
+
+      res.status(200).json({ ok: true, message: 'Delete movie images on R2 triggered' });
       return;
     }
 

@@ -106,6 +106,7 @@ export default function GitHubActions() {
   const [savingUploadSettings, setSavingUploadSettings] = useState(false);
   const [form] = Form.useForm();
   const [uploadForm] = Form.useForm();
+  const [deleteForm] = Form.useForm();
 
   const readTextFile = (file: File) => {
     return new Promise<string>((resolve, reject) => {
@@ -113,6 +114,55 @@ export default function GitHubActions() {
       reader.onload = () => resolve(String(reader.result || ''));
       reader.onerror = () => reject(new Error('Không đọc được file'));
       reader.readAsText(file);
+    });
+  };
+
+  const handleTriggerDeleteR2 = async () => {
+    const PHRASE = 'XOA ANH R2';
+    const values = await deleteForm.validateFields();
+    const dryRun = !!values.dry_run;
+    let typed = '';
+    Modal.confirm({
+      title: dryRun ? 'Xác nhận chạy thử xóa ảnh R2 (dry-run)' : 'Xác nhận XÓA ảnh hàng loạt trên R2',
+      okText: dryRun ? 'Chạy dry-run' : 'XÓA ảnh',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      content: (
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            Thao tác này sẽ {dryRun ? 'chỉ liệt kê đối tượng khớp điều kiện (không xóa thật).' : 'xóa ảnh hàng loạt trên R2 và không thể hoàn tác.'}
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            Nhập chính xác cụm sau để xác nhận: <b>{PHRASE}</b>
+          </div>
+          <Input autoFocus placeholder={PHRASE} onChange={(e) => { typed = e.target.value || ''; }} />
+        </div>
+      ),
+      onOk: async () => {
+        if ((typed || '').trim() !== PHRASE) {
+          message.error('Cụm xác nhận không đúng. Đã hủy thao tác.');
+          return Promise.reject();
+        }
+        setTriggering('delete-movie-images-r2');
+        try {
+          const payload: any = { ...values };
+          const res = await fetch(`${API_URL}/api/trigger-action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete-movie-images-r2', ...payload }),
+          });
+          const data = await res.json().catch(async () => ({ error: await res.text() }));
+          if (res.ok && data?.ok) {
+            message.success(data?.message || 'Đã kích hoạt xóa ảnh R2.');
+          } else {
+            message.error(data?.error || data?.message || `Lỗi ${res.status}`);
+          }
+        } catch (e: any) {
+          message.error(e?.message || 'Không kết nối được API.');
+        } finally {
+          setTriggering(null);
+        }
+      },
     });
   };
 
@@ -560,17 +610,21 @@ export default function GitHubActions() {
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: 8 }}>
-                      <Space size={8} align="center">
-                        <Text>Tự động upload ảnh lên R2 sau khi Update data:</Text>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                        <Text style={{ flex: '1 1 240px', minWidth: 0, whiteSpace: 'normal', wordBreak: 'break-word' }}>
+                          Tự động upload ảnh lên R2 sau khi Update data:
+                        </Text>
                         <Switch checked={autoUploadImagesAfterBuild} onChange={setAutoUploadImagesAfterBuild} />
-                      </Space>
+                      </div>
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: 8 }}>
-                      <Space size={8} align="center">
-                        <Text>Chỉ deploy Cloudflare sau khi upload ảnh R2 xong (khi chạy 2 pha):</Text>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                        <Text style={{ flex: '1 1 240px', minWidth: 0, whiteSpace: 'normal', wordBreak: 'break-word' }}>
+                          Chỉ deploy Cloudflare sau khi upload ảnh R2 xong (khi chạy 2 pha):
+                        </Text>
                         <Switch checked={deployAfterR2Upload} onChange={setDeployAfterR2Upload} />
-                      </Space>
+                      </div>
                     </Form.Item>
 
                     <Text strong style={{ width: '100%' }}>Thủ công (khi bấm Kích hoạt):</Text>
@@ -601,6 +655,77 @@ export default function GitHubActions() {
                           <Text type="secondary">Tổng phim: {totalMovies} • Tổng trang: {totalPages}</Text>
                         )}
                       </Space>
+                    </Form.Item>
+                  </Form>
+                </Card>
+
+                <Card title="Delete movie images on R2" style={{ marginTop: 24 }}>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                    Xóa ảnh trên R2 theo prefix (thư mục), theo keys, hoặc theo movie ids (đọc từ r2_upload_state.json). Mặc định chạy dry-run để an toàn.
+                  </Text>
+
+                  <Form
+                    form={deleteForm}
+                    layout="vertical"
+                    initialValues={{
+                      mode: 'prefix',
+                      prefix: 'thumbs/',
+                      keys: '',
+                      movie_ids: '',
+                      kind: 'both',
+                      dry_run: true,
+                      limit: 0,
+                    }}
+                  >
+                    <Space wrap align="start">
+                      <Form.Item name="mode" label="Mode">
+                        <Radio.Group optionType="button" buttonStyle="solid">
+                          <Radio.Button value="prefix">prefix</Radio.Button>
+                          <Radio.Button value="keys">keys</Radio.Button>
+                          <Radio.Button value="movie_ids">movie_ids</Radio.Button>
+                        </Radio.Group>
+                      </Form.Item>
+
+                      <Form.Item name="kind" label="Loại ảnh">
+                        <Radio.Group optionType="button" buttonStyle="solid">
+                          <Radio.Button value="both">both</Radio.Button>
+                          <Radio.Button value="thumb">thumb</Radio.Button>
+                          <Radio.Button value="poster">poster</Radio.Button>
+                        </Radio.Group>
+                      </Form.Item>
+
+                      <Form.Item name="limit" label="Limit (0 = no limit)">
+                        <InputNumber min={0} style={{ width: 190 }} />
+                      </Form.Item>
+
+                      <Form.Item name="dry_run" label="Dry run (không xóa thật)" valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                    </Space>
+
+                    <Form.Item name="prefix" label="Prefix (ví dụ: thumbs/ hoặc posters/)">
+                      <Input placeholder="thumbs/" />
+                    </Form.Item>
+
+                    <Form.Item name="keys" label="Keys (mỗi dòng 1 key)">
+                      <Input.TextArea rows={3} placeholder="thumbs/a.jpg\nposters/b.jpg" />
+                    </Form.Item>
+
+                    <Form.Item name="movie_ids" label="Movie IDs (mỗi dòng 1 id)">
+                      <Input.TextArea rows={3} placeholder="62a4...\n6264..." />
+                    </Form.Item>
+
+                    <Form.Item>
+                      <Button
+                        danger
+                        type="primary"
+                        icon={triggering === 'delete-movie-images-r2' ? <Spin size="small" /> : <DeleteOutlined />}
+                        onClick={handleTriggerDeleteR2}
+                        loading={triggering === 'delete-movie-images-r2'}
+                        disabled={!!triggering}
+                      >
+                        Xóa ảnh R2
+                      </Button>
                     </Form.Item>
                   </Form>
                 </Card>
