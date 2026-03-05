@@ -1,0 +1,1 @@
+window.DAOP = window.DAOP || {};window.DAOP.slugIndex = window.DAOP.slugIndex || {};window.DAOP.slugIndex["se"] = {"serpents-lair":{"id":"6993c373b06c99c722f29890","i":220,"title":"Serpent's Lair","origin_name":"Serpent's Lair","slug":"serpents-lair","thumb":"/uploads/movies/serpents-lair-thumb.jpg","year":1995,"type":"single","episode_current":"Full"}};
