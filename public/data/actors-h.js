@@ -1,1 +1,1 @@
-window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
+window.actorsData = {"map":{"han-ki-woong":["68d269952ed633410a684f5a"]},"names":{"han-ki-woong":"Han Ki-woong"},"meta":{"han-ki-woong":{"tmdb_id":1531151,"profile":null,"tmdb_url":"https://www.themoviedb.org/person/1531151"}},"movies":{"han-ki-woong":[{"id":"68d269952ed633410a684f5a","title":"Vòng Xoáy Giả Tạo","origin_name":"A Graceful Liar","slug":"vong-xoay-gia-tao","thumb":"/uploads/movies/vong-xoay-gia-tao-thumb.jpg","year":2025,"type":"series","episode_current":"Tập 97"}]}};

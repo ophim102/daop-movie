@@ -41,7 +41,6 @@
     "featured_count_sm": 0,
     "featured_count_xs": 0,
     "ids": [
-      "68d269952ed633410a684f5a",
       "699fce7cb06c99c722f6e216",
       "69840ded400bf394bd83d41e",
       "69a81f8154ca9185bbb66858",
@@ -56,43 +55,10 @@
       "69a6774cccc6cea2687efd08",
       "68f9f11ea2d805aecaf99b2e",
       "690d5c6726683d7f739fd5d0",
-      "693a839b8e1195b71e9271a9"
+      "693a839b8e1195b71e9271a9",
+      "68d269952ed633410a684f5a"
     ],
     "movies": [
-      {
-        "id": "68d269952ed633410a684f5a",
-        "title": "Vòng Xoáy Giả Tạo",
-        "origin_name": "A Graceful Liar",
-        "slug": "vong-xoay-gia-tao",
-        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
-        "poster": "",
-        "year": 2025,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Hoàn tất (101/101)",
-        "quality": "HD",
-        "status": "completed",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": true,
-        "modified": "2026-03-05T23:26:08.000Z"
-      },
       {
         "id": "699fce7cb06c99c722f6e216",
         "title": "Mất Tích 2026 (Phần 1)",
@@ -732,6 +698,40 @@
         "chieurap": false,
         "sub_docquyen": true,
         "modified": "2026-03-02T22:48:29.000Z"
+      },
+      {
+        "id": "68d269952ed633410a684f5a",
+        "title": "Vòng Xoáy Giả Tạo",
+        "origin_name": "A Graceful Liar",
+        "slug": "vong-xoay-gia-tao",
+        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
+        "poster": "",
+        "year": 2025,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "620a2300e0fc277084dfd6d2",
+            "name": "Hàn Quốc",
+            "slug": "han-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 97",
+        "quality": "HD",
+        "status": "ongoing",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": true,
+        "modified": "2026-03-02T22:09:30.000Z"
       }
     ]
   },
@@ -821,7 +821,6 @@
     "featured_count_sm": 1,
     "featured_count_xs": 1,
     "ids": [
-      "68d269952ed633410a684f5a",
       "69843f824ea2111da8b72fb3",
       "69a685dff063d23bbbcf34ee",
       "69a954d032adc86a1e7d7794",
@@ -833,43 +832,10 @@
       "69a14f3f1d0b515454ae9db7",
       "69a56b5ceea244e3e8b143f4",
       "69a84f29f063d23bbbcf8d05",
-      "69895b6eb9fc4b5429662af5"
+      "69895b6eb9fc4b5429662af5",
+      "69a3bbc1eea244e3e8b099da"
     ],
     "movies": [
-      {
-        "id": "68d269952ed633410a684f5a",
-        "title": "Vòng Xoáy Giả Tạo",
-        "origin_name": "A Graceful Liar",
-        "slug": "vong-xoay-gia-tao",
-        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
-        "poster": "",
-        "year": 2025,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Hoàn tất (101/101)",
-        "quality": "HD",
-        "status": "completed",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": true,
-        "modified": "2026-03-05T23:26:08.000Z"
-      },
       {
         "id": "69843f824ea2111da8b72fb3",
         "title": "Món Quà Của Kluay",
@@ -1332,6 +1298,40 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-05T13:03:50.000Z"
+      },
+      {
+        "id": "69a3bbc1eea244e3e8b099da",
+        "title": "Oan Gia Đường Tôm",
+        "origin_name": "Shrimp Encounter",
+        "slug": "oan-gia-duong-tom",
+        "thumb": "/uploads/movies/oan-gia-duong-tom-thumb.jpg",
+        "poster": "",
+        "year": 2026,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "62093063196e9f4ab6b448b8",
+            "name": "Trung Quốc",
+            "slug": "trung-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 14",
+        "quality": "HD",
+        "status": "ongoing",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-05T12:23:02.000Z"
       }
     ]
   },
@@ -5450,7 +5450,6 @@
     "grid_columns_sm": 3,
     "grid_columns_xs": 2,
     "ids": [
-      "68d269952ed633410a684f5a",
       "69843f824ea2111da8b72fb3",
       "69a685dff063d23bbbcf34ee",
       "69a954d032adc86a1e7d7794",
@@ -5465,43 +5464,10 @@
       "69a905ae124287e0825e06e0",
       "693162625f6639c506373d1c",
       "69895b6eb9fc4b5429662af5",
-      "69a3bbc1eea244e3e8b099da"
+      "69a3bbc1eea244e3e8b099da",
+      "69a8fbd2eea244e3e8b21874"
     ],
     "movies": [
-      {
-        "id": "68d269952ed633410a684f5a",
-        "title": "Vòng Xoáy Giả Tạo",
-        "origin_name": "A Graceful Liar",
-        "slug": "vong-xoay-gia-tao",
-        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
-        "poster": "",
-        "year": 2025,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Hoàn tất (101/101)",
-        "quality": "HD",
-        "status": "completed",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": true,
-        "modified": "2026-03-05T23:26:08.000Z"
-      },
       {
         "id": "69843f824ea2111da8b72fb3",
         "title": "Món Quà Của Kluay",
@@ -6071,6 +6037,45 @@
         "chieurap": false,
         "sub_docquyen": false,
         "modified": "2026-03-05T12:23:02.000Z"
+      },
+      {
+        "id": "69a8fbd2eea244e3e8b21874",
+        "title": "Wajma, Chuyện Tình Afghanistan",
+        "origin_name": "An Afghan Love Story",
+        "slug": "wajma-chuyen-tinh-afghanistan",
+        "thumb": "/uploads/movies/wajma-chuyen-tinh-afghanistan-thumb.jpg",
+        "poster": "",
+        "year": 2013,
+        "type": "single",
+        "genre": [
+          {
+            "id": "620a220de0fc277084dfd16d",
+            "name": "Tình Cảm",
+            "slug": "tinh-cam"
+          },
+          {
+            "id": "620a2238e0fc277084dfd291",
+            "name": "Tâm Lý",
+            "slug": "tam-ly"
+          }
+        ],
+        "country": [
+          {
+            "id": "620a2378e0fc277084dfd972",
+            "name": "Pháp",
+            "slug": "phap"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Full",
+        "quality": "HD",
+        "status": "completed",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "modified": "2026-03-05T12:19:26.000Z"
       }
     ]
   },
@@ -6812,7 +6817,6 @@
     "featured_count_sm": 0,
     "featured_count_xs": 0,
     "ids": [
-      "68d269952ed633410a684f5a",
       "69840ded400bf394bd83d41e",
       "69841589ae6f0c1fdf37ee28",
       "6947a82897c71dcd0d63982e",
@@ -6824,46 +6828,13 @@
       "696e21a2b06c99c722ed865a",
       "69a6dc4c400bf394bd8e0d18",
       "690d5c6726683d7f739fd5d0",
+      "68d269952ed633410a684f5a",
       "69a57dc2f063d23bbbcee1d5",
       "699c7307f063d23bbbcb694f",
       "69a402dada6ce23e8ea149e2",
       "696b9967b9fc4b5429639e55"
     ],
     "movies": [
-      {
-        "id": "68d269952ed633410a684f5a",
-        "title": "Vòng Xoáy Giả Tạo",
-        "origin_name": "A Graceful Liar",
-        "slug": "vong-xoay-gia-tao",
-        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
-        "poster": "",
-        "year": 2025,
-        "type": "series",
-        "genre": [
-          {
-            "id": "620f3d2b91fa4af90ab697fe",
-            "name": "Chính kịch",
-            "slug": "chinh-kich"
-          }
-        ],
-        "country": [
-          {
-            "id": "620a2300e0fc277084dfd6d2",
-            "name": "Hàn Quốc",
-            "slug": "han-quoc"
-          }
-        ],
-        "lang_key": "Vietsub",
-        "episode_current": "Hoàn tất (101/101)",
-        "quality": "HD",
-        "status": "completed",
-        "showtimes": "",
-        "is_4k": false,
-        "is_exclusive": false,
-        "chieurap": false,
-        "sub_docquyen": true,
-        "modified": "2026-03-05T23:26:08.000Z"
-      },
       {
         "id": "69840ded400bf394bd83d41e",
         "title": "Trao Em Cả Vũ Trụ",
@@ -7277,6 +7248,40 @@
         "chieurap": false,
         "sub_docquyen": true,
         "modified": "2026-03-03T00:38:20.000Z"
+      },
+      {
+        "id": "68d269952ed633410a684f5a",
+        "title": "Vòng Xoáy Giả Tạo",
+        "origin_name": "A Graceful Liar",
+        "slug": "vong-xoay-gia-tao",
+        "thumb": "/uploads/movies/vong-xoay-gia-tao-thumb.jpg",
+        "poster": "",
+        "year": 2025,
+        "type": "series",
+        "genre": [
+          {
+            "id": "620f3d2b91fa4af90ab697fe",
+            "name": "Chính kịch",
+            "slug": "chinh-kich"
+          }
+        ],
+        "country": [
+          {
+            "id": "620a2300e0fc277084dfd6d2",
+            "name": "Hàn Quốc",
+            "slug": "han-quoc"
+          }
+        ],
+        "lang_key": "Vietsub",
+        "episode_current": "Tập 97",
+        "quality": "HD",
+        "status": "ongoing",
+        "showtimes": "",
+        "is_4k": false,
+        "is_exclusive": false,
+        "chieurap": false,
+        "sub_docquyen": true,
+        "modified": "2026-03-02T22:09:30.000Z"
       },
       {
         "id": "69a57dc2f063d23bbbcee1d5",
