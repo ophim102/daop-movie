@@ -560,14 +560,26 @@
   window.DAOP.normalizeImgUrl = function (url) {
     if (!url) return '';
     var u = String(url);
+    var uploadsPath = '';
     if (u.startsWith('/uploads/')) {
+      uploadsPath = u;
+    } else {
+      try {
+        if (u.startsWith('http://') || u.startsWith('https://')) {
+          var pu = new URL(u);
+          if (pu && pu.pathname && String(pu.pathname).startsWith('/uploads/')) uploadsPath = String(pu.pathname);
+        }
+      } catch (e1) {}
+    }
+
+    if (uploadsPath) {
       var settings = (window.DAOP && window.DAOP.siteSettings) ? window.DAOP.siteSettings : null;
       var ophimDomain = (settings && settings.ophim_img_domain) ? String(settings.ophim_img_domain) : 'https://img.ophim.live';
       var r2Domain = (settings && settings.r2_img_domain) ? String(settings.r2_img_domain) : '';
       ophimDomain = ophimDomain.replace(/\/$/, '');
       r2Domain = r2Domain.replace(/\/$/, '');
 
-      var path = u;
+      var path = uploadsPath;
       var filename = '';
       try {
         filename = path.split('/').pop() || '';
@@ -582,7 +594,7 @@
         }
         return r2Domain + '/' + folder + '/' + r2Name;
       }
-      return ophimDomain + u;
+      return ophimDomain + uploadsPath;
     }
     if (u.startsWith('//')) return 'https:' + u;
     return u;
