@@ -11297,6 +11297,20 @@
         "key": "posters/co-gai-den-tu-hu-vo-tai-khoi-dong-poster.webp",
         "bytes": 5700
       }
+    },
+    "6753fb6d9560de1904cc8d77": {
+      "thumb": {
+        "ok": true,
+        "at": 1772951625647,
+        "key": "thumbs/beastars-the-gioi-nguoi-thu-phan-3-thumb.webp",
+        "bytes": 13278
+      },
+      "poster": {
+        "ok": true,
+        "at": 1772951626545,
+        "key": "posters/beastars-the-gioi-nguoi-thu-phan-3-poster.webp",
+        "bytes": 10034
+      }
     }
   }
 }
