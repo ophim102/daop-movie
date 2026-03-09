@@ -1,1 +1,1 @@
-window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
+window.actorsData = {"map":{"fred-davis":["69aa32560a0114095c7e5a4e"]},"names":{"fred-davis":"Fred Davis"},"meta":{"fred-davis":{"tmdb_id":1508542,"profile":null,"tmdb_url":"https://www.themoviedb.org/person/1508542"}},"movies":{"fred-davis":[{"id":"69aa32560a0114095c7e5a4e","title":"Lazarus: The Awakening","origin_name":"Lazarus: The Awakening","slug":"lazarus-the-awakening","thumb":"/uploads/movies/lazarus-the-awakening-thumb.jpg","year":2026,"type":"single","episode_current":"Trailer"}]}};
