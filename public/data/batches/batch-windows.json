@@ -5,26 +5,26 @@
   "windows": [
     {
       "start": 0,
-      "end": 5
+      "end": 4
     },
     {
-      "start": 5,
-      "end": 9
+      "start": 4,
+      "end": 8
     },
     {
-      "start": 9,
-      "end": 19
+      "start": 8,
+      "end": 18
     },
     {
-      "start": 19,
-      "end": 25
+      "start": 18,
+      "end": 24
     },
     {
-      "start": 25,
-      "end": 83
+      "start": 24,
+      "end": 80
     },
     {
-      "start": 83,
+      "start": 80,
       "end": 120
     },
     {
