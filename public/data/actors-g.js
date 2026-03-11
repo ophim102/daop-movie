@@ -1,1 +1,1 @@
-window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
+window.actorsData = {"map":{"guan-yunpeng":["692eadd4f8d2b25ec830f9ef"]},"names":{"guan-yunpeng":"Guan Yunpeng"},"meta":{"guan-yunpeng":{"tmdb_id":2759476,"profile":"https://image.tmdb.org/t/p/w500/1KpjdoYVrCVIkgFjtsupcD65Ly4.jpg","tmdb_url":"https://www.themoviedb.org/person/2759476"}},"movies":{"guan-yunpeng":[{"id":"692eadd4f8d2b25ec830f9ef","title":"Trục Ngọc","origin_name":"Zhu Yu","slug":"truc-ngoc","thumb":"/uploads/movies/truc-ngoc-thumb.jpg","year":2025,"type":"series","episode_current":"Tập 5"}]}};
