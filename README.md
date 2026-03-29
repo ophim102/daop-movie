@@ -1,4 +1,5 @@
 # DAOP - Hệ thống Website Phim
+LH Telegram @tieucot520
 
 Hệ thống gồm: **Website phim tĩnh** (Cloudflare Pages), **Admin Panel** (Vercel), **Ứng dụng đa nền tảng** (Capacitor).
 
