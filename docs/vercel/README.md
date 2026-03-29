@@ -43,7 +43,7 @@ Không cần tạo thêm file trên Vercel; chỉ cần push `vercel.json` trong
 ## 3. Biến môi trường (Environment Variables)
 
 Thêm tại **Project → Settings → Environment Variables**.  
-**Quy tắc:** Tiền tố **`VITE_`** được Vite **đưa vào bundle trình duyệt** — chỉ đặt URL/anon key public; **không** dùng `VITE_` cho `service_role`, secret R2, PAT GitHub.
+**Quy tắc:** Tiền tố **`VITE_`** được Vite **đưa vào bundle trình duyệt** — chỉ đặt URL/anon key public; **không** dùng `VITE_` cho `service_role`, secret object storage, PAT GitHub.
 
 ### 3.1. Bắt buộc cho Admin (client — Vite)
 
@@ -91,7 +91,6 @@ Dùng khi Dashboard / MovieList / MovieEdit / EpisodeEdit gọi `/api/movies`. U
 |------|---------|
 | `IMAGE_CDN_BASE` | Base URL công khai kết thúc bằng `/public` (vd. `https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public`). |
 | `IMAGES_REPO`, `IMAGES_TOKEN`, `IMAGES_BRANCH` | Repo chỉ chứa ảnh (`owner/repo`); fallback `GITHUB_*` nếu bỏ trống. |
-| `R2_PUBLIC_URL` | *Legacy:* tương thích tên cũ; ưu tiên dùng `IMAGE_CDN_BASE`. |
 
 ### 3.7. Tùy chọn — Admin UI (Vite)
 

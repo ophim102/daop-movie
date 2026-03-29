@@ -22,7 +22,7 @@ Làm **lần lượt Bước 1 → 5**. Chi tiết sâu: [TRIEN-KHAI.md](./TRIEN
 
 | Tính năng | Cần thêm |
 |-----------|----------|
-| Ảnh trên **R2** | Access key, secret, bucket, public URL → GitHub Secrets (xem [r2/README.md](./r2/README.md)) |
+| Ảnh qua **GitHub + jsDelivr** | `IMAGE_CDN_BASE` + `IMAGES_REPO` (tùy chọn `IMAGES_TOKEN`, `IMAGES_BRANCH`) → GitHub Secrets |
 | **Phim custom (Supabase)** | Bảng `movies` / `movie_episodes` — xem [supabase/schema-movies-episodes.sql](./supabase/schema-movies-episodes.sql) |
 | **Bình luận** nội bộ | D1, KV, `SUPABASE_JWT_SECRET` (xem [comments/README.md](./comments/README.md)) |
 
@@ -43,7 +43,7 @@ Làm **lần lượt Bước 1 → 5**. Chi tiết sâu: [TRIEN-KHAI.md](./TRIEN
 | `CLOUDFLARE_API_TOKEN` | Token sau khi làm Bước 5 |
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID Cloudflare |
 
-Danh sách **đủ secret + variable** (R2, Supabase, `GH_PAT`, `OPHIM_BASE_URL`, …): [docs/env/github.env.example](./env/github.env.example).
+Danh sách **đủ secret + variable** (Supabase, `GH_PAT`, `OPHIM_BASE_URL`, …): [docs/env/github.env.example](./env/github.env.example).
 
 3. **Variables → Actions** (tùy chọn): `CLOUDFLARE_PAGES_PROJECT_NAME` = tên project Pages bạn đặt ở Cloudflare (nếu khác mặc định trong file workflow).
 
@@ -96,7 +96,7 @@ Chi tiết / sửa RLS: [supabase/README.md](./supabase/README.md).
 | `GITHUB_TOKEN` | PAT GitHub (classic), quyền **repo** |
 | `GITHUB_REPO` | `owner/repo` đúng với repo này |
 
-Bản **.env mẫu đủ biến** (R2, Supabase Admin cho API, Supabase User, `VITE_*` tùy chọn): [docs/env/vercel.env.example](./env/vercel.env.example).
+Bản **.env mẫu đủ biến** (ảnh/cdn, Supabase Admin cho API, Supabase User, `VITE_*` tùy chọn): [docs/env/vercel.env.example](./env/vercel.env.example).
 
 **Hướng dẫn gom** (project, `vercel.json`, từng nhóm env, bảng `/api/*`): [vercel/README.md](./vercel/README.md).
 
@@ -116,7 +116,7 @@ Website deploy bằng **Pages — Direct Upload** (Actions đẩy `public/`), **
 4. Dán token + Account ID vào **GitHub Secrets** (đã liệt kê Bước 2).
 5. Đảm bảo trên nhánh **`main`** có **`public/`** đã có nội dung sau build (chạy workflow **update-data** / **build-on-demand**, hoặc `npm run build` rồi push). Push **`main`** sẽ kích hoạt workflow deploy lên Pages (nếu đã cấu hình như trong repo).
 
-**Toàn bộ thứ cần tạo trên Cloudflare** (Pages, token, R2, comment D1/KV, domain): [cloudflare/README.md](./cloudflare/README.md).
+**Toàn bộ thứ cần tạo trên Cloudflare** (Pages, token, comment D1/KV, domain): [cloudflare/README.md](./cloudflare/README.md).
 
 ---
 
@@ -126,6 +126,6 @@ Website deploy bằng **Pages — Direct Upload** (Actions đẩy `public/`), **
 - Vào **Admin** (Vercel) → **Cài đặt chung** → dán Supabase **User** URL + anon → **Lưu** → dùng **Build website** để build lại và deploy (nếu đã cấu hình `GITHUB_TOKEN`).
 - Site: URL dạng `https://<tên-project>.pages.dev`.
 
-**Tùy:** domain riêng, R2, Supabase, comment, app — xem [README.md](./README.md) (danh mục `docs/`).
+**Tùy:** domain riêng, Supabase, comment, app — xem [README.md](./README.md) (danh mục `docs/`).
 
 **Lỗi thường gặp:** [TRIEN-KHAI.md](./TRIEN-KHAI.md) phần **Bước 7** (Admin không đọc dữ liệu, build không ra Site, deploy lỗi).

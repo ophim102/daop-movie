@@ -1,6 +1,6 @@
 # Hướng dẫn triển khai DAOP
 
-Tài liệu này mô tả từng bước đưa dự án lên môi trường thật: website trên Cloudflare Pages, Admin trên Vercel, dữ liệu từ Supabase, ảnh qua GitHub + jsDelivr (hoặc tùy chọn R2), hệ thống comment nội bộ.
+Tài liệu này mô tả từng bước đưa dự án lên môi trường thật: website trên Cloudflare Pages, Admin trên Vercel, dữ liệu từ Supabase, ảnh qua GitHub + jsDelivr, hệ thống comment nội bộ.
 
 **Mục lục tài liệu (một cửa):** [README.md](./README.md).
 
@@ -16,7 +16,7 @@ Tài liệu này mô tả từng bước đưa dự án lên môi trường th�
 |---------|---------|----------|
 | **GitHub** | Lưu code, GitHub Actions | Có |
 | **Supabase** | 2 project: User (auth, favorites, history) + Admin (cấu hình) | Có |
-| **Cloudflare** | Pages (website) + có thể R2 (ảnh) | Có (Pages); R2 tùy chọn |
+| **Cloudflare** | Pages (website) | Có (Pages) |
 | **Vercel** | Host Admin + API trigger build | Có |
 | **TMDB** | API key lấy thông tin phim | Có (để build có dữ liệu) |
 | **Cloudflare D1 + KV** | Cho hệ thống bình luận nội bộ | Có (nếu dùng comment) |
@@ -95,7 +95,7 @@ Dùng cho GitHub Actions (build, deploy) và (sau này) cho Cloudflare/Vercel.
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID Cloudflare (32 ký tự hex) | Dashboard Cloudflare → Overview |
 | `GITHUB_TOKEN` | Mặc định có sẵn trong Actions, dùng push/deploy | (không cần tạo thủ công cho workflow cơ bản) |
 
-**Ảnh / CDN (mặc định):** Secret `IMAGE_CDN_BASE` (vd. `https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public`), `IMAGES_REPO`, tùy chọn `IMAGES_TOKEN` / `IMAGES_BRANCH` — trùng cấu hình trên Vercel. **Legacy R2 (tùy chọn):** `R2_ACCOUNT_ID`, … `R2_PUBLIC_URL` — xem `docs/r2/README.md`. Thêm `OPHIM_BASE_URL` nếu endpoint OPhim khác mặc định.
+**Ảnh / CDN (mặc định):** Secret `IMAGE_CDN_BASE` (vd. `https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public`), `IMAGES_REPO`, tùy chọn `IMAGES_TOKEN` / `IMAGES_BRANCH` — trùng cấu hình trên Vercel. Thêm `OPHIM_BASE_URL` nếu endpoint OPhim khác mặc định.
 
 **Variables** (Settings → Variables): có thể thêm `CLOUDFLARE_PAGES_PROJECT_NAME` = tên project Pages (ví dụ: `daop`).
 
@@ -103,7 +103,7 @@ Dùng cho GitHub Actions (build, deploy) và (sau này) cho Cloudflare/Vercel.
 
 ## Bước 4: Deploy website lên Cloudflare Pages
 
-**Danh sách gom mọi thứ cần tạo trên Cloudflare (Pages, token, comment; R2 chỉ khi dùng):** [cloudflare/README.md](./cloudflare/README.md).
+**Danh sách gom mọi thứ cần tạo trên Cloudflare (Pages, token, comment):** [cloudflare/README.md](./cloudflare/README.md).
 
 ### Build bằng GitHub Actions, deploy bằng Cloudflare API (Direct Upload)
 
@@ -122,8 +122,8 @@ Workflow này: khi bạn push lên nhánh `main`, GitHub Actions sẽ **chỉ đ
 4. Chọn một trong hai:
    - **Dùng mẫu:** kéo xuống tìm **Edit Cloudflare Workers** → **Use template** (sau đó có thể thu hẹp quyền nếu cần), hoặc
    - **Custom token:** **Create Custom Token** → đặt tên (vd: `daop-pages-deploy`), phần **Permissions**:
-     - **Account** → **Cloudflare Pages** → **Edit**
-     - (Chỉ khi dùng R2) **Account** → **Workers R2 Storage** → **Edit**
+     - **Tối thiểu cần có:** **Account** → **Cloudflare Pages** → **Edit** (để deploy/upload thư mục `public/`)
+     - Không cần quyền object storage chuyên dụng nếu bạn dùng ảnh qua **GitHub + jsDelivr**.
 5. **Continue to summary** → **Create Token**.
 6. **Copy** token ngay (chỉ hiển thị một lần). Lưu vào nơi an toàn → dùng làm giá trị secret `CLOUDFLARE_API_TOKEN`.
 
@@ -341,7 +341,7 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
 
 ## Bước 9: Tùy chọn bổ sung
 
-- **Ảnh:** GitHub repo + jsDelivr (`IMAGE_CDN_BASE`, `IMAGES_*`); build/workflow sync `public/thumbs` & `posters`. **R2** chỉ nếu tự chọn (xem `docs/r2/README.md`).
+- **Ảnh:** GitHub repo + jsDelivr (`IMAGE_CDN_BASE`, `IMAGES_*`); build/workflow sync `public/thumbs` & `posters`.
 - **Phim tùy chỉnh (Supabase):** Schema bảng `movies` / `movie_episodes` và seed: `docs/supabase/schema-movies-episodes.sql`. File CSV mẫu cột (tham khảo): `docs/csv-templates/README.md`.
 - **Comment nội bộ:** cấu hình D1 + KV + `SUPABASE_JWT_SECRET` theo `docs/comments/README.md`.
 - **Capacitor (app Android/iOS/TV):** Luồng đầy đủ trong `docs/capacitor/README.md` (build `public/` → `cap copy` → mở Android Studio / Xcode; cấu hình `webDir` hoặc thư mục `www`).
@@ -358,4 +358,4 @@ Sau khi có `public/data` trên nhánh `main`, deploy lại Pages (tự động 
 6. Vào Admin, cấu hình Site Settings (Supabase User, tracking, cảnh báo), build lại rồi deploy lại site.
 7. (Tùy chọn) Gắn domain, CDN ảnh, Comments, Capacitor.
 
-Nếu gặp lỗi cụ thể (build, deploy, đăng nhập, sync user…), có thể đối chiếu thêm với `docs/` tương ứng (supabase, cloudflare-pages, vercel, github-actions, r2, comments).
+Nếu gặp lỗi cụ thể (build, deploy, đăng nhập, sync user…), có thể đối chiếu thêm với `docs/` tương ứng (supabase, cloudflare-pages, vercel, github-actions, comments).

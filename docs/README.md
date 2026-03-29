@@ -1,6 +1,6 @@
 # Tài liệu DAOP — mục lục
 
-Một repo có **nhiều lớp** (GitHub, Supabase, Vercel, Cloudflare, tùy chọn R2/comment/app). Trang này là **điểm vào duy nhất**: chọn lộ trình hoặc chủ đề, rồi mở file được liệt kê — tránh đọc lặp giữa BAT-DAU-NHANH, TRIEN-KHAI và các README con.
+Một repo có **nhiều lớp** (GitHub, Supabase, Vercel, Cloudflare, tùy chọn ảnh/comment/app). Trang này là **điểm vào duy nhất**: chọn lộ trình hoặc chủ đề, rồi mở file được liệt kê — tránh đọc lặp giữa BAT-DAU-NHANH, TRIEN-KHAI và các README con.
 
 ---
 
@@ -23,9 +23,8 @@ Một repo có **nhiều lớp** (GitHub, Supabase, Vercel, Cloudflare, tùy ch�
 | **GitHub** — repo, Actions, Secrets/Variables, PAT, workflow | [github/README.md](./github/README.md) | Kèm [github-actions/README.md](./github-actions/README.md) |
 | **Supabase** — 2 project, SQL, JWT, RLS | [supabase/README.md](./supabase/README.md) | JWT User dùng cho comment trên Pages |
 | **Vercel** — Admin + API, `vercel.json`, env | [vercel/README.md](./vercel/README.md) | Sự cố build: [vercel/TROUBLESHOOTING.md](./vercel/TROUBLESHOOTING.md) |
-| **Cloudflare** — Account, token, Pages, R2, D1/KV, biến Pages | [cloudflare/README.md](./cloudflare/README.md) | Tóm deploy ngắn: [cloudflare-pages/README.md](./cloudflare-pages/README.md) |
+| **Cloudflare** — Account, token, Pages, D1/KV, biến Pages | [cloudflare/README.md](./cloudflare/README.md) | Tóm deploy ngắn: [cloudflare-pages/README.md](./cloudflare-pages/README.md) |
 | **Comment (D1 + KV + Functions)** | [comments/README.md](./comments/README.md) | Gồm `COMMENTS_ADMIN_SECRET`, export/import |
-| **R2** (ảnh) | [r2/README.md](./r2/README.md) | Tùy chọn |
 | **CSV mẫu cột phim** (tham khảo) | [csv-templates/README.md](./csv-templates/README.md) | Cột khớp bảng Supabase |
 | **Capacitor** (Android / iOS / TV) | [capacitor/README.md](./capacitor/README.md) | Tùy chọn |
 | **Mẫu JSON / Excel** | [config-json-examples/README.md](./config-json-examples/README.md), [templates/README.md](./templates/README.md) | |

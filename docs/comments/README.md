@@ -26,7 +26,7 @@ Hệ thống comment dùng:
 Ví dụ bằng Wrangler:
 
 ```bash
-wrangler d1 create daop-comments
+wrangler d1 create ophimcomment
 wrangler kv namespace create COMMENT_CACHE
 wrangler kv namespace create COMMENT_RATE_LIMIT
 ```
@@ -38,8 +38,8 @@ Sau đó copy các ID vào `wrangler.toml`:
 ## 3) Chạy migration D1
 
 ```bash
-wrangler d1 execute daop-comments --file=./migrations/001_comments.sql
-wrangler d1 execute daop-comments --file=./migrations/002_comment_reactions.sql
+wrangler d1 execute ophimcomment --file=./migrations/001_comments.sql
+wrangler d1 execute ophimcomment --file=./migrations/002_comment_reactions.sql
 ```
 
 ## 4) Biến môi trường bắt buộc

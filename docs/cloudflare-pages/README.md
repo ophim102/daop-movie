@@ -2,12 +2,12 @@
 
 **Mục lục tổng:** [../README.md](../README.md).
 
-**Hướng dẫn gom toàn bộ Cloudflare (Pages, R2, token, comment):** [../cloudflare/README.md](../cloudflare/README.md).
+**Hướng dẫn gom toàn bộ Cloudflare (Pages, token, comment):** [../cloudflare/README.md](../cloudflare/README.md).
 
 Tóm tắt:
 
 1. Tạo project Pages kiểu **Direct Upload** (không Connect Git).
-2. Workflow `.github/workflows/deploy.yml` deploy thư mục `public/` bằng `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (GitHub Secrets).
+2. Workflow `.github/workflows/deploy.yml` deploy thư mục `public/` bằng `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (GitHub Secrets). Token cần quyền tối thiểu **Account → Cloudflare Pages → Edit**.
 3. (Tùy chọn) GitHub Variable `CLOUDFLARE_PAGES_PROJECT_NAME` nếu tên project khác `daop`.
 4. Build dữ liệu: `update-data` / `build-on-demand` rồi deploy tự kích hoạt theo workflow.
 

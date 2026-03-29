@@ -31,9 +31,18 @@ create table if not exists public.ad_preroll (
   created_at timestamptz default now()
 );
 
-alter table public.ad_preroll
-add constraint if not exists ad_preroll_roll_check
-check (roll in ('pre','mid','post'));
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'ad_preroll_roll_check'
+  ) then
+    alter table public.ad_preroll
+      add constraint ad_preroll_roll_check
+      check (roll in ('pre','mid','post'));
+  end if;
+end $$;
 
 -- Bảng homepage sections
 create table if not exists public.homepage_sections (

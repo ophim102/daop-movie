@@ -2,9 +2,9 @@
 
 **Mục lục tổng:** [../README.md](../README.md).
 
-Một tài khoản [Cloudflare](https://dash.cloudflare.com) có thể gồm nhiều dịch vụ DAOP dùng tới. Làm theo thứ tự: **bắt buộc cho site** → **R2** (nếu host ảnh) → **Comment** (nếu bật D1/KV). Chi tiết deploy: [../TRIEN-KHAI.md](../TRIEN-KHAI.md) (Bước 4), checklist GitHub: [../env/github.env.example](../env/github.env.example).
+Một tài khoản [Cloudflare](https://dash.cloudflare.com) có thể gồm nhiều dịch vụ DAOP dùng tới. Làm theo thứ tự: **bắt buộc cho site** → **Comment** (nếu bật D1/KV). Ảnh thumbnail/poster thường đi qua GitHub + jsDelivr (xem `IMAGE_CDN_BASE`, `IMAGES_*`). Chi tiết deploy: [../TRIEN-KHAI.md](../TRIEN-KHAI.md) (Bước 4), checklist GitHub: [../env/github.env.example](../env/github.env.example).
 
-**Mục lục trang này (cuộn theo số mục):** §1 Tài khoản · §2 Pages · §3 R2 · §4 Comment · §5 Bảng tổng hợp · §6 Liên kết nhanh
+**Mục lục trang này (cuộn theo số mục):** §1 Tài khoản · §2 Pages · §3 Ảnh/CDN · §4 Comment · §5 Bảng tổng hợp · §6 Liên kết nhanh
 
 ---
 
@@ -15,12 +15,11 @@ Một tài khoản [Cloudflare](https://dash.cloudflare.com) có thể gồm nhi
 | **Account ID** | Chuỗi 32 ký tự hex (ví dụ trong sidebar Dashboard hoặc **Overview** domain). Xác định *tài khoản* Cloudflare của bạn. | GitHub Secret `CLOUDFLARE_ACCOUNT_ID` |
 | **API Token (Account)** | Token do bạn tạo (**My Profile → API Tokens → Create Token**), cấp quyền theo bảng dưới. Không nhầm với **Global API Key** cũ. | GitHub Secret `CLOUDFLARE_API_TOKEN` |
 
-**Gợi ý quyền token deploy + R2 (một token cho gọn):**
+**Gợi ý quyền token deploy (một token cho gọn):**
 
 - **Account → Cloudflare Pages → Edit** — để GitHub Actions/Wangler đẩy thư mục `public/` lên Pages.
-- **Account → Workers R2 Storage → Edit** — nếu dùng R2 (build upload ảnh, workflow xóa/upload R2).
 
-Có thể tách hai token (chỉ Pages / chỉ R2) nếu muốn thu hẹp quyền.
+Có thể tách hai token (chỉ Pages) nếu muốn thu hẹp quyền.
 
 ---
 
@@ -47,27 +46,114 @@ Các secret khác (TMDB, Supabase Admin…) **không** cần trên Pages — ch�
 
 ---
 
-## 3. R2 — object storage (ảnh WebP, prefix `thumbs/` `posters/` …)
+## 3. Ảnh/CDN (GitHub + jsDelivr)
 
-| Việc cần làm | Chú thích |
-|--------------|-----------|
-| **Tạo bucket** | **R2 → Create bucket**. Tên bucket (ví dụ `daop-media`) → biến `R2_BUCKET_NAME`. |
-| **Credential S3-compatible** | **R2 → [bucket] → Settings** hoặc **Manage R2 API Tokens**: tạo token/access key (Read+Write object). → `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. |
-| **Account ID** | Giống mục 1; R2 cùng account với Pages. → `R2_ACCOUNT_ID` (thường trùng `CLOUDFLARE_ACCOUNT_ID` về giá trị). |
-| **Public URL** | Domain public cho object: **R2 bucket → Public access** hoặc **Custom domain** cho bucket. URL gốc (không có slash cuối thừa khi dùng trong code) → `R2_PUBLIC_URL`. |
+Ảnh thumbnail/poster thường được lưu trong **GitHub repo ảnh** (layout `public/thumbs/`, `public/posters/`) và được public qua jsDelivr theo `IMAGE_CDN_BASE`.
 
-**Nơi cấu hình R2:**
-
-- **GitHub Actions Secrets** — `npm run build` và workflow upload/xóa ảnh R2.
-- **Vercel Environment Variables** — API `upload-image`, `movies` khi upload ảnh từ Admin.
-
-Không bắt buộc: không cấu hình R2 thì build vẫn chạy, ảnh giữ URL gốc (xem [../r2/README.md](../r2/README.md)).
-
----
+Cloudflare chỉ cần **Pages** để host website tĩnh; không cần storage riêng cho ảnh.
 
 ## 4. Comment nội bộ — D1 + KV + Pages Functions
 
 Chỉ cần khi dùng hệ thống comment trong `functions/api/comment/`.
+
+### Checklist nhanh (dễ làm nhất)
+
+1. **Tạo D1 database** (lưu dữ liệu comment)
+2. **Tạo 2 KV namespaces** (cache + rate limit)
+3. **Điền ID vào `wrangler.toml`** (bindings: `DB`, `COMMENT_CACHE`, `COMMENT_RATE_LIMIT`)
+4. **Chạy migrations** để tạo bảng trong D1
+5. **Set Environment Variables trên Cloudflare Pages**:
+   - `SUPABASE_JWT_SECRET` (bắt buộc)
+   - `COMMENTS_ADMIN_SECRET` (tùy chọn, dạng Secret/encrypted)
+6. **Deploy lại** (để Pages Functions nhận bindings + env)
+
+### 4.1 Tạo D1 database + 2 KV namespaces
+
+Bạn có 2 cách. **Khuyên dùng CLI** vì copy/paste ID nhanh và ít nhầm.
+
+> Nếu bạn **giữ nguyên cấu hình có sẵn** trong `wrangler.toml` (D1 `database_name = "ophimcomment"` và đã có `database_id`/KV `id`), bạn có thể **bỏ qua bước tạo mới** ở mục này và chuyển thẳng tới:
+> - **4.3 Chạy migrations**
+> - **4.4 Set Environment Variables**
+
+**Cách A — CLI (khuyến nghị):**
+
+```bash
+# 1) Login Wrangler (mở browser để authorize)
+npx wrangler login
+
+# 2) Tạo D1 (giữ nguyên tên như repo đang dùng)
+npx wrangler d1 create ophimcomment
+
+# 3) Tạo 2 KV namespaces
+npx wrangler kv namespace create COMMENT_CACHE
+npx wrangler kv namespace create COMMENT_RATE_LIMIT
+```
+
+Sau mỗi lệnh, Wrangler sẽ in ra **database_id** (D1) và **id** (KV). Copy các ID đó để điền vào `wrangler.toml`.
+
+**Cách B — Dashboard (nếu không dùng CLI):**
+- D1: **Workers & Pages → D1 → Create database**
+- KV: **Workers & Pages → KV → Create namespace** (tạo 2 namespace theo đúng tên)
+- Sau khi tạo, vào chi tiết từng resource để copy **ID**.
+
+### 4.2 Điền bindings vào `wrangler.toml`
+
+File `wrangler.toml` ở root repo đã có sẵn cấu trúc đúng. Bạn chỉ cần thay các giá trị sau cho đúng resource bạn vừa tạo:
+
+- `[[d1_databases]]`
+  - `binding = "DB"` (**giữ nguyên**)
+  - `database_name = "<tên-db>"` (tên bạn tạo)
+  - `database_id = "<database_id>"` (ID bạn copy)
+- `[[kv_namespaces]]`
+  - `binding = "COMMENT_CACHE"` + `id = "<id>"`
+  - `binding = "COMMENT_RATE_LIMIT"` + `id = "<id>"`
+
+### 4.3 Chạy migrations (tạo bảng trong D1)
+
+Chạy 2 file migration có sẵn trong repo:
+
+```bash
+npx wrangler d1 execute ophimcomment --file=./migrations/001_comments.sql
+npx wrangler d1 execute ophimcomment --file=./migrations/002_comment_reactions.sql
+```
+
+Lưu ý: `ophimcomment` ở trên là **database_name** trong `wrangler.toml`. Nếu bạn đặt tên khác thì thay lại cho đúng.
+
+### 4.4 Set Environment Variables trên Cloudflare Pages (bắt buộc)
+
+Vào **Cloudflare Dashboard → Workers & Pages → Pages → (project của bạn) → Settings → Variables and Secrets**.
+
+- **`SUPABASE_JWT_SECRET` (bắt buộc)**:
+  - Lấy ở **Supabase User project** → **Settings → API → JWT Secret**
+  - Set cho đúng environment bạn deploy (thường **Production**; nếu bạn dùng Preview thì set cả Preview)
+
+### 4.5 `COMMENTS_ADMIN_SECRET` (tùy chọn, chỉ khi muốn export/import từ Admin)
+
+Nếu bạn muốn dùng tính năng export/import comment từ Admin, bạn cần thêm secret này (khuyên 16–32 ký tự).
+
+**Cách A — Dashboard:**
+- Cũng tại **Variables and Secrets** → **Add**
+- Name: `COMMENTS_ADMIN_SECRET`
+- Chọn **Secret / Encrypt**
+- Dán giá trị
+
+**Cách B — CLI (ổn định nhất khi UI hạn chế):**
+
+```bash
+npx wrangler pages secret put COMMENTS_ADMIN_SECRET --project-name=TÊN_PROJECT_PAGES
+```
+
+### 4.6 Deploy lại để nhận bindings + env
+
+Sau khi đổi `wrangler.toml` hoặc set env/secrets, hãy deploy lại Pages (workflow `deploy.yml` / push `main`).
+
+### 4.7 Test nhanh
+
+- Mở 1 trang phim (`/phim/...`) hoặc xem phim (`/xem-phim/...`) và kéo tới khu vực comment.
+- Nếu chưa đăng nhập: sẽ hiện nút đăng nhập.
+- Nếu đã đăng nhập: thử gửi 1 comment.
+
+Muốn xem hướng dẫn chi tiết hơn (API export/import, lỗi 401/503, rate limit…): xem `docs/comments/README.md`.
 
 | Thành phần | Việc cần làm | Chú thích |
 |------------|--------------|-----------|
@@ -88,19 +174,19 @@ Chi tiết file, API, frontend: [../comments/README.md](../comments/README.md).
 | STT | Tạo trong Dashboard / CLI | Mục đích |
 |-----|---------------------------|----------|
 | 1 | Tài khoản Cloudflare | Truy cập mọi dịch vụ. |
-| 2 | **API Token** (Pages + R2 nếu cần) | Deploy Pages từ GitHub; có thể dùng chung quyền R2. |
-| 3 | Ghi nhớ **Account ID** | `CLOUDFLARE_ACCOUNT_ID`, thường dùng chung cho R2. |
+| 2 | **API Token** (Pages) | Deploy Pages từ GitHub. |
+| 3 | Ghi nhớ **Account ID** | `CLOUDFLARE_ACCOUNT_ID`. |
 | 4 | **Pages project** (Direct Upload) | Host website; tên project khớp `CLOUDFLARE_PAGES_PROJECT_NAME` hoặc `daop`. |
-| 5 | (Tùy chọn) **R2 bucket** + access keys + public URL | Ảnh build + upload Admin. |
+| 5 | (Tùy chọn) **Repo ảnh + CDN** (`IMAGE_CDN_BASE`, `IMAGES_*`) | Ảnh build + hiển thị trên site. |
 | 6 | (Tùy chọn) **D1** + **2 KV** + migration + `SUPABASE_JWT_SECRET` | Comment nội bộ. |
-| 7 | (Tùy chọn) **Custom domain** Pages / R2 | Thương hiệu, URL đẹp. |
+| 7 | (Tùy chọn) **Custom domain** Pages | Thương hiệu, URL đẹp. |
 
 ---
 
 ## 6. Liên kết nhanh tài liệu con
 
 - Deploy Pages (ngắn): [../cloudflare-pages/README.md](../cloudflare-pages/README.md)
-- R2 chi tiết: [../r2/README.md](../r2/README.md)
+- Ảnh / CDN: xem [../vercel/README.md](../vercel/README.md) và [../github-actions/README.md](../github-actions/README.md)
 - Comment: [../comments/README.md](../comments/README.md)
 - GitHub (repo, deploy token): [../github/README.md](../github/README.md) — Secrets mẫu [../env/github.env.example](../env/github.env.example)
 - Vercel (Admin + API): [../vercel/README.md](../vercel/README.md)
