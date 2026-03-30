@@ -1,1 +1,1 @@
-window.actorsData = {"map":{"quincy-fouse":["627ab8b5db9df06c659480dc"]},"names":{"quincy-fouse":"Quincy Fouse"},"meta":{"quincy-fouse":{"tmdb_id":1788166,"profile":"https://image.tmdb.org/t/p/w500/dhmAa34BkmKiPwvEthEYhOT4CSE.jpg","tmdb_url":"https://www.themoviedb.org/person/1788166"}},"movies":{}};
+window.actorsData = {"map":{},"names":{},"meta":{},"movies":{}};
