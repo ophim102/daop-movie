@@ -122,6 +122,8 @@ create table if not exists public.audit_logs (
   created_at timestamptz default now()
 );
 
+create index if not exists audit_logs_created_at_idx on public.audit_logs (created_at desc);
+
 -- RLS: chỉ admin (role trong JWT)
 alter table public.ad_banners enable row level security;
 alter table public.ad_preroll enable row level security;
