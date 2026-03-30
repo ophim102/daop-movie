@@ -273,10 +273,10 @@
 
   function renderAlphabetPicker(container, activeKey) {
     if (!container) return;
+    container.className = 'actor-alpha-wrap';
     var k0 = String(activeKey || '').toLowerCase();
     var html =
       '<div class="actor-alpha">' +
-      '<div class="actor-alpha-title">Chọn chữ cái:</div>' +
       '<div class="actor-alpha-grid">' +
       SHARD_KEYS.map(function (k) {
         var label = k === 'other' ? '#' : k.toUpperCase();
@@ -284,6 +284,7 @@
         return '<button type="button" class="' + cls + '" data-key="' + k + '">' + label + '</button>';
       }).join('') +
       '</div>' +
+      '<button type="button" class="actor-alpha-toggle" data-role="alpha-toggle" aria-expanded="false" aria-label="Mở rộng danh sách chữ cái" title="Mở rộng danh sách chữ cái" hidden>▾</button>' +
       '</div>';
     container.innerHTML = html;
     container.style.display = '';
@@ -295,6 +296,47 @@
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
       });
     });
+
+    // Mobile: collapse to first row by default, expand on demand.
+    var alphaBox = container.querySelector('.actor-alpha');
+    var alphaGrid = container.querySelector('.actor-alpha-grid');
+    var toggleBtn = container.querySelector('button[data-role="alpha-toggle"]');
+    if (!alphaBox || !alphaGrid || !toggleBtn) return;
+
+    function isMobileAlpha() {
+      try { return !!(window.matchMedia && window.matchMedia('(max-width: 767px)').matches); } catch (e) { return false; }
+    }
+    function setExpanded(expanded) {
+      if (expanded) alphaBox.classList.add('expanded');
+      else alphaBox.classList.remove('expanded');
+      toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      toggleBtn.setAttribute('aria-label', expanded ? 'Thu gọn danh sách chữ cái' : 'Mở rộng danh sách chữ cái');
+      toggleBtn.setAttribute('title', expanded ? 'Thu gọn danh sách chữ cái' : 'Mở rộng danh sách chữ cái');
+      toggleBtn.textContent = expanded ? '▴' : '▾';
+    }
+    function refreshToggleVisibility() {
+      if (!isMobileAlpha()) {
+        alphaBox.classList.remove('expanded');
+        toggleBtn.hidden = true;
+        return;
+      }
+      alphaBox.classList.remove('expanded');
+      var needsToggle = alphaGrid.scrollHeight > (alphaGrid.clientHeight + 2);
+      toggleBtn.hidden = !needsToggle;
+      if (!needsToggle) alphaBox.classList.remove('expanded');
+      setExpanded(false);
+    }
+
+    toggleBtn.addEventListener('click', function () {
+      var expanded = alphaBox.classList.contains('expanded');
+      setExpanded(!expanded);
+    });
+    setTimeout(refreshToggleVisibility, 0);
+    try {
+      window.addEventListener('resize', refreshToggleVisibility, { passive: true });
+    } catch (e2) {
+      window.addEventListener('resize', refreshToggleVisibility);
+    }
   }
 
   function paginate(arr, page, pageSize) {
@@ -387,6 +429,8 @@
       var q = normalizeText(q0.q || '');
       var k0 = String(q0.k || '').toLowerCase();
       if (SHARD_KEYS.indexOf(k0) < 0) k0 = '';
+      // Default: auto-select "A" when landing on /dien-vien/ without query.
+      if (!q && !k0) k0 = 'a';
 
       document.title = 'Diễn viên | ' + (window.DAOP && window.DAOP.siteName ? window.DAOP.siteName : 'DAOP Phim');
       var titleEl0 = document.getElementById('actor-name');
@@ -546,6 +590,7 @@
 
     var profileWrap = document.getElementById('actor-profile');
     if (profileWrap) {
+      profileWrap.className = 'actor-profile';
       var m2 = meta && meta[slug] ? meta[slug] : null;
       var img = m2 && m2.profile ? String(m2.profile) : '';
       var url = m2 && m2.tmdb_url ? String(m2.tmdb_url) : '';
