@@ -342,6 +342,63 @@
     }
   }
 
+  function ensureFiltersLoaded() {
+    try {
+      if (window.filtersData && (window.filtersData.genreMap || window.filtersData.countryMap)) return Promise.resolve(true);
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      return fetch(base + '/data/filters.json' + ((window.DAOP && window.DAOP._dataCacheBust) || ''), { cache: 'force-cache' })
+        .then(function (r) { return r && r.ok ? r.json() : Promise.reject(new Error('HTTP ' + (r ? r.status : 0))); })
+        .then(function (data) { window.filtersData = data || {}; return true; })
+        .catch(function () {
+          return new Promise(function (resolve) {
+            var url = base + '/data/filters.js' + ((window.DAOP && window.DAOP._dataCacheBust) || '');
+            try {
+              window.DAOP = window.DAOP || {};
+              window.DAOP._loadedScripts = window.DAOP._loadedScripts || {};
+              if (window.DAOP._loadedScripts[url]) return resolve(true);
+              var s = document.createElement('script');
+              s.src = url;
+              s.onload = function () { window.DAOP._loadedScripts[url] = true; resolve(true); };
+              s.onerror = function () { resolve(false); };
+              document.head.appendChild(s);
+            } catch (e) {
+              resolve(false);
+            }
+          });
+        });
+    } catch (e2) {
+      return Promise.resolve(false);
+    }
+  }
+
+  function ensureCommentsLibsLoaded() {
+    try {
+      if (window.DAOP && typeof window.DAOP.mountComments === 'function') return Promise.resolve(true);
+      var base = (window.DAOP && window.DAOP.basePath) || '';
+      function loadScript(src) {
+        return new Promise(function (resolve) {
+          try {
+            window.DAOP = window.DAOP || {};
+            window.DAOP._loadedScripts = window.DAOP._loadedScripts || {};
+            var key = String(src);
+            if (window.DAOP._loadedScripts[key]) return resolve(true);
+            var s = document.createElement('script');
+            s.src = src;
+            s.onload = function () { window.DAOP._loadedScripts[key] = true; resolve(true); };
+            s.onerror = function () { resolve(false); };
+            document.head.appendChild(s);
+          } catch (e) { resolve(false); }
+        });
+      }
+      var purify = 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js';
+      return loadScript(purify).then(function () {
+        return loadScript(base + '/js/comments.js' + ((window.DAOP && window.DAOP._dataCacheBust) || ''));
+      });
+    } catch (e2) {
+      return Promise.resolve(false);
+    }
+  }
+
   function iconSvg(name) {
     if (name === 'heart') {
       return '<svg class="md-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-10-9c-2-3.3 0.2-8 5-8 2 0 3.4 1 5 3 1.6-2 3-3 5-3 4.8 0 7 4.7 5 8-3 4.4-10 9-10 9z"/></svg>';
@@ -1795,34 +1852,42 @@
       });
     }
 
-    var renderCard = window.DAOP && window.DAOP.renderMovieCard;
-    if (renderCard) {
+    // Lazy-load recommendations (needs filtersData) only when user scrolls near the section.
+    (function mountRecommendLazy() {
+      var renderCard = window.DAOP && window.DAOP.renderMovieCard;
+      if (!renderCard) return;
       var grid = document.getElementById('watch-recommend-grid');
-      if (grid) {
-        var cfg = getWatchRecSettings();
-        var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
-        grid.className = 'movies-grid';
-        grid.innerHTML = '<p>Đang tải...</p>';
+      if (!grid) return;
+      var cfg = getWatchRecSettings();
+      var baseUrl = (window.DAOP && window.DAOP.basePath) || '';
+      var listRef = { list: [] };
+      var toolbarEl = document.getElementById('watch-rec-toolbar');
+      grid.className = 'movies-grid';
+      grid.innerHTML = '<p>Đang tải...</p>';
 
-        var fd = window.filtersData || {};
-        var genreMap = fd.genreMap || {};
-        var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); }).filter(Boolean);
-        var idSet = new Set();
-        genres.forEach(function (g) {
-          var arr = genreMap[g] || [];
-          (arr || []).forEach(function (id) { if (id != null) idSet.add(String(id)); });
-        });
-        if (movie && movie.id != null) idSet.delete(String(movie.id));
-        var ids = Array.from(idSet).slice(0, Math.max(cfg.limit * 4, cfg.limit));
+      var started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        ensureFiltersLoaded().then(function () {
+          var fd = window.filtersData || {};
+          var genreMap = fd.genreMap || {};
+          var genres = (movie.genre || []).map(function (g) { return g && (g.slug || g.id); }).filter(Boolean);
+          var idSet = new Set();
+          genres.forEach(function (g) {
+            var arr = genreMap[g] || [];
+            (arr || []).forEach(function (id) { if (id != null) idSet.add(String(id)); });
+          });
+          if (movie && movie.id != null) idSet.delete(String(movie.id));
+          var ids = Array.from(idSet).slice(0, Math.max(cfg.limit * 4, cfg.limit));
 
-        var listRef = { list: [] };
-        var toolbarEl = document.getElementById('watch-rec-toolbar');
-        var getById = window.DAOP && window.DAOP.getMovieLightByIdAsync;
-        if (typeof getById !== 'function') {
-          grid.innerHTML = '<p>Không thể tải dữ liệu phim.</p>';
-          setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
-        } else {
-          Promise.all(ids.map(function (id) { return getById(id); }))
+          var getById = window.DAOP && window.DAOP.getMovieLightByIdAsync;
+          if (typeof getById !== 'function') {
+            grid.innerHTML = '<p>Không thể tải dữ liệu phim.</p>';
+            setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
+            return;
+          }
+          return Promise.all(ids.map(function (id) { return getById(id); }))
             .then(function (arr) {
               listRef.list = (arr || []).filter(Boolean).slice(0, cfg.limit);
               setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
@@ -1832,15 +1897,50 @@
               grid.innerHTML = '<p>Không có phim.</p>';
               setupRecommendToolbar(toolbarEl, grid, baseUrl, listRef);
             });
-        }
+        });
       }
-    }
 
-    try {
-      if (window.DAOP && typeof window.DAOP.mountComments === 'function') {
-        window.DAOP.mountComments('#watch-comments-container', { postSlug: movie.slug || '' });
+      try {
+        if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 1500 });
+      } catch (e0) {}
+      try {
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+              if (en && en.isIntersecting) {
+                try { io.disconnect(); } catch (e1) {}
+                start();
+              }
+            });
+          }, { rootMargin: '400px' });
+          io.observe(grid);
+          return;
+        }
+      } catch (e2) {}
+      setTimeout(start, 800);
+    })();
+
+    // Lazy-load comments libs + mount only when user expands comments
+    (function mountCommentsLazy() {
+      var mounted = false;
+      function mountOnce() {
+        if (mounted) return;
+        mounted = true;
+        ensureCommentsLibsLoaded().then(function () {
+          try {
+            if (window.DAOP && typeof window.DAOP.mountComments === 'function') {
+              window.DAOP.mountComments('#watch-comments-container', { postSlug: movie.slug || '' });
+            }
+          } catch (e0) {}
+        });
       }
-    } catch (e5) {}
+      try {
+        var btnScrollComments = root.querySelector('#watch-btn-scroll-comments');
+        var btnCollapseComments = root.querySelector('#watch-btn-collapse-comments');
+        if (btnScrollComments) btnScrollComments.addEventListener('click', function () { mountOnce(); }, { once: true });
+        if (btnCollapseComments) btnCollapseComments.addEventListener('click', function () { mountOnce(); }, { once: true });
+      } catch (e1) {}
+    })();
   }
 
   function init() {
