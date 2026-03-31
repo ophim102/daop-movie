@@ -76,101 +76,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab4e9db9df06c65947e1d.webp",
-    "link_url": "/phim/tinh-yeu-khong-the-khang-cu.html",
-    "title": "Tình Yêu Không Thể Kháng Cự",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (4/4)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab74fdb9df06c65948003.webp",
-    "link_url": "/phim/am-thuc-duong-pho-chau-a.html",
-    "title": "Ẩm Thực Đường Phố: Châu Á",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (9/9)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Tài Liệu"
-    ],
-    "sort_order": 6,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab8b5db9df06c659480dc.webp",
-    "link_url": "/phim/hau-due-phan-1.html",
-    "title": "Hậu Duệ (Phần 1)",
-    "year": "2018",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (16/16)",
-    "genres": [
-      "Hành Động",
-      "Tình Cảm",
-      "Tâm Lý",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab5e9db9df06c65947f0f.webp",
-    "link_url": "/phim/diem-mu-2.html",
-    "title": "Điểm Mù 2",
-    "year": "2016",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (22/22)",
-    "genres": [
-      "Hành Động",
-      "Tâm Lý",
-      "Hình Sự",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab6ccdb9df06c65947faf.webp",
-    "link_url": "/phim/than-vuong-cua-ngay-tan.html",
-    "title": "Thần Vương Của Ngày Tàn",
-    "year": "2015",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab6a4db9df06c65947f83.webp",
-    "link_url": "/phim/than-vuong-cua-ngay-tan-2.html",
-    "title": "Thần Vương Của Ngày Tàn 2",
-    "year": "2015",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab32fdb9df06c65947c44.webp",
     "link_url": "/phim/bat-kha-chien-bai.html",
     "title": "Bất Khả Chiến Bại",
@@ -182,6 +87,89 @@
       "Viễn Tưởng",
       "Phiêu Lưu",
       "Khoa Học"
+    ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab277db9df06c65947bd9.webp",
+    "link_url": "/phim/bay-chim-lac.html",
+    "title": "Bầy Chim Lạc",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (40/40)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab9d6db9df06c659481ca.webp",
+    "link_url": "/phim/thi-nghiem.html",
+    "title": "Thí Nghiệm",
+    "year": "2020",
+    "country": "Hàn Quốc",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Tình Cảm",
+      "Viễn Tưởng",
+      "Khoa Học"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab4e9db9df06c65947e1d.webp",
+    "link_url": "/phim/tinh-yeu-khong-the-khang-cu.html",
+    "title": "Tình Yêu Không Thể Kháng Cự",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (4/4)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab35bdb9df06c65947c7f.webp",
+    "link_url": "/phim/khoanh-khac-rung-dong.html",
+    "title": "Khoảnh Khắc Rung Động",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (24/24)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 9,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6246fe01c78eb57bbfe377c7.webp",
+    "link_url": "/phim/luong-the-hoan.html",
+    "title": "Lưỡng Thế Hoan",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (36/36)",
+    "genres": [
+      "Tình Cảm"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627aba46db9df06c65948201.webp",
+    "link_url": "/phim/truy-tim-ufo.html",
+    "title": "Truy Tìm UFO",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
