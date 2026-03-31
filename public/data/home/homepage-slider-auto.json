@@ -16,53 +16,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab74fdb9df06c65948003.webp",
-    "link_url": "/phim/am-thuc-duong-pho-chau-a.html",
-    "title": "Ẩm Thực Đường Phố: Châu Á",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (9/9)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Tài Liệu"
-    ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab6ccdb9df06c65947faf.webp",
-    "link_url": "/phim/than-vuong-cua-ngay-tan.html",
-    "title": "Thần Vương Của Ngày Tàn",
-    "year": "2015",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab6a4db9df06c65947f83.webp",
-    "link_url": "/phim/than-vuong-cua-ngay-tan-2.html",
-    "title": "Thần Vương Của Ngày Tàn 2",
-    "year": "2015",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 3,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab64ddb9df06c65947f51.webp",
     "link_url": "/phim/sat-nhan-ao-mua-truy-lung-hung-thu-o-han-quoc.html",
     "title": "Sát Nhân Áo Mưa: Truy Lùng Hung Thủ Ở Hàn Quốc",
@@ -75,21 +28,64 @@
       "Kinh Dị",
       "Tài Liệu"
     ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab497db9df06c65947dc3.webp",
+    "link_url": "/phim/sao-troi-bien-rong.html",
+    "title": "Sao Trời Biển Rộng",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (12/12)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab3b5db9df06c65947cc0.webp",
+    "link_url": "/phim/hoi-dap-ve-muong-thu-quai-vat-phieu-luu.html",
+    "title": "Hỏi Đáp Về Muông Thú (Quái Vật Phiêu Lưu)",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (12/12)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Tài Liệu"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab32fdb9df06c65947c44.webp",
+    "link_url": "/phim/bat-kha-chien-bai.html",
+    "title": "Bất Khả Chiến Bại",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Hành Động",
+      "Viễn Tưởng",
+      "Phiêu Lưu",
+      "Khoa Học"
+    ],
     "sort_order": 4,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab5e9db9df06c65947f0f.webp",
-    "link_url": "/phim/diem-mu-2.html",
-    "title": "Điểm Mù 2",
-    "year": "2016",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (22/22)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab277db9df06c65947bd9.webp",
+    "link_url": "/phim/bay-chim-lac.html",
+    "title": "Bầy Chim Lạc",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (40/40)",
     "genres": [
-      "Hành Động",
-      "Tâm Lý",
-      "Hình Sự",
-      "Phiêu Lưu"
+      "Tình Cảm",
+      "Tâm Lý"
     ],
     "sort_order": 5,
     "enabled": true
@@ -109,35 +105,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab497db9df06c65947dc3.webp",
-    "link_url": "/phim/sao-troi-bien-rong.html",
-    "title": "Sao Trời Biển Rộng",
-    "year": "2021",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab3b5db9df06c65947cc0.webp",
-    "link_url": "/phim/hoi-dap-ve-muong-thu-quai-vat-phieu-luu.html",
-    "title": "Hỏi Đáp Về Muông Thú (Quái Vật Phiêu Lưu)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Tài Liệu"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab35bdb9df06c65947c7f.webp",
     "link_url": "/phim/khoanh-khac-rung-dong.html",
     "title": "Khoảnh Khắc Rung Động",
@@ -148,23 +115,22 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 9,
+    "sort_order": 7,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab32fdb9df06c65947c44.webp",
-    "link_url": "/phim/bat-kha-chien-bai.html",
-    "title": "Bất Khả Chiến Bại",
-    "year": "2021",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab74fdb9df06c65948003.webp",
+    "link_url": "/phim/am-thuc-duong-pho-chau-a.html",
+    "title": "Ẩm Thực Đường Phố: Châu Á",
+    "year": "2019",
     "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
+    "episode_current": "Hoàn Tất (9/9)",
     "genres": [
       "Hành Động",
-      "Viễn Tưởng",
       "Phiêu Lưu",
-      "Khoa Học"
+      "Tài Liệu"
     ],
-    "sort_order": 10,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -177,6 +143,37 @@
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
+    ],
+    "sort_order": 9,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/62314b3d3c735a9a446dd02f.webp",
+    "link_url": "/phim/vo-do-phan-2.html",
+    "title": "Vô độ (Phần 2)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Tình Cảm",
+      "Hài Hước",
+      "Tâm Lý"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6230553c43fcea7179e23055.webp",
+    "link_url": "/phim/tam-sinh-tam-the-thap-ly-dao-hoa.html",
+    "title": "Tam sinh tam thế thập lý đào hoa",
+    "year": "2017",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (58/58)",
+    "genres": [
+      "Tình Cảm",
+      "Cổ Trang",
+      "Viễn Tưởng",
+      "Chính kịch"
     ],
     "sort_order": 11,
     "enabled": true
