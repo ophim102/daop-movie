@@ -149,19 +149,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6246fe01c78eb57bbfe377c7.webp",
-    "link_url": "/phim/luong-the-hoan.html",
-    "title": "Lưỡng Thế Hoan",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (36/36)",
-    "genres": [
-      "Tình Cảm"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627aba46db9df06c65948201.webp",
     "link_url": "/phim/truy-tim-ufo.html",
     "title": "Truy Tìm UFO",
@@ -169,6 +156,20 @@
     "country": "Âu Mỹ",
     "episode_current": "Hoàn Tất (10/10)",
     "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab919db9df06c6594811b.webp",
+    "link_url": "/phim/khi-co-ay-yeu.html",
+    "title": "Khi Cô Ấy Yêu",
+    "year": "2019",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (30/30)",
+    "genres": [
+      "Tình Cảm",
       "Tâm Lý"
     ],
     "sort_order": 11,
