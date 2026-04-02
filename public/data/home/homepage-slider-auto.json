@@ -31,6 +31,20 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b6b4bdb9df06c6594f9f0.webp",
+    "link_url": "/phim/tieu-thu-qua-den-va-tien-sinh-than-lan.html",
+    "title": "Tiểu Thư Quạ Đen Và Tiên Sinh Thằn Lằn",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (36/36)",
+    "genres": [
+      "Tình Cảm",
+      "Gia Đình"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b34b2db9df06c6594c58d.webp",
     "link_url": "/phim/bo-dung-lam-con-mat-mat-nua.html",
     "title": "Bố, đừng làm con mất mặt nữa!",
@@ -41,7 +55,7 @@
       "Hài Hước",
       "Gia Đình"
     ],
-    "sort_order": 2,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -55,7 +69,7 @@
       "Thể Thao",
       "Học Đường"
     ],
-    "sort_order": 3,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -68,7 +82,7 @@
     "genres": [
       "Học Đường"
     ],
-    "sort_order": 4,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -82,7 +96,7 @@
       "Hành Động",
       "Bí ẩn"
     ],
-    "sort_order": 5,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -96,7 +110,7 @@
       "Hành Động",
       "Bí ẩn"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -111,7 +125,7 @@
       "Viễn Tưởng",
       "Khoa Học"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -127,7 +141,7 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -143,7 +157,7 @@
       "Kinh Dị",
       "Tài Liệu"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -156,21 +170,6 @@
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab3b5db9df06c65947cc0.webp",
-    "link_url": "/phim/hoi-dap-ve-muong-thu-quai-vat-phieu-luu.html",
-    "title": "Hỏi Đáp Về Muông Thú (Quái Vật Phiêu Lưu)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Tài Liệu"
     ],
     "sort_order": 11,
     "enabled": true
