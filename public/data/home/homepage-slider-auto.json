@@ -1,5 +1,32 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbed2db9df06c65953cef.webp",
+    "link_url": "/phim/cha-chung-ta-bi-mat-cua-bac-si-cline.html",
+    "title": "Cha chúng ta: Bí mật của bác sĩ Cline",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tài Liệu"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbe94db9df06c65953c7b.webp",
+    "link_url": "/phim/42-ngay-bong-toi.html",
+    "title": "42 ngày bóng tối",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (6/6)",
+    "genres": [
+      "Chính kịch",
+      "Bí ẩn"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abc0fdb9df06c65948311.webp",
     "link_url": "/phim/bo-giap-ri-set-binh-minh.html",
     "title": "Bộ giáp rỉ sét -Bình minh-",
@@ -11,23 +38,22 @@
       "Phiêu Lưu",
       "Bí ẩn"
     ],
-    "sort_order": 0,
+    "sort_order": 2,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
-    "link_url": "/phim/thanh-pho-mat-tich.html",
-    "title": "Thành Phố Mất Tích",
-    "year": "2022",
-    "country": "Âu Mỹ",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbf0cdb9df06c65953d51.webp",
+    "link_url": "/phim/najmro-vua-dao-tau.html",
+    "title": "Najmro: Vua đào tẩu",
+    "year": "2021",
+    "country": "Ba lan",
     "episode_current": "Full",
     "genres": [
       "Hành Động",
-      "Tình Cảm",
       "Hài Hước",
       "Phiêu Lưu"
     ],
-    "sort_order": 1,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -41,7 +67,7 @@
       "Tình Cảm",
       "Gia Đình"
     ],
-    "sort_order": 2,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -55,7 +81,7 @@
       "Hài Hước",
       "Gia Đình"
     ],
-    "sort_order": 3,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -69,7 +95,7 @@
       "Thể Thao",
       "Học Đường"
     ],
-    "sort_order": 4,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -82,7 +108,7 @@
     "genres": [
       "Học Đường"
     ],
-    "sort_order": 5,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -96,7 +122,7 @@
       "Hành Động",
       "Bí ẩn"
     ],
-    "sort_order": 6,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -110,7 +136,7 @@
       "Hành Động",
       "Bí ẩn"
     ],
-    "sort_order": 7,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -125,7 +151,7 @@
       "Viễn Tưởng",
       "Khoa Học"
     ],
-    "sort_order": 8,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -140,36 +166,6 @@
       "Viễn Tưởng",
       "Phiêu Lưu",
       "Khoa Học"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab64ddb9df06c65947f51.webp",
-    "link_url": "/phim/sat-nhan-ao-mua-truy-lung-hung-thu-o-han-quoc.html",
-    "title": "Sát Nhân Áo Mưa: Truy Lùng Hung Thủ Ở Hàn Quốc",
-    "year": "2021",
-    "country": "Hàn Quốc",
-    "episode_current": "Hoàn Tất (3/3)",
-    "genres": [
-      "Tâm Lý",
-      "Hình Sự",
-      "Kinh Dị",
-      "Tài Liệu"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab497db9df06c65947dc3.webp",
-    "link_url": "/phim/sao-troi-bien-rong.html",
-    "title": "Sao Trời Biển Rộng",
-    "year": "2021",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
