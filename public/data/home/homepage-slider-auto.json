@@ -27,37 +27,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abc0fdb9df06c65948311.webp",
-    "link_url": "/phim/bo-giap-ri-set-binh-minh.html",
-    "title": "Bộ giáp rỉ sét -Bình minh-",
-    "year": "2022",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Bí ẩn"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
-    "link_url": "/phim/thanh-pho-mat-tich.html",
-    "title": "Thành Phố Mất Tích",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Hành Động",
-      "Tình Cảm",
-      "Hài Hước",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 3,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbf0cdb9df06c65953d51.webp",
     "link_url": "/phim/najmro-vua-dao-tau.html",
     "title": "Najmro: Vua đào tẩu",
@@ -69,7 +38,7 @@
       "Hài Hước",
       "Phiêu Lưu"
     ],
-    "sort_order": 4,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -83,7 +52,7 @@
       "Tình Cảm",
       "Gia Đình"
     ],
-    "sort_order": 5,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -97,7 +66,7 @@
       "Hài Hước",
       "Gia Đình"
     ],
-    "sort_order": 6,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -111,61 +80,83 @@
       "Thể Thao",
       "Học Đường"
     ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b33bedb9df06c6594c480.webp",
+    "link_url": "/phim/bo-ba-trom-cap-ban-hoat-hinh-phan-2.html",
+    "title": "Bộ ba trộm cắp: Bản hoạt hình (Phần 2)",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Hài Hước"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b6456db9df06c6594f532.webp",
+    "link_url": "/phim/bojack-horseman-phan-6.html",
+    "title": "BoJack Horseman (Phần 6)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (16/16)",
+    "genres": [
+      "Hài Hước"
+    ],
     "sort_order": 7,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abe48db9df06c6594852a.webp",
-    "link_url": "/phim/neu-nhu-nung-gom-thi-cung-lam-mot-cai-ly-coi-di.html",
-    "title": "Nếu như nung gốm thì cũng làm một cái ly cối đi",
-    "year": "2021",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b4c43db9df06c6594dcec.webp",
+    "link_url": "/phim/em-gai-phong-ben-3.html",
+    "title": "Em Gái Phòng Bên 3",
+    "year": "2019",
+    "country": "Hàn Quốc",
+    "episode_current": "Full",
     "genres": [
-      "Học Đường"
+      "Phim 18+"
     ],
     "sort_order": 8,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abd13db9df06c659483ec.webp",
-    "link_url": "/phim/jouran-the-princess-of-snow-and-blood.html",
-    "title": "Jouran: THE PRINCESS OF SNOW AND BLOOD",
-    "year": "2021",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b658adb9df06c6594f60a.webp",
+    "link_url": "/phim/chuyen-o-santa-clarita-phan-2.html",
+    "title": "Chuyện ở Santa Clarita (Phần 2)",
+    "year": "2018",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
     "genres": [
-      "Hành Động",
-      "Bí ẩn"
+      "Kinh Dị"
     ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abbaedb9df06c659482c5.webp",
-    "link_url": "/phim/back-arrow.html",
-    "title": "BACK ARROW",
-    "year": "2021",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (20/20)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b6441db9df06c6594f497.webp",
+    "link_url": "/phim/bojack-horseman-phan-5.html",
+    "title": "BoJack Horseman (Phần 5)",
+    "year": "2018",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (12/12)",
     "genres": [
-      "Hành Động",
-      "Bí ẩn"
+      "Hài Hước"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627ab838db9df06c65948088.webp",
-    "link_url": "/phim/cuoc-chien-khong-gian-2.html",
-    "title": "Cuộc Chiến Không Gian 2",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abef5db9df06c659485fa.webp",
+    "link_url": "/phim/tay-dam-toi-thuong-megalo-box.html",
+    "title": "Tay đấm tối thượng Megalo Box",
+    "year": "2018",
+    "country": "Nhật Bản",
+    "episode_current": "Hoàn Tất (13/13)",
     "genres": [
-      "Tâm Lý",
-      "Viễn Tưởng",
-      "Khoa Học"
+      "Hành Động"
     ],
     "sort_order": 11,
     "enabled": true
