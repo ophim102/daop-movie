@@ -1,5 +1,32 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cca729e983cdfde33e9ed.webp",
+    "link_url": "/phim/the-souvenir-part-ii.html",
+    "title": "Tình Yêu Mê Ly (Phần 2)",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Chính kịch"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd2b89e983cdfde33f999.webp",
+    "link_url": "/phim/bi-mat-che-giau.html",
+    "title": "Bí Mật Che Giấu",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Chính kịch",
+      "Bí ẩn"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c957edb9df06c65979ab8.webp",
     "link_url": "/phim/nu-gia-su-goi-cam.html",
     "title": "Nữ Gia Sư Gợi Cảm",
@@ -9,7 +36,7 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 0,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -22,7 +49,7 @@
     "genres": [
       "Tài Liệu"
     ],
-    "sort_order": 1,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -36,7 +63,38 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 2,
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abc0fdb9df06c65948311.webp",
+    "link_url": "/phim/bo-giap-ri-set-binh-minh.html",
+    "title": "Bộ giáp rỉ sét -Bình minh-",
+    "year": "2022",
+    "country": "Nhật Bản",
+    "episode_current": "Hoàn Tất (12/12)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Bí ẩn"
+    ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb4119e983cdfde33d8be.webp",
+    "link_url": "/phim/biet-doi-titans-phan-3.html",
+    "title": "Biệt Đội Titans (Phần 3)",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
+    "genres": [
+      "Hành Động",
+      "Viễn Tưởng",
+      "Phiêu Lưu",
+      "Khoa Học"
+    ],
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -49,7 +107,7 @@
     "genres": [
       "Tài Liệu"
     ],
-    "sort_order": 3,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -65,7 +123,7 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
-    "sort_order": 4,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -80,88 +138,33 @@
       "Hài Hước",
       "Phiêu Lưu"
     ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c9430db9df06c6597964c.webp",
-    "link_url": "/phim/em-gai-phong-ben-4.html",
-    "title": "Em Gái Phòng Bên 4",
-    "year": "2020",
-    "country": "Hàn Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Phim 18+"
-    ],
-    "sort_order": 6,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bf9efdb9df06c65956bcc.webp",
-    "link_url": "/phim/toi-co-kha-nang-giao-tiep-dac-biet.html",
-    "title": "Tôi Có Khả Năng Giao Tiếp Đặc Biệt",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (26/26)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý",
-      "Hình Sự"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bfdd9db9df06c65956f3a.webp",
-    "link_url": "/phim/em-la-dap-an-cua-anh.html",
-    "title": "Em Là Đáp Án Của Anh",
-    "year": "2019",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (42/42)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý",
-      "Hình Sự"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bfd0cdb9df06c65956e62.webp",
-    "link_url": "/phim/cong-chua-beo-dang-yeu.html",
-    "title": "Công Chúa Béo Đáng Yêu",
-    "year": "2019",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (24/24)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627be9b1db9df06c659561ae.webp",
-    "link_url": "/phim/thuan-hoa.html",
-    "title": "Thuần Hóa",
-    "year": "2019",
-    "country": "Pháp",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b6b4bdb9df06c6594f9f0.webp",
+    "link_url": "/phim/tieu-thu-qua-den-va-tien-sinh-than-lan.html",
+    "title": "Tiểu Thư Quạ Đen Và Tiên Sinh Thằn Lằn",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (36/36)",
     "genres": [
-      "Tâm Lý"
+      "Tình Cảm",
+      "Gia Đình"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627be97ddb9df06c65956190.webp",
-    "link_url": "/phim/thien-than-nho-cua-me.html",
-    "title": "Thiên Thần Nhỏ Của Mẹ",
-    "year": "2019",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b34b2db9df06c6594c58d.webp",
+    "link_url": "/phim/bo-dung-lam-con-mat-mat-nua.html",
+    "title": "Bố, đừng làm con mất mặt nữa!",
+    "year": "2021",
     "country": "Âu Mỹ",
-    "episode_current": "Full",
+    "episode_current": "Hoàn Tất (8/8)",
     "genres": [
-      "Tâm Lý"
+      "Hài Hước",
+      "Gia Đình"
     ],
     "sort_order": 11,
     "enabled": true
