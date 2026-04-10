@@ -82,6 +82,22 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
+    "link_url": "/phim/thanh-pho-mat-tich.html",
+    "title": "Thành Phố Mất Tích",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Hành Động",
+      "Tình Cảm",
+      "Hài Hước",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb4119e983cdfde33d8be.webp",
     "link_url": "/phim/biet-doi-titans-phan-3.html",
     "title": "Biệt Đội Titans (Phần 3)",
@@ -94,7 +110,7 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -107,7 +123,7 @@
     "genres": [
       "Tài Liệu"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -123,7 +139,7 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -138,7 +154,7 @@
       "Hài Hước",
       "Phiêu Lưu"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -150,20 +166,6 @@
     "episode_current": "Hoàn Tất (36/36)",
     "genres": [
       "Tình Cảm",
-      "Gia Đình"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b34b2db9df06c6594c58d.webp",
-    "link_url": "/phim/bo-dung-lam-con-mat-mat-nua.html",
-    "title": "Bố, đừng làm con mất mặt nữa!",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
-    "genres": [
-      "Hài Hước",
       "Gia Đình"
     ],
     "sort_order": 11,
