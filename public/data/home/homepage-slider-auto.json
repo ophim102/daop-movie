@@ -1,5 +1,20 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd19f9e983cdfde33f8b8.webp",
+    "link_url": "/phim/tan-mon-huyen-an.html",
+    "title": "Tân Môn Huyền Án",
+    "year": "2022",
+    "country": "Trung Quốc",
+    "episode_current": "Full",
+    "genres": [
+      "Hành Động",
+      "Viễn Tưởng",
+      "Bí ẩn"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cca729e983cdfde33e9ed.webp",
     "link_url": "/phim/the-souvenir-part-ii.html",
     "title": "Tình Yêu Mê Ly (Phần 2)",
@@ -9,7 +24,21 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 0,
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d1c809e983cdfde342f7a.webp",
+    "link_url": "/phim/cam-ngon-truyen.html",
+    "title": "Cẩm Ngôn Truyện",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (34/34)",
+    "genres": [
+      "Tình Cảm",
+      "Cổ Trang"
+    ],
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -23,78 +52,34 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c957edb9df06c65979ab8.webp",
-    "link_url": "/phim/nu-gia-su-goi-cam.html",
-    "title": "Nữ Gia Sư Gợi Cảm",
-    "year": "2022",
-    "country": "Hàn Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Phim 18+"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbed2db9df06c65953cef.webp",
-    "link_url": "/phim/cha-chung-ta-bi-mat-cua-bac-si-cline.html",
-    "title": "Cha chúng ta: Bí mật của bác sĩ Cline",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Tài Liệu"
-    ],
     "sort_order": 3,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbe94db9df06c65953c7b.webp",
-    "link_url": "/phim/42-ngay-bong-toi.html",
-    "title": "42 ngày bóng tối",
-    "year": "2022",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d2c899e983cdfde34399b.webp",
+    "link_url": "/phim/biet-doi-titan-phan-1.html",
+    "title": "Biệt Đội Titan (Phần 1)",
+    "year": "2018",
     "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (6/6)",
+    "episode_current": "Hoàn Tất (11/11)",
     "genres": [
-      "Chính kịch",
-      "Bí ẩn"
+      "Hành Động",
+      "Phiêu Lưu"
     ],
     "sort_order": 4,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abc0fdb9df06c65948311.webp",
-    "link_url": "/phim/bo-giap-ri-set-binh-minh.html",
-    "title": "Bộ giáp rỉ sét -Bình minh-",
-    "year": "2022",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb9089e983cdfde33dde9.webp",
+    "link_url": "/phim/cong-dong-vui-tinh-phan-6.html",
+    "title": "Cộng đồng vui tính (Phần 6)",
+    "year": "2015",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
     "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Bí ẩn"
+      "Hài Hước"
     ],
     "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
-    "link_url": "/phim/thanh-pho-mat-tich.html",
-    "title": "Thành Phố Mất Tích",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Hành Động",
-      "Tình Cảm",
-      "Hài Hước",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 6,
     "enabled": true
   },
   {
@@ -110,63 +95,71 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb5c89e983cdfde33da88.webp",
+    "link_url": "/phim/coi-nhu-da-chet-phan-2.html",
+    "title": "Coi như đã chết (Phần 2)",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Chính kịch"
+    ],
     "sort_order": 7,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c99959e983cdfde33c370.webp",
-    "link_url": "/phim/the-dark-side-of-green-energies.html",
-    "title": "The Dark Side of Green Energies",
-    "year": "2021",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb5ba9e983cdfde33da73.webp",
+    "link_url": "/phim/coi-nhu-da-chet-phan-1.html",
+    "title": "Coi như đã chết (Phần 1)",
+    "year": "2019",
     "country": "Âu Mỹ",
-    "episode_current": "Full",
+    "episode_current": "Hoàn Tất (10/10)",
     "genres": [
-      "Tài Liệu"
+      "Chính kịch"
     ],
     "sort_order": 8,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bf96cdb9df06c65956b56.webp",
-    "link_url": "/phim/edens-zero.html",
-    "title": "Edens Zero",
-    "year": "2021",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (25/25)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb5469e983cdfde33d987.webp",
+    "link_url": "/phim/chuyen-thanh-pho.html",
+    "title": "Chuyện thành phố",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
     "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
+      "Chính kịch"
     ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbf0cdb9df06c65953d51.webp",
-    "link_url": "/phim/najmro-vua-dao-tau.html",
-    "title": "Najmro: Vua đào tẩu",
-    "year": "2021",
-    "country": "Ba lan",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb7209e983cdfde33dbca.webp",
+    "link_url": "/phim/con-tau-nightflyers-phan-1.html",
+    "title": "Con Tàu Nightflyers (Phần 1)",
+    "year": "2018",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn tất (10/10)",
     "genres": [
-      "Hành Động",
-      "Hài Hước",
-      "Phiêu Lưu"
+      "Tâm Lý",
+      "Kinh Dị"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627b6b4bdb9df06c6594f9f0.webp",
-    "link_url": "/phim/tieu-thu-qua-den-va-tien-sinh-than-lan.html",
-    "title": "Tiểu Thư Quạ Đen Và Tiên Sinh Thằn Lằn",
-    "year": "2021",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (36/36)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb8fb9e983cdfde33ddd9.webp",
+    "link_url": "/phim/cong-dong-vui-tinh-phan-5.html",
+    "title": "Cộng đồng vui tính (Phần 5)",
+    "year": "2014",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
     "genres": [
-      "Tình Cảm",
-      "Gia Đình"
+      "Hài Hước"
     ],
     "sort_order": 11,
     "enabled": true
