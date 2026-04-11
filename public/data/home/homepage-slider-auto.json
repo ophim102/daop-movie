@@ -1,5 +1,19 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d2cee9e983cdfde3439f2.webp",
+    "link_url": "/phim/dung-cam-tien-len-de-yeu-em.html",
+    "title": "Dũng Cảm Tiến Lên Để Yêu Em",
+    "year": "2018",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (35/35)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd19f9e983cdfde33f8b8.webp",
     "link_url": "/phim/tan-mon-huyen-an.html",
     "title": "Tân Môn Huyền Án",
@@ -11,7 +25,7 @@
       "Viễn Tưởng",
       "Bí ẩn"
     ],
-    "sort_order": 0,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -24,7 +38,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 1,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -38,7 +52,7 @@
       "Tình Cảm",
       "Cổ Trang"
     ],
-    "sort_order": 2,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -52,7 +66,7 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 3,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -66,7 +80,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 4,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -79,7 +93,7 @@
     "genres": [
       "Hài Hước"
     ],
-    "sort_order": 5,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -92,7 +106,7 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -105,7 +119,7 @@
     "genres": [
       "Tài Liệu"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -119,7 +133,7 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -134,34 +148,21 @@
       "Phiêu Lưu",
       "Bí ẩn"
     ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb4119e983cdfde33d8be.webp",
-    "link_url": "/phim/biet-doi-titans-phan-3.html",
-    "title": "Biệt Đội Titans (Phần 3)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c99959e983cdfde33c370.webp",
-    "link_url": "/phim/the-dark-side-of-green-energies.html",
-    "title": "The Dark Side of Green Energies",
-    "year": "2021",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
+    "link_url": "/phim/thanh-pho-mat-tich.html",
+    "title": "Thành Phố Mất Tích",
+    "year": "2022",
     "country": "Âu Mỹ",
     "episode_current": "Full",
     "genres": [
-      "Tài Liệu"
+      "Hành Động",
+      "Tình Cảm",
+      "Hài Hước",
+      "Phiêu Lưu"
     ],
     "sort_order": 11,
     "enabled": true
