@@ -1,19 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d2cee9e983cdfde3439f2.webp",
-    "link_url": "/phim/dung-cam-tien-len-de-yeu-em.html",
-    "title": "Dũng Cảm Tiến Lên Để Yêu Em",
-    "year": "2018",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (35/35)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd19f9e983cdfde33f8b8.webp",
     "link_url": "/phim/tan-mon-huyen-an.html",
     "title": "Tân Môn Huyền Án",
@@ -24,6 +10,20 @@
       "Hành Động",
       "Viễn Tưởng",
       "Bí ẩn"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d323a9e983cdfde343e6b.webp",
+    "link_url": "/phim/tinh-yeu-khong-ngo-den.html",
+    "title": "Tình Yêu Không Ngờ Đến",
+    "year": "2021",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (24/24)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
     ],
     "sort_order": 1,
     "enabled": true
@@ -42,6 +42,40 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d31739e983cdfde343de9.webp",
+    "link_url": "/phim/thuong-co-mat-uoc.html",
+    "title": "Thượng Cổ Mật Ước",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (45/45)",
+    "genres": [
+      "Hành Động",
+      "Tình Cảm",
+      "Cổ Trang",
+      "Tâm Lý",
+      "Chiến Tranh",
+      "Võ Thuật",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d313f9e983cdfde343dca.webp",
+    "link_url": "/phim/nguyet-thuong-trong-hoa.html",
+    "title": "Nguyệt Thượng Trọng Hỏa",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (48/48)",
+    "genres": [
+      "Tình Cảm",
+      "Cổ Trang",
+      "Tâm Lý"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d1c809e983cdfde342f7a.webp",
     "link_url": "/phim/cam-ngon-truyen.html",
     "title": "Cẩm Ngôn Truyện",
@@ -52,7 +86,35 @@
       "Tình Cảm",
       "Cổ Trang"
     ],
-    "sort_order": 3,
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d33699e983cdfde343f44.webp",
+    "link_url": "/phim/truy-tim-sieu-xe.html",
+    "title": "Truy Tìm Siêu Xe",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d32f69e983cdfde343ee2.webp",
+    "link_url": "/phim/hoc-vien-mary.html",
+    "title": "Học Viện Mary",
+    "year": "2019",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (20/20)",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -66,103 +128,49 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 4,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d2c899e983cdfde34399b.webp",
-    "link_url": "/phim/biet-doi-titan-phan-1.html",
-    "title": "Biệt Đội Titan (Phần 1)",
-    "year": "2018",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (11/11)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb9089e983cdfde33dde9.webp",
-    "link_url": "/phim/cong-dong-vui-tinh-phan-6.html",
-    "title": "Cộng đồng vui tính (Phần 6)",
-    "year": "2015",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hài Hước"
-    ],
-    "sort_order": 6,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c957edb9df06c65979ab8.webp",
-    "link_url": "/phim/nu-gia-su-goi-cam.html",
-    "title": "Nữ Gia Sư Gợi Cảm",
-    "year": "2022",
-    "country": "Hàn Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Phim 18+"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbed2db9df06c65953cef.webp",
-    "link_url": "/phim/cha-chung-ta-bi-mat-cua-bac-si-cline.html",
-    "title": "Cha chúng ta: Bí mật của bác sĩ Cline",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Tài Liệu"
-    ],
     "sort_order": 8,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627bbe94db9df06c65953c7b.webp",
-    "link_url": "/phim/42-ngay-bong-toi.html",
-    "title": "42 ngày bóng tối",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (6/6)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d32949e983cdfde343e92.webp",
+    "link_url": "/phim/giang-long-chi-bach-lo-vi-suong.html",
+    "title": "Giáng Long Chi Bạch Lộ Vi Sương",
+    "year": "2018",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (20/20)",
     "genres": [
-      "Chính kịch",
-      "Bí ẩn"
+      "Hành Động",
+      "Tình Cảm",
+      "Tâm Lý",
+      "Phiêu Lưu"
     ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627abc0fdb9df06c65948311.webp",
-    "link_url": "/phim/bo-giap-ri-set-binh-minh.html",
-    "title": "Bộ giáp rỉ sét -Bình minh-",
-    "year": "2022",
-    "country": "Nhật Bản",
-    "episode_current": "Hoàn Tất (12/12)",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d32099e983cdfde343e43.webp",
+    "link_url": "/phim/tien-sinh-boi-loi.html",
+    "title": "Tiên Sinh Bơi Lội",
+    "year": "2018",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (46/46)",
     "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Bí ẩn"
+      "Tình Cảm",
+      "Tâm Lý"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/6279f0313a2c0c6289c11f38.webp",
-    "link_url": "/phim/thanh-pho-mat-tich.html",
-    "title": "Thành Phố Mất Tích",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d31029e983cdfde343da9.webp",
+    "link_url": "/phim/tro-dua-cua-thuong-de-5.html",
+    "title": "Trò Đùa Của Thượng Đế 5",
+    "year": "2018",
+    "country": "Hàn Quốc",
+    "episode_current": "Hoàn Tất (16/16)",
     "genres": [
-      "Hành Động",
       "Tình Cảm",
-      "Hài Hước",
-      "Phiêu Lưu"
+      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
