@@ -132,6 +132,22 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d348f9e983cdfde343ff7.webp",
+    "link_url": "/phim/ve-binh-thoi-gian.html",
+    "title": "Vệ Binh Thời Gian",
+    "year": "2018",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (12/12)",
+    "genres": [
+      "Hành Động",
+      "Viễn Tưởng",
+      "Phiêu Lưu",
+      "Khoa Học"
+    ],
+    "sort_order": 9,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d32949e983cdfde343e92.webp",
     "link_url": "/phim/giang-long-chi-bach-lo-vi-suong.html",
     "title": "Giáng Long Chi Bạch Lộ Vi Sương",
@@ -144,7 +160,7 @@
       "Tâm Lý",
       "Phiêu Lưu"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -154,20 +170,6 @@
     "year": "2018",
     "country": "Trung Quốc",
     "episode_current": "Hoàn Tất (46/46)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d31029e983cdfde343da9.webp",
-    "link_url": "/phim/tro-dua-cua-thuong-de-5.html",
-    "title": "Trò Đùa Của Thượng Đế 5",
-    "year": "2018",
-    "country": "Hàn Quốc",
-    "episode_current": "Hoàn Tất (16/16)",
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
