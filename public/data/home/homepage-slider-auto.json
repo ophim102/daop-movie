@@ -104,6 +104,20 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3b489e983cdfde344648.webp",
+    "link_url": "/phim/gai-gia-pho-thi.html",
+    "title": "Gái Già Phố Thị",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ae59e983cdfde3445da.webp",
     "link_url": "/phim/cuu-long-bat-bai.html",
     "title": "Cửu Long Bất Bại",
@@ -114,7 +128,7 @@
       "Tâm Lý",
       "Võ Thuật"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -129,7 +143,7 @@
       "Viễn Tưởng",
       "Khoa Học"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -142,7 +156,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -155,20 +169,6 @@
     "genres": [
       "Hành Động",
       "Phiêu Lưu"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d32f69e983cdfde343ee2.webp",
-    "link_url": "/phim/hoc-vien-mary.html",
-    "title": "Học Viện Mary",
-    "year": "2019",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (20/20)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
