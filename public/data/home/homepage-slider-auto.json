@@ -104,6 +104,48 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ae59e983cdfde3445da.webp",
+    "link_url": "/phim/cuu-long-bat-bai.html",
+    "title": "Cửu Long Bất Bại",
+    "year": "2019",
+    "country": "Hồng Kông",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý",
+      "Võ Thuật"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3a219e983cdfde344533.webp",
+    "link_url": "/phim/chuyen-bay-cuoc-doi.html",
+    "title": "Chuyến Bay Cuộc Đời",
+    "year": "2019",
+    "country": "Canada",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý",
+      "Viễn Tưởng",
+      "Khoa Học"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d39c89e983cdfde3444f3.webp",
+    "link_url": "/phim/chien-dich-balkan.html",
+    "title": "Chiến Dịch Balkan",
+    "year": "2019",
+    "country": "Nga",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 9,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d33699e983cdfde343f44.webp",
     "link_url": "/phim/truy-tim-sieu-xe.html",
     "title": "Truy Tìm Siêu Xe",
@@ -114,7 +156,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 7,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -124,47 +166,6 @@
     "year": "2019",
     "country": "Trung Quốc",
     "episode_current": "Hoàn Tất (20/20)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd2b89e983cdfde33f999.webp",
-    "link_url": "/phim/bi-mat-che-giau.html",
-    "title": "Bí Mật Che Giấu",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Chính kịch",
-      "Bí ẩn"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d38e59e983cdfde344416.webp",
-    "link_url": "/phim/ban-trai-bat-ngo.html",
-    "title": "Bạn Trai Bất Ngờ",
-    "year": "2018",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d34d39e983cdfde34401f.webp",
-    "link_url": "/phim/vi-sao-lang-man.html",
-    "title": "Vì Sao Lãng Mạn",
-    "year": "2018",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (40/40)",
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
