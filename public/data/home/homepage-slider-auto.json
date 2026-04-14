@@ -104,6 +104,19 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3dbe9e983cdfde34485f.webp",
+    "link_url": "/phim/ngay-tuu-truong.html",
+    "title": "Ngày Tựu Trường",
+    "year": "2019",
+    "country": "Pháp",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3b489e983cdfde344648.webp",
     "link_url": "/phim/gai-gia-pho-thi.html",
     "title": "Gái Già Phố Thị",
@@ -114,7 +127,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -128,7 +141,7 @@
       "Tâm Lý",
       "Võ Thuật"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -143,7 +156,7 @@
       "Viễn Tưởng",
       "Khoa Học"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -155,20 +168,6 @@
     "episode_current": "Full",
     "genres": [
       "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d33699e983cdfde343f44.webp",
-    "link_url": "/phim/truy-tim-sieu-xe.html",
-    "title": "Truy Tìm Siêu Xe",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu"
     ],
     "sort_order": 11,
     "enabled": true
