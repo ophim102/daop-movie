@@ -104,6 +104,33 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3feb9e983cdfde344a29.webp",
+    "link_url": "/phim/trum-huong-cang-2.html",
+    "title": "Trùm Hương Cảng 2",
+    "year": "2019",
+    "country": "Trung Quốc",
+    "episode_current": "Full",
+    "genres": [
+      "Hình Sự",
+      "Võ Thuật"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3e7c9e983cdfde34492a.webp",
+    "link_url": "/phim/quy-co-bala.html",
+    "title": "Quý Cô Bala",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3de69e983cdfde344887.webp",
     "link_url": "/phim/nguoi-giu-ngon-hai-dang.html",
     "title": "Người Giữ Ngọn Hải Đăng",
@@ -113,7 +140,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 7,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -126,7 +153,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 8,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -139,35 +166,6 @@
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ae59e983cdfde3445da.webp",
-    "link_url": "/phim/cuu-long-bat-bai.html",
-    "title": "Cửu Long Bất Bại",
-    "year": "2019",
-    "country": "Hồng Kông",
-    "episode_current": "Full",
-    "genres": [
-      "Tâm Lý",
-      "Võ Thuật"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3a219e983cdfde344533.webp",
-    "link_url": "/phim/chuyen-bay-cuoc-doi.html",
-    "title": "Chuyến Bay Cuộc Đời",
-    "year": "2019",
-    "country": "Canada",
-    "episode_current": "Full",
-    "genres": [
-      "Tâm Lý",
-      "Viễn Tưởng",
-      "Khoa Học"
     ],
     "sort_order": 11,
     "enabled": true
