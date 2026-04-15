@@ -1,20 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd19f9e983cdfde33f8b8.webp",
-    "link_url": "/phim/tan-mon-huyen-an.html",
-    "title": "Tân Môn Huyền Án",
-    "year": "2022",
-    "country": "Trung Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Bí ẩn"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d323a9e983cdfde343e6b.webp",
     "link_url": "/phim/tinh-yeu-khong-ngo-den.html",
     "title": "Tình Yêu Không Ngờ Đến",
@@ -25,20 +10,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cca729e983cdfde33e9ed.webp",
-    "link_url": "/phim/the-souvenir-part-ii.html",
-    "title": "Tình Yêu Mê Ly (Phần 2)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 2,
+    "sort_order": 0,
     "enabled": true
   },
   {
@@ -57,7 +29,7 @@
       "Võ Thuật",
       "Phiêu Lưu"
     ],
-    "sort_order": 3,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -72,7 +44,7 @@
       "Cổ Trang",
       "Tâm Lý"
     ],
-    "sort_order": 4,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -86,7 +58,7 @@
       "Tình Cảm",
       "Gia Đình"
     ],
-    "sort_order": 5,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -100,7 +72,20 @@
       "Tình Cảm",
       "Cổ Trang"
     ],
-    "sort_order": 6,
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d40f49e983cdfde344ab1.webp",
+    "link_url": "/phim/yeu-nham-sep-bu.html",
+    "title": "Yêu Nhầm Sếp Bự",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tình Cảm"
+    ],
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -114,7 +99,7 @@
       "Hình Sự",
       "Võ Thuật"
     ],
-    "sort_order": 7,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -127,7 +112,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 8,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -140,7 +125,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 9,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -153,7 +138,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 10,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -166,6 +151,20 @@
     "genres": [
       "Tình Cảm",
       "Tâm Lý"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ae59e983cdfde3445da.webp",
+    "link_url": "/phim/cuu-long-bat-bai.html",
+    "title": "Cửu Long Bất Bại",
+    "year": "2019",
+    "country": "Hồng Kông",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý",
+      "Võ Thuật"
     ],
     "sort_order": 11,
     "enabled": true
