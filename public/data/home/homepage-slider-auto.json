@@ -1,81 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d323a9e983cdfde343e6b.webp",
-    "link_url": "/phim/tinh-yeu-khong-ngo-den.html",
-    "title": "Tình Yêu Không Ngờ Đến",
-    "year": "2021",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (24/24)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d31739e983cdfde343de9.webp",
-    "link_url": "/phim/thuong-co-mat-uoc.html",
-    "title": "Thượng Cổ Mật Ước",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (45/45)",
-    "genres": [
-      "Hành Động",
-      "Tình Cảm",
-      "Cổ Trang",
-      "Tâm Lý",
-      "Chiến Tranh",
-      "Võ Thuật",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d313f9e983cdfde343dca.webp",
-    "link_url": "/phim/nguyet-thuong-trong-hoa.html",
-    "title": "Nguyệt Thượng Trọng Hỏa",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (48/48)",
-    "genres": [
-      "Tình Cảm",
-      "Cổ Trang",
-      "Tâm Lý"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d1e989e983cdfde343172.webp",
-    "link_url": "/phim/rat-muon-o-ben-anh.html",
-    "title": "Rất Muốn Ở Bên Anh",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (24/24)",
-    "genres": [
-      "Tình Cảm",
-      "Gia Đình"
-    ],
-    "sort_order": 3,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d1c809e983cdfde342f7a.webp",
-    "link_url": "/phim/cam-ngon-truyen.html",
-    "title": "Cẩm Ngôn Truyện",
-    "year": "2020",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (34/34)",
-    "genres": [
-      "Tình Cảm",
-      "Cổ Trang"
-    ],
-    "sort_order": 4,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d40f49e983cdfde344ab1.webp",
     "link_url": "/phim/yeu-nham-sep-bu.html",
     "title": "Yêu Nhầm Sếp Bự",
@@ -85,7 +9,7 @@
     "genres": [
       "Tình Cảm"
     ],
-    "sort_order": 5,
+    "sort_order": 0,
     "enabled": true
   },
   {
@@ -99,7 +23,7 @@
       "Hình Sự",
       "Võ Thuật"
     ],
-    "sort_order": 6,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -112,59 +36,140 @@
     "genres": [
       "Tâm Lý"
     ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3fa29e983cdfde3449f3.webp",
+    "link_url": "/phim/tim-lai-cong-ly.html",
+    "title": "Tìm Lại Công Lý",
+    "year": "2018",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý",
+      "Hình Sự"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3edc9e983cdfde344986.webp",
+    "link_url": "/phim/tham-tu-lung-danh-conan-21-ban-tinh-ca-mau-do-tham.html",
+    "title": "Thám Tử Lừng Danh Conan 21: Bản Tình Ca Màu Đỏ Thẫm",
+    "year": "2017",
+    "country": "Nhật Bản",
+    "episode_current": "Full",
+    "genres": [
+      "Hành Động",
+      "Hình Sự",
+      "Phiêu Lưu",
+      "Bí ẩn"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d404b9e983cdfde344a43.webp",
+    "link_url": "/phim/truyen-ky-luc-to-hue-nang.html",
+    "title": "Truyền Kỳ Lục Tổ Huệ Năng",
+    "year": "2016",
+    "country": "Trung Quốc",
+    "episode_current": "Full",
+    "genres": [
+      "Cổ Trang",
+      "Tài Liệu"
+    ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3f389e983cdfde3449c2.webp",
+    "link_url": "/phim/than-kiem-tam-thieu-gia-dich-kiem.html",
+    "title": "Thần Kiếm - Tam Thiểu Gia Đích Kiếm",
+    "year": "2016",
+    "country": "Trung Quốc",
+    "episode_current": "Full",
+    "genres": [
+      "Hành Động",
+      "Cổ Trang",
+      "Phiêu Lưu",
+      "Gia Đình"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d40cb9e983cdfde344a9c.webp",
+    "link_url": "/phim/yeu-nham-hot-girl.html",
+    "title": "Yêu Nhầm Hot Girl",
+    "year": "2009",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tình Cảm"
+    ],
     "sort_order": 7,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3de69e983cdfde344887.webp",
-    "link_url": "/phim/nguoi-giu-ngon-hai-dang.html",
-    "title": "Người Giữ Ngọn Hải Đăng",
-    "year": "2019",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d409a9e983cdfde344a6a.webp",
+    "link_url": "/phim/vu-cuop-the-ky.html",
+    "title": "Vụ Cướp Thế Kỷ",
+    "year": "2008",
     "country": "Âu Mỹ",
     "episode_current": "Full",
     "genres": [
-      "Kinh Dị"
+      "Hành Động",
+      "Tâm Lý",
+      "Hình Sự",
+      "Phiêu Lưu"
     ],
     "sort_order": 8,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3dbe9e983cdfde34485f.webp",
-    "link_url": "/phim/ngay-tuu-truong.html",
-    "title": "Ngày Tựu Trường",
-    "year": "2019",
-    "country": "Pháp",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ebe9e983cdfde344960.webp",
+    "link_url": "/phim/scooby-doo-2-quai-vat-hien-hinh.html",
+    "title": "Scooby-Doo 2: Quái Vật Hiện Hình",
+    "year": "2004",
+    "country": "Âu Mỹ",
     "episode_current": "Full",
     "genres": [
-      "Tâm Lý"
+      "Hành Động",
+      "Phiêu Lưu",
+      "Bí ẩn"
     ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3b489e983cdfde344648.webp",
-    "link_url": "/phim/gai-gia-pho-thi.html",
-    "title": "Gái Già Phố Thị",
-    "year": "2019",
-    "country": "Âu Mỹ",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3f039e983cdfde34499b.webp",
+    "link_url": "/phim/tham-tu-lung-danh-conan-ao-thuat-gia-cuoi-cung-cua-the-ky.html",
+    "title": "Thám Tử Lừng Danh Conan : Ảo Thuật Gia Cuối Cùng Của Thế Kỷ",
+    "year": "1999",
+    "country": "Nhật Bản",
     "episode_current": "Full",
     "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
+      "Hành Động",
+      "Phiêu Lưu",
+      "Bí ẩn"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3ae59e983cdfde3445da.webp",
-    "link_url": "/phim/cuu-long-bat-bai.html",
-    "title": "Cửu Long Bất Bại",
-    "year": "2019",
-    "country": "Hồng Kông",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3fb79e983cdfde344a14.webp",
+    "link_url": "/phim/trai-tim-dung-cam.html",
+    "title": "Trái Tim Dũng Cảm",
+    "year": "1995",
+    "country": "Âu Mỹ",
     "episode_current": "Full",
     "genres": [
+      "Hành Động",
       "Tâm Lý",
-      "Võ Thuật"
+      "Chiến Tranh",
+      "Phiêu Lưu"
     ],
     "sort_order": 11,
     "enabled": true
