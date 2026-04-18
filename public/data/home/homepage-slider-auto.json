@@ -1,20 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cd19f9e983cdfde33f8b8.webp",
-    "link_url": "/phim/tan-mon-huyen-an.html",
-    "title": "Tân Môn Huyền Án",
-    "year": "2022",
-    "country": "Trung Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Bí ẩn"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db1569e983cdfde3475b6.webp",
     "link_url": "/phim/adventure-beast-hoi-dap-ve-muong-thu.html",
     "title": "Adventure Beast: Hỏi đáp về muông thú",
@@ -25,7 +10,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 1,
+    "sort_order": 0,
     "enabled": true
   },
   {
@@ -42,7 +27,7 @@
       "Khoa Học",
       "Âm Nhạc"
     ],
-    "sort_order": 2,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -57,7 +42,7 @@
       "Âm Nhạc",
       "Gia Đình"
     ],
-    "sort_order": 3,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -71,36 +56,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 4,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cca729e983cdfde33e9ed.webp",
-    "link_url": "/phim/the-souvenir-part-ii.html",
-    "title": "Tình Yêu Mê Ly (Phần 2)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627cb4119e983cdfde33d8be.webp",
-    "link_url": "/phim/biet-doi-titans-phan-3.html",
-    "title": "Biệt Đội Titans (Phần 3)",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Khoa Học"
-    ],
-    "sort_order": 6,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -113,7 +69,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 7,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -126,7 +82,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 8,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -139,7 +95,7 @@
     "genres": [
       "Hài Hước"
     ],
-    "sort_order": 9,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -152,7 +108,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 10,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -162,6 +118,53 @@
     "year": "2020",
     "country": "Âu Mỹ",
     "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Chính kịch"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d31739e983cdfde343de9.webp",
+    "link_url": "/phim/thuong-co-mat-uoc.html",
+    "title": "Thượng Cổ Mật Ước",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (45/45)",
+    "genres": [
+      "Hành Động",
+      "Tình Cảm",
+      "Cổ Trang",
+      "Tâm Lý",
+      "Chiến Tranh",
+      "Võ Thuật",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 9,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d313f9e983cdfde343dca.webp",
+    "link_url": "/phim/nguyet-thuong-trong-hoa.html",
+    "title": "Nguyệt Thượng Trọng Hỏa",
+    "year": "2020",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (48/48)",
+    "genres": [
+      "Tình Cảm",
+      "Cổ Trang",
+      "Tâm Lý"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db46b9e983cdfde3478b8.webp",
+    "link_url": "/phim/ao-thuat-cho-nhan-loai-phan-2.html",
+    "title": "Ảo thuật cho nhân loại (Phần 2)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (06/06)",
     "genres": [
       "Chính kịch"
     ],
