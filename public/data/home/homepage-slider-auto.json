@@ -15,6 +15,19 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c957edb9df06c65979ab8.webp",
+    "link_url": "/phim/nu-gia-su-goi-cam.html",
+    "title": "Nữ Gia Sư Gợi Cảm",
+    "year": "2022",
+    "country": "Hàn Quốc",
+    "episode_current": "Full",
+    "genres": [
+      "Phim 18+"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db1569e983cdfde3475b6.webp",
     "link_url": "/phim/adventure-beast-hoi-dap-ve-muong-thu.html",
     "title": "Adventure Beast: Hỏi đáp về muông thú",
@@ -25,7 +38,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 1,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -42,7 +55,7 @@
       "Khoa Học",
       "Âm Nhạc"
     ],
-    "sort_order": 2,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -57,7 +70,7 @@
       "Âm Nhạc",
       "Gia Đình"
     ],
-    "sort_order": 3,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -71,7 +84,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 4,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -84,7 +97,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 5,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -100,7 +113,20 @@
       "Phiêu Lưu",
       "Khoa Học"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627c99959e983cdfde33c370.webp",
+    "link_url": "/phim/the-dark-side-of-green-energies.html",
+    "title": "The Dark Side of Green Energies",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tài Liệu"
+    ],
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -113,7 +139,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 7,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -126,7 +152,7 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 8,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -138,32 +164,6 @@
     "episode_current": "Hoàn Tất (8/8)",
     "genres": [
       "Hài Hước"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db1b29e983cdfde347614.webp",
-    "link_url": "/phim/aj-va-nu-hoang.html",
-    "title": "AJ và nữ hoàng",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627dac5c9e983cdfde347201.webp",
-    "link_url": "/phim/cu-truot-dai.html",
-    "title": "Cú trượt dài",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
     ],
     "sort_order": 11,
     "enabled": true
