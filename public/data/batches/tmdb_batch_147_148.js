@@ -1,1 +1,1 @@
-window.moviesTmdbBatch = [{"id":"627c99959e983cdfde33c370","tmdb":{"type":"movie","id":"765250","season":null,"vote_average":7,"vote_count":2},"imdb":null,"cast":[],"director":["Jean-Louis Pérez","Guillaume Pitron"],"cast_meta":[],"keywords":["china","social documentary","natural resources","political documentary"]}];
+window.moviesTmdbBatch = [{"id":"627bfea4db9df06c65957016","tmdb":{"type":null,"id":"","season":null,"vote_average":0,"vote_count":0},"imdb":null,"cast":[],"director":[],"cast_meta":[],"keywords":[]}];
