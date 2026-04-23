@@ -1,5 +1,45 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12799e983cdfde34b955.webp",
+    "link_url": "/phim/san-linh-hon.html",
+    "title": "Săn Linh Hồn",
+    "year": "2024",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Kinh Dị"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12f19e983cdfde34b9c8.webp",
+    "link_url": "/phim/can-phong-203.html",
+    "title": "Căn Phòng 203",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Kinh Dị"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11ae9e983cdfde34b89c.webp",
+    "link_url": "/phim/nhung-ke-nguyen-rua-2022.html",
+    "title": "Những Kẻ Nguyền Rủa 2022",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Viễn Tưởng",
+      "Kinh Dị"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11059e983cdfde34b806.webp",
     "link_url": "/phim/ted-k.html",
     "title": "Ted K",
@@ -9,7 +49,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 0,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -22,7 +62,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 1,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -35,7 +75,7 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 2,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -49,7 +89,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 3,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -66,7 +106,7 @@
       "Khoa Học",
       "Âm Nhạc"
     ],
-    "sort_order": 4,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -81,7 +121,7 @@
       "Âm Nhạc",
       "Gia Đình"
     ],
-    "sort_order": 5,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -94,7 +134,7 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 6,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -107,52 +147,13 @@
     "genres": [
       "Chính kịch"
     ],
-    "sort_order": 7,
+    "sort_order": 10,
     "enabled": true
   },
   {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db3679e983cdfde3477f6.webp",
     "link_url": "/phim/anh-em-co-ay-phan-5.html",
     "title": "Anh, em, cô ấy (Phần 5)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db2119e983cdfde34768c.webp",
-    "link_url": "/phim/anh-em-u-bia.html",
-    "title": "Anh em ủ bia",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
-    "genres": [
-      "Hài Hước"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db1b29e983cdfde347614.webp",
-    "link_url": "/phim/aj-va-nu-hoang.html",
-    "title": "AJ và nữ hoàng",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627dac5c9e983cdfde347201.webp",
-    "link_url": "/phim/cu-truot-dai.html",
-    "title": "Cú trượt dài",
     "year": "2020",
     "country": "Âu Mỹ",
     "episode_current": "Hoàn Tất (10/10)",
