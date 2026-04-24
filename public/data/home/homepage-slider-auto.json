@@ -13,6 +13,62 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e148f9e983cdfde34bb4f.webp",
+    "link_url": "/phim/ngo-khong-tieu-thanh-truyen.html",
+    "title": "Ngộ Không: Tiểu Thánh Truyện",
+    "year": "2022",
+    "country": "Trung Quốc",
+    "episode_current": "Trailer",
+    "genres": [
+      "Cổ Trang",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13d69e983cdfde34baae.webp",
+    "link_url": "/phim/dac-vu-vo-hinh.html",
+    "title": "Đặc Vụ Vô Hình",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e139d9e983cdfde34ba6b.webp",
+    "link_url": "/phim/tho-ga-ra-kho-bau.html",
+    "title": "Thỏ Gà Rà Kho Báu",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Phiêu Lưu"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13459e983cdfde34ba14.webp",
+    "link_url": "/phim/khoi-nguon-dai-dich.html",
+    "title": "Khởi Nguồn Đại Dịch",
+    "year": "2022",
+    "country": "Hàn Quốc",
+    "episode_current": "Trailer",
+    "genres": [
+      "Viễn Tưởng",
+      "Phiêu Lưu",
+      "Kinh Dị"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12f19e983cdfde34b9c8.webp",
     "link_url": "/phim/can-phong-203.html",
     "title": "Căn Phòng 203",
@@ -22,7 +78,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 1,
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -36,7 +92,7 @@
       "Viễn Tưởng",
       "Kinh Dị"
     ],
-    "sort_order": 2,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -49,7 +105,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 3,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -62,7 +118,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 4,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -75,7 +131,7 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 5,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -89,7 +145,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 6,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -105,60 +161,6 @@
       "Phiêu Lưu",
       "Khoa Học",
       "Âm Nhạc"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627dab1a9e983cdfde347115.webp",
-    "link_url": "/phim/country-comfort-giai-dieu-tu-mai-am.html",
-    "title": "Country Comfort: Giai điệu từ mái ấm",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Hài Hước",
-      "Âm Nhạc",
-      "Gia Đình"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627de9579e983cdfde349c09.webp",
-    "link_url": "/phim/nguoi-me-goi-cam.html",
-    "title": "Người Mẹ Gợi Cảm",
-    "year": "2020",
-    "country": "Hàn Quốc",
-    "episode_current": "Full",
-    "genres": [
-      "Phim 18+"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db4799e983cdfde3478cf.webp",
-    "link_url": "/phim/ao-thuat-cho-nhan-loai-phan-3.html",
-    "title": "Ảo thuật cho nhân loại (Phần 3)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (7/7)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db3679e983cdfde3477f6.webp",
-    "link_url": "/phim/anh-em-co-ay-phan-5.html",
-    "title": "Anh, em, cô ấy (Phần 5)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
     ],
     "sort_order": 11,
     "enabled": true
