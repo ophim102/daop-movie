@@ -82,6 +82,19 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3c069e983cdfde34471c.webp",
+    "link_url": "/phim/maverix.html",
+    "title": "Maverix",
+    "year": "2022",
+    "country": "Úc",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Chính kịch"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11ae9e983cdfde34b89c.webp",
     "link_url": "/phim/nhung-ke-nguyen-rua-2022.html",
     "title": "Những Kẻ Nguyền Rủa 2022",
@@ -92,7 +105,7 @@
       "Viễn Tưởng",
       "Kinh Dị"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -105,7 +118,7 @@
     "genres": [
       "Tâm Lý"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -118,7 +131,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -131,32 +144,19 @@
     "genres": [
       "Phim 18+"
     ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12c59e983cdfde34b9a4.webp",
-    "link_url": "/phim/nang-tien-ca-o-paris.html",
-    "title": "Nàng Tiên Cá Ở Paris",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Tình Cảm",
-      "Viễn Tưởng"
-    ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627de9579e983cdfde349c09.webp",
-    "link_url": "/phim/nguoi-me-goi-cam.html",
-    "title": "Người Mẹ Gợi Cảm",
-    "year": "2020",
-    "country": "Hàn Quốc",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627db1569e983cdfde3475b6.webp",
+    "link_url": "/phim/adventure-beast-hoi-dap-ve-muong-thu.html",
+    "title": "Adventure Beast: Hỏi đáp về muông thú",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (12/12)",
     "genres": [
-      "Phim 18+"
+      "Hành Động",
+      "Phiêu Lưu"
     ],
     "sort_order": 11,
     "enabled": true
