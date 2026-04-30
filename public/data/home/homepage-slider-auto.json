@@ -108,6 +108,20 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f26959e983cdfde3528ff.webp",
+    "link_url": "/phim/arcane.html",
+    "title": "Arcane",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (9/9)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f22559e983cdfde352480.webp",
     "link_url": "/phim/muon-van-cach-yeu.html",
     "title": "Muôn Vàn Cách Yêu",
@@ -118,7 +132,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -132,7 +146,7 @@
       "Viễn Tưởng",
       "Kinh Dị"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -144,19 +158,6 @@
     "episode_current": "Trailer",
     "genres": [
       "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e10d29e983cdfde34b7d8.webp",
-    "link_url": "/phim/nhung-bong-ma-cua-borley-rectory.html",
-    "title": "Những Bóng Ma Của Borley Rectory",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Kinh Dị"
     ],
     "sort_order": 11,
     "enabled": true
