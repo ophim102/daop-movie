@@ -1,113 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12799e983cdfde34b955.webp",
-    "link_url": "/phim/san-linh-hon.html",
-    "title": "Săn Linh Hồn",
-    "year": "2024",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Kinh Dị"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e148f9e983cdfde34bb4f.webp",
-    "link_url": "/phim/ngo-khong-tieu-thanh-truyen.html",
-    "title": "Ngộ Không: Tiểu Thánh Truyện",
-    "year": "2022",
-    "country": "Trung Quốc",
-    "episode_current": "Trailer",
-    "genres": [
-      "Cổ Trang",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13d69e983cdfde34baae.webp",
-    "link_url": "/phim/dac-vu-vo-hinh.html",
-    "title": "Đặc Vụ Vô Hình",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e139d9e983cdfde34ba6b.webp",
-    "link_url": "/phim/tho-ga-ra-kho-bau.html",
-    "title": "Thỏ Gà Rà Kho Báu",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Phiêu Lưu"
-    ],
-    "sort_order": 3,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13459e983cdfde34ba14.webp",
-    "link_url": "/phim/khoi-nguon-dai-dich.html",
-    "title": "Khởi Nguồn Đại Dịch",
-    "year": "2022",
-    "country": "Hàn Quốc",
-    "episode_current": "Trailer",
-    "genres": [
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Kinh Dị"
-    ],
-    "sort_order": 4,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12f19e983cdfde34b9c8.webp",
-    "link_url": "/phim/can-phong-203.html",
-    "title": "Căn Phòng 203",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Kinh Dị"
-    ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3c069e983cdfde34471c.webp",
-    "link_url": "/phim/maverix.html",
-    "title": "Maverix",
-    "year": "2022",
-    "country": "Úc",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 6,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3bbf9e983cdfde3446b9.webp",
-    "link_url": "/phim/sac-dep-tan-khoc.html",
-    "title": "Sắc đẹp tàn khốc",
-    "year": "2022",
-    "country": "Nam Phi",
-    "episode_current": "Hoàn Tất (6/6)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f26959e983cdfde3528ff.webp",
     "link_url": "/phim/arcane.html",
     "title": "Arcane",
@@ -118,7 +10,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 8,
+    "sort_order": 0,
     "enabled": true
   },
   {
@@ -132,32 +24,141 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f223c9e983cdfde35245a.webp",
+    "link_url": "/phim/gio-lon-thoi-qua.html",
+    "title": "Gió Lớn Thổi Qua",
+    "year": "2019",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (28/28)",
+    "genres": [
+      "Hài Hước"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e848c9e983cdfde34fc8d.webp",
+    "link_url": "/phim/tro-ly-het-y.html",
+    "title": "Trợ Lý Hết Ý",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e84769e983cdfde34fc74.webp",
+    "link_url": "/phim/tro-dua-cua-so-phan.html",
+    "title": "Trò Đùa Của Số Phận",
+    "year": "2019",
+    "country": "Ấn Độ",
+    "episode_current": "Full",
+    "genres": [
+      "Tình Cảm",
+      "Tâm Lý"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f21b89e983cdfde3523ce.webp",
+    "link_url": "/phim/hoat-sac-sinh-huong.html",
+    "title": "Hoạt Sắc Sinh Hương",
+    "year": "2015",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (44/44)",
+    "genres": [
+      "Cổ Trang",
+      "Tâm Lý"
+    ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f21629e983cdfde352396.webp",
+    "link_url": "/phim/my-nhan-tam-ke.html",
+    "title": "Mỹ Nhân Tâm Kế",
+    "year": "2010",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (40/40)",
+    "genres": [
+      "Cổ Trang",
+      "Tâm Lý"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e84e59e983cdfde34fcdf.webp",
+    "link_url": "/phim/vet-cat.html",
+    "title": "Vết Cắt",
+    "year": "2003",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Tâm Lý",
+      "Bí ẩn"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12799e983cdfde34b955.webp",
+    "link_url": "/phim/san-linh-hon.html",
+    "title": "Săn Linh Hồn",
+    "year": "2024",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Kinh Dị"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e148f9e983cdfde34bb4f.webp",
+    "link_url": "/phim/ngo-khong-tieu-thanh-truyen.html",
+    "title": "Ngộ Không: Tiểu Thánh Truyện",
+    "year": "2022",
+    "country": "Trung Quốc",
+    "episode_current": "Trailer",
+    "genres": [
+      "Cổ Trang",
+      "Phiêu Lưu"
+    ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11ae9e983cdfde34b89c.webp",
-    "link_url": "/phim/nhung-ke-nguyen-rua-2022.html",
-    "title": "Những Kẻ Nguyền Rủa 2022",
-    "year": "2021",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13d69e983cdfde34baae.webp",
+    "link_url": "/phim/dac-vu-vo-hinh.html",
+    "title": "Đặc Vụ Vô Hình",
+    "year": "2022",
     "country": "Âu Mỹ",
     "episode_current": "Trailer",
     "genres": [
-      "Viễn Tưởng",
-      "Kinh Dị"
+      "Hành Động",
+      "Phiêu Lưu"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11059e983cdfde34b806.webp",
-    "link_url": "/phim/ted-k.html",
-    "title": "Ted K",
-    "year": "2021",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e139d9e983cdfde34ba6b.webp",
+    "link_url": "/phim/tho-ga-ra-kho-bau.html",
+    "title": "Thỏ Gà Rà Kho Báu",
+    "year": "2022",
     "country": "Âu Mỹ",
     "episode_current": "Trailer",
     "genres": [
-      "Tâm Lý"
+      "Phiêu Lưu"
     ],
     "sort_order": 11,
     "enabled": true
