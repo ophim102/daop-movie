@@ -103,21 +103,6 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f29bf9e983cdfde352c76.webp",
-    "link_url": "/phim/thi-tran-hemlock-grove-phan-2.html",
-    "title": "Thị Trấn Hemlock Grove (Phần 2)",
-    "year": "2014",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Kinh Dị"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27b69e983cdfde352a47.webp",
     "link_url": "/phim/archer-phan-8.html",
     "title": "Archer (Phần 8)",
@@ -128,6 +113,21 @@
       "Hành Động",
       "Hài Hước",
       "Phiêu Lưu"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f29bf9e983cdfde352c76.webp",
+    "link_url": "/phim/thi-tran-hemlock-grove-phan-2.html",
+    "title": "Thị Trấn Hemlock Grove (Phần 2)",
+    "year": "2014",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Kinh Dị"
     ],
     "sort_order": 8,
     "enabled": true
