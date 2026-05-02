@@ -1,5 +1,138 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f28529e983cdfde352af7.webp",
+    "link_url": "/phim/ba-co-tiec-tung.html",
+    "title": "Bà cô tiệc tùng",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Phiêu Lưu",
+      "Chính kịch",
+      "Bí ẩn"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a219e983cdfde352cf2.webp",
+    "link_url": "/phim/biet-doi-tinh-nhue-la.html",
+    "title": "Biệt đội tinh nhuệ L.A. (Phần 2)",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Chính kịch"
+    ],
+    "sort_order": 1,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f28aa9e983cdfde352b41.webp",
+    "link_url": "/phim/benh-vien-lenox-hill.html",
+    "title": "Bệnh viện Lenox Hill",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (9/9)",
+    "genres": [
+      "Khoa Học"
+    ],
+    "sort_order": 2,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27f29e983cdfde352a9f.webp",
+    "link_url": "/phim/archer-phan-11.html",
+    "title": "Archer (Phần 11)",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a819e983cdfde352d8a.webp",
+    "link_url": "/phim/biet-doi-tinh-nhue-la-phan-1.html",
+    "title": "Biệt đội tinh nhuệ L.A. (Phần 1)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Chính kịch"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27e39e983cdfde352a7d.webp",
+    "link_url": "/phim/archer-phan-10.html",
+    "title": "Archer (Phần 10)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (09/09)",
+    "genres": [
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27c29e983cdfde352a60.webp",
+    "link_url": "/phim/archer-phan-9.html",
+    "title": "Archer (Phần 9)",
+    "year": "2018",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f29bf9e983cdfde352c76.webp",
+    "link_url": "/phim/thi-tran-hemlock-grove-phan-2.html",
+    "title": "Thị Trấn Hemlock Grove (Phần 2)",
+    "year": "2014",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (10/10)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Kinh Dị"
+    ],
+    "sort_order": 7,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27b69e983cdfde352a47.webp",
+    "link_url": "/phim/archer-phan-8.html",
+    "title": "Archer (Phần 8)",
+    "year": "2017",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
+    "genres": [
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
+    ],
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12799e983cdfde34b955.webp",
     "link_url": "/phim/san-linh-hon.html",
     "title": "Săn Linh Hồn",
@@ -9,7 +142,7 @@
     "genres": [
       "Kinh Dị"
     ],
-    "sort_order": 0,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -23,7 +156,7 @@
       "Cổ Trang",
       "Phiêu Lưu"
     ],
-    "sort_order": 1,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -36,128 +169,6 @@
     "genres": [
       "Hành Động",
       "Phiêu Lưu"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e139d9e983cdfde34ba6b.webp",
-    "link_url": "/phim/tho-ga-ra-kho-bau.html",
-    "title": "Thỏ Gà Rà Kho Báu",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Phiêu Lưu"
-    ],
-    "sort_order": 3,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13459e983cdfde34ba14.webp",
-    "link_url": "/phim/khoi-nguon-dai-dich.html",
-    "title": "Khởi Nguồn Đại Dịch",
-    "year": "2022",
-    "country": "Hàn Quốc",
-    "episode_current": "Trailer",
-    "genres": [
-      "Viễn Tưởng",
-      "Phiêu Lưu",
-      "Kinh Dị"
-    ],
-    "sort_order": 4,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12f19e983cdfde34b9c8.webp",
-    "link_url": "/phim/can-phong-203.html",
-    "title": "Căn Phòng 203",
-    "year": "2022",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Kinh Dị"
-    ],
-    "sort_order": 5,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3c069e983cdfde34471c.webp",
-    "link_url": "/phim/maverix.html",
-    "title": "Maverix",
-    "year": "2022",
-    "country": "Úc",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 6,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627d3bbf9e983cdfde3446b9.webp",
-    "link_url": "/phim/sac-dep-tan-khoc.html",
-    "title": "Sắc đẹp tàn khốc",
-    "year": "2022",
-    "country": "Nam Phi",
-    "episode_current": "Hoàn Tất (6/6)",
-    "genres": [
-      "Chính kịch"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f26959e983cdfde3528ff.webp",
-    "link_url": "/phim/arcane.html",
-    "title": "Arcane",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (9/9)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f22559e983cdfde352480.webp",
-    "link_url": "/phim/muon-van-cach-yeu.html",
-    "title": "Muôn Vàn Cách Yêu",
-    "year": "2021",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (43/43)",
-    "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11ae9e983cdfde34b89c.webp",
-    "link_url": "/phim/nhung-ke-nguyen-rua-2022.html",
-    "title": "Những Kẻ Nguyền Rủa 2022",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Viễn Tưởng",
-      "Kinh Dị"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11059e983cdfde34b806.webp",
-    "link_url": "/phim/ted-k.html",
-    "title": "Ted K",
-    "year": "2021",
-    "country": "Âu Mỹ",
-    "episode_current": "Trailer",
-    "genres": [
-      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
