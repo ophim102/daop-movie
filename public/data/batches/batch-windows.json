@@ -1,7 +1,7 @@
 {
   "baseBatchSize": 120,
   "maxBytes": 300000,
-  "total": 375,
+  "total": 379,
   "windows": [
     {
       "start": 0,
@@ -314,6 +314,10 @@
     {
       "start": 370,
       "end": 375
+    },
+    {
+      "start": 375,
+      "end": 379
     }
   ]
 }
