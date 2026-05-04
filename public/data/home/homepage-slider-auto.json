@@ -156,16 +156,14 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27c29e983cdfde352a60.webp",
-    "link_url": "/phim/archer-phan-9.html",
-    "title": "Archer (Phần 9)",
-    "year": "2018",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e83919e983cdfde34fb16.webp",
+    "link_url": "/phim/tho-san-dau-nguoi.html",
+    "title": "Thợ Săn Đầu Người",
+    "year": "2019",
     "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
+    "episode_current": "Full",
     "genres": [
-      "Hành Động",
-      "Hài Hước",
-      "Phiêu Lưu"
+      "Kinh Dị"
     ],
     "sort_order": 11,
     "enabled": true
