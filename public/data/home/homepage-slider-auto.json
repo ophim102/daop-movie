@@ -129,41 +129,45 @@
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e848c9e983cdfde34fc8d.webp",
-    "link_url": "/phim/tro-ly-het-y.html",
-    "title": "Trợ Lý Hết Ý",
-    "year": "2019",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27c29e983cdfde352a60.webp",
+    "link_url": "/phim/archer-phan-9.html",
+    "title": "Archer (Phần 9)",
+    "year": "2018",
     "country": "Âu Mỹ",
-    "episode_current": "Full",
+    "episode_current": "Hoàn Tất (8/8)",
     "genres": [
-      "Tâm Lý"
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
     ],
     "sort_order": 9,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e84769e983cdfde34fc74.webp",
-    "link_url": "/phim/tro-dua-cua-so-phan.html",
-    "title": "Trò Đùa Của Số Phận",
-    "year": "2019",
-    "country": "Ấn Độ",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27b69e983cdfde352a47.webp",
+    "link_url": "/phim/archer-phan-8.html",
+    "title": "Archer (Phần 8)",
+    "year": "2017",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (8/8)",
     "genres": [
-      "Tình Cảm",
-      "Tâm Lý"
+      "Hành Động",
+      "Hài Hước",
+      "Phiêu Lưu"
     ],
     "sort_order": 10,
     "enabled": true
   },
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e83919e983cdfde34fb16.webp",
-    "link_url": "/phim/tho-san-dau-nguoi.html",
-    "title": "Thợ Săn Đầu Người",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Full",
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f21b89e983cdfde3523ce.webp",
+    "link_url": "/phim/hoat-sac-sinh-huong.html",
+    "title": "Hoạt Sắc Sinh Hương",
+    "year": "2015",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (44/44)",
     "genres": [
-      "Kinh Dị"
+      "Cổ Trang",
+      "Tâm Lý"
     ],
     "sort_order": 11,
     "enabled": true
