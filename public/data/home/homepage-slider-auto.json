@@ -1,50 +1,5 @@
 [
   {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a219e983cdfde352cf2.webp",
-    "link_url": "/phim/biet-doi-tinh-nhue-la.html",
-    "title": "Biệt đội tinh nhuệ L.A. (Phần 2)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Chính kịch"
-    ],
-    "sort_order": 0,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a819e983cdfde352d8a.webp",
-    "link_url": "/phim/biet-doi-tinh-nhue-la-phan-1.html",
-    "title": "Biệt đội tinh nhuệ L.A. (Phần 1)",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Chính kịch"
-    ],
-    "sort_order": 1,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f29bf9e983cdfde352c76.webp",
-    "link_url": "/phim/thi-tran-hemlock-grove-phan-2.html",
-    "title": "Thị Trấn Hemlock Grove (Phần 2)",
-    "year": "2014",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (10/10)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Kinh Dị"
-    ],
-    "sort_order": 2,
-    "enabled": true
-  },
-  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e148f9e983cdfde34bb4f.webp",
     "link_url": "/phim/ngo-khong-tieu-thanh-truyen.html",
     "title": "Ngộ Không: Tiểu Thánh Truyện",
@@ -55,7 +10,7 @@
       "Cổ Trang",
       "Phiêu Lưu"
     ],
-    "sort_order": 3,
+    "sort_order": 0,
     "enabled": true
   },
   {
@@ -69,7 +24,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 4,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -82,7 +37,7 @@
     "genres": [
       "Phiêu Lưu"
     ],
-    "sort_order": 5,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -97,7 +52,7 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 6,
+    "sort_order": 3,
     "enabled": true
   },
   {
@@ -111,7 +66,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 7,
+    "sort_order": 4,
     "enabled": true
   },
   {
@@ -125,7 +80,22 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 8,
+    "sort_order": 5,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a219e983cdfde352cf2.webp",
+    "link_url": "/phim/biet-doi-tinh-nhue-la.html",
+    "title": "Biệt đội tinh nhuệ L.A. (Phần 2)",
+    "year": "2020",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Chính kịch"
+    ],
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -138,7 +108,7 @@
     "genres": [
       "Khoa Học"
     ],
-    "sort_order": 9,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -153,7 +123,22 @@
       "Hài Hước",
       "Phiêu Lưu"
     ],
-    "sort_order": 10,
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a819e983cdfde352d8a.webp",
+    "link_url": "/phim/biet-doi-tinh-nhue-la-phan-1.html",
+    "title": "Biệt đội tinh nhuệ L.A. (Phần 1)",
+    "year": "2019",
+    "country": "Âu Mỹ",
+    "episode_current": "Hoàn Tất (13/13)",
+    "genres": [
+      "Hành Động",
+      "Phiêu Lưu",
+      "Chính kịch"
+    ],
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -167,6 +152,19 @@
       "Hành Động",
       "Hài Hước",
       "Phiêu Lưu"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f223c9e983cdfde35245a.webp",
+    "link_url": "/phim/gio-lon-thoi-qua.html",
+    "title": "Gió Lớn Thổi Qua",
+    "year": "2019",
+    "country": "Trung Quốc",
+    "episode_current": "Hoàn Tất (28/28)",
+    "genres": [
+      "Hài Hước"
     ],
     "sort_order": 11,
     "enabled": true
