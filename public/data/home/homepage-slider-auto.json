@@ -139,6 +139,19 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11059e983cdfde34b806.webp",
+    "link_url": "/phim/ted-k.html",
+    "title": "Ted K",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Tâm Lý"
+    ],
+    "sort_order": 10,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a219e983cdfde352cf2.webp",
     "link_url": "/phim/biet-doi-tinh-nhue-la.html",
     "title": "Biệt đội tinh nhuệ L.A. (Phần 2)",
@@ -149,19 +162,6 @@
       "Hành Động",
       "Phiêu Lưu",
       "Chính kịch"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f28aa9e983cdfde352b41.webp",
-    "link_url": "/phim/benh-vien-lenox-hill.html",
-    "title": "Bệnh viện Lenox Hill",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (9/9)",
-    "genres": [
-      "Khoa Học"
     ],
     "sort_order": 11,
     "enabled": true
