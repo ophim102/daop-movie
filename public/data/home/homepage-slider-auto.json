@@ -1,5 +1,18 @@
 [
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12799e983cdfde34b955.webp",
+    "link_url": "/phim/san-linh-hon.html",
+    "title": "Săn Linh Hồn",
+    "year": "2024",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Kinh Dị"
+    ],
+    "sort_order": 0,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e148f9e983cdfde34bb4f.webp",
     "link_url": "/phim/ngo-khong-tieu-thanh-truyen.html",
     "title": "Ngộ Không: Tiểu Thánh Truyện",
@@ -10,7 +23,7 @@
       "Cổ Trang",
       "Phiêu Lưu"
     ],
-    "sort_order": 0,
+    "sort_order": 1,
     "enabled": true
   },
   {
@@ -24,7 +37,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 1,
+    "sort_order": 2,
     "enabled": true
   },
   {
@@ -37,7 +50,35 @@
     "genres": [
       "Phiêu Lưu"
     ],
-    "sort_order": 2,
+    "sort_order": 3,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e13459e983cdfde34ba14.webp",
+    "link_url": "/phim/khoi-nguon-dai-dich.html",
+    "title": "Khởi Nguồn Đại Dịch",
+    "year": "2022",
+    "country": "Hàn Quốc",
+    "episode_current": "Trailer",
+    "genres": [
+      "Viễn Tưởng",
+      "Phiêu Lưu",
+      "Kinh Dị"
+    ],
+    "sort_order": 4,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e12f19e983cdfde34b9c8.webp",
+    "link_url": "/phim/can-phong-203.html",
+    "title": "Căn Phòng 203",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Kinh Dị"
+    ],
+    "sort_order": 5,
     "enabled": true
   },
   {
@@ -52,7 +93,7 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 3,
+    "sort_order": 6,
     "enabled": true
   },
   {
@@ -66,7 +107,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 4,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -80,7 +121,21 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 5,
+    "sort_order": 8,
+    "enabled": true
+  },
+  {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e11ae9e983cdfde34b89c.webp",
+    "link_url": "/phim/nhung-ke-nguyen-rua-2022.html",
+    "title": "Những Kẻ Nguyền Rủa 2022",
+    "year": "2021",
+    "country": "Âu Mỹ",
+    "episode_current": "Trailer",
+    "genres": [
+      "Viễn Tưởng",
+      "Kinh Dị"
+    ],
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -95,7 +150,7 @@
       "Phiêu Lưu",
       "Chính kịch"
     ],
-    "sort_order": 6,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -107,64 +162,6 @@
     "episode_current": "Hoàn Tất (9/9)",
     "genres": [
       "Khoa Học"
-    ],
-    "sort_order": 7,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27f29e983cdfde352a9f.webp",
-    "link_url": "/phim/archer-phan-11.html",
-    "title": "Archer (Phần 11)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (8/8)",
-    "genres": [
-      "Hành Động",
-      "Hài Hước",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 8,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a819e983cdfde352d8a.webp",
-    "link_url": "/phim/biet-doi-tinh-nhue-la-phan-1.html",
-    "title": "Biệt đội tinh nhuệ L.A. (Phần 1)",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Chính kịch"
-    ],
-    "sort_order": 9,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f27e39e983cdfde352a7d.webp",
-    "link_url": "/phim/archer-phan-10.html",
-    "title": "Archer (Phần 10)",
-    "year": "2019",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (09/09)",
-    "genres": [
-      "Hành Động",
-      "Hài Hước",
-      "Phiêu Lưu"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f223c9e983cdfde35245a.webp",
-    "link_url": "/phim/gio-lon-thoi-qua.html",
-    "title": "Gió Lớn Thổi Qua",
-    "year": "2019",
-    "country": "Trung Quốc",
-    "episode_current": "Hoàn Tất (28/28)",
-    "genres": [
-      "Hài Hước"
     ],
     "sort_order": 11,
     "enabled": true
