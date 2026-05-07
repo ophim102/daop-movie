@@ -82,6 +82,19 @@
     "enabled": true
   },
   {
+    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627e08339e983cdfde34b200.webp",
+    "link_url": "/phim/tro-lai-nam-tot-nghiep.html",
+    "title": "Trở lại năm tốt nghiệp",
+    "year": "2022",
+    "country": "Âu Mỹ",
+    "episode_current": "Full",
+    "genres": [
+      "Hài Hước"
+    ],
+    "sort_order": 6,
+    "enabled": true
+  },
+  {
     "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f28529e983cdfde352af7.webp",
     "link_url": "/phim/ba-co-tiec-tung.html",
     "title": "Bà cô tiệc tùng",
@@ -93,7 +106,7 @@
       "Chính kịch",
       "Bí ẩn"
     ],
-    "sort_order": 6,
+    "sort_order": 7,
     "enabled": true
   },
   {
@@ -107,7 +120,7 @@
       "Hành Động",
       "Phiêu Lưu"
     ],
-    "sort_order": 7,
+    "sort_order": 8,
     "enabled": true
   },
   {
@@ -121,7 +134,7 @@
       "Tình Cảm",
       "Tâm Lý"
     ],
-    "sort_order": 8,
+    "sort_order": 9,
     "enabled": true
   },
   {
@@ -135,7 +148,7 @@
       "Viễn Tưởng",
       "Kinh Dị"
     ],
-    "sort_order": 9,
+    "sort_order": 10,
     "enabled": true
   },
   {
@@ -147,21 +160,6 @@
     "episode_current": "Trailer",
     "genres": [
       "Tâm Lý"
-    ],
-    "sort_order": 10,
-    "enabled": true
-  },
-  {
-    "image_url": "https://cdn.jsdelivr.net/gh/ophim102/cm114@main/public/posters/627f2a219e983cdfde352cf2.webp",
-    "link_url": "/phim/biet-doi-tinh-nhue-la.html",
-    "title": "Biệt đội tinh nhuệ L.A. (Phần 2)",
-    "year": "2020",
-    "country": "Âu Mỹ",
-    "episode_current": "Hoàn Tất (13/13)",
-    "genres": [
-      "Hành Động",
-      "Phiêu Lưu",
-      "Chính kịch"
     ],
     "sort_order": 11,
     "enabled": true
